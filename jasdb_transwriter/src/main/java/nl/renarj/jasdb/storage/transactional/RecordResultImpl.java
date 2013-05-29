@@ -11,14 +11,12 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.streams.ClonableByteArrayInputStream;
 import nl.renarj.jasdb.core.streams.ClonableDataStream;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 
 import java.io.UnsupportedEncodingException;
 
 public class RecordResultImpl implements RecordResult {
 	private long recordSize;
     private long recordPointer;
-    private UUIDKey documentId;
 
 	private String contents;
 	
@@ -35,14 +33,6 @@ public class RecordResultImpl implements RecordResult {
         return recordPointer;
     }
 
-    public void setRecordPointer(long recordPointer) {
-        this.recordPointer = recordPointer;
-    }
-
-    protected void setDocumentId(UUIDKey documentId) {
-        this.documentId = documentId;
-    }
-
     public RECORD_FLAG getRecordFlag() {
         return recordFlag;
     }
@@ -50,11 +40,6 @@ public class RecordResultImpl implements RecordResult {
     private boolean isEmpty() {
 		return contents == null || contents.isEmpty() || recordFlag == RECORD_FLAG.DELETED;
 	}
-
-    @Override
-    public UUIDKey getId() {
-        return documentId;
-    }
 
     @Override
     public ClonableDataStream getStream() throws JasDBStorageException {

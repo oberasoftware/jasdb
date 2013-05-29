@@ -99,7 +99,6 @@ public class TransactionalRecordWriter implements RecordWriter {
             long recordPointer = getRecordPointer(documentId);
 
             RecordResultImpl recordResult = writer.readRecord(recordPointer);
-            recordResult.setDocumentId((UUIDKey)documentId.cloneKey(false));
 
             return recordResult;
         } catch(RecordNotFoundException e) {

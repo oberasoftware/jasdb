@@ -9,7 +9,6 @@ package nl.renarj.jasdb.core.storage;
 
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.streams.ClonableDataStream;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 
 /**
  * This contains a single record result from storage.
@@ -21,12 +20,6 @@ public interface RecordResult {
      * @throws JasDBStorageException If unable to stream the record
      */
     ClonableDataStream getStream() throws JasDBStorageException;
-
-    /**
-     * Gets the record id
-     * @return The record id
-     */
-    UUIDKey getId();
 
     /**
      * The size of the record
