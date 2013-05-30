@@ -35,17 +35,19 @@ import java.util.Map;
  *
  * @author Renze de Vries
  */
-public class LocalConfigurableKernel extends AbstractModule {
-    private static final Logger LOG = LoggerFactory.getLogger(LocalConfigurableKernel.class);
+public class ConfigurableKernel extends AbstractModule {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurableKernel.class);
 
     private static final String CREDENTIALS_PROVIDER = "credentialsprovider";
     private static final String REMOTE_MODULE = "remote";
     private static final String RECORD_MODULE = "record";
     private static final String STORAGESERVICE_MODULE = "storageservice";
+    private static final String USER_MANAGER_MODULE = "usermanager";
+    private static final String SESSION_MANAGER_MODULE = "sessionmanager";
 
     private Configuration configuration;
 
-    public LocalConfigurableKernel(Configuration configuration) {
+    public ConfigurableKernel(Configuration configuration) {
         this.configuration = configuration;
     }
 
@@ -69,11 +71,12 @@ public class LocalConfigurableKernel extends AbstractModule {
 
         bind(DBInstanceFactory.class).to(DBInstanceFactoryImpl.class);
         bind(MetadataStore.class).to(JasDBMetadataStore.class);
-        bind(UserManager.class).to(DummyUserManager.class);
-        bind(SessionManager.class).to(DummySessionManager.class);
         loadModule(StorageServiceFactory.class, STORAGESERVICE_MODULE, modules, LocalStorageServiceFactoryImpl.class);
         loadModule(RemoteService.class, REMOTE_MODULE, modules, DummyRemoteService.class);
         loadModule(RecordWriterFactory.class, RECORD_MODULE, modules, TransactionalRecordWriterFactory.class);
+
+        loadModule(UserManager.class, USER_MANAGER_MODULE, modules, DummyUserManager.class);
+        loadModule(SessionManager.class, SESSION_MANAGER_MODULE, modules, DummySessionManager.class);
         loadModule(CredentialsProvider.class, CREDENTIALS_PROVIDER, modules, DummyCredentialsProvider.class);
     }
 

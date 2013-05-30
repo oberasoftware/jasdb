@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasdb kernel="nl.renarj.jasdb.core.LocalConfigurableKernel">
+<jasdb kernel="nl.renarj.jasdb.core.ConfigurableKernel">
     <modules>
         <!-- Set the used kernel modules -->
         <module type="record" class="nl.renarj.jasdb.storage.transactional.TransactionalRecordWriterFactory"/>
