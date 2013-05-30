@@ -65,7 +65,7 @@ public class ConfigurableKernel extends AbstractModule {
             String moduleImplementation = moduleConfiguration.getAttribute("class");
 
             if(StringUtils.stringNotEmpty(moduleType) && StringUtils.stringNotEmpty(moduleImplementation)) {
-                modules.put(moduleType, moduleImplementation);
+                modules.put(moduleType.toLowerCase(), moduleImplementation);
             }
         }
 
