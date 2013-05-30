@@ -22,11 +22,6 @@
 	</properties>
 
 	<repositories>
-		<repository>
-			<id>ren_internal</id>
-			<name>Internal 3rd party repository</name>
-			<url>http://oberasoftware.com:8080/nexus/content/groups/public/</url>
-		</repository>
         <repository>
             <id>ren_release</id>
             <name>Internal release repository</name>
