@@ -14,9 +14,8 @@
 			<artifactId>ren_core</artifactId>
 		</dependency>
         <dependency>
-            <groupId>nl.renarj</groupId>
+            <groupId>com.obera</groupId>
             <artifactId>jasdb_index_btreeplus</artifactId>
-            <version>${project.version}</version>
         </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
