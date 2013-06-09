@@ -273,20 +273,23 @@ public class SimpleKernel {
         Thread shutdownThread = new Thread(new KernelShutdown());
         Runtime.getRuntime().addShutdownHook(shutdownThread);
 
-        try {
-            MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-            ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
-            if(!server.isRegistered(name)) {
-                server.registerMBean(new KernelShutdown(), name);
+        if(!System.getProperty("java.vm.name").contains("Hotspot")) {
+            log.info("Hotspot based JVM, registering management bean");
+            try {
+                MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
+                if(!server.isRegistered(name)) {
+                    server.registerMBean(new KernelShutdown(), name);
+                }
+            } catch (InstanceAlreadyExistsException e) {
+                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+            } catch (MBeanRegistrationException e) {
+                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+            } catch (NotCompliantMBeanException e) {
+                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+            } catch(MalformedObjectNameException e) {
+                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
             }
-        } catch (InstanceAlreadyExistsException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-        } catch (MBeanRegistrationException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-        } catch (NotCompliantMBeanException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-        } catch(MalformedObjectNameException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
         }
     }
 
