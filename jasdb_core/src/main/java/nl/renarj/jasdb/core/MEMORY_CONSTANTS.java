@@ -10,7 +10,9 @@ public interface MEMORY_CONSTANTS {
 
     static final int TWO_LONG_BYTES = LONG_BYTE_SIZE + LONG_BYTE_SIZE;
 
-    static final int OBJECT_SIZE = 12;
+    static final int OBJECT_REF = 8;
+
+    static final int OBJECT_SIZE = 16;
 
     static final int ARRAY_SIZE = 12;
 }

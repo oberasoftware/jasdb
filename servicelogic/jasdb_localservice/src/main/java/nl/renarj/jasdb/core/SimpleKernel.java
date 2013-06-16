@@ -20,30 +20,19 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.LocatorException;
 import nl.renarj.jasdb.core.exceptions.ServiceException;
 import nl.renarj.jasdb.core.locator.NodeInformation;
+import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
 import nl.renarj.jasdb.service.StorageServiceFactory;
 import nl.renarj.jasdb.service.metadata.JasDBMetadataStore;
 import nl.renarj.jasdb.storage.exceptions.RecordStoreInUseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.management.ManagementFactory;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.jar.Manifest;
 
 public class SimpleKernel {
     private static final Logger log = LoggerFactory.getLogger(SimpleKernel.class);
@@ -51,14 +40,14 @@ public class SimpleKernel {
     private static final String FALLBACK_JASDB_XML = "default-jasdb.xml";
     private static final String JASDB_CONFIG = "jasdb.xml";
 
-    private static final String UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK = "Unable to register JMX shutdown hook";
+
     private static final String GRID_CONFIG_PATH = "/jasdb/Grid";
     private static final String GRID_ID_CONFIG = "id";
 
     private static final Lock reconfigureLock = new ReentrantLock();
     private static SimpleKernel INSTANCE;
 
-    private String instanceId = ManagementFactory.getRuntimeMXBean().getName().replace(".", "_") + this.getClass().getClassLoader().hashCode();
+    private String instanceId = PlatformManagerFactory.getPlatformManager().getProcessId();
     private NodeInformation nodeInformation;
     private String kernelVersion = "unknown";
     private String gridId;
@@ -145,21 +134,7 @@ public class SimpleKernel {
         INSTANCE.latch.countDown();
         INSTANCE = null;
 
-        unregisterManagementBean();
-    }
-
-    private void unregisterManagementBean() {
-        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        try {
-            ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
-            server.unregisterMBean(name);
-        } catch(MalformedObjectNameException e) {
-            log.error("Unable to unregister management bean: {}", e.getMessage());
-        } catch(MBeanRegistrationException e) {
-            log.error("Unable to unregister management bean: {}", e.getMessage());
-        } catch(InstanceNotFoundException e) {
-            log.error("Unable to unregister management bean: {}", e.getMessage());
-        }
+        PlatformManagerFactory.getPlatformManager().shutdownPlatform();
     }
 
     /**
@@ -273,24 +248,7 @@ public class SimpleKernel {
         Thread shutdownThread = new Thread(new KernelShutdown());
         Runtime.getRuntime().addShutdownHook(shutdownThread);
 
-        if(!System.getProperty("java.vm.name").contains("Hotspot")) {
-            log.info("Hotspot based JVM, registering management bean");
-            try {
-                MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
-                if(!server.isRegistered(name)) {
-                    server.registerMBean(new KernelShutdown(), name);
-                }
-            } catch (InstanceAlreadyExistsException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-            } catch (MBeanRegistrationException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-            } catch (NotCompliantMBeanException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-            } catch(MalformedObjectNameException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-            }
-        }
+        PlatformManagerFactory.getPlatformManager().initializePlatform();
     }
 
 	
@@ -326,31 +284,32 @@ public class SimpleKernel {
     }
 
     private void loadVersionInformation() {
-        Class<SimpleKernel> kernelClass = SimpleKernel.class;
-        String className = kernelClass.getSimpleName() + ".class";
-        String classPath = kernelClass.getResource(className).toString();
-        if(classPath.startsWith("jar")) {
-            String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
-            try {
-                URL versionManifest = new URL(manifestPath);
-                InputStream is = versionManifest.openStream();
-                try {
-                    Manifest mf = new Manifest(is);
-                    String releaseVersion = mf.getMainAttributes().getValue("ReleaseVersion");
-                    String builderNumber = mf.getMainAttributes().getValue("BuildNumber");
-
-                    kernelVersion = releaseVersion + "-" + builderNumber;
-                } finally {
-                    if(is != null) {
-                        is.close();
-                    }
-                }
-            } catch(IOException e) {
-                log.warn("Unable to load kernel version information, ignoring", e);
-            }
-        } else {
-            log.info("No kernel versioning information available, not loading from jar");
-        }
+//        Class<SimpleKernel> kernelClass = SimpleKernel.class;
+//        String className = kernelClass.getSimpleName() + ".class";
+//        String classPath = kernelClass.getResource(className).toString();
+//        if(classPath.startsWith("jar")) {
+//            String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+//            try {
+//                URL versionManifest = new URL(manifestPath);
+//                InputStream is = versionManifest.openStream();
+//                try {
+//                    Manifest mf = new Manifest(is);
+//                    String releaseVersion = mf.getMainAttributes().getValue("ReleaseVersion");
+//                    String builderNumber = mf.getMainAttributes().getValue("BuildNumber");
+//
+//                    kernelVersion = releaseVersion + "-" + builderNumber;
+//                } finally {
+//                    if(is != null) {
+//                        is.close();
+//                    }
+//                }
+//            } catch(IOException e) {
+//                log.warn("Unable to load kernel version information, ignoring", e);
+//            }
+//        } else {
+//            log.info("No kernel versioning information available, not loading from jar");
+//        }
+        kernelVersion = "Special android version";
     }
 	
 	public static String getVersion() throws ConfigurationException {

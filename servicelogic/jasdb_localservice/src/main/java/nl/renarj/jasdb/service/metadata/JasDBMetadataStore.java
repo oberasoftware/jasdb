@@ -7,6 +7,7 @@ import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataProvider;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
 import nl.renarj.jasdb.core.utils.FileUtils;
 import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
 import nl.renarj.jasdb.storage.transactional.FSWriter;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +76,7 @@ public class JasDBMetadataStore implements MetadataStore {
         LOG.info("Last shutdown clean: {}", lastShutdownClean);
         try {
             if(datastoreLocation.exists() || datastoreLocation.mkdirs()) {
-                FileUtils.writeToFile(pidFile, "JasDB Instance Started, " + ManagementFactory.getRuntimeMXBean().getName());
+                FileUtils.writeToFile(pidFile, "JasDB Instance Started, " + PlatformManagerFactory.getPlatformManager().getProcessId());
                 LOG.info("Created JasDB pid file: {}", pidFile);
             } else {
                 throw new JasDBStorageException("Unable to create database path, directories could not be created: " + datastoreLocation) ;

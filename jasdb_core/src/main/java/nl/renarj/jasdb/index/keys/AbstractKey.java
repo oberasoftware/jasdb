@@ -7,6 +7,7 @@
  */
 package nl.renarj.jasdb.index.keys;
 
+import nl.renarj.jasdb.core.MEMORY_CONSTANTS;
 import nl.renarj.jasdb.index.keys.impl.CompositeKey;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
 
@@ -73,10 +74,11 @@ public abstract class AbstractKey implements Key {
 
     @Override
     public long size() {
-        long size = 0;
+        long size = MEMORY_CONSTANTS.OBJECT_SIZE;
         if(keys != null) {
+            size += MEMORY_CONSTANTS.ARRAY_SIZE + MEMORY_CONSTANTS.OBJECT_SIZE;
             for(Key key : keys) {
-                size += key.size();
+                size += key.size() + MEMORY_CONSTANTS.OBJECT_REF;
             }
         }
         return size;

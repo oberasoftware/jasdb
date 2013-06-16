@@ -7,6 +7,7 @@
  */
 package nl.renarj.jasdb.index.keys.impl;
 
+import nl.renarj.jasdb.core.MEMORY_CONSTANTS;
 import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import nl.renarj.jasdb.index.keys.AbstractKey;
 import nl.renarj.jasdb.index.keys.CompareMethod;
@@ -51,7 +52,7 @@ public class StringKey extends AbstractKey {
 
     @Override
     public long size() {
-        return unicodeBytes.length + super.size();
+        return unicodeBytes.length + MEMORY_CONSTANTS.ARRAY_SIZE + super.size();
     }
 
     @Override

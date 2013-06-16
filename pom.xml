@@ -89,6 +89,11 @@
                 <artifactId>jasdb_transwriter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>nl.renarj</groupId>
+                <artifactId>jasdb_localservice</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- jersey related libraries -->
 			<dependency>
@@ -117,6 +122,7 @@
             <dependency>
 				<groupId>com.google.inject</groupId>
 				<artifactId>guice</artifactId>
+                <classifier>no_aop</classifier>
 				<version>${guice.version}</version>
 			</dependency>
 			<dependency>
@@ -207,6 +213,7 @@
         <module>connectors/jasdb_connector</module>
         <module>connectors/jasdb_apiconnector</module>
         <module>testing/jasdb_integration_test</module>
+        <module>jasdb_android</module>
     </modules>
 
     <profiles>
