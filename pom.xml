@@ -119,6 +119,24 @@
 				<version>${jetty.version}</version>
 			</dependency>
 
+            <!-- android related libraries -->
+            <dependency>
+                <groupId>com.github.tony19</groupId>
+                <artifactId>logback-android-core</artifactId>
+                <version>1.0.10-2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.android</groupId>
+                <artifactId>android</artifactId>
+                <version>4.1.1.4</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.tony19</groupId>
+                <artifactId>logback-android-classic</artifactId>
+                <version>1.0.10-2</version>
+            </dependency>
+
             <dependency>
 				<groupId>com.google.inject</groupId>
 				<artifactId>guice</artifactId>
