@@ -37,6 +37,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<description>This is the JASDB service logic</description>
-	<inceptionYear>2011</inceptionYear>
 </project>

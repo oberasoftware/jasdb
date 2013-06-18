@@ -1,6 +1,5 @@
 package nl.renarj.jasdb.core.platform;
 
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,17 +18,23 @@ public class PlatformManagerFactory {
     private PlatformManagerFactory() {
         ServiceLoader<PlatformManager> platformManagerServiceLoader = ServiceLoader.load(PlatformManager.class);
         String systemJvm = System.getProperty("java.vm.name").toLowerCase();
+        LOG.info("Using platform JVM: {}", systemJvm);
         for(PlatformManager loadedPlatformManager : platformManagerServiceLoader) {
+            LOG.info("Platform manager: {}", loadedPlatformManager);
             if(loadedPlatformManager.platformMatch(systemJvm)) {
                 this.platformManager = loadedPlatformManager;
                 break;
             }
         }
         if(platformManager == null) {
-            throw new RuntimeJasDBException("Could not load a suitable platform manager for jvm: " + systemJvm);
-        } else {
-            LOG.info("Using platform manager: {}", platformManager);
+            platformManager = new DefaultPlatformManager();
         }
+
+        LOG.info("Using platform manager: {}", platformManager);
+    }
+
+    public synchronized static void setPlatformManager(PlatformManager platformManager) {
+        platformManagerFactory.platformManager = platformManager;
     }
 
     public static PlatformManager getPlatformManager() {

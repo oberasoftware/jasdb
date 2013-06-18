@@ -2,6 +2,7 @@ package com.obera.jasdb.android;
 
 import android.content.Context;
 import com.obera.jasdb.android.platform.AndroidContext;
+import com.obera.jasdb.android.platform.AndroidPlatformManager;
 import nl.renarj.jasdb.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.UserAdministration;
@@ -9,6 +10,7 @@ import nl.renarj.jasdb.api.context.Credentials;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class AndroidDBSession implements DBSession {
     }
 
     private void initializeSystemContext(Context context) {
+        PlatformManagerFactory.setPlatformManager(new AndroidPlatformManager());
         AndroidContext.setContext(context);
     }
 

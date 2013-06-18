@@ -40,21 +40,21 @@ public class HotspotPlatformManager implements PlatformManager {
 
     @Override
     public void initializePlatform() throws JasDBStorageException {
-            try {
-                MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
-                if(!server.isRegistered(name)) {
-                    server.registerMBean(new KernelShutdown(), name);
-                }
-            } catch (InstanceAlreadyExistsException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-            } catch (MBeanRegistrationException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-            } catch (NotCompliantMBeanException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-            } catch(MalformedObjectNameException e) {
-                throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+        try {
+            MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+            ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
+            if(!server.isRegistered(name)) {
+                server.registerMBean(new KernelShutdown(), name);
             }
+        } catch (InstanceAlreadyExistsException e) {
+            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+        } catch (MBeanRegistrationException e) {
+            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+        } catch (NotCompliantMBeanException e) {
+            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+        } catch(MalformedObjectNameException e) {
+            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+        }
     }
 
     @Override
