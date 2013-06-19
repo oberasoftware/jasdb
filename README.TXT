@@ -13,4 +13,5 @@ JasDB has the folowing features:
 * REST webservice
 * Java client API (both for remote and local embedded mode)
 
-For more information have a look at http://www.oberasoftware.com or the wiki https://github.com/oberasoftware/jasdb/wiki
+For more information have a look at http://www.oberasoftware.com or 
+the wiki https://bitbucket.org/oberasoftware/jasdb_open/wiki
