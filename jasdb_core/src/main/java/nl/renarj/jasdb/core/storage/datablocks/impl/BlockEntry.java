@@ -1,6 +1,7 @@
 package nl.renarj.jasdb.core.storage.datablocks.impl;
 
 import nl.renarj.jasdb.core.caching.CacheEntry;
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.storage.datablocks.DataBlock;
 
 /**
@@ -39,5 +40,18 @@ public class BlockEntry<T extends DataBlock> implements CacheEntry<T> {
     @Override
     public T getValue() {
         return dataBlock;
+    }
+
+    @Override
+    public void release() throws JasDBStorageException {
+        dataBlock.close();
+    }
+
+    @Override
+    public String toString() {
+        return "BlockEntry{" +
+                "openBlockCount=" + openBlockCount +
+                ", dataBlock=" + dataBlock +
+                '}';
     }
 }

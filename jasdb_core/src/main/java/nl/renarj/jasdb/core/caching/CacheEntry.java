@@ -1,5 +1,7 @@
 package nl.renarj.jasdb.core.caching;
 
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+
 /**
  * @author Renze de Vries
  */
@@ -9,4 +11,6 @@ public interface CacheEntry<X> {
     long memorySize();
 
     X getValue();
+
+    void release() throws JasDBStorageException;
 }

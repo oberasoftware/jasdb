@@ -1,5 +1,6 @@
 package nl.renarj.jasdb.core.caching;
 
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -174,6 +175,11 @@ public class LRURegionTest {
         @Override
         public long memorySize() {
             return size;
+        }
+
+        @Override
+        public void release() throws JasDBStorageException {
+
         }
 
         @Override

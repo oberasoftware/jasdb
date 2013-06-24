@@ -75,15 +75,17 @@ public class GlobalCachingMemoryManager {
     public void checkMemoryState(Set<CacheRegion> ignoreRegions) {
         long memorySize = calculateMemorySize();
         if(memorySize > maximumMemory) {
+            LOG.debug("Current memory size: {}", memorySize);
+            LOG.debug("Maximum memory: {}", maximumMemory);
             long reduceSize = memorySize - maximumMemory;
             LOG.info("Memory overflow: {} bytes more than allowed limit", reduceSize);
             CacheRegion<? extends Comparable, ?> leastUsed = getLeastUsedRegion(ignoreRegions);
             if(leastUsed != null) {
                 long actualReduce = leastUsed.reduceBy(reduceSize);
-                LOG.info("Reduced region: {} by: {} bytes", leastUsed, actualReduce);
+                LOG.debug("Reduced region: {} by: {} bytes", leastUsed, actualReduce);
                 if(actualReduce < reduceSize) {
                     ignoreRegions.add(leastUsed);
-                    LOG.info("Reduce was not sufficient to meet reduce size: {} was actually: {}", reduceSize, actualReduce);
+                    LOG.debug("Reduce was not sufficient to meet reduce size: {} was actually: {}", reduceSize, actualReduce);
                     checkMemoryState(ignoreRegions);
                 }
             } else {
@@ -95,9 +97,9 @@ public class GlobalCachingMemoryManager {
     private CacheRegion<? extends Comparable, ?> getLeastUsedRegion(Set<CacheRegion> checkedRegions) {
         CacheRegion<? extends Comparable, ?> leastUsed = null;
         for(CacheRegion<? extends Comparable, ?> region: getRegions()) {
-            LOG.info("Checking region: {}", region);
+            LOG.debug("Checking region: {}", region);
             if(!checkedRegions.contains(region)) {
-                LOG.info("Region available: {}", region.memorySize());
+                LOG.debug("Region available: {}", region.memorySize());
                 if(leastUsed == null || leastUsed.lastRegionAccess() > region.lastRegionAccess()) {
                     leastUsed = region;
                 }

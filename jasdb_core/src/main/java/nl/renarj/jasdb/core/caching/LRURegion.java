@@ -3,6 +3,8 @@ package nl.renarj.jasdb.core.caching;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import nl.renarj.core.utilities.collections.OrderedBalancedTree;
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,20 +67,26 @@ public class LRURegion<T extends CacheEntry> implements CacheRegion<Long, T> {
     @Override
     public long reduceBy(long reduceSize) {
         long initialMemory = memorySize();
+        LOG.debug("initial memory: {}", initialMemory);
         long targetMemory = initialMemory - reduceSize;
         targetMemory = targetMemory > 0 ? targetMemory : 0; //should never be negative
+        LOG.debug("Target memory: {}", targetMemory);
         Set<Long> checkedKeys = new HashSet<Long>();
         while(memorySize() > targetMemory) {
-            Long key = blockAccessTime.last();
-            if(!checkedKeys.contains(key)) {
-                checkedKeys.add(key);
+            Long key = blockAccessTime.first();
 
-                removeEntry(key);
+            if(!checkedKeys.contains(key)) {
+                LOG.debug("Removing key: {}", key);
+                if(removeEntry(key)) {
+                    checkedKeys.add(key);
+                }
             } else {
-                LOG.debug("Cannot reduce memory footprint of region: {} further", this);
+                LOG.debug("Cannot reduce memory footprint of region: {} further, key: {} cannot be found", this, key);
                 break;
             }
         }
+        long afterSize = memorySize();
+        LOG.debug("After size: {}", afterSize);
         return initialMemory - memorySize();
     }
 
@@ -129,6 +137,13 @@ public class LRURegion<T extends CacheEntry> implements CacheRegion<Long, T> {
         try {
             EntryWrapper entryWrapper = cachedBlocks.get(key);
             if(!entryWrapper.getEntry().isInUse()) {
+                LOG.debug("Removing entry: {}", entryWrapper);
+                try {
+                    entryWrapper.getEntry().release();
+                } catch(JasDBStorageException e) {
+                    throw new RuntimeJasDBException("Unable to cleanly close index memory block", e);
+                }
+
                 cachedBlocks.remove(key);
                 blockAccessTime.remove(entryWrapper.getEntryId());
                 updateAccess();
@@ -206,6 +221,14 @@ public class LRURegion<T extends CacheEntry> implements CacheRegion<Long, T> {
 
         public void setEntryId(Long entryId) {
             this.entryId = entryId;
+        }
+
+        @Override
+        public String toString() {
+            return "EntryWrapper{" +
+                    "entry=" + entry +
+                    ", entryId=" + entryId +
+                    '}';
         }
     }
 }
