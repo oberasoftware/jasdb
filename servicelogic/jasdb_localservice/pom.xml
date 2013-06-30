@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>jasdb</artifactId>
 		<groupId>nl.renarj</groupId>
-        <version>0.8</version>
+        <version>0.9-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>jasdb_localservice</artifactId>
