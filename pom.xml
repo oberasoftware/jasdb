@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>nl.renarj</groupId>
-	<version>0.8-SNAPSHOT</version>
+	<version>0.8</version>
 	<artifactId>jasdb</artifactId>
 	<packaging>pom</packaging>
 
@@ -55,7 +55,7 @@
     <scm>
         <developerConnection>scm:git:git@bitbucket.org:oberasoftware/jasdb_open.git</developerConnection>
         <url>http://bitbucket.org/oberasoftware/jasdb_open</url>
-        <tag>HEAD</tag>
+        <tag>v0.8</tag>
     </scm>
 
     <dependencyManagement>

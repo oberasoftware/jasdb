@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>jasdb</artifactId>
 		<groupId>nl.renarj</groupId>
-		<version>0.8-SNAPSHOT</version>
+		<version>0.8</version>
 	</parent>
 	<artifactId>jasdb_transwriter</artifactId>
 	<name>jasdb_transwriter</name>
