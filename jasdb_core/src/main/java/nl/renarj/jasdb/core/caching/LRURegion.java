@@ -77,9 +77,8 @@ public class LRURegion<T extends CacheEntry> implements CacheRegion<Long, T> {
 
             if(!checkedKeys.contains(key)) {
                 LOG.debug("Removing key: {}", key);
-                if(removeEntry(key)) {
-                    checkedKeys.add(key);
-                }
+                removeEntry(key);
+                checkedKeys.add(key);
             } else {
                 LOG.debug("Cannot reduce memory footprint of region: {} further, key: {} cannot be found", this, key);
                 break;
