@@ -32,4 +32,9 @@ public class DefaultPlatformManager implements PlatformManager {
     public void shutdownPlatform() throws JasDBStorageException {
 
     }
+
+    @Override
+    public String getVersionData() {
+        return "Unknown";
+    }
 }
