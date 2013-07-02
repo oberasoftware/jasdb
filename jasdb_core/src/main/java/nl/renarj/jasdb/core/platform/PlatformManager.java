@@ -15,4 +15,6 @@ public interface PlatformManager {
     void initializePlatform() throws JasDBStorageException;
 
     void shutdownPlatform() throws JasDBStorageException;
+
+    String getVersionData();
 }

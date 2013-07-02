@@ -208,8 +208,8 @@ public class SimpleKernel {
                 log.info("Starting remote service: {}", remoteService.getClass().getName());
                 this.remoteService.startService();
 
-                loadVersionInformation();
-                log.info("Booting kernel version: {}", kernelVersion);
+                kernelVersion = PlatformManagerFactory.getPlatformManager().getVersionData();
+                log.info("Booting JasDB version: {}", kernelVersion);
                 log.info("JasDB instance id: {}", instanceId);
                 registerShutdownHooks();
 
@@ -282,37 +282,4 @@ public class SimpleKernel {
         }
 
     }
-
-    private void loadVersionInformation() {
-//        Class<SimpleKernel> kernelClass = SimpleKernel.class;
-//        String className = kernelClass.getSimpleName() + ".class";
-//        String classPath = kernelClass.getResource(className).toString();
-//        if(classPath.startsWith("jar")) {
-//            String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
-//            try {
-//                URL versionManifest = new URL(manifestPath);
-//                InputStream is = versionManifest.openStream();
-//                try {
-//                    Manifest mf = new Manifest(is);
-//                    String releaseVersion = mf.getMainAttributes().getValue("ReleaseVersion");
-//                    String builderNumber = mf.getMainAttributes().getValue("BuildNumber");
-//
-//                    kernelVersion = releaseVersion + "-" + builderNumber;
-//                } finally {
-//                    if(is != null) {
-//                        is.close();
-//                    }
-//                }
-//            } catch(IOException e) {
-//                log.warn("Unable to load kernel version information, ignoring", e);
-//            }
-//        } else {
-//            log.info("No kernel versioning information available, not loading from jar");
-//        }
-        kernelVersion = "Special android version";
-    }
-	
-	public static String getVersion() throws ConfigurationException {
-        return getInstance().kernelVersion;
-	}
 }

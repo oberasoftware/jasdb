@@ -10,6 +10,7 @@ import nl.renarj.jasdb.core.platform.PlatformManager;
  */
 public class AndroidPlatformManager implements PlatformManager {
     private static final String ANDROID_JVM_NAME = "dalvik";
+    private static final String JASDB_ANDROID = "JasDB For Android";
 
     @Override
     public boolean platformMatch(String platformName) {
@@ -39,5 +40,10 @@ public class AndroidPlatformManager implements PlatformManager {
     @Override
     public void shutdownPlatform() throws JasDBStorageException {
 
+    }
+
+    @Override
+    public String getVersionData() {
+        return JASDB_ANDROID;
     }
 }
