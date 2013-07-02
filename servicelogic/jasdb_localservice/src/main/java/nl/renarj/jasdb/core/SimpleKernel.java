@@ -282,4 +282,8 @@ public class SimpleKernel {
         }
 
     }
+
+    public static String getVersion() throws ConfigurationException {
+        return getInstance().kernelVersion;
+    }
 }
