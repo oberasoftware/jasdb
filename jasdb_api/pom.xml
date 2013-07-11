@@ -11,9 +11,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>nl.renarj</groupId>
+            <groupId>com.obera</groupId>
             <artifactId>jasdb_core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
