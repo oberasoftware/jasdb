@@ -11,9 +11,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<build.version>${project.version}.${BUILD_NUMBER}</build.version>
-        <jasdb.index.version>0.8-SNAPSHOT</jasdb.index.version>
-        <jasdb.core.version>0.8-SNAPSHOT</jasdb.core.version>
+        <jasdb.index.version>0.8</jasdb.index.version>
+        <jasdb.core.version>0.8</jasdb.core.version>
+        <corelib.version>0.6.2</corelib.version>
         <jersey.version>1.13</jersey.version>
         <jetty.version>8.1.5.v20120716</jetty.version>
         <logback.version>1.0.11</logback.version>
@@ -63,7 +63,7 @@
 			<dependency>
 				<groupId>nl.renarj</groupId>
 				<artifactId>ren_core</artifactId>
-				<version>0.6.2-SNAPSHOT</version>
+				<version>${corelib.version}</version>
 			</dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
