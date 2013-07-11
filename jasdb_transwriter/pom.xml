@@ -9,18 +9,9 @@
 	<artifactId>jasdb_transwriter</artifactId>
 	<name>jasdb_transwriter</name>
 	<dependencies>
-		<dependency>
-			<groupId>nl.renarj</groupId>
-			<artifactId>ren_core</artifactId>
-		</dependency>
         <dependency>
             <groupId>com.obera</groupId>
             <artifactId>jasdb_index_btreeplus</artifactId>
         </dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>jasdb_core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 </project>
