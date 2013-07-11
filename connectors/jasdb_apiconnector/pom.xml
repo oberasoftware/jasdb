@@ -4,6 +4,7 @@
         <artifactId>jasdb</artifactId>
         <groupId>nl.renarj</groupId>
         <version>0.8-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
