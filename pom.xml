@@ -53,8 +53,8 @@
     </distributionManagement>
 
     <scm>
-        <developerConnection>scm:git:git@bitbucket.org:obera/jasdb.git</developerConnection>
-        <url>http://bitbucket.org/obera/jasdb</url>
+        <developerConnection>scm:git:git@bitbucket.org:oberasoftware/jasdb_open.git</developerConnection>
+        <url>http://bitbucket.org/oberasoftware/jasdb_open</url>
         <tag>HEAD</tag>
     </scm>
 
