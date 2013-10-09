@@ -1,0 +1,344 @@
+package nl.renarj.jasdb.index.btreeplus;
+
+import com.google.common.collect.Lists;
+import nl.renarj.jasdb.index.Index;
+import nl.renarj.jasdb.index.IndexState;
+import nl.renarj.jasdb.index.keys.impl.CompositeKey;
+import nl.renarj.jasdb.index.keys.impl.LongKey;
+import nl.renarj.jasdb.index.keys.impl.StringKey;
+import nl.renarj.jasdb.index.keys.impl.UUIDKey;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
+import nl.renarj.jasdb.index.keys.types.LongKeyType;
+import nl.renarj.jasdb.index.keys.types.StringKeyType;
+import nl.renarj.jasdb.index.keys.types.UUIDKeyType;
+import nl.renarj.jasdb.index.result.IndexSearchResultIterator;
+import nl.renarj.jasdb.index.result.SearchLimit;
+import nl.renarj.jasdb.index.search.EqualsCondition;
+import nl.renarj.jasdb.index.search.IndexField;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+public class InvertedIndexTest extends IndexBaseTest {
+	private static final Logger log = LoggerFactory.getLogger(InvertedIndexTest.class);
+    private static final Random rnd = new Random(System.nanoTime());
+	
+	@After
+	public void tearDown() {
+		assertDelete(new File(tmpDir, "inverted.idx"));
+		assertDelete(new File(tmpDir, "inverted.idxm"));
+	}
+
+    @Before
+    public void setup() {
+        assertDelete(new File(tmpDir, "inverted.idx"));
+        assertDelete(new File(tmpDir, "inverted.idxm"));
+    }
+	
+	@Test
+	public void testInvertedIndex() throws Exception {
+		int NUMBER_ENTITIES = 20000;
+		File indexLocation = new File(tmpDir, "inverted.idx");
+        Map<Integer, Integer> keyAmounts = new HashMap<Integer, Integer>();
+
+		KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("field1", new StringKeyType()), new IndexField("__ID", new UUIDKeyType())), new ArrayList<IndexField>());
+		Index invertedIndex = new BTreeIndex(indexLocation, keyInfo);
+        try {
+            long total = 0;
+            for(int i=0; i<NUMBER_ENTITIES; i++) {
+                int key = rnd.nextInt(8);
+                changeAmount(keyAmounts, key, true);
+
+                long start = System.nanoTime();
+                CompositeKey compositeKey = new CompositeKey();
+                compositeKey.addKey(keyInfo.getKeyNameMapper(), "field1", new StringKey("key" + key));
+                compositeKey.addKey(keyInfo.getKeyNameMapper(), "__ID", new UUIDKey(System.currentTimeMillis(), i + 1000));
+
+                invertedIndex.insertIntoIndex(compositeKey);
+                long end = System.nanoTime();
+                total += (end - start);
+            }
+            log.info("Average insert time: {}", (total / NUMBER_ENTITIES));
+        } finally {
+            invertedIndex.closeIndex();
+        }
+		
+		Index index = new BTreeIndex(indexLocation, keyInfo);
+		try {
+            index.openIndex();
+            assertIndex(keyAmounts, index);
+
+            int runs = 100;
+            long total = 0;
+            for(int i=0; i<runs; i++) {
+                long averageSearch = assertIndex(keyAmounts, index);
+                log.debug("Run: {} took average: {} ns.", i, averageSearch);
+                total += averageSearch;
+            }
+            long average = total / runs;
+            log.info("Average retrieval of {} runs was {} ns.", runs, average);
+        } finally {
+			index.closeIndex();
+		}
+	}
+
+    @Test
+    public void testInvertedIndexCompoundKey() throws Exception {
+        int NUMBER_ENTITIES = 20000;
+        int maxKey = 8;
+        int maxAge = 100;
+        File indexLocation = new File(tmpDir, "inverted.idx");
+        Map<String, Integer> keyAmounts = new HashMap<String, Integer>();
+
+        KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
+                    new IndexField("field", new StringKeyType(200)),
+                    new IndexField("age", new LongKeyType()),
+                    new IndexField("__ID", new UUIDKeyType())
+            ),new ArrayList<IndexField>()
+        );
+        Index index = new BTreeIndex(indexLocation, keyInfo);
+        KeyNameMapper mapper = keyInfo.getKeyNameMapper();
+        try {
+            long total = 0;
+            for(int i=0; i<NUMBER_ENTITIES; i++) {
+                int key = rnd.nextInt(maxKey);
+                int age = rnd.nextInt(maxAge);
+                String uniqueKey = "key" + key + "_" + age;
+                changeAmount(keyAmounts, uniqueKey, true);
+
+                CompositeKey insertKey = new CompositeKey();
+                insertKey.addKey(mapper, "field", new StringKey("key" + key))
+                        .addKey(mapper, "age", new LongKey(age))
+                        .addKey(keyInfo.getKeyNameMapper(), "__ID", new UUIDKey(System.currentTimeMillis(), i + 1000));
+
+                long start = System.nanoTime();
+                index.insertIntoIndex(insertKey);
+                long end = System.nanoTime();
+                total += (end - start);
+            }
+            log.info("Average insert time: {}", (total / NUMBER_ENTITIES));
+        } finally {
+            index.closeIndex();
+        }
+
+        index = new BTreeIndex(indexLocation, keyInfo);
+        try {
+            for(int key=0; key<maxKey; key++) {
+                for(int age=0; age<maxAge; age++) {
+                    CompositeKey searchKey = new CompositeKey();
+                    searchKey.addKey(mapper, "field", new StringKey("key" + key))
+                            .addKey(mapper, "age", new LongKey(age));
+
+                    IndexSearchResultIterator resultIterator = index.searchIndex(new EqualsCondition(searchKey), Index.NO_SEARCH_LIMIT);
+
+                    String countKey = "key" + key + "_" + age;
+                    if(keyAmounts.containsKey(countKey)) {
+                        assertEquals((int) keyAmounts.get(countKey), resultIterator.size());
+                    } else {
+                        assertEquals(0, resultIterator.size());
+                    }
+                }
+            }
+        } finally {
+            index.closeIndex();
+        }
+    }
+
+    @Test
+    public void testInsertCompoundKeyExtraInfo() throws Exception {
+        KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
+                new IndexField("field", new StringKeyType(200)),
+                new IndexField("age", new LongKeyType()),
+                new IndexField("RECORD_POINTER", new LongKeyType())
+            ), new ArrayList<IndexField>()
+        );
+
+        File indexLocation = new File(tmpDir, "inverted.idx");
+        Index index = new BTreeIndex(indexLocation, keyInfo);
+        KeyNameMapper mapper = keyInfo.getKeyNameMapper();
+        try {
+            CompositeKey insertKey = new CompositeKey();
+            insertKey.addKey(mapper, "field", new StringKey("mykey")).addKey(mapper, "age", new LongKey(29)).addKey(mapper, "RECORD_POINTER", new LongKey(100));
+            index.insertIntoIndex(insertKey);
+
+            insertKey = new CompositeKey();
+            insertKey.addKey(mapper, "field", new StringKey("mykey")).addKey(mapper, "age", new LongKey(29)).addKey(mapper, "RECORD_POINTER", new LongKey(120));
+            index.insertIntoIndex(insertKey);
+
+            CompositeKey searchKey = new CompositeKey();
+            searchKey.addKey(mapper, "field", new StringKey("mykey")).addKey(mapper, "age", new LongKey(29));
+
+            IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(searchKey), Index.NO_SEARCH_LIMIT);
+            assertEquals(2, result.size());
+        } finally {
+            index.closeIndex();
+        }
+    }
+
+    @Test
+    public void testCompoundKeyStringLongCompare() throws Exception {
+        KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
+                new IndexField("field", new StringKeyType(200)),
+                new IndexField("age", new LongKeyType()),
+                new IndexField("RECORD_POINTER", new LongKeyType())
+        ), new ArrayList<IndexField>());
+
+        File indexLocation = new File(tmpDir, "inverted.idx");
+        Index invertedIndex = new BTreeIndex(indexLocation, keyInfo);
+        KeyNameMapper mapper = invertedIndex.getKeyInfo().getKeyNameMapper();
+        try {
+            CompositeKey insertKey = new CompositeKey();
+            insertKey.addKey(mapper, "field", new StringKey("amsterdam")).addKey(mapper, "age", new LongKey(1)).addKey(mapper, "RECORD_POINTER", new LongKey(100));
+            invertedIndex.insertIntoIndex(insertKey);
+
+            insertKey = new CompositeKey();
+            insertKey.addKey(mapper, "field", new StringKey("amsterdam")).addKey(mapper, "age", new LongKey(2)).addKey(mapper, "RECORD_POINTER", new LongKey(120));
+            invertedIndex.insertIntoIndex(insertKey);
+
+            insertKey = new CompositeKey();
+            insertKey.addKey(mapper, "field", new StringKey("amsterdam")).addKey(mapper, "age", new LongKey(3)).addKey(mapper, "RECORD_POINTER", new LongKey(120));
+            invertedIndex.insertIntoIndex(insertKey);
+
+            CompositeKey searchKey = new CompositeKey();
+            searchKey.addKey(mapper, "field", new StringKey("amsterdam")).addKey(mapper, "age", new StringKey("1"));
+            IndexSearchResultIterator result = invertedIndex.searchIndex(new EqualsCondition(searchKey), Index.NO_SEARCH_LIMIT);
+            assertEquals(1, result.size());
+
+            searchKey = new CompositeKey();
+            searchKey.addKey(mapper, "field", new StringKey("amsterdam")).addKey(mapper, "age", new StringKey("2"));
+            result = invertedIndex.searchIndex(new EqualsCondition(searchKey), Index.NO_SEARCH_LIMIT);
+            assertEquals(1, result.size());
+
+            searchKey = new CompositeKey();
+            searchKey.addKey(mapper, "field", new StringKey("amsterdam")).addKey(mapper, "age", new StringKey("3"));
+            result = invertedIndex.searchIndex(new EqualsCondition(searchKey), Index.NO_SEARCH_LIMIT);
+            assertEquals(1, result.size());
+        } finally {
+            invertedIndex.closeIndex();
+        }
+    }
+
+
+    @Test
+    public void testInvertedIndexRemoveKeys() throws Exception {
+        int NUMBER_ENTITIES = 20000;
+        int REMOVE_ENTITIES = 2000;
+        File indexLocation = new File(tmpDir, "inverted.idx");
+        Map<Integer, Integer> amounts = new HashMap<Integer, Integer>();
+
+        KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
+                new IndexField("field1", new StringKeyType()),
+                new IndexField("RECORD_POINTER", new LongKeyType())),
+            new ArrayList<IndexField>());
+        Index invertedIndex = new BTreeIndex(indexLocation, keyInfo);
+        KeyNameMapper mapper = keyInfo.getKeyNameMapper();
+        try {
+            int keyCounter = 0;
+            for(int i=0; i<NUMBER_ENTITIES; i++) {
+                CompositeKey insertKey = new CompositeKey();
+                insertKey.addKey(mapper, "field1", new StringKey("key" + keyCounter));
+                insertKey.addKey(mapper, "RECORD_POINTER", new LongKey(i + 1000));
+
+                invertedIndex.insertIntoIndex(insertKey);
+                changeAmount(amounts, keyCounter, true);
+
+                keyCounter++;
+                if(keyCounter > 10) keyCounter = 0;
+            }
+        } finally {
+            invertedIndex.closeIndex();
+        }
+
+        invertedIndex = new BTreeIndex(indexLocation, keyInfo);
+        try {
+            int keyCounter = 0;
+            long totalTime = 0;
+            for(int i=0; i<REMOVE_ENTITIES; i++) {
+                long start = System.nanoTime();
+                CompositeKey removeKey = new CompositeKey();
+                removeKey.addKey(mapper, "field1", new StringKey("key" + keyCounter));
+                removeKey.addKey(mapper, "RECORD_POINTER", new LongKey(i + 1000));
+
+                invertedIndex.removeFromIndex(removeKey);
+                long end = System.nanoTime();
+                totalTime += (end - start);
+                changeAmount(amounts, keyCounter, false);
+
+                keyCounter++;
+                if(keyCounter > 10) keyCounter = 0;
+            }
+            log.info("Average remove time: {}", (totalTime / REMOVE_ENTITIES));
+
+            assertIndex(amounts, invertedIndex);
+        } finally {
+            invertedIndex.closeIndex();
+        }
+    }
+    
+    @Test
+    public void testInvertedIndexInsertRemoveInsert() throws Exception {
+    	int testSize = 1000;
+    	int removeSize = 800;
+    			
+        File indexLocation = new File(tmpDir, "inverted.idx");
+        KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
+                new IndexField("field1", new StringKeyType()),
+                new IndexField("RECORD_POINTER", new LongKeyType())),
+                new ArrayList<IndexField>());
+    	Index invertedIndex = new BTreeIndex(indexLocation, keyInfo);
+    	try {
+	    	for(int i=0; i<testSize; i++) {
+                CompositeKey compositeKey = new CompositeKey();
+                compositeKey.addKey(keyInfo.getKeyNameMapper(), "field1", new StringKey("key1")).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(i));
+	    		invertedIndex.insertIntoIndex(compositeKey);
+	    	}
+	    	assertEquals("The size is unexpected", testSize, invertedIndex.searchIndex(new EqualsCondition(new StringKey("key1")), new SearchLimit()).size());
+
+	    	for(int i=0; i<removeSize; i++) {
+                CompositeKey compositeKey = new CompositeKey();
+                compositeKey.addKey(keyInfo.getKeyNameMapper(), "field1", new StringKey("key1")).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(i));
+	    		invertedIndex.removeFromIndex(compositeKey);
+	    	}
+	    	assertEquals("The size is unexpected", (testSize - removeSize), invertedIndex.searchIndex(new EqualsCondition(new StringKey("key1")), new SearchLimit()).size());
+    	} finally {
+    		invertedIndex.closeIndex();
+    	}
+    }
+
+    @Test
+    public void testInvertedIndexEmptyStringKey() throws Exception {
+        File indexLocation = new File(tmpDir, "inverted.idx");
+        KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
+                new IndexField("field1", new StringKeyType()),
+                new IndexField("RECORD_POINTER", new LongKeyType())),
+                new ArrayList<IndexField>());
+        Index invertedIndex = new BTreeIndex(indexLocation, keyInfo);
+        CompositeKey compositeKey = new CompositeKey();
+        compositeKey.addKey(keyInfo.getKeyNameMapper(), "field1", new StringKey("")).addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(100));
+
+        invertedIndex.insertIntoIndex(compositeKey);
+        invertedIndex.closeIndex();
+
+        assertEquals("State should be closed", IndexState.CLOSED, invertedIndex.getState());
+
+        invertedIndex = new BTreeIndex(indexLocation, keyInfo);
+        try {
+            assertFalse(invertedIndex.searchIndex(new EqualsCondition(new StringKey("")), Index.NO_SEARCH_LIMIT).isEmpty());
+        } finally {
+            invertedIndex.closeIndex();
+        }
+    }
+}

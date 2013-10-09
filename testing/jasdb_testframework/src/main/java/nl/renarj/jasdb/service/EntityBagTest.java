@@ -13,6 +13,7 @@ import nl.renarj.jasdb.api.query.QueryBuilder;
 import nl.renarj.jasdb.api.query.QueryExecutor;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.SimpleKernel;
+import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
@@ -48,7 +49,7 @@ public abstract class EntityBagTest {
 	private Logger log = LoggerFactory.getLogger(EntityBagTest.class);
 	
 	private static final int INITIAL_SIZE = 100;
-	private static final int NUMBER_ENTITIES = 10000;
+	private static final int NUMBER_ENTITIES = 3000000;
 	private static final String searchTestId = "f5533a4a-14e2-42fc-94db-bac3fc0b1712";
     
     private DBSessionFactory sessionFactory;
@@ -77,6 +78,7 @@ public abstract class EntityBagTest {
 		String randomId = "";
 		DBSession pojoDb = sessionFactory.createSession();
 		EntityBag bag = pojoDb.createOrGetBag("testbag");
+        bag.ensureIndex(new IndexField("title", new StringKeyType()), true);
 		
 		try {
             log.info("Starting insert of: {}", NUMBER_ENTITIES);
@@ -84,6 +86,7 @@ public abstract class EntityBagTest {
             long start = System.currentTimeMillis();
             for(int i=0; i<NUMBER_ENTITIES; i++) {
 				SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
+                entity.addProperty("title", "title" + i);
 				for(int j=0; j<10; j++) {
 					entity.addProperty("test-" + i + "-" + j, i + "-" + j);
 					entity.addProperty("testString-" + i + "-" + j, "String-" + i + "-" + j);
@@ -100,6 +103,11 @@ public abstract class EntityBagTest {
 				if(i == (NUMBER_ENTITIES / 2)) {
 					randomId = entity.getInternalId();
 				}
+
+                if(i % 100000 == 0) {
+                    log.info("Inserted: {} in: {}", i, (System.currentTimeMillis() - start));
+                    log.info("Current memory size: {}", GlobalCachingMemoryManager.getGlobalInstance().calculateMemorySize());
+                }
 			}
             long end = System.currentTimeMillis();
             log.info("Finished insert in: {}", TimeUnit.SECONDS.convert((end - start), TimeUnit.MILLISECONDS));
@@ -175,6 +183,30 @@ public abstract class EntityBagTest {
 			SimpleKernel.shutdown();
 		}
 	}
+
+    @Test
+    public void testInvalidJsonInsert() throws Exception {
+        DBSession session = sessionFactory.createSession();
+        EntityBag bag = session.createOrGetBag("MySpecialBag");
+
+        SimpleEntity entity = new SimpleEntity();
+        entity.addProperty("title", "Title of my content");
+        entity.addProperty("text", "Some big piece of text content");
+        bag.addEntity(entity);
+
+        QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("text").value("Some big piece of text content"));
+        QueryResult result = executor.execute();
+
+        assertThat(result.size(), is(1l));
+        for(SimpleEntity resultEntity : result) {
+            String json = SimpleEntity.toJson(resultEntity);
+            log.info("Output: {}", json);
+        }
+//        assertNotNull(simpleEntity);
+//
+//        String json = SimpleEntity.toJson(simpleEntity);
+//        log.info("Output: {}", json);
+    }
 
     @Test
     public void testNotEqualsMultiIndexes() throws Exception {

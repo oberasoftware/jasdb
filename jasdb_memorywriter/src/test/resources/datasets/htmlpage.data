@@ -1,0 +1,1415 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+  <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+<link href="/styles-cache/site1.css" rel="stylesheet" type="text/css" />
+<link rel="apple-touch-icon" href="/images/i18n/nl/apple_icon.png"/>
+<script src="/scripts-cache/site1.js" type="text/javascript"></script>  <title>nu.nl | Het laatste nieuws het eerst op nu.nl</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="viewport" content="width = 980" />
+
+
+
+
+  <link rel="alternate" title="NU.nl Algemeen"   type="application/rss+xml" href="/feeds/rss/algemeen.rss"   />
+  <link rel="alternate" title="NU.nl Economie"   type="application/rss+xml" href="/feeds/rss/economie.rss"   />
+  <link rel="alternate" title="NU.nl Internet"   type="application/rss+xml" href="/feeds/rss/internet.rss"   />
+  <link rel="alternate" title="NU.nl Sport"      type="application/rss+xml" href="/feeds/rss/sport.rss"      />
+  <link rel="alternate" title="NU.nl Achterklap" type="application/rss+xml" href="/feeds/rss/achterklap.rss" />
+  
+  <link rel="alternate" title="Mobile/PDA"       type="text/html"  media="handheld" href="http://mobiel.nu.nl" />
+
+<script>
+$().ready(function () {
+  $('.rss_url').each(function () {
+    $(this).attr('href', "\/feeds\/rss\/algemeen.rss")
+  });
+});
+</script>
+
+
+
+  <script type="text/javascript">
+  var context  = {
+    'category' : 'home',
+    'stir_webdir' : 'voorpagina',
+    'article_id' : '',
+    'article_name' : '',
+    'article_author' : ''
+  };
+</script>
+
+<script type="text/javascript" src="http://cts.snmmd.nl/service/js/nu-nl/home/"></script>
+<script type="text/javascript">
+  tagging = new Tagging(context);
+
+  try
+  {
+    tagging.render('head');
+  }
+  catch (err)
+  {
+    tagging.log(err);
+  }
+</script>
+
+
+<script type="text/javascript" src="http://cts.snmmd.nl/service/js/nu-nl/geo-layer/"></script>
+<script type="text/javascript">
+  geoTagging = new Tagging(context);
+</script>
+</head>
+<body>
+<script type="text/javascript">
+  if (typeof(tagging.get_source('toc')) != 'undefined')
+  {
+    try
+    {
+      tagging.render('toc');
+    }
+    catch (err)
+    {
+      tagging.log(err);
+    }
+  }
+</script><div id='page'>
+      
+
+
+<style type="text/css">#pageheader{position:relative;height:126px;background:url(http://www.nu.nl/images/extensionnav/extensionnav_bg.png) repeat-x left top;line-height:1.4em;z-index:500}#pageheader .container{position:relative;font-size:11px}#pageheader .container{width:756px !important;margin:0 auto !important}#pageheader .container .adblock_h{position:relative;height:82px;padding:6px 0 5px 28px}#pageheader .container #extensionnav{width:804px;height:24px;margin:0 auto;position:absolute;right:0;top:103px}#pageheader .container #extensionnav ul{display:block;height:24px;list-style:none;z-index:500;padding:0px;margin:0px}#pageheader .container #extensionnav ul li{display:block;position:relative;float:left;width:82px;height:23px;margin:0 0 0 6px;padding:0 5px 0 0;list-style:none;color:#494a8b;background:url(http://www.nu.nl/images/extensionnav/tabs.png) no-repeat right -24px;z-index:500}#pageheader .container #extensionnav ul li.active{background:url(http://www.nu.nl/images/extensionnav/tabs.png) no-repeat right top}#pageheader .container #extensionnav ul li:first-child{margin:0}#pageheader .container #extensionnav ul li.meer{width:55px}#pageheader .container #extensionnav ul li a:link,#pageheader .container #extensionnav ul li a:visited{display:block;width:auto;height:20px;margin:0;padding:3px 0 0 4px;color:#494a8b;text-align:left;font-weight:bold;text-decoration:none;background:url(http://www.nu.nl/images/extensionnav/tabs.png) no-repeat left -24px;cursor:pointer;font-size:11px}#pageheader .container #extensionnav ul li.active a:link,#pageheader .container #extensionnav ul li.active a:visited{background:url(http://www.nu.nl/images/extensionnav/tabs.png) no-repeat left top}#pageheader .container #extensionnav ul li a span{display:block;height:17px;padding:1px 0 0 24px;background-image:url(http://www.nu.nl/images/extensionnav/icons_nu.png);background-repeat:no-repeat}#pageheader .container #extensionnav ul li.meer a span{background:url(http://www.nu.nl/images/extensionnav/icons_extensionnav.png) no-repeat left 2px;padding:1px 0 0 20px}#pageheader .container #extensionnav ul li a:hover,#pageheader .container #extensionnav ul li a.hover{text-decoration:none}#pageheader .container #extensionnav ul li:hover>a{text-decoration:none}#pageheader .container #extensionnav ul ul li a{font-weight:normal;background:none;text-transform:none !important}#pageheader .container #extensionnav ul li ul.moresites li{display:block;position:relative;float:right;width:auto;height:105px;margin:0;padding:0;background:url(http://www.nu.nl/images/extensionnav/moresites.png) no-repeat left -127px;padding:0}#pageheader .container #extensionnav ul ul.moresites{display:none;position:absolute;right:-3px;top:20px;width:815px;height:125px;padding:0}#pageheader .container #extensionnav ul ul.moresites div.background{position:relative;padding:18px 2px 0 4px;height:124px;background:url(http://www.nu.nl/images/extensionnav/moresites.png) no-repeat right top}#pageheader .container #extensionnav ul ul.moresites div.background span{display:block;position:absolute;top:0;left:-4px;width:4px;height:124px;background:url(http://www.nu.nl/images/extensionnav/moresites_left.png) no-repeat left top}#pageheader .container #extensionnav ul li:hover ul.moresites{display:block;position:absolute;right:-3px;top:20px}#pageheader .container #extensionnav ul li ul.moresites li ul li{display:block;float:none;background:none;width:150px;height:24px;margin:0;padding:0;list-style:none;background:#fff;z-index:500;border:none}#pageheader .container #extensionnav ul ul.moresites li ul li.alt{background:#f4f4f4}#pageheader .container #extensionnav ul ul.moresites li ul li a:link,#pageheader .container #extensionnav ul ul.moresites li ul li a:visited{display:block;float:none;height:19px;width:auto;margin:0;padding:5px 0 0 28px;background:none;background-image:url(http://www.nu.nl/images/extensionnav/icons_nu.png);background-repeat:no-repeat;cursor:pointer}#pageheader .container #extensionnav ul ul.moresites li ul li a:hover{text-decoration:underline}#pageheader .container #extensionnav ul ul.moresites li ul{display:block;float:left;margin:0 6px 0 0}li>ul{top:auto;left:auto}</style>
+<script type="text/javascript" language="JavaScript" >
+<!-- 
+var NUTopbar={selectActiveTab:function()
+{var url=document.location.href;var item=undefined;var links=document.getElementsByTagName('a');for(var i=0;i<links.length;i++)
+{var link=links[i];if(link.parentNode.parentNode.parentNode['id']=='extensionnav')
+{var tmpUrl=url.substr(0,link['href'].length);if(tmpUrl==link['href']){if(item===undefined||(item['href'].length<link['href'].length)){item=link;}}}}
+if(item!==undefined){item.parentNode['className']=item.parentNode['className']+' active';}}}
+if(!window.NU)
+{if(typeof(tagging)!='object')
+{tagging={};tagging.get_source=function(){}}
+var NU={};NU.LazyWrite={write:function(content)
+{if(typeof(window.tagging)=='object')
+{document.write(content);}}}
+NU.AT={externalLink:function(element)
+{if(typeof(window.xt_click)=='function')
+{if(typeof(topbar_AT_PAGE)=='undefined')
+return;var label=NU.AT.createLabel(element);xt_click(element,'C','',label,'S');}},createLabel:function(element)
+{var url="";var label="";var linkLabel="";var cleanUrl="";if(element.href){url=element.href.split('?')[0];}
+if(element.title){linkLabel=NU.AT.escape(element.title.toLowerCase());}
+if(linkLabel==""&&element.innerHTML!==null){linkLabel=NU.AT.stripTags(element.innerHTML).replace(/\s*((\S+\s*)*)/,"$1");linkLabel=NU.AT.escape(linkLabel);}
+cleanUrl=NU.AT.escape(url.replace(/^(http:\/\/www\.)|^(www\.)/,""));cleanUrl="";label=topbar_AT_PAGE;if(cleanUrl!=""){label+='::'+cleanUrl;}
+if(linkLabel!=""){label+="::"+linkLabel;}
+return label;},stripTags:function(string)
+{return string.replace(/<\/?[^>]+>/gi,'');},escape:function(string)
+{if(string==undefined)
+{return'empty';}
+var escapeChars=[225,228,224,233,235,232,237,239,236,243,246,242,337,250,252,249,369,223];var replaceChars=["a","a","a","e","e","e","i","i","i","o","o","o","o","u","u","u","u","ss"];string=string.replace(/ /g,'_').toLowerCase();for(idx=0;idx<escapeChars.length;idx++)
+{var r=new RegExp(String.fromCharCode(escapeChars[idx]),'g');string=string.replace(r,replaceChars[idx])}
+string=string.replace(/([^a-z0-9\-_\.\/]|\s)+/g,"");return string;}}
+window.NU=NU;} //-->
+</script>
+
+  <div style="margin: 0px; padding: 0px; width: 978px; height: 0px; clear: both;" id="pushdown"></div>
+
+<div id="pageheader">
+  <div class="container">
+    <div class="adblock_h">
+              <center>
+          <script type="text/javascript">
+
+  if (typeof(tagging.get_source('multiple-top')) != 'undefined')
+  {
+    NU.LazyWrite.write(tagging.get_source('multiple-top'));
+  }
+</script>        </center>
+          </div>
+
+    <!-- EXTENSIENAVIGATIE -->
+    <div id="extensionnav">
+      <ul>
+                            <li><a onclick="NU.AT.internalLink(this, event);" href="http://www.nu.nl" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1nunllogo.png');" >NU</span></a></li>
+                            <li><a onclick="NU.AT.externalLink(this, event);" href="http://www.nuzakelijk.nl" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUz.png');" >NUzakelijk</span></a></li>
+                            <li><a onclick="NU.AT.externalLink(this, event);" href="http://www.nusport.nl" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUsport.png');" >NUsport</span></a></li>
+                            <li><a onclick="NU.AT.externalLink(this, event);" href="http://www.nufoto.nl" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1Nufoto.png');" >NUfoto</span></a></li>
+                            <li><a onclick="NU.AT.externalLink(this, event);" href="http://www.nujij.nl" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUjij.png');" >NUjij</span></a></li>
+                            <li><a onclick="NU.AT.externalLink(this, event);" href="http://www.zie.nl" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1Zie.png');" >Zie</span></a></li>
+                            <li><a onclick="NU.AT.internalLink(this, event);" href="http://www.nu.nl/tvgids/" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUtvgids.png');" >NUtvgids</span></a></li>
+                            <li><a onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl" target="_self" ><span style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUwerk.png');" >NUwerk</span></a></li>
+        
+        <li class="meer"><a href="#" class="showmore"><span>Meer</span></a>
+          <ul class="moresites">
+            <li>
+              <div class="background">
+                <span class="left"></span>
+                                  <ul>
+                                                                            <li class="" ><a onclick="NU.AT.externalLink(this, event);" style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUlive.png');" href="http://www.nulive.nl" target="_self" >NUlive</a></li>
+                                                          <li class="alt" ><a onclick="NU.AT.externalLink(this, event);" style="background-image: url('http://www.nu.nl//files/topbar-logos/1nujornaal.png');" href="http://www.nu.tv" target="_self" >NUjournaal</a></li>
+                                                          <li class="" ><a onclick="NU.AT.externalLink(this, event);" style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUtoen.png');" href="http://www.nuentoen.nl" target="_self" >NUenToen</a></li>
+                                    </ul>
+                                  <ul>
+                                                                            <li class="" ><a onclick="NU.AT.internalLink(this, event);" style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUreizen.png');" href="http://www.nu.nl/reizen/" target="_self" >NUreizen</a></li>
+                                                          <li class="alt" ><a onclick="NU.AT.externalLink(this, event);" style="background-image: url('http://www.nu.nl//files/topbar-logos/1NUbijlage.png');" href="http://www.nubijlage.nl" target="_self" >NUBijlage</a></li>
+                                    </ul>
+                              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- EINDE EXTENSIENAVIGATIE -->
+  </div>
+</div>
+
+
+
+
+<script type="text/javascript" language="JavaScript" ><!--
+NUTopbar.selectActiveTab()
+--></script>
+
+<div id="pagewrapper">
+  <div id="leftcolumn">
+    <div class="logo">
+      <a onclick="NU.AT.internalLink(this, event);" href="/" title="Voorpagina">
+        <img src="/images/logo_nu_nl.gif" alt="" />
+      </a>
+    </div>
+
+    <div id="mainmenu">
+  <ul class="listleft">
+    
+      
+            <li class=" selected" >
+        <a onclick="NU.AT.internalLink(this, event);" href="/" target="" style="">Voorpagina</a>
+              </li>
+    
+      
+            <li class=" closed" id='item100'>
+        <span onclick="NU.toggleSubsection(this)">&nbsp;</span><a onclick="NU.AT.internalLink(this, event);" href="/algemeen/" target="" style="">Algemeen</a>
+                  <ul class="subsection">
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/binnenland/" target="">Binnenland</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/buitenland/" target="">Buitenland</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/politiek/" target="">Politiek</a>
+              </li>
+                      </ul>
+              </li>
+    
+      
+            <li class="" id='item1771728'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/onrust-midden-oosten/" target="" style="font-weight: bold">Onrust&nbsp;Midden-Oosten</a>
+              </li>
+    
+      
+            <li class="" id='item1771851'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/nobelprijzen-2011/" target="" style="font-weight: bold">Nobelprijzen&nbsp;2011</a>
+              </li>
+    
+      
+            <li class="" id='item99'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/economie/" target="" style="">Economie</a>
+              </li>
+    
+      
+            <li class="" id='item149'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/sport/" target="" style="">Sport</a>
+              </li>
+    
+      
+            <li class=" closed" id='item1771438'>
+        <span onclick="NU.toggleSubsection(this)">&nbsp;</span><a onclick="NU.AT.internalLink(this, event);" href="/tech/" target="" style="">Tech</a>
+                  <ul class="subsection">
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/internet/" target="">Internet</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/gadgets/" target="">Gadgets</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/games/" target="">Games</a>
+              </li>
+                      </ul>
+              </li>
+    
+      
+            <li class="" id='item125'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/achterklap/" target="" style="">Achterklap</a>
+              </li>
+    
+      
+            <li class="" id='item937692'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/opmerkelijk/" target="" style="">Opmerkelijk</a>
+              </li>
+    
+      
+            <li class="" id='item652061'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/beurs/" target="" style="">Beurs</a>
+              </li>
+    
+      
+            <li class="" id='item478878'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/wetenschap/" target="" style="">Wetenschap</a>
+              </li>
+    
+      
+            <li class=" closed" id='item1771440'>
+        <span onclick="NU.toggleSubsection(this)">&nbsp;</span><a onclick="NU.AT.internalLink(this, event);" href="/cultuur/" target="" style="">Cultuur&nbsp;en&nbsp;Media</a>
+                  <ul class="subsection">
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/film/" target="">Film</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/muziek/" target="">Muziek</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/boek/" target="">Boek</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/media/" target="">Media</a>
+              </li>
+                      </ul>
+              </li>
+    
+      
+            <li class="" id='item1771338'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/werk-en-prive/" target="" style="">Werk&nbsp;en&nbsp;Priv&eacute;</a>
+              </li>
+    
+      
+            <li class="" id='item1146768'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/gezondheid/" target="" style="">Gezondheid</a>
+              </li>
+    
+      
+            <li class=" closed" id='item1727095'>
+        <span onclick="NU.toggleSubsection(this)">&nbsp;</span><a onclick="NU.AT.internalLink(this, event);" href="/lifestyle/" target="" style="">Lifestyle</a>
+                  <ul class="subsection">
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/vrouw/" target="">Vrouw</a>
+              </li>
+                          <li class="">
+                <a onclick="NU.AT.internalLink(this, event);" href="/man/" target="">Man</a>
+              </li>
+                      </ul>
+              </li>
+    
+      
+            <li class="" id='item881569'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/auto/" target="" style="">Auto</a>
+              </li>
+    
+      
+            <li class="" id='item836883'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/column/" target="" style="">Column</a>
+              </li>
+    
+      
+            <li class="" id='item91'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/weer/index.html" target="" style="">Weer</a>
+              </li>
+    
+      
+            <li class="" id='item92'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/verkeer/index.html" target="" style="">Verkeer</a>
+              </li>
+    
+      
+            <li class="" id='item249'>
+        <a onclick="NU.AT.internalLink(this, event);" href="/socialtools.html" target="" style="">NU.nl&nbsp;apps</a>
+              </li>
+    
+      
+      
+      
+            <li class="" >
+        <a onclick="NU.AT.externalLink(this, event);" href="http://www.nubijlage.nl/nudata/" target="_blank" style="">NUdata</a>
+              </li>
+      </ul>
+</div>
+
+    <div id="adblock_v">
+       <script type="text/javascript">
+
+  if (typeof(tagging.get_source('skyscraper')) != 'undefined')
+  {
+    NU.LazyWrite.write(tagging.get_source('skyscraper'));
+  }
+</script>    </div>
+  </div>
+
+  <div id="contentwrapper">
+
+    <div id="header-wrapper" >
+  <div id="header">
+    <form action="/zoeken/" method="get">
+      <fieldset id="zoek">
+        <input id="zoekfield" name="q" type="text" value="Zoek nieuws" onfocus="this.select()" type="text"/>
+      </fieldset>
+    </form>
+
+    <h1>    <script type="text/javascript">document.write(NU.today())</script>.
+    Het laatste nieuws het eerst op NU.nl    </h1>
+    <div class="clear"></div>
+  </div>
+</div>    
+<!-- breaks in two -->
+
+<div id="middlecolumn">
+    <div class="component refreshable">
+<!-- algemeen -->
+<div class="section algemeen">
+
+  
+  <div class="leadarticle ">
+          <a title="NFI haalt spullen uit woning Oost-Souburg" onclick="NU.AT.internalLink(this, event);" class="imagelink" href="/binnenland/2636344/nfi-haalt-spullen-woning-oost-souburg.html">
+                  <img  xtclib="position1_image_article_1" src="http://media.nu.nl/m/m1ezw9va36hl.jpg" />
+              </a>
+
+      <div id="leadtxt" class="caption">
+                <h3>
+          <a onclick="NU.AT.internalLink(this, event);"  xtclib="position1_article_1" href="/binnenland/2636344/nfi-haalt-spullen-woning-oost-souburg.html">
+            NFI haalt spullen uit woning Oost-Souburg                      </a>
+        </h3>
+                  <p>
+            <a title="NFI haalt spullen uit woning Oost-Souburg" onclick="NU.AT.internalLink(this, event);" xtclib="position1_caption_article_1" href="/binnenland/2636344/nfi-haalt-spullen-woning-oost-souburg.html">Groot aantal objecten overgeladen in speciale container</a>
+          </p>
+              </div>
+       </div>
+
+  <div class="clear"></div>
+
+  <div class="list">
+    <ul>
+      	    <li>
+          <a  xtclib="position1_article_2" onclick="NU.AT.internalLink(this, event);" href="/buitenland/2636364/vrouw-prostitueert-dochter-12-bingo.html">
+            Vrouw prostitueert dochter (12) voor bingo                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position1_article_3" onclick="NU.AT.internalLink(this, event);" href="/buitenland/2636346/dalai-lama-noemt-china-hypocriet-en-leugenachtig.html">
+            Dalai lama noemt China hypocriet en leugenachtig                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position1_article_4" onclick="NU.AT.internalLink(this, event);" href="/binnenland/2636314/studenten-beginnen-niet-master-maatregelen.html">
+            'Studenten beginnen niet aan master door maatregelen'                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position1_article_5" onclick="NU.AT.internalLink(this, event);" href="/binnenland/2636285/crematorium-in-haag-ontruimd-foutje-oven.html">
+            Crematorium in Den Haag ontruimd na foutje oven                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position1_article_6" onclick="NU.AT.internalLink(this, event);" href="/binnenland/2636282/spoortunnel-schiphol-dicht-oefening.html">
+            Spoortunnel Schiphol dicht voor oefening                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position1_article_7" onclick="NU.AT.internalLink(this, event);" href="/binnenland/2636276/meldpunt-werknemers-coa.html">
+            Meldpunt voor werknemers COA                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position1_article_8" onclick="NU.AT.internalLink(this, event);" href="/buitenland/2636272/twee-polen-wilden-6-miljoen-van-ikea.html">
+            Twee Polen wilden 6 miljoen van Ikea                      </a>
+        </li>
+          </ul>
+  </div>
+</div>
+</div>  <div class="component refreshable">
+<!-- economie -->
+<div class="section economie">
+
+      <h2 class="sectiontitle">
+      <span>
+                    <a onclick="NU.AT.internalLink(this, event);"  xtclib="position2_section"  href="/economie/">Economie</a>
+               </span>
+    </h2>
+  
+  <div class="subarticle ">
+          <a title="'Frankrijks grootste banken gaan herkapitaliseren'" onclick="NU.AT.internalLink(this, event);" class="imagelink" href="/economie/2636265/frankrijks-grootste-banken-gaan-herkapitaliseren.html">
+                  <img  xtclib="position2_image_article_1" src="http://media.nu.nl/m/m1ezsgxa5bao.jpg" />
+              </a>
+
+      <div id="subtxt" class="caption">
+                <h3>
+          <a onclick="NU.AT.internalLink(this, event);"  xtclib="position2_article_1" href="/economie/2636265/frankrijks-grootste-banken-gaan-herkapitaliseren.html">
+            'Frankrijks grootste banken gaan herkapitaliseren'                      </a>
+        </h3>
+                  <p>
+            <a title="'Frankrijks grootste banken gaan herkapitaliseren'" onclick="NU.AT.internalLink(this, event);" xtclib="position2_caption_article_1" href="/economie/2636265/frankrijks-grootste-banken-gaan-herkapitaliseren.html">Volgens bronnen zijn de banken bereid om tussen 10 en 15 miljard euro te accepteren</a>
+          </p>
+              </div>
+       </div>
+
+  <div class="clear"></div>
+
+  <div class="list">
+    <ul>
+      	    <li>
+          <a  xtclib="position2_article_2" onclick="NU.AT.internalLink(this, event);" href="/economie/2636271/aardgasfonds-geen-onderdeel-begroting-eli.html">
+            Aardgasfonds geen onderdeel begroting EL&amp;I                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position2_article_3" onclick="NU.AT.internalLink(this, event);" href="/economie/2636188/rio-tinto-stoot--zimbabwaanse-dochter-af.html">
+            Rio Tinto stoot  Zimbabwaanse dochter af                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position2_article_4" onclick="NU.AT.internalLink(this, event);" href="/economie/2636162/besparing-stroomverbruik-volgen-internet.html">
+            Besparing stroomverbruik volgen op internet                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position2_article_5" onclick="NU.AT.internalLink(this, event);" href="/economie/2636144/koortsachtig-overleg-dexia.html">
+            Koortsachtig overleg over Dexia                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position2_article_6" onclick="NU.AT.internalLink(this, event);" href="/economie/2636130/verwarring-nieuwe-energielabels.html">
+            'Verwarring door nieuwe energielabels'                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position2_article_7" onclick="NU.AT.internalLink(this, event);" href="/economie/2636105/griekenland-heeft-grotere-lening-nodig.html">
+            'Griekenland heeft grotere lening nodig'                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position2_article_8" onclick="NU.AT.internalLink(this, event);" href="/economie/2635954/moodys-waarschuwt-belgie-.html">
+            Moody's waarschuwt Belgi&euml;                       </a>
+        </li>
+          </ul>
+  </div>
+</div>
+</div>  <div class="component refreshable">
+<!-- sport -->
+<div class="section sport">
+
+      <h2 class="sectiontitle">
+      <span>
+                    <a onclick="NU.AT.internalLink(this, event);"  xtclib="position3_section"  href="/sport/">Sport</a>
+               </span>
+    </h2>
+  
+  <div class="subarticle ">
+          <a title="Kromowidjojo verslaat Veldhuis in Dubai" onclick="NU.AT.internalLink(this, event);" class="imagelink" href="/sport/2636299/kromowidjojo-verslaat-veldhuis-in-dubai.html">
+                  <img  xtclib="position3_image_article_1" src="http://media.nu.nl/m/m1ezwaea4k9e.jpg" />
+              </a>
+
+      <div id="subtxt" class="caption">
+                <h3>
+          <a onclick="NU.AT.internalLink(this, event);"  xtclib="position3_article_1" href="/sport/2636299/kromowidjojo-verslaat-veldhuis-in-dubai.html">
+            Kromowidjojo verslaat Veldhuis in Dubai                      </a>
+        </h3>
+                  <p>
+            <a title="Kromowidjojo verslaat Veldhuis in Dubai" onclick="NU.AT.internalLink(this, event);" xtclib="position3_caption_article_1" href="/sport/2636299/kromowidjojo-verslaat-veldhuis-in-dubai.html">Zwemster wint 100 meter vrij bij wereldbekerwedstrijden</a>
+          </p>
+              </div>
+       </div>
+
+  <div class="clear"></div>
+
+  <div class="list">
+    <ul>
+      	    <li>
+          <a  xtclib="position3_article_2" onclick="NU.AT.internalLink(this, event);" href="/sport/2636368/vinokoerov-maakt-rentree-in-chrono-nations.html">
+            Vinokoerov maakt rentree in Chrono des Nations                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position3_article_3" onclick="NU.AT.internalLink(this, event);" href="/sport/2636359/shorttrackster-mors-plaatst-zich-nk-afstanden.html">
+            Shorttrackster Ter Mors plaatst zich voor NK afstanden                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position3_article_4" onclick="NU.AT.internalLink(this, event);" href="/sport/2636310/mollema-grijpt-naast-zege-in-ronde-van-emilie.html">
+            Mollema grijpt naast zege in Ronde van Emili&euml;                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position3_article_5" onclick="NU.AT.internalLink(this, event);" href="/sport/2636257/cilic-en-berdych-finale-in-peking.html">
+            Cilic en Berdych naar finale in Peking                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position3_article_6" onclick="NU.AT.internalLink(this, event);" href="/sport/2636216/safina-ontkent-afscheid.html">
+            Safina ontkent afscheid                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position3_article_7" onclick="NU.AT.internalLink(this, event);" href="/sport/2636169/tafeltennissters-beginnen-ek-overtuigend.html">
+            Tafeltennissters beginnen EK overtuigend                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position3_article_8" onclick="NU.AT.internalLink(this, event);" href="/sport/2636156/van-nistelrooij-zet-ek-nog-niet-hoofd.html">
+            Van Nistelrooij zet EK nog niet uit zijn hoofd                      </a>
+        </li>
+          </ul>
+  </div>
+</div>
+</div>  <div class="component refreshable">
+<!-- tech -->
+<div class="section techniek">
+
+      <h2 class="sectiontitle">
+      <span>
+                    <a onclick="NU.AT.internalLink(this, event);"  xtclib="position4_section"  href="/tech/">Tech</a>
+               </span>
+    </h2>
+  
+  <div class="subarticle ">
+          <a title="Gemeentesites plat door lek" onclick="NU.AT.internalLink(this, event);" class="imagelink" href="/internet/2636345/gemeentesites-plat-lek.html">
+                  <img  xtclib="position4_image_article_1" src="http://media.nu.nl/m/m1ezvwrawvuh.jpg" />
+              </a>
+
+      <div id="subtxt" class="caption">
+                <h3>
+          <a onclick="NU.AT.internalLink(this, event);"  xtclib="position4_article_1" href="/internet/2636345/gemeentesites-plat-lek.html">
+            Gemeentesites plat door lek                      </a>
+        </h3>
+                  <p>
+            <a title="Gemeentesites plat door lek" onclick="NU.AT.internalLink(this, event);" xtclib="position4_caption_article_1" href="/internet/2636345/gemeentesites-plat-lek.html">Beveiliging 50 webpagina's niet toereikend</a>
+          </p>
+              </div>
+       </div>
+
+  <div class="clear"></div>
+
+  <div class="list">
+    <ul>
+      	    <li>
+          <a  xtclib="position4_article_2" onclick="NU.AT.internalLink(this, event);" href="/internet/2636233/bende-id-fraudeurs-opgepakt-in-vs.html">
+            Bende ID-fraudeurs opgepakt in VS                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position4_article_3" onclick="NU.AT.internalLink(this, event);" href="/internet/2636198/aantal-gameverslaafde-kinderen-verdubbeld.html">
+            'Aantal gameverslaafde kinderen verdubbeld'                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position4_article_4" onclick="NU.AT.internalLink(this, event);" href="/gadgets/2636192/beste-iphone-lancering-ooit-att.html">
+            Beste iPhone-lancering ooit voor AT&amp;T                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position4_article_5" onclick="NU.AT.internalLink(this, event);" href="/internet/2636178/zieke-man-gered-facebook.html">
+            Zieke man 'gered' door Facebook                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position4_article_6" onclick="NU.AT.internalLink(this, event);" href="/internet/2636125/dalai-lama-en-desmond-tutu-gebruiken-google--gesprek.html">
+            Dalai lama en Desmond Tutu gebruiken Google + voor gesprek                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position4_article_7" onclick="NU.AT.internalLink(this, event);" href="/film/2636073/sony-verfilmt-biografie-steve-jobs.html">
+            'Sony verfilmt biografie Steve Jobs'                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position4_article_8" onclick="NU.AT.internalLink(this, event);" href="/games/2635590/review-gameplay-fifa-12-enorm-verbeterd.html">
+            Review: Gameplay FIFA 12 enorm verbeterd                      </a>
+        </li>
+          </ul>
+  </div>
+</div>
+</div>  <div class="component refreshable">
+<!-- overig -->
+<div class="section overig">
+
+      <h2 class="sectiontitle">
+      <span>
+                    Overig               </span>
+    </h2>
+  
+  <div class="subarticle ">
+          <a title="Beyonc&eacute; beschuldigd van plagiaat" onclick="NU.AT.internalLink(this, event);" class="imagelink" href="/muziek/2636273/beyonce-beschuldigd-van-plagiaat.html">
+                  <img  xtclib="position5_image_article_1" src="http://media.nu.nl/m/m1ezqleak49m.jpg" />
+              </a>
+
+      <div id="subtxt" class="caption">
+                <h3>
+          <a onclick="NU.AT.internalLink(this, event);"  xtclib="position5_article_1" href="/muziek/2636273/beyonce-beschuldigd-van-plagiaat.html">
+            Beyonc&eacute; beschuldigd van plagiaat                      </a>
+        </h3>
+                  <p>
+            <a title="Beyonc&eacute; beschuldigd van plagiaat" onclick="NU.AT.internalLink(this, event);" xtclib="position5_caption_article_1" href="/muziek/2636273/beyonce-beschuldigd-van-plagiaat.html">Belgische dansgroep Rosas gaat stappen ondernemen tegen zangeres</a>
+          </p>
+              </div>
+       </div>
+
+  <div class="clear"></div>
+
+  <div class="list">
+    <ul>
+      	    <li>
+          <a  xtclib="position5_article_2" onclick="NU.AT.internalLink(this, event);" href="/muziek/2636306/lady-gaga-brengt-cd-met-remixes.html">
+            Lady Gaga brengt cd met remixes uit                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position5_article_3" onclick="NU.AT.internalLink(this, event);" href="/auto/2636290/audi-test-allroad-versie-a6-avant.html">
+            Audi test Allroad-versie A6 Avant                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position5_article_4" onclick="NU.AT.internalLink(this, event);" href="/achterklap/2636260/angelina-jolie-en-brad-pitt-steunen-somalie.html">
+            Angelina Jolie en Brad Pitt steunen Somali&euml;                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position5_article_5" onclick="NU.AT.internalLink(this, event);" href="/wetenschap/2636249/natuurbescherming-voorkomt-ontbossing-niet.html">
+            'Natuurbescherming voorkomt ontbossing niet'                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position5_article_6" onclick="NU.AT.internalLink(this, event);" href="/achterklap/2636231/rihanna-date-britse-bokser.html">
+            'Rihanna date Britse bokser'                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position5_article_7" onclick="NU.AT.internalLink(this, event);" href="/achterklap/2636139/kristin-davis-adopteert-meisje.html">
+            Kristin Davis adopteert meisje                      </a>
+        </li>
+      	    <li>
+          <a  xtclib="position5_article_8" onclick="NU.AT.internalLink(this, event);" href="/media/2636091/the-voice-verslaat-zelfs-oranje.html">
+            'The Voice' verslaat zelfs Oranje                      </a>
+        </li>
+          </ul>
+  </div>
+</div>
+</div>  <div class="component">
+<div class="section adgreen">
+  <h2 class="sectiontitle">
+    <span><a xtclib="position6_section" onclick="NU.AT.externalLink(this, event);" href="http://www.nuentoen.nl/" target="">NU&amp;toen</a></span>
+  </h2>
+
+  <div class="subarticle">
+          <a onclick="NU.AT.externalLink(this, event);" class='imagelink' href="http://www.nuentoen.nl/fotos/246246/1911-curie-nobelprijs-voor-chemie.html" target="">
+                            <img xtclib="position6_image_article_1" src="http://media.nu.nl/m/m1ezw67auks3_138x138.jpg" width="120" height="120"/>
+              </a>
+      <div id="subtxt" class="caption">
+        <h3>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_1" href="http://www.nuentoen.nl/fotos/246246/1911-curie-nobelprijs-voor-chemie.html" target="">
+            1911 Curie Nobelprijs voor Chemie          </a>
+         </h3>
+        <p><a onclick="NU.AT.externalLink(this, event);" title="1911 Curie Nobelprijs voor Chemie" xtclib="position6_caption _article_1"  href="http://www.nuentoen.nl/" target="">Nobelprijswinnaars in het verleden</a></p>
+      </div>
+      </div>
+
+  <div class="list"
+          style="background: url(http://media.nu.nl/m/.jpg) no-repeat bottom right;"
+    >
+
+    <ul>
+              <li>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_2" href="http://www.nuentoen.nl/fotos/246245/1921-einstein-nobelprijs-voor-de-natuurkunde.html" target="">
+          1921 Einstein Nobelprijs voor de Natuurkunde</a>
+        </li>
+              <li>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_3" href="http://www.nuentoen.nl/fotos/246247/1964-king-nobelprijs-voor-de-vrede.html" target="">
+          1964 King Nobelprijs voor de vrede</a>
+        </li>
+              <li>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_4" href="http://www.nuentoen.nl/fotos/246249/1979-moeder-teresa-nobelprijs-voor-de-vrede.html" target="">
+          1979 Moeder Teresa Nobelprijs voor de vrede</a>
+        </li>
+              <li>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_5" href="http://www.nuentoen.nl/fotos/246248/1989-dalai-lama-nobelprijs-voor-de-vrede.html" target="">
+          1989 Dalai lama Nobelprijs voor de vrede</a>
+        </li>
+              <li>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_6" href="http://www.nuentoen.nl/fotos/246251/1993-mandela-nobelprijs-voor-de-vrede.html" target="">
+          1993 Mandela Nobelprijs voor de vrede</a>
+        </li>
+              <li>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_7" href="http://www.nuentoen.nl/fotos/246252/1994-arafat-peres-en-rabin-nobelprijs-voor-de-vrede.html" target="">
+          1994 Arafat, Peres en Rabin Nobelprijs voor de vrede</a>
+        </li>
+              <li>
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position6_article_8" href="http://www.nuentoen.nl/fotos/246253/2001-annan-nobelprijs-voor-de-vrede.html" target="">
+          2001 Annan Nobelprijs voor de vrede</a>
+        </li>
+          </ul>
+  </div>
+</div>
+</div>  <div class="component refreshable"><!--[if lt IE 7]>
+<style type="text/css">
+  #nuvideo_overlay
+  {
+      visibility: hidden;
+  }
+</style>
+<![endif]-->
+<!-- video -->
+
+
+<div class="section videos">
+    <h2 class="sectiontitle">
+        <span class="icon zienl">
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="position7_section" href="http://www.zie.nl">
+            De laatste video's op ZIE.nl
+          </a>
+        </span>
+    </h2>
+    <ul class="archive clearfix">
+                                <li>
+          <a title="Nobelprijswinnares Wangari Maathai begraven" class='play' xtclib="position7_play_article_1" onclick="NU.AT.externalLink(this, event);" href="http://www.zie.nl/video/nobelprijswinnares-wangari-maathai-begraven/m1ezwabfu5si" target="_blank">
+            Afspelen
+          </a>
+          <div class="image">
+              <img alt="Nobelprijswinnares Wangari Maathai begraven" src="http://media.nu.nl/m/m1ezvi7a64al.jpg">
+          </div>
+          <div class="caption">
+            <a  onclick="NU.AT.externalLink(this, event);"  xtclib="position7_article_1" href="http://www.zie.nl/video/nobelprijswinnares-wangari-maathai-begraven/m1ezwabfu5si" target="_blank">
+              Nobelprijswinnares Wangari Maathai begraven            </a>
+          </div>
+        </li>
+                                <li>
+          <a title="Slag om Sirte gaat door" class='play' xtclib="position7_play_article_2" onclick="NU.AT.externalLink(this, event);" href="http://www.zie.nl/video/slag-om-sirte-gaat-door/m1ezwa8fmlry" target="_blank">
+            Afspelen
+          </a>
+          <div class="image">
+              <img alt="Slag om Sirte gaat door" src="http://media.nu.nl/m/m1ezwa6a5lxq.jpg">
+          </div>
+          <div class="caption">
+            <a  onclick="NU.AT.externalLink(this, event);"  xtclib="position7_article_2" href="http://www.zie.nl/video/slag-om-sirte-gaat-door/m1ezwa8fmlry" target="_blank">
+              Slag om Sirte gaat door            </a>
+          </div>
+        </li>
+                                <li>
+          <a title="Vliegtuig stort neer in Australi&euml;" class='play' xtclib="position7_play_article_3" onclick="NU.AT.externalLink(this, event);" href="http://www.zie.nl/video/vliegtuig-stort-neer-in-australie/m1ezwaxf5wrq" target="_blank">
+            Afspelen
+          </a>
+          <div class="image">
+              <img alt="Vliegtuig stort neer in Australië" src="http://media.nu.nl/m/m1ezwava2xsy.jpg">
+          </div>
+          <div class="caption">
+            <a  onclick="NU.AT.externalLink(this, event);"  xtclib="position7_article_3" href="http://www.zie.nl/video/vliegtuig-stort-neer-in-australie/m1ezwaxf5wrq" target="_blank">
+              Vliegtuig stort neer in Australi&euml;            </a>
+          </div>
+        </li>
+                                <li>
+          <a title="Moesson maakt slachtoffers in Thailand" class='play' xtclib="position7_play_article_4" onclick="NU.AT.externalLink(this, event);" href="http://www.zie.nl/video/moesson-maakt-slachtoffers-in-thailand/m1ezwalfk1qr" target="_blank">
+            Afspelen
+          </a>
+          <div class="image">
+              <img alt="Moesson maakt slachtoffers in Thailand" src="http://media.nu.nl/m/m1ezvxgaa6dk.jpg">
+          </div>
+          <div class="caption">
+            <a  onclick="NU.AT.externalLink(this, event);"  xtclib="position7_article_4" href="http://www.zie.nl/video/moesson-maakt-slachtoffers-in-thailand/m1ezwalfk1qr" target="_blank">
+              Moesson maakt slachtoffers in Thailand            </a>
+          </div>
+        </li>
+                                <li>
+          <a title="Schip vastgelopen in Westerschelde" class='play' xtclib="position7_play_article_5" onclick="NU.AT.externalLink(this, event);" href="http://www.zie.nl/video/schip-vastgelopen-in-westerschelde/m1ezwamfvuqs" target="_blank">
+            Afspelen
+          </a>
+          <div class="image">
+              <img alt="Schip vastgelopen in Westerschelde" src="http://media.nu.nl/m/m1ezwapax8kj.jpg">
+          </div>
+          <div class="caption">
+            <a  onclick="NU.AT.externalLink(this, event);"  xtclib="position7_article_5" href="http://www.zie.nl/video/schip-vastgelopen-in-westerschelde/m1ezwamfvuqs" target="_blank">
+              Schip vastgelopen in Westerschelde            </a>
+          </div>
+        </li>
+                                <li>
+          <a title="Optimisme over olielek Nieuw-Zeeland" class='play' xtclib="position7_play_article_6" onclick="NU.AT.externalLink(this, event);" href="http://www.zie.nl/video/optimisme-over-olielek-nieuw-zeeland/m1ezwaof80r6" target="_blank">
+            Afspelen
+          </a>
+          <div class="image">
+              <img alt="Optimisme over olielek Nieuw-Zeeland" src="http://media.nu.nl/m/m1ezwata8imx.jpg">
+          </div>
+          <div class="caption">
+            <a  onclick="NU.AT.externalLink(this, event);"  xtclib="position7_article_6" href="http://www.zie.nl/video/optimisme-over-olielek-nieuw-zeeland/m1ezwaof80r6" target="_blank">
+              Optimisme over olielek Nieuw-Zeeland            </a>
+          </div>
+        </li>
+            </ul>
+</div>
+</div>  <div class="component"><div class="section dossiers">
+    <h2 class="sectiontitle"><span class="icon folder"><a href="#">Actuele Dossiers</a></span></h2>
+    <ul class="archive clearfix">
+              <li>
+            <a title="Nobelprijzen 2011" onclick="NU.AT.internalLink(this, event);" class="open" href="/nobelprijzen-2011/">
+                <img xtclib="current1_image_1" alt=""src="http://media.nu.nl/m/m1fzopbaq1nf.jpg" />
+            </a>
+
+            <div class="caption">
+                <h3><a onclick="NU.AT.internalLink(this, event);" xtclib="current1_section_1" href="/nobelprijzen-2011/">Nobelprijzen 2011</a></h3>
+                <p>
+                   <a title="Nobelprijzen 2011" xtclib="current1_link_1"  onclick="NU.AT.internalLink(this, event);" href="/nobelprijzen-2011/">
+                     20                     artikelen                   </a>
+                </p>
+            </div>
+        </li>
+              <li>
+            <a title="Midden-Oosten" onclick="NU.AT.internalLink(this, event);" class="open" href="/onrust-midden-oosten/">
+                <img xtclib="current1_image_2" alt=""src="http://media.nu.nl/m/m1eztnnara57.jpg" />
+            </a>
+
+            <div class="caption">
+                <h3><a onclick="NU.AT.internalLink(this, event);" xtclib="current1_section_2" href="/onrust-midden-oosten/">Midden-Oosten</a></h3>
+                <p>
+                   <a title="Midden-Oosten" xtclib="current1_link_2"  onclick="NU.AT.internalLink(this, event);" href="/onrust-midden-oosten/">
+                     2427                     artikelen                   </a>
+                </p>
+            </div>
+        </li>
+              <li>
+            <a title="Schuldencrisis" onclick="NU.AT.internalLink(this, event);" class="open" href="/schuldencrisis/">
+                <img xtclib="current1_image_3" alt=""src="http://media.nu.nl/m/m1ezsf1a96x9.jpg" />
+            </a>
+
+            <div class="caption">
+                <h3><a onclick="NU.AT.internalLink(this, event);" xtclib="current1_section_3" href="/schuldencrisis/">Schuldencrisis</a></h3>
+                <p>
+                   <a title="Schuldencrisis" xtclib="current1_link_3"  onclick="NU.AT.internalLink(this, event);" href="/schuldencrisis/">
+                     722                     artikelen                   </a>
+                </p>
+            </div>
+        </li>
+          </ul>
+</div>
+</div></div>
+  
+<div id="rightcolumn">
+    <div class="component"><div class="widget socialmedia">
+  <h4><span>Volg NU.nl</span></h4>
+  <div class="content">
+    <a title="facebook" onclick="NU.AT.externalLink(this, event);" href="http://www.facebook.com/nu.nl" class="facebook"></a>
+    <a title="twitter" onclick="NU.AT.externalLink(this, event);" href="http://www.twitter.com/nunl" class="twitter"></a>
+    <div class="clear"></div>
+  </div>
+</div>
+</div>  <div class="component"><div class="widget localnews">
+  <div class="content">
+
+          <div class="weathericon icon_l"></div>
+      <a title="weer" xtclib="info1_link1" onclick="NU.AT.internalLink(this, event);" href="/weer/index.html" class="weer">
+          <span>10&deg;C</span>
+          <small  >Regen</small>
+      </a>
+    
+          <a title="verkeer" xtclib="info1_link2" onclick="NU.AT.internalLink(this, event);" href="/verkeer/index.html" class="verkeer">
+        <span>  2 files</span>
+        <small>0 km</small>
+      </a>
+    
+          <a title="brandstof" xtclib="info1_link3" onclick="NU.AT.internalLink(this, event);" href="/brandstof/index.html" class="brandstof">
+          <span>&euro; 1,682</span>
+          <small>Euro 95</small>
+      </a>
+    
+          <a title="beurs" xtclib="info1_link4" onclick="NU.AT.internalLink(this, event);" href="/beurs/" class="beurs">
+          <span>288,31</span>
+          <small class="up">2,50</small>
+      </a>
+    
+    <div class="clear"></div>
+  </div>
+
+  <div class="uploadnewsphoto">
+    <a class="uploadphoto" href="http://www.nufoto.nl/upload/stap1/" title="Upload een nieuwsfoto"></a>
+  </div>
+</div>
+</div>  <div class="component refreshable"><div class="widget alternate">
+
+  <h4>
+      <span class="" >
+          <a onclick="NU.AT.internalLink(this, event);" xtclib="ankeiler1_link1" href="/onrust-midden-oosten/" >
+              Onrust Midden-Oosten</a>
+      </span>
+  </h4>
+  <div class="content">
+    <div class="image">
+        <a href="/onrust-midden-oosten/"
+           title="Onrust Midden-Oosten"
+           onclick="NU.AT.internalLink(this, event);"
+                   >
+          <img
+            xtclib="ankeiler1_image1"
+                        src="http://media.nu.nl/m/m1ezwaaalw4f.jpg"
+            alt=""
+           />
+        </a>
+    </div>
+
+        <div class="caption">
+      <p>President Jemen zegt macht op te geven </p>
+    </div>
+    
+  </div>
+  <div class="clear"></div>
+</div>
+</div>  <div class="component">          <div class="adblock_border">
+        <center>
+          <table>
+            <tr>
+              <td>
+                <script type="text/javascript">
+
+  if (typeof(tagging.get_source('multiple-button1')) != 'undefined')
+  {
+    NU.LazyWrite.write(tagging.get_source('multiple-button1'));
+  }
+</script>              </td>
+            </tr>
+          </table>
+        </center>
+      </div>
+    </div>  <div class="component refreshable">
+<div class="widget column">
+  <h4>
+      <span class="column">
+          <a xtclib="shorty1_title1" onclick="NU.AT.internalLink(this, event);;"  href="/column">
+              Column          </a>
+      </span>
+  </h4>
+  <div class="content">
+    <div class="image" >
+        <a title="Column" onclick="NU.AT.internalLink(this, event);;"  href="/column">
+          <img
+            xtclib="shorty1_image1"
+                        src="http://media.nu.nl/m/m1ezw7var083.jpg"
+          />
+        </a>
+    </div>
+    <div class="caption">
+      <p><a target="_blank" href="http://www.nu.nl/column/">Iedereen kan opereren - Arjan Dasselaar<br />
+
+</a></p>    </div>
+
+      </div>
+
+  <div class="clear"></div>
+</div>
+
+</div>  <div class="component refreshable">
+<div class="widget beeld">
+  <h4>
+      <span class="beeld">
+          <a xtclib="shorty2_title1"   href="javascript:NU.slideshowPopup('/slideshow/1881665/popup.html');">
+              Nieuws in beeld          </a>
+      </span>
+  </h4>
+  <div class="content">
+    <div class="image_slide" >
+        <a title="Nieuws in beeld"   href="javascript:NU.slideshowPopup('/slideshow/1881665/popup.html');">
+          <img
+            xtclib="shorty2_image1"
+                        src="http://media.nu.nl/m/m1ezwahavmak.jpg"
+          />
+        </a>
+    </div>
+    <div class="caption">
+      <p>Een overzicht van de meest bijzondere nieuwsfoto's.</p>    </div>
+
+    <a xtclib="shorty2_more1"    href="javascript:NU.slideshowPopup('/slideshow/1881665/popup.html');" class="more"><span>Bekijk&nbsp;de&nbsp;foto's <var>(100)</var></span></a>  </div>
+
+  <div class="clear"></div>
+</div>
+
+</div>  <div class="component"><div class=freeblock>
+  <p style="margin-bottom:15px"><script type="text/javascript">
+    if (typeof(tagging.get_source('small-banner')) != 'undefined')
+    {
+      NU.LazyWrite.write(tagging.get_source('small-banner'));
+    }
+</script></p>
+<style>
+   #__lwTarget4 { margin-bottom: 12px; }
+</style></div></div>  <div class="component"><center>
+  <script type="text/javascript">
+    if (typeof(tagging.get_source('half-button')) != 'undefined')
+    {
+      NU.LazyWrite.write(tagging.get_source('half-button'));
+    }
+  </script>    
+</center>
+<div class="widget">
+  <h4><span>Sevensheaven</span></h4>
+  <a onclick="NU.AT.internalLink(this, event);" href="/sevensheaven/"><img width="180" src="http://media.nu.nl/m/m1ezw50aqvgx_180.jpg" /></a>
+</div>
+</div>  <div class="component"><div class="widget alternate nuentoenwidget">
+  <h4>
+      <span class="nuentoen">
+        <a xtclib="nuentoen1_section" onclick="NU.AT.externalLink(this, event);"  href="http://www.nuentoen.nl">Toen op  8 okt</a>
+      </span>
+  </h4>
+  <div class="content">
+    <a xtclib="nuentoen1_date" onclick="NU.AT.externalLink(this, event);" href="http://www.nuentoen.nl/" target="_blank" class='nuentoenthumb'
+                  style='background-image: url(http://media.nu.nl/m/m1ezwajav4hj.jpg);background-position: center center;background-repeat: no-repeat;'
+           >
+    </a>
+    <div class="caption">
+      <p><a xtclib="nuentoen1_caption" onclick="NU.AT.externalLink(this, event);" href="http://www.nuentoen.nl/">1981 J<wbr />A<wbr />c<wbr />t<wbr />i<wbr />e<wbr />v<wbr />o<wbr />e<wbr />r<wbr />d<wbr />e<wbr />r gooit ruit AMRO-bank ....</a></p>
+    </div>
+  </div>
+  <div class="clear"></div>
+</div>
+</div>  <div class="component refreshable"><div class="widget">
+    <h4>
+        <span class="nuwerk">
+            <a xtclib="nuwerk1_section" onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl">Top 5 NUwerk.nl</a>
+        </span>
+    </h4>
+    <div class="content">
+        <ul class="top5">
+                      <li>
+              <a xtclib="nuwerk1_article1" onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl/bedrijfsdetail.php?wg_id=1098&action=search&from=9&pos=1&user_id=1098&content_id=177&search=Find" title="Bas van der Heijden (24) " target="_blank">
+                <label>1.</label>
+                <span>Bas van der Heijden (24) </span>
+              </a>
+            </li>
+                      <li>
+              <a xtclib="nuwerk1_article2" onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl/bedrijfsdetail.php?wg_id=804&action=search&from=9&pos=2&user_id=804&content_id=324&search=Find" title="Parnassia Bavo Groep (6) " target="_blank">
+                <label>2.</label>
+                <span>Parnassia Bavo Groep (6) </span>
+              </a>
+            </li>
+                      <li>
+              <a xtclib="nuwerk1_article3" onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl/bedrijfsdetail.php?wg_id=415&action=search&from=9&pos=3&user_id=415&content_id=180&search=Find" title="KPN Corporate Market (78) " target="_blank">
+                <label>3.</label>
+                <span>KPN Corporate Market (78) </span>
+              </a>
+            </li>
+                      <li>
+              <a xtclib="nuwerk1_article4" onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl/index.php?action=search&2=&15=&96=&97=&98=&102=&104=61&106=&107=&109=&search=Find&from=9&pos=4&content_id=201" title="Vacatures prov. Utrecht (914) " target="_blank">
+                <label>4.</label>
+                <span>Vacatures prov. Utrecht (914) </span>
+              </a>
+            </li>
+                      <li>
+              <a xtclib="nuwerk1_article5" onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl/bedrijfsdetail.php?wg_id=2444&action=search&from=9&pos=5&user_id=2444&content_id=120&search=Find" title="W&auml;rtsil&auml; Nederland B.V. (1)" target="_blank">
+                <label>5.</label>
+                <span>W&auml;rtsil&auml; Nederland B.V. (1)</span>
+              </a>
+            </li>
+                  </ul>
+                  <a xtclib="nuwerk1_more" onclick="NU.AT.externalLink(this, event);" href="http://www.nuwerk.nl" target="_blank" class='more'><span> 6.417 vacatures...</span></a>
+            </div>
+    <div class="clear"></div>
+</div>
+</div>  <div class="component refreshable"><div class="widget alternate">
+
+  <h4>
+      <span class="nufoto" >
+          <a onclick="NU.AT.externalLink(this, event);" xtclib="ankeiler2_link1" href="http://www.nufoto.nl/fotos/246429/simulatie-duikongeval-in-de-vinkeveense-plassen.html" >
+              NU op NUfoto</a>
+      </span>
+  </h4>
+  <div class="content">
+    <div class="image">
+        <a href="http://www.nufoto.nl/fotos/246429/simulatie-duikongeval-in-de-vinkeveense-plassen.html"
+           title="NU op NUfoto"
+           onclick="NU.AT.externalLink(this, event);"
+                   >
+          <img
+            xtclib="ankeiler2_image1"
+                        src="http://media.nu.nl/m/m1ezwaeaaq90.jpg"
+            alt=""
+           />
+        </a>
+    </div>
+
+        <div class="caption">
+      <p>Simulatie duikongeval in de Vinkeveense Plassen</p>
+    </div>
+    
+  </div>
+  <div class="clear"></div>
+</div>
+</div>  <div class="component refreshable">
+<div class="widget beeld">
+  <h4>
+      <span class="beeld">
+          <a xtclib="shorty3_title1"   href="javascript:NU.slideshowPopup('/slideshow/1886550/popup.html');">
+              Kerkschilderingen          </a>
+      </span>
+  </h4>
+  <div class="content">
+    <div class="image_slide" >
+        <a title="Kerkschilderingen"   href="javascript:NU.slideshowPopup('/slideshow/1886550/popup.html');">
+          <img
+            xtclib="shorty3_image1"
+                        src="http://media.nu.nl/m/m1ezwacapk8c.jpg"
+          />
+        </a>
+    </div>
+    <div class="caption">
+      <p>Koningin Beatrix heeft zaterdag de gerestaureerde gewelfschilderingen in het dak van de Grote Sint Laurenskerk in Alkmaar onthuld.</p>    </div>
+
+    <a xtclib="shorty3_more1"    href="javascript:NU.slideshowPopup('/slideshow/1886550/popup.html');" class="more"><span>Bekijk&nbsp;de&nbsp;foto's <var>(5)</var></span></a>  </div>
+
+  <div class="clear"></div>
+</div>
+
+</div>  <div class="component refreshable">
+<div class="widget beeld">
+  <h4>
+      <span class="beeld">
+          <a xtclib="shorty4_title1"   href="javascript:NU.slideshowPopup('/slideshow/1886545/popup.html');">
+              Vastgelopen          </a>
+      </span>
+  </h4>
+  <div class="content">
+    <div class="image_slide" >
+        <a title="Vastgelopen"   href="javascript:NU.slideshowPopup('/slideshow/1886545/popup.html');">
+          <img
+            xtclib="shorty4_image1"
+                        src="http://media.nu.nl/m/m1ezwaxa5hsn.jpg"
+          />
+        </a>
+    </div>
+    <div class="caption">
+      <p>In de Westerschelde was in de nacht van vrijdag op zaterdag een schip met auto's aan boord&nbsp; vastgelopen. </p>    </div>
+
+    <a xtclib="shorty4_more1"    href="javascript:NU.slideshowPopup('/slideshow/1886545/popup.html');" class="more"><span>Bekijk&nbsp;de&nbsp;foto's <var>(5)</var></span></a>  </div>
+
+  <div class="clear"></div>
+</div>
+
+</div></div>
+
+      <!--end content wrapper-->
+</div>
+
+<div class="clear"></div>
+
+  
+<div id="footer">
+  
+ <div class="adblock_h">
+     <script type="text/javascript">
+
+  if (typeof(tagging.get_source('multiple-bottom')) != 'undefined')
+  {
+    NU.LazyWrite.write(tagging.get_source('multiple-bottom'));
+  }
+</script>  </div>
+  <div class="logo"><a onclick="NU.AT.internalLink(this, event);" href="/" title="nu.nl | Het laatste nieuws het eerst op nu.nl">nu.nl | Het laatste nieuws het eerst op nu.nl</a></div>
+  <div class="content">
+    <div class="top">
+              <ul class="sections">
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/algemeen/" target="_self" >Algemeen</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/economie/" target="_self" >Economie</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/sport/" target="_self" >Sport</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/tech/" target="_self" >Tech</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/achterklap/" target="_self" >Achterklap</a></li>
+                </ul>
+              <ul class="sections">
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/opmerkelijk/" target="_self" >Opmerkelijk</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/beurs/" target="_self" >Beurs</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/wetenschap/" target="_self" >Wetenschap</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/cultuur/" target="_self" >Cultuur en Media</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/gezondheid/" target="_self" >Gezondheid</a></li>
+                </ul>
+              <ul class="sections">
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/lifestyle/" target="_self" >Lifestyle</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/auto/" target="_self" >Auto</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/column/" target="_self" >Column</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/weer/index.html" target="_self" >Weer</a></li>
+                </ul>
+              <ul class="sections">
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/verkeer/index.html" target="_self" >Verkeer</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/werk-en-prive/" target="_self" >Werk en Priv&eacute;</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/geldzaken/" target="_self" >Geldzaken</a></li>
+                  <li><a  onclick="NU.AT.internalLink(this, event);" href="/de-jager/" target="_self" >Cartoon</a></li>
+                </ul>
+            <div class="socialmedia">
+        <span id="volg">Volg NU.nl:</span>
+        <ul>
+          <li class="hyves"><a onclick="NU.AT.internalLink(this, event);" href="/socialtools.html#hyves" title="Hyves">Hyves</a></li>
+          <li class="rss"><a onclick="NU.AT.internalLink(this, event);" href="/socialtools.html#rss" title="RSS feed">RSS Feed</a></li>
+          <li class="twitter"><a onclick="NU.AT.internalLink(this, event);" href="/socialtools.html#twitter" title="Twitter">Twitter</a></li>
+          <li class="facebook"><a onclick="NU.AT.internalLink(this, event);" href="/socialtools.html#facebook" title="Facebook">Facebook</a></li>
+        </ul>
+      </div>
+    </div>
+
+   <div class="bottom">
+       <a onclick="NU.AT.internalLink(this, event);" href="/colofon.html" rel="nofollow">Contact</a> |
+       <a onclick="NU.AT.internalLink(this, event);" href="/disclaimer.html" rel="nofollow">Disclaimer</a> |
+       <a onclick="NU.AT.internalLink(this, event);" href="/copyright.html" rel="nofollow">Copyright</a>  |
+       <a onclick="NU.AT.internalLink(this, event);" href="/socialtools.html#tools">Tools</a> |
+       <a onclick="NU.AT.internalLink(this, event);" href="/privacy-en-cookiebeleid.html" rel="nofollow">Privacy- en cookiebeleid</a> |
+       <a onclick="NU.AT.internalLink(this, event);" href="/socialtools.html#mobiel" rel="nofollow">Mobiel</a> |
+       <a onclick="NU.AT.internalLink(this, event);" href="/adverteren.html" rel="nofollow">Adverteren</a>
+   </div>
+    <div class="colofon">
+      <span class="realisatie">
+          nu.nl - Scio melius -
+          <a onclick="NU.AT.externalLink(this, event);" href="http://www.ibuildings.nl/" target="_blank" rel="nofollow">Powered by Ibuildings</a> -
+          <a onclick="NU.AT.externalLink(this, event);" href="http://www.terremark.nl/" target="_blank" rel="nofollow">Hosting by Terremark</a>
+      </span>
+      <span class="copyright">Copyright &copy; 1998-2011</span>
+      <span class="sanoma">
+          NU.nl is onderdeel van het netwerk van
+          <a onclick="NU.AT.externalLink(this, event);" href="http://www.sanoma-adverteren.nl/nl-web-Crossmedia.php" target="_blank" rel="nofollow">
+              Sanoma Media Netherlands groep
+          </a>
+      </span>
+      <span class="sanoma">
+          <span class="sanoma-other-sites" >Andere sites van Sanoma Media Group:</span><br/>
+          <a href="http://jmp.ilsemedia.nl/?s=ilsemedia_footer&amp;p=www.nu.nl&amp;l=http%3A//www.startpagina.nl" target="_blank" rel="follow"><img class='startpaginaicon' src='/images/StartpaginaS19x19.jpg'>Startpagina</a> -
+          <a href="http://jmp.ilsemedia.nl/?s=ilsemedia_footer&amp;p=www.nu.nl&amp;l=http%3A//www.overzicht.nl" target="_blank" rel="follow">Overzicht</a> -
+          <a href="http://jmp.ilsemedia.nl/?s=ilsemedia_footer&amp;p=www.nu.nl&amp;l=http%3A//www.kieskeurig.nl" target="_blank" rel="follow">Kieskeurig.nl</a> -
+          <a href="http://jmp.ilsemedia.nl/?s=ilsemedia_footer&amp;p=www.nu.nl&amp;l=http%3A//www.web-log.nl" target="_blank" rel="follow">Web-log</a> -
+          <a href="http://jmp.ilsemedia.nl/?s=ilsemedia_footer&amp;p=www.nu.nl&amp;l=http%3A//www.goeievraag.nl" target="_blank" rel="follow">GoeieVraag</a> -
+          <a href="http://jmp.ilsemedia.nl/?s=ilsemedia_footer&amp;p=www.nu.nl&amp;l=http%3A//www.schoolbank.nl" target="_blank" rel="follow">Schoolbank</a> -
+          <a href="http://www.dnews.de" target="_blank">Dnews</a> -
+          <a href="http://deeplink.zaazoo.info/Deeplink/Lead?Touroperator=SU_vakantie_nl&SiteId=112&Campaign=nu-footer&Deeplink=aHR0cDovL3d3dy52YWthbnRpZS5ubD9DYW1wYWlnbklEPW51LWZvb3Rlcg==" target="_blank">Vakantie.nl</a>
+      </span>
+      <br/>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    NU.AT.PAGE = 'home';
+    NU.AT.LEVEL2 = '1';
+    NU.AT.CHAPTER = '';
+    NU.AT.LEVELNAME = 'home';
+    NU.AT.ARTICLE = '';
+</script>
+
+<script type="text/javascript"> <!--
+xtnv = document;
+xtsd = "http://LOGC210";
+xtsite = "475312";
+xtn2 = "1";
+xtpage = "home";
+   xtergo="1";
+
+//-->
+</script>
+
+    <script type="javascript" src="/scripts-cache/xtclicks.js"></script>
+<script type="text/javascript" src="/scripts-cache/xtcore.js"></script>
+
+<noscript>
+  <img width="1" height="1" alt=""
+          src="http://LOGC210.xiti.com/hit.xiti?s=475312&s2=1&p=home&"
+      >
+</noscript>
+       
+  <div id="__lwBuffer0" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(0)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(0, true)</script>
+  <div id="__lwBuffer1" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(1)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(1, true)</script>
+  <div id="__lwBuffer2" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(2)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(2, true)</script>
+  <div id="__lwBuffer3" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(3)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(3, true)</script>
+  <div id="__lwBuffer4" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(4)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(4, true)</script>
+  <div id="__lwBuffer5" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(5)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(5, true)</script>
+  <div id="__lwBuffer6" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(6)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(6, true)</script>
+  <div id="__lwBuffer7" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(7)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(7, true)</script>
+  <div id="__lwBuffer8" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(8)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(8, true)</script>
+  <div id="__lwBuffer9" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(9)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(9, true)</script>
+  <div id="__lwBuffer10" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(10)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(10, true)</script>
+  <div id="__lwBuffer11" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(11)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(11, true)</script>
+  <div id="__lwBuffer12" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(12)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(12, true)</script>
+  <div id="__lwBuffer13" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(13)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(13, true)</script>
+  <div id="__lwBuffer14" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(14)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(14, true)</script>
+  <div id="__lwBuffer15" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(15)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(15, true)</script>
+  <div id="__lwBuffer16" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(16)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(16, true)</script>
+  <div id="__lwBuffer17" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(17)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(17, true)</script>
+  <div id="__lwBuffer18" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(18)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(18, true)</script>
+  <div id="__lwBuffer19" style="display: none; position: relative"><script type="text/javascript">NU.LazyWrite.flush(19)</script></div>
+  <script type="text/javascript">NU.LazyWrite.move(19, true)</script>
+
+<script type="text/javascript">
+  if (typeof(tagging.get_source('footer')) != 'undefined')
+  {
+    try
+    {
+      tagging.render('footer');
+    }
+    catch (err)
+    {
+      tagging.log(err);
+    }
+  }
+</script><script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+  try {
+    var pageTracker = _gat._getTracker("UA-10557259-1");
+    pageTracker._addOrganic("startgoogle.startpagina.nl","q");
+    pageTracker._addOrganic("vinden.nl","q");
+    pageTracker._setDomainName("nu.nl");
+    pageTracker._setCookieTimeout("2592000");
+    pageTracker._setAllowAnchor(true);
+    pageTracker._initData();
+    pageTracker._trackPageview();
+  } catch(err) {}
+</script>
+
+<script type="text/javascript" src="/scripts/ga-links.js"></script><script type="text/javascript">
+  var as = new Arnostat();
+  as.site = "nu-test";
+  as.page = "Voorpagina";
+  as.realtime = "0.0.0.0";
+  as.visit();
+</script>
+
+
+<script type="text/javascript">
+  var statsId = "0.0"; 
+
+  function n(o) {
+    lc_click(statsId, '','',o.href);
+  }
+
+  function ftvlog(nr, lh, name) {
+    ftvlaunch(nr, lh, name);
+    lc_click(statsId, '', '', 'FTV-' + nr);
+    return false;
+  }
+
+  if (Math.random() <= (10/100)) {
+    var lc_image = new Image();
+    lc_image.src = "http://nu-test.arnostat.nl/visit.gif?" + statsId;
+  }
+
+  $('#extensionnav li').click(function() {
+    as.click('extensionlinks');
+  });
+
+  $('#middlecolumn .subarticle').click(function() {
+    as.click('homeaanbiedingen');
+  });
+
+  $('#catstoryblock').click(function() {
+    as.click('homeaanbiedingen');
+  });
+  $('#alle_reisspecials').click(function() {
+    as.click('aanbieders');
+  });
+  $('#citytrips').click(function() {
+    as.click('citytrips');
+  });
+
+</script>
+
+
+<noscript>
+  <img src="http://stats.ilsemedia.nl/visit.gif?a=v&s=nu-test&p=Voorpagina&pv=&i=&c=&js=no" width="1" height="1"/>
+</noscript>
+
+  <script type="text/javascript">
+  $(function(){
+    window.setInterval("NU.Ajaxrefresh.update()", 300000);
+  });
+</script> 
+    <!-- end pageWrapper div -->
+    </div>
+  <!-- end page div -->
+  </div>
+</body>
+</html>
+

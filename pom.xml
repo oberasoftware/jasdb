@@ -4,8 +4,8 @@
 	<url>http://www.renarj.nl</url>
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>nl.renarj</groupId>
-	<version>0.9-SNAPSHOT</version>
+	<groupId>com.obera</groupId>
+	<version>1.0-SNAPSHOT</version>
 	<artifactId>jasdb</artifactId>
 	<packaging>pom</packaging>
 
@@ -79,27 +79,69 @@
 				<scope>test</scope>
 			</dependency>
 
-            <!-- jasdb dependencies -->
+            <!-- jasdb internal dependencies -->
             <dependency>
                 <groupId>com.obera</groupId>
                 <artifactId>jasdb_index_btreeplus</artifactId>
-                <version>${jasdb.index.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.obera</groupId>
-                <artifactId>jasdb_core</artifactId>
-                <version>${jasdb.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>nl.renarj</groupId>
                 <artifactId>jasdb_transwriter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>nl.renarj</groupId>
+                <groupId>com.obera</groupId>
                 <artifactId>jasdb_localservice</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_apiconnector</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_restmodel</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_acl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_memorywriter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_testframework</artifactId>
+                <scope>test</scope>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_restservice</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
+                <artifactId>jasdb_restconnector</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
             <!-- jersey related libraries -->
 			<dependency>
@@ -230,7 +272,15 @@
 	</build>
 	<modules>
         <module>jasdb_api</module>
+        <module>jasdb_core</module>
+        <module>jasdb_index_btreeplus</module>
 		<module>jasdb_transwriter</module>
+        <module>jasdb_acl</module>
+        <module>jasdb_memorywriter</module>
+        <module>testing/jasdb_ent_integration</module>
+        <module>rest/jasdb_restservice</module>
+        <module>rest/jasdb_restconnector</module>
+        <module>rest/jasdb_restmodel</module>
 		<module>servicelogic/jasdb_localservice</module>
 		<module>testing/jasdb_testframework</module>
         <module>connectors/jasdb_connector</module>

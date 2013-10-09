@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasdb kernel="nl.renarj.jasdb.core.ConfigurableKernel">
+    <modules>
+        <!-- Set the used kernel modules -->
+        <!--<module type="record" class="nl.renarj.jasdb.storage.transactional.TransactionalRecordWriterFactory"/>-->
+        <module type="record" class="nl.renarj.jasdb.storage.btree.BTreeRecordWriterFactory"/>
+
+        <!--<module type="remote" class="nl.renarj.jasdb.rest.RestService"/>-->
+
+        <!--<module type="credentialsprovider" class="com.obera.service.acl.LocalCredentialsProvider"/>-->
+        <!--<module type="usermanager" class="com.obera.service.acl.UserManagerImpl"/>-->
+        <!--<module type="sessionmanager" class="com.obera.service.acl.SessionManagerImpl"/>-->
+
+        <module type="storageservice" class="nl.renarj.jasdb.service.LocalStorageServiceFactoryImpl">
+            <!--<wrappers>-->
+            <!--<wrapper class="com.obera.service.acl.AuthorizationServiceWrapper"/>-->
+            <!--</wrappers>-->
+        </module>
+    </modules>
+
+    <!-- This allows selecting the mode of flushing data to disk -->
+    <flushing mode="interval" enabled="false">
+        <Property Name="period" Value="30s"/>
+    </flushing>
+
+    <!-- This enables or disables the statistics engine -->
+    <Statistics enabled="false"/>
+
+    <!-- The instances configuration, the default attribute specifies the default instance id-->
+    <instances/>
+
+    <!-- Configuration settings for the btree index -->
+    <Index Type="btree" pageSize="512">
+        <Caching Enabled="true">
+            <Property Name="MaxCacheMemSize" Value="128m"/>
+            <Property Name="MaxCachedBlocks" Value="20000"/>
+        </Caching>
+    </Index>
+</jasdb>

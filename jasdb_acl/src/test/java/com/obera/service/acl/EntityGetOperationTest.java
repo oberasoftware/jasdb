@@ -1,0 +1,36 @@
+package com.obera.service.acl;
+
+import nl.renarj.jasdb.api.acl.AccessMode;
+import nl.renarj.jasdb.api.context.RequestContext;
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.service.StorageService;
+
+import java.util.UUID;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+/**
+ * @author Renze de Vries
+ */
+public class EntityGetOperationTest extends AbstractAuthorizationTest {
+    public EntityGetOperationTest() {
+        super(AccessMode.NONE, AccessMode.READ);
+    }
+
+    @Override
+    protected AuthorizationOperation getOperation() {
+        return new AuthorizationOperation() {
+            @Override
+            public void doOperation(AuthorizationServiceWrapper authorizationServiceWrapper,
+                                    StorageService wrappedService, String user, String password) throws JasDBStorageException {
+                String id = UUID.randomUUID().toString();
+                authorizationServiceWrapper.getEntityById(createContext(user, password, "localhost"), id);
+
+                verify(wrappedService, times(1)).getEntityById(any(RequestContext.class), eq(id));
+            }
+        };
+    }
+}

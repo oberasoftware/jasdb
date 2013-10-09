@@ -1,0 +1,145 @@
+package nl.renarj.jasdb.rest;
+
+import com.google.inject.Inject;
+import com.sun.jersey.spi.container.servlet.ServletContainer;
+import nl.renarj.core.utilities.configuration.Configuration;
+import nl.renarj.jasdb.core.RemoteService;
+import nl.renarj.jasdb.core.exceptions.ConfigurationException;
+import nl.renarj.jasdb.core.exceptions.JasDBException;
+import nl.renarj.jasdb.core.exceptions.ServiceException;
+import nl.renarj.jasdb.core.locator.GridLocatorUtil;
+import nl.renarj.jasdb.core.locator.ServiceInformation;
+import nl.renarj.jasdb.core.utils.FileUtils;
+import nl.renarj.jasdb.rest.security.OAuthTokenEndpoint;
+import nl.renarj.jasdb.rest.security.OAuthTokenFilter;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.DispatcherType;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+public class RestService implements RemoteService {
+    private static final Logger LOG = LoggerFactory.getLogger(RestService.class);
+
+    private static final String REST_SSL_PORT_PATH = "/jasdb/Services/Remote[@service='rest']/Property[@Name='sslPort']";
+    private static final String REST_SSL_KEYSTORE_PATH = "/jasdb/Services/Remote[@service='rest']/Property[@Name='sslKeystore']";
+    private static final String REST_SSL_KEYSTORE_PASS_PATH = "/jasdb/Services/Remote[@service='rest']/Property[@Name='sslKeystorePassword']";
+    private static final String PROPERTY_VALUE = "Value";
+    private static final String REST_CONFIG_PATH = "/jasdb/Services/Remote[@service='rest']";
+    private static final String REST_PORT_CONFIG = "port";
+    private static final String REST_OAUTH_ENABLED = "oauth";
+    private static final boolean DEFAULT_OAUTH = false;
+
+    private static final int DEFAULT_PORT = 7050;
+
+    private ServiceInformation serviceInformation;
+
+	private int portNr;
+    private SSLDetails sslDetails;
+    private boolean oauthEnabled;
+
+	private Server server;
+    
+    @Inject
+    public RestService(Configuration configuration) throws ConfigurationException {
+		Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
+        portNr = restConfiguration.getAttribute(REST_PORT_CONFIG, DEFAULT_PORT);
+        oauthEnabled = restConfiguration.getAttribute(REST_OAUTH_ENABLED, DEFAULT_OAUTH);
+
+        loadNodeData();
+        sslDetails = loadSSLDetails(configuration);
+	}
+
+    private SSLDetails loadSSLDetails(Configuration configuration) throws ConfigurationException {
+        Configuration sslPortConfiguration = configuration.getChildConfiguration(REST_SSL_PORT_PATH);
+        Configuration sslKeystoreConfig = configuration.getChildConfiguration(REST_SSL_KEYSTORE_PATH);
+        Configuration sslKeystorePasswordConfig = configuration.getChildConfiguration(REST_SSL_KEYSTORE_PASS_PATH);
+
+        if(sslPortConfiguration != null && sslKeystoreConfig != null && sslKeystorePasswordConfig != null) {
+            return new SSLDetails(sslPortConfiguration.getAttribute(PROPERTY_VALUE, 7051),
+                    sslKeystoreConfig.getAttribute(PROPERTY_VALUE),
+                    sslKeystorePasswordConfig.getAttribute(PROPERTY_VALUE));
+        }
+        return null;
+    }
+    
+    private void loadNodeData() throws ConfigurationException {
+        try {
+            String address = GridLocatorUtil.getPublicAddress().getHostAddress();
+
+            Map<String, String> serviceProperties = new HashMap<String, String>();
+            serviceProperties.put("connectorType", "rest");
+            serviceProperties.put("protocol", "http");
+            serviceProperties.put("host", address);
+            serviceProperties.put("port", "" + portNr);
+
+            this.serviceInformation = new ServiceInformation("rest", serviceProperties);
+        } catch(ConfigurationException e) {
+            throw new ConfigurationException("Unable to load public endpoint information", e);
+        }
+    }
+
+    @Override
+    public ServiceInformation getServiceInformation() {
+        return serviceInformation;
+    }
+
+    @Override
+    public void startService() throws JasDBException {
+		server = new Server(portNr);
+
+        if(sslDetails != null) {
+            String keystorePath = FileUtils.resolveResourcePath(sslDetails.getKeystore());
+            LOG.info("Using keystore path: {}", keystorePath);
+            SslContextFactory sslContextFactory = new SslContextFactory(keystorePath);
+            sslContextFactory.setKeyStorePassword(sslDetails.getKeystorePass());
+
+            Connector connector = new SslSelectChannelConnector(sslContextFactory);
+            connector.setPort(sslDetails.getSslPort());
+            server.addConnector(connector);
+            LOG.info("Starting SSL connector: {}", sslDetails);
+        }
+
+		ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+		contextHandler.setContextPath("/");
+		server.setHandler(contextHandler);
+
+        if(oauthEnabled) {
+            ServletHolder oauthTokenEndpoint = new ServletHolder(OAuthTokenEndpoint.class);
+            contextHandler.addServlet(oauthTokenEndpoint, "/token");
+            contextHandler.addFilter(OAuthTokenFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+        }
+
+		ServletHolder holder = new ServletHolder(ServletContainer.class);
+		holder.setInitParameter("javax.ws.rs.Application", "nl.renarj.jasdb.rest.JasdbRestApplication");
+		contextHandler.addServlet(holder, "/*");
+
+		try {
+            LOG.info("Starting Jetty Rest service on port: {}", portNr);
+			server.start();
+		} catch(Exception e) {
+			LOG.error("Unable to start nodeInformation", e);
+		}		
+	}
+    
+    @Override
+    public void stopService() throws ServiceException {
+		if(server != null) {
+			LOG.info("Stopping Rest service");
+			try {
+				server.stop();
+			} catch(Exception e) {
+				LOG.error("Unable to stop service cleanly: " + e.getMessage());
+			}
+		}
+	}
+}

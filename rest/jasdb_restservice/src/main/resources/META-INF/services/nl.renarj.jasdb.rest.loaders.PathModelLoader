@@ -1,0 +1,9 @@
+nl.renarj.jasdb.rest.loaders.InstanceModelLoader
+nl.renarj.jasdb.rest.loaders.BagModelLoader
+nl.renarj.jasdb.rest.loaders.EntityModelLoader
+nl.renarj.jasdb.rest.loaders.CacheModelLoader
+nl.renarj.jasdb.rest.loaders.PartitionModelLoader
+nl.renarj.jasdb.rest.loaders.StatisticsModelLoader
+nl.renarj.jasdb.rest.loaders.IndexModelLoader
+nl.renarj.jasdb.rest.loaders.UserModelLoader
+nl.renarj.jasdb.rest.loaders.GrantModelLoader
