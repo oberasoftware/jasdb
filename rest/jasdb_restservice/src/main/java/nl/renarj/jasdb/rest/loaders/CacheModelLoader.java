@@ -26,7 +26,7 @@ public class CacheModelLoader  extends AbstractModelLoader {
 		if(input.getCondition() == null) {
                 GlobalCachingMemoryManager cachingMemoryManager = GlobalCachingMemoryManager.getGlobalInstance();
 
-				List<CacheBucket> buckets = new ArrayList<CacheBucket>();
+				List<CacheBucket> buckets = new ArrayList<>();
 				for(CacheRegion region : cachingMemoryManager.getRegions()) {
 					buckets.add(new CacheBucket(region.name(), region.size(), region.memorySize()));
 				}

@@ -72,7 +72,7 @@ public class QuerySearchOperation {
 	}
 	
 	private IndexSearchResultIteratorCollection doSort(IndexSearchResultIteratorCollection results, List<SortParameter> params) throws JasDBStorageException {
-		Set<String> requiredKeys = new HashSet<String>();
+		Set<String> requiredKeys = new HashSet<>();
 		for(SortParameter sortParam : params) {
 			String paramField = sortParam.getField();
 			if(!results.getKeyNameMapper().isMapped(paramField)) {
@@ -108,7 +108,7 @@ public class QuerySearchOperation {
 	}
 	
 	private List<Key> merge(List<Key> left, List<Key> right, String field, KeyNameMapper keyNameMapper) {
-		List<Key> results = new ArrayList<Key>(left.size() + right.size());
+		List<Key> results = new ArrayList<>(left.size() + right.size());
 		int currentLeft = 0;
 		int currentRight = 0;
 		
@@ -191,7 +191,7 @@ public class QuerySearchOperation {
 			Index bestIndexMatch = indexManager.getBestMatchingIndex(bagName, fields);
 			
 			if(bestIndexMatch != null) {
-				Set<String> remainingFields = new HashSet<String>(fields);
+				Set<String> remainingFields = new HashSet<>(fields);
 				remainingFields.removeAll(bestIndexMatch.getKeyInfo().getKeyFields());
 				
 				IndexSearchResultIteratorCollection results = null;
@@ -227,9 +227,9 @@ public class QuerySearchOperation {
 	
 	private IndexSearchResultIteratorCollection doTableScan(BlockOperation operation, Set<String> fields, IndexSearchResultIteratorCollection currentResults) throws JasDBStorageException {
 		BlockMerger merger = operation.getMerger();
-		List<Key> foundKeys = new ArrayList<Key>();
+		List<Key> foundKeys = new ArrayList<>();
 
-		Set<String> payloadFields = new HashSet<String>(fields);
+		Set<String> payloadFields = new HashSet<>(fields);
 		payloadFields.add(SimpleEntity.DOCUMENT_ID);
 
         for(Iterator<String> fieldIterator = payloadFields.iterator(); fieldIterator.hasNext();) {

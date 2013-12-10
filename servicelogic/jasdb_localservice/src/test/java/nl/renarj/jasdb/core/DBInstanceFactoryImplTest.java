@@ -55,7 +55,7 @@ public class DBInstanceFactoryImplTest {
         when(kernelContext.getMetadataStore()).thenReturn(metadataStore);
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl();
-        instanceFactory.initializeServices(kernelContext);
+//        instanceFactory.initializeServices(kernelContext);
 
         assertThat(instanceFactory.listInstances().size(), is(2));
         assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1", "instance2"));
@@ -69,7 +69,7 @@ public class DBInstanceFactoryImplTest {
         when(kernelContext.getMetadataStore()).thenReturn(metadataStore);
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl();
-        instanceFactory.initializeServices(kernelContext);
+//        instanceFactory.initializeServices(kernelContext);
 
         instanceFactory.addInstance("instance1", "/some/path");
 
@@ -90,7 +90,7 @@ public class DBInstanceFactoryImplTest {
         when(metadataStore.containsInstance("instance1")).thenReturn(false).thenReturn(true);
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl();
-        instanceFactory.initializeServices(kernelContext);
+//        instanceFactory.initializeServices(kernelContext);
 
         instanceFactory.addInstance("instance1", "/some/path");
 
@@ -105,7 +105,7 @@ public class DBInstanceFactoryImplTest {
         when(kernelContext.getMetadataStore()).thenReturn(metadataStore);
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl();
-        instanceFactory.initializeServices(kernelContext);
+//        instanceFactory.initializeServices(kernelContext);
         instanceFactory.addInstance("instance1", "/some/path");
         assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1"));
 
@@ -125,7 +125,7 @@ public class DBInstanceFactoryImplTest {
         when(metadataStore.containsInstance("notexisting")).thenReturn(false);
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl();
-        instanceFactory.initializeServices(kernelContext);
+//        instanceFactory.initializeServices(kernelContext);
 
         instanceFactory.deleteInstance("notexisting");
     }
@@ -144,7 +144,7 @@ public class DBInstanceFactoryImplTest {
         when(metadataStore.getInstances()).thenReturn(Lists.newArrayList(defaultInstance, instance));
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl();
-        instanceFactory.initializeServices(kernelContext);
+//        instanceFactory.initializeServices(kernelContext);
 
         DBInstance loadedInstance = instanceFactory.getInstance("instance");
         assertThat(loadedInstance, notNullValue());
@@ -166,7 +166,7 @@ public class DBInstanceFactoryImplTest {
         when(metadataStore.getInstances()).thenReturn(Lists.newArrayList(defaultInstance, instance));
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl();
-        instanceFactory.initializeServices(kernelContext);
+//        instanceFactory.initializeServices(kernelContext);
 
         DBInstance loadedInstance = instanceFactory.getInstance();
         assertThat(loadedInstance, notNullValue());
@@ -180,7 +180,7 @@ public class DBInstanceFactoryImplTest {
     }
 
     private List<String> getInstanceIds(List<DBInstance> dbInstances) {
-        List<String> instanceIds = new ArrayList<String>();
+        List<String> instanceIds = new ArrayList<>();
         for(DBInstance dbInstance : dbInstances) {
             instanceIds.add(dbInstance.getInstanceId());
         }

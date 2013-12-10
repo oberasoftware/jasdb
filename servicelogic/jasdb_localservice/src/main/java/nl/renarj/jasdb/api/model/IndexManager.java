@@ -11,19 +11,23 @@ import java.util.Set;
 
 public interface IndexManager {
 
-	public void shutdownIndexes() throws JasDBStorageException;
+	void shutdownIndexes() throws JasDBStorageException;
 
-	public List<Index> getLoadedIndexes();
+    void flush(String bagName) throws JasDBStorageException;
 
-	public Index getBestMatchingIndex(String bagName, Set<String> fields) throws JasDBStorageException;
+    void flush() throws JasDBStorageException;
 
-	public Map<String, Index> getIndexes(String bagName) throws JasDBStorageException;
+	List<Index> getLoadedIndexes();
 
-	public Index getIndex(String bagName, String keyName) throws JasDBStorageException;
+	Index getBestMatchingIndex(String bagName, Set<String> fields) throws JasDBStorageException;
 
-	public Index createIndex(String bagName, CompositeIndexField compositeIndexFields, boolean unique, IndexField... values) throws JasDBStorageException;
+	Map<String, Index> getIndexes(String bagName) throws JasDBStorageException;
 
-	public Index createIndex(String bagName, IndexField indexField,	boolean unique, IndexField... valueFields) throws JasDBStorageException;
+	Index getIndex(String bagName, String keyName) throws JasDBStorageException;
 
-    public void removeIndex(String bagName, String keyName) throws JasDBStorageException;
+	Index createIndex(String bagName, CompositeIndexField compositeIndexFields, boolean unique, IndexField... values) throws JasDBStorageException;
+
+	Index createIndex(String bagName, IndexField indexField, boolean unique, IndexField... valueFields) throws JasDBStorageException;
+
+    void removeIndex(String bagName, String keyName) throws JasDBStorageException;
 }

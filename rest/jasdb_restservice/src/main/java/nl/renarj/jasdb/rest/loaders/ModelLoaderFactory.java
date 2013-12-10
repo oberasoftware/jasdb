@@ -15,7 +15,7 @@ public class ModelLoaderFactory {
 	private static final ModelLoaderFactory INSTANCE = new ModelLoaderFactory();
 	
 	private ServiceLoader<PathModelLoader> serviceLoader = ServiceLoader.load(PathModelLoader.class);
-	private Map<String, PathModelLoader> modelLoaders = new HashMap<String, PathModelLoader>();
+	private Map<String, PathModelLoader> modelLoaders = new HashMap<>();
 	
 	private ModelLoaderFactory() {
 		for(PathModelLoader modelLoader : serviceLoader) {

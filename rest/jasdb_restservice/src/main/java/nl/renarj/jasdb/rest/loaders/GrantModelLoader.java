@@ -53,7 +53,7 @@ public class GrantModelLoader extends AbstractModelLoader {
         try {
             UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
             List<GrantObject> grantObjects = userManager.getGrantObjects(context.getUserSession());
-            List<RestGrantObject> restGrantObjects = new ArrayList<RestGrantObject>();
+            List<RestGrantObject> restGrantObjects = new ArrayList<>();
             for(GrantObject grantObject : grantObjects) {
                 restGrantObjects.add(GrantModelMapper.map(grantObject));
             }

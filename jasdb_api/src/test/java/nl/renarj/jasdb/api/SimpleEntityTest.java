@@ -206,7 +206,7 @@ public class SimpleEntityTest {
     public void testSetBulkProperties() {
         SimpleEntity simpleEntity = new SimpleEntity();
 
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("field1", 100);
         properties.put("field2", 300l);
         properties.put("field3", "Simple String");

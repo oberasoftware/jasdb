@@ -1,6 +1,5 @@
 package nl.renarj.jasdb.api.model;
 
-import nl.renarj.jasdb.api.kernel.KernelContext;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 
@@ -10,7 +9,6 @@ import java.util.List;
  * The DBInstanceFactory manages all active and configured database instances
  */
 public interface DBInstanceFactory {
-    void initializeServices(KernelContext kernelContext) throws JasDBStorageException;
 
     /**
      * Gets the default Database instance

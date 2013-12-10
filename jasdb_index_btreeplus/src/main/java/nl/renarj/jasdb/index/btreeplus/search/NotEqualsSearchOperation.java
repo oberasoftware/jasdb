@@ -41,7 +41,7 @@ public class NotEqualsSearchOperation implements SearchOperation {
         EqualsCondition equalsCondition = EqualsSearchOperation.validateCondition(keyInfo, condition);
         Key undesiredKey = equalsCondition.getKey();
 
-        List<Key> results = new LinkedList<Key>();
+        List<Key> results = new LinkedList<>();
         for(Key key : indexIterator) {
             if(key.compare(undesiredKey, CompareMethod.EQUALS).getCompare() != 0) {
                 results.add(key);

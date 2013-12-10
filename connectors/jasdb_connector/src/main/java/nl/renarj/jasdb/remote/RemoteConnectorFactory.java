@@ -22,9 +22,9 @@ public class RemoteConnectorFactory {
     public static final String CONNECTOR_TYPE = "connectorType";
     private static RemoteConnectorFactory instance = new RemoteConnectorFactory();
     
-    private Map<String, ConnectorLoader> loaderMap = new HashMap<String, ConnectorLoader>();
+    private Map<String, ConnectorLoader> loaderMap = new HashMap<>();
 
-    private Map<String, RemoteConnector> cachedConnectorMap = new ConcurrentHashMap<String, RemoteConnector>();
+    private Map<String, RemoteConnector> cachedConnectorMap = new ConcurrentHashMap<>();
 
     private String preferredType;
     

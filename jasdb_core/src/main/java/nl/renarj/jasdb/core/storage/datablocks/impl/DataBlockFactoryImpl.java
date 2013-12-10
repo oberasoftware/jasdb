@@ -34,7 +34,7 @@ public class DataBlockFactoryImpl implements DataBlockFactory {
         this.blockSize = blockSize;
         this.fileChannel = fileChannel;
 
-        activeBlockRegion = new LRURegion<BlockEntry<DataBlock>>(file.toString());
+        activeBlockRegion = new LRURegion<>(file.toString());
 //        GlobalCachingMemoryManager.getGlobalInstance().registerRegion(activeBlockRegion);
     }
 
@@ -82,7 +82,7 @@ public class DataBlockFactoryImpl implements DataBlockFactory {
                 MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, position, blockSize);
 
                 DataBlock dataBlock = new DataBlockImpl(position, this, mappedByteBuffer);
-                BlockEntry<DataBlock> entry = new BlockEntry<DataBlock>(dataBlock);
+                BlockEntry<DataBlock> entry = new BlockEntry<>(dataBlock);
                 entry.incrementBlockCount();
                 activeBlockRegion.putEntry(position, entry);
 
@@ -109,7 +109,7 @@ public class DataBlockFactoryImpl implements DataBlockFactory {
 
             DataBlock block = new DataBlockImpl(recordPosition, this, fileChannel.map(FileChannel.MapMode.READ_WRITE, recordPosition, blockSize));
 
-            BlockEntry<DataBlock> entry = new BlockEntry<DataBlock>(block);
+            BlockEntry<DataBlock> entry = new BlockEntry<>(block);
             entry.incrementBlockCount();
             activeBlockRegion.putEntry(block.getPosition(), entry);
 

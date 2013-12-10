@@ -35,7 +35,7 @@ public class LeaveBlockImpl implements LeaveBlock {
     private long memorySize;
 
     public LeaveBlockImpl(BlockPersister persister, DataBlock dataBlock, long parentBlock, boolean modified) {
-        this.leaves = new OrderedBalancedTree<Key, Key>();
+        this.leaves = new OrderedBalancedTree<>();
         this.leaveProperties = new LeaveBlockProperties(dataBlock, -1, -1, parentBlock);
         this.leaveProperties.setModified(modified);
         this.lockManager = new ReadWriteLock();

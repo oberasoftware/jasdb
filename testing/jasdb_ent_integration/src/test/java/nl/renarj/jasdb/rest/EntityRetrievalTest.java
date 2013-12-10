@@ -48,7 +48,7 @@ public class EntityRetrievalTest extends RestBaseTest {
 
     private static final int TEST_SIZE = 1000;
     private static final Random rnd = new Random(System.currentTimeMillis());
-    private Map<String, Integer> cityMap = new HashMap<String, Integer>();
+    private Map<String, Integer> cityMap = new HashMap<>();
 
     @Override
     public void setUp() throws Exception {

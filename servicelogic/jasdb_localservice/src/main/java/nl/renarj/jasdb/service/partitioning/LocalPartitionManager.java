@@ -14,6 +14,8 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.partitions.BagPartition;
 import nl.renarj.jasdb.core.partitions.PartitionInformationWrapper;
 import nl.renarj.jasdb.service.IdGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,18 +25,22 @@ import java.util.List;
  * Date: 1/19/12
  * Time: 9:20 AM
  */
+@Component
 public class LocalPartitionManager implements PartitioningManager {
     public static final String LOCAL_STRATEGY = "LocalPartition";
     private static final String START_RANGE = "0";
     private static final String END_RANGE = "F";
 
+    @Autowired
     private MetadataStore metadataStore;
+
+    @Autowired
     private IdGenerator generator;
 
-    public LocalPartitionManager(IdGenerator generator, MetadataStore metadataStore) {
-        this.metadataStore = metadataStore;
-        this.generator = generator;
-    }
+//    public LocalPartitionManager(IdGenerator generator, MetadataStore metadataStore) {
+//        this.metadataStore = metadataStore;
+//        this.generator = generator;
+//    }
 
     @Override
     public void configure(Configuration configuration) throws ConfigurationException {
@@ -62,7 +68,7 @@ public class LocalPartitionManager implements PartitioningManager {
 
     @Override
     public List<PartitionInformationWrapper> getKnownPartitions() throws JasDBStorageException {
-        List<PartitionInformationWrapper> wrappers = new ArrayList<PartitionInformationWrapper>();
+        List<PartitionInformationWrapper> wrappers = new ArrayList<>();
 //        for(BagPartition partition : bagInfoReaderWriter.getPartitions()) {
 //            PartitionInformationWrapper wrapper = new PartitionInformationWrapper(SimpleKernel.getNodeInformation(), partition,true);
 //            wrappers.add(wrapper);

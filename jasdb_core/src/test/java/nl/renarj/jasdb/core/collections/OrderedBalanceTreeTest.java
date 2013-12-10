@@ -88,7 +88,7 @@ public class OrderedBalanceTreeTest {
         int testSize = 10000;
         OrderedBalancedTree<Long, Long> ol = createTree();
 
-        List<Long> alreadyGenerated = new ArrayList<Long>();
+        List<Long> alreadyGenerated = new ArrayList<>();
         for(int i=0; i<testSize; i++) {
             Long val = new Long(i);
             ol.put(val, val);
@@ -124,7 +124,7 @@ public class OrderedBalanceTreeTest {
     }
 
     protected OrderedBalancedTree<Long, Long> createTree() {
-        return new OrderedBalancedTree<Long, Long>();
+        return new OrderedBalancedTree<>();
     }
 
     @Test
@@ -132,7 +132,7 @@ public class OrderedBalanceTreeTest {
      * This tests a failure case seen in the invertedindexblock where ordering was incorrect after remove causing a failure in the contains operation
      */
     public void testBalanceTreeRemove() {
-        OrderedBalancedTree<String, String> balancedTree = new OrderedBalancedTree<String, String>();
+        OrderedBalancedTree<String, String> balancedTree = new OrderedBalancedTree<>();
         balancedTree.put("1372;372d13bc-2047-4ce2-bef6-1d345103b37d;", "");
         balancedTree.put("2990;c25d16e1-726e-482a-8eee-7093d53b6ed0;", "");
         balancedTree.put("4017;d5ebbddc-ffdf-411f-b96c-40a7005472c9;", "");
@@ -159,7 +159,7 @@ public class OrderedBalanceTreeTest {
 
     @Test
     public void testAddBalanceTree() {
-        List<Long> expectedNumbers = new ArrayList<Long>();
+        List<Long> expectedNumbers = new ArrayList<>();
 
         OrderedBalancedTree<Long, Long> balanceTree = createTree();
         balanceTree.put(20L, 20L);
@@ -208,7 +208,7 @@ public class OrderedBalanceTreeTest {
         balancedTree.put(3L, 3L);
         balancedTree.put(5L, 5L);
 
-        List<Long> expected = new ArrayList<Long>();
+        List<Long> expected = new ArrayList<>();
         expected.add(1L);
         expected.add(3L);
         expected.add(3L);
@@ -336,7 +336,7 @@ public class OrderedBalanceTreeTest {
     @Test
     public void testBalancedTreeKeys() {
         int testSize = 100;
-        List<Long> expected = new ArrayList<Long>();
+        List<Long> expected = new ArrayList<>();
         OrderedBalancedTree<Long, Long> balancedTree = createTree();
         for(int i=0; i<testSize; i++) {
             balancedTree.put(new Long(i), new Long(i + testSize));
@@ -351,7 +351,7 @@ public class OrderedBalanceTreeTest {
     public void testOrder() {
         int testSize = 10000;
         int maxNumber = 1000000;
-        List<Long> alreadyGenerated = new ArrayList<Long>();
+        List<Long> alreadyGenerated = new ArrayList<>();
         OrderedBalancedTree<Long, Long> ol = createTree();
 
 
@@ -370,7 +370,7 @@ public class OrderedBalanceTreeTest {
         }
         log.info("Average add operation took: {}", (totalTime / testSize));
 
-        List<Long> sortedList = new ArrayList<Long>(alreadyGenerated);
+        List<Long> sortedList = new ArrayList<>(alreadyGenerated);
         Collections.sort(sortedList);
 
         List<Long> items = ol.values();

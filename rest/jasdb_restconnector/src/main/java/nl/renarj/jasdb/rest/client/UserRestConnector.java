@@ -46,7 +46,7 @@ public class UserRestConnector extends RemoteRestConnector implements UserConnec
         ClientResponse clientResponse = doRequest(context, "Users");
         try {
             RestUserList userList = new JsonRestResponseHandler().deserialize(RestUserList.class, clientResponse.getEntityInputStream());
-            List<String> userNames = new ArrayList<String>();
+            List<String> userNames = new ArrayList<>();
             for(RestUser restUser : userList.getUsers()) {
                 userNames.add(restUser.getUsername());
             }

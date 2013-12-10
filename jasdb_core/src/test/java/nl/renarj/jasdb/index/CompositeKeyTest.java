@@ -73,7 +73,7 @@ public class CompositeKeyTest {
 
     private KeyOrderedTree<Key> createTree(int ages, int records) {
         KeyNameMapper nameMapper = createNameMapper();
-        KeyOrderedTree<Key> balancedTree = new KeyOrderedTree<Key>();
+        KeyOrderedTree<Key> balancedTree = new KeyOrderedTree<>();
         for(int i=0; i<ages; i++) {
 
             for(int j=0; j<records; j++) {

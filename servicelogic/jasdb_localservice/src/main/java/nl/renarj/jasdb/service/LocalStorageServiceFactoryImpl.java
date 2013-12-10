@@ -2,70 +2,62 @@ package nl.renarj.jasdb.service;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import nl.renarj.core.exceptions.CoreConfigException;
 import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.core.utilities.conversion.ValueConverterUtil;
-import nl.renarj.jasdb.api.kernel.KernelContext;
 import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.api.model.IndexManager;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
+import nl.renarj.jasdb.api.model.IndexManagerFactory;
+import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.core.storage.RecordWriterFactory;
 import nl.renarj.jasdb.service.metadata.BagMeta;
 import nl.renarj.jasdb.service.wrappers.ServiceWrapperFactory;
-import nl.renarj.jasdb.storage.indexing.IndexManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
-import java.io.File;
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Singleton
+@Component
 public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
     private static final Logger LOG = LoggerFactory.getLogger(LocalStorageServiceFactoryImpl.class);
 
     private static final String DEFAULT_FLUSH_INTERVAL = "30s";
 
-	private Map<String, StorageService> storageServices = new ConcurrentHashMap<String, StorageService>();
-	
-    private Map<String, IndexManager> indexManagers = new ConcurrentHashMap<String, IndexManager>();
-    
-    private MetadataStore metadataStore;
-    private RecordWriterFactory recordWriterFactory;
-    private ServiceWrapperFactory serviceWrapperFactory;
-    protected Configuration configuration;
+	private Map<String, StorageService> storageServices = new ConcurrentHashMap<>();
 
     private StorageFlushThread storageFlushThread;
-	
-	@Inject
-	public LocalStorageServiceFactoryImpl(Configuration configuration, RecordWriterFactory recordWriterFactory) throws ConfigurationException {
-        this.configuration = configuration;
-        this.recordWriterFactory = recordWriterFactory;
-	}
 
-    @Override
-    public void initializeServices(KernelContext kernelContext) throws JasDBStorageException {
-        this.metadataStore = kernelContext.getMetadataStore();
-        this.serviceWrapperFactory = new ServiceWrapperFactory(kernelContext);
+    @Autowired
+    private ConfigurationLoader configurationLoader;
 
-        for(Instance instance : metadataStore.getInstances()) {
-            initializeInstanceBags(instance.getInstanceId());
-        }
+    @Autowired
+    private MetadataStore metadataStore;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private ServiceWrapperFactory serviceWrapperFactory;
+
+    @Autowired
+    private IndexManagerFactory indexManagerFactory;
+
+    @PostConstruct
+    public void initializeServices() throws JasDBStorageException {
         loadFlushingMode();
     }
 
     private void loadFlushingMode() throws JasDBStorageException {
-        Configuration flushingConfiguration = configuration.getChildConfiguration("/jasdb/flushing");
+        Configuration flushingConfiguration = configurationLoader.getConfiguration().getChildConfiguration("/jasdb/flushing");
         if(flushingConfiguration != null && flushingConfiguration.getAttribute("enabled", false) && flushingConfiguration.getAttribute("mode", "").equals("interval")) {
             Configuration periodConfiguration = flushingConfiguration.getChildConfiguration("Property[@Name='period']");
             int period = 30000;
@@ -82,35 +74,14 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
     }
     
     @Override
-    public void initializeInstanceBags(String instance) throws JasDBStorageException {
-        for(String bag : getBags(instance)) {
-            LOG.debug("Loading storage service for bag: {} for instance: {}", bag, instance);
-            getOrCreateStorageService(instance, bag);
-        }
-    }
-
-    @Override
-    public IndexManager getIndexManager(Instance instance) throws JasDBStorageException {
-        if(!indexManagers.containsKey(instance.getInstanceId())) {
-            if(metadataStore.containsInstance(instance.getInstanceId())) {
-                IndexManager indexManager = new IndexManagerImpl(metadataStore, instance, configuration);
-                indexManagers.put(instance.getInstanceId(), indexManager);
-            } else {
-                throw new JasDBStorageException("Unable to get index manager, instance does not exist");
-            }
-        }
-
-        return indexManagers.get(instance.getInstanceId());
-    }
-
-    @Override
     public StorageService getStorageService(String instanceId, String bagName) throws JasDBStorageException {
         String storageServiceKey = instanceId + "_" + bagName;
         if(storageServices.containsKey(storageServiceKey)) {
             return storageServices.get(storageServiceKey);
-        } else {
-            return null;
+        } else if(metadataStore.containsBag(instanceId, bagName)) {
+            return getOrCreateStorageService(instanceId, bagName);
         }
+        return null;
     }
 
     @Override
@@ -135,12 +106,13 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
 
                 Instance instance = metadataStore.getInstance(instanceId);
                 StorageService serviceInstance = createStorageServiceInstance(instance, bagName);
-                serviceInstance.openService(configuration);
+                serviceInstance.openService(configurationLoader.getConfiguration());
                 serviceInstance.initializePartitions();
-                StorageService wrappedInstance = serviceWrapperFactory.wrap(serviceInstance);
+//                StorageService wrappedInstance = serviceWrapperFactory.wrap(serviceInstance);
 
-                storageServices.put(key, wrappedInstance);
-                return wrappedInstance;
+                storageServices.put(key, serviceInstance); //wrappedInstance);
+//                return wrappedInstance;
+                return serviceInstance;
             } else {
                 throw new JasDBStorageException("Unable to create bag storage service, instance: " + instanceId + " does not exist");
             }
@@ -148,10 +120,11 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
     }
 	
 	protected StorageService createStorageServiceInstance(Instance instance, String bagName) throws JasDBStorageException {
-        File bagFile = new File(instance.getPath(), bagName + LocalStorageServiceImpl.BAG_EXTENSION);
-        RecordWriter recordWriter = recordWriterFactory.createWriter(bagFile);
+//        File bagFile = new File(instance.getPath(), bagName + LocalStorageServiceImpl.BAG_EXTENSION);
+//        RecordWriter recordWriter = recordWriterFactory.createWriter(bagFile);
 
-		return new LocalStorageServiceImpl(instance, getIndexManager(instance), recordWriter, metadataStore, bagName);
+        return (StorageService) applicationContext.getBean("LocalStorageService", instance.getInstanceId(), bagName);
+//		return new LocalStorageServiceImpl(instance.getInstanceId(), bagName); //indexManagerFactory.getIndexManager(instance), recordWriter, metadataStore, bagName);
 	}
 
     @Override
@@ -188,7 +161,7 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
 	}
 
 	private List<String> getBags(String instanceId) throws JasDBStorageException {
-        return new ArrayList<String>(Collections2.transform(metadataStore.getBags(instanceId), new Function<Bag, String>() {
+        return new ArrayList<>(Collections2.transform(metadataStore.getBags(instanceId), new Function<Bag, String>() {
             @Override
             public String apply(Bag bag) {
                 return bag.getName();

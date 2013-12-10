@@ -1,8 +1,6 @@
 package nl.renarj.jasdb.core;
 
-import com.google.inject.Singleton;
 import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.jasdb.api.kernel.KernelContext;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.model.DBInstance;
@@ -14,27 +12,29 @@ import nl.renarj.jasdb.service.metadata.InstanceMeta;
 import nl.renarj.jasdb.service.metadata.JasDBMetadataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Singleton
+@Component
 public class DBInstanceFactoryImpl implements DBInstanceFactory {
     private static final Logger LOG = LoggerFactory.getLogger(DBInstanceFactoryImpl.class);
 
-	private Map<String, DBInstance> instances = new ConcurrentHashMap<String, DBInstance>();
+	private Map<String, DBInstance> instances = new ConcurrentHashMap<>();
 
+    @Autowired
     private MetadataStore metadataStore;
 	
 	public DBInstanceFactoryImpl() throws ConfigurationException {
 	}
 
-    @Override
-    public void initializeServices(KernelContext kernelContext) throws JasDBStorageException {
-        this.metadataStore = kernelContext.getMetadataStore();
-
+    @PostConstruct
+    public void initializeServices() throws JasDBStorageException {
         for(Instance instanceMeta : metadataStore.getInstances()) {
             LOG.info("Loading instance: {} on path: {}", instanceMeta.getInstanceId(), instanceMeta.getPath());
             instances.put(instanceMeta.getInstanceId(), new DBInstanceImpl(metadataStore, instanceMeta));
@@ -91,7 +91,7 @@ public class DBInstanceFactoryImpl implements DBInstanceFactory {
 
     @Override
 	public List<DBInstance> listInstances() {
-		return new ArrayList<DBInstance>(this.instances.values());
+		return new ArrayList<>(this.instances.values());
 	}
 
 	@Override

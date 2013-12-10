@@ -25,9 +25,9 @@ public class QueryBuilder {
 	
 	public QueryBuilder(BlockType type) {
 		this.type = type;
-		queryFields = new HashMap<String, List<QueryField>>();
-		blocks = new ArrayList<QueryBuilder>();
-		sortParams = new ArrayList<SortParameter>();
+		queryFields = new HashMap<>();
+		blocks = new ArrayList<>();
+		sortParams = new ArrayList<>();
 	}
 	
 	public static QueryBuilder createBuilder() {

@@ -39,7 +39,7 @@ public class ConcurrencyTest extends DBBaseTest {
     private static final String NEW_PROPERTY = "newProperty";
     private static final String MY_NEW_VALUE = "MyNewValue";
 
-    private List<String> createdIds = new ArrayList<String>();
+    private List<String> createdIds = new ArrayList<>();
 	
 	@Before
 	public void setUp() {
@@ -66,7 +66,7 @@ public class ConcurrencyTest extends DBBaseTest {
 
 		try {
 			log.info("Starting data preperations");
-            List<String> generatedIds = new ArrayList<String>(amount);
+            List<String> generatedIds = new ArrayList<>(amount);
 			for(int i=0; i<amount; i++) {
 				SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
 				entity.addProperty("someProperty" + i, i);
@@ -88,9 +88,9 @@ public class ConcurrencyTest extends DBBaseTest {
 	}
 
     private Map<Thread, ReadThread> createReaderThreads(int amount, boolean start) throws JasDBStorageException {
-        Map<Thread, ReadThread> readers = new HashMap<Thread, ReadThread>();
+        Map<Thread, ReadThread> readers = new HashMap<>();
         for(int i=0; i<amount; i++) {
-            ReadThread reader = new ReadThread("reader" + i, new ArrayList<String>(createdIds));
+            ReadThread reader = new ReadThread("reader" + i, new ArrayList<>(createdIds));
             Thread readerThread = new Thread(reader, "Reader" + i);
             if(start) {
                 readerThread.start();
@@ -103,7 +103,7 @@ public class ConcurrencyTest extends DBBaseTest {
     }
 
     private Map<Thread, WriterThread> createWriterThreads(int amount, int storeAmount) throws JasDBStorageException {
-        Map<Thread, WriterThread> writers = new HashMap<Thread, WriterThread>();
+        Map<Thread, WriterThread> writers = new HashMap<>();
         for(int i=0; i<amount; i++) {
             WriterThread writer = new WriterThread("writer" + i, storeAmount);
             Thread writerThread = new Thread(writer, "Writer" + i);
@@ -115,7 +115,7 @@ public class ConcurrencyTest extends DBBaseTest {
     }
 
     private Map<Thread, UpdateThread> createUpdateThreads(int amount) throws JasDBStorageException {
-        Map<Thread, UpdateThread> updaters = new HashMap<Thread, UpdateThread>();
+        Map<Thread, UpdateThread> updaters = new HashMap<>();
         for(int i=0; i<amount; i++) {
             UpdateThread update = new UpdateThread("update" + i, createdIds);
             Thread updateThread = new Thread(update, "Update" + i);
@@ -127,7 +127,7 @@ public class ConcurrencyTest extends DBBaseTest {
     }
 
     private Map<Thread, RemoveThread> createRemoveThreads(int amount) throws JasDBException {
-        Map<Thread, RemoveThread> removers = new HashMap<Thread, RemoveThread>();
+        Map<Thread, RemoveThread> removers = new HashMap<>();
         for(int i=0; i<amount; i++) {
             RemoveThread remover = new RemoveThread("remove" + i, createData(NUMBER_ENTITIES, false));
             Thread removeThread = new Thread(remover, "Remove" + i);
@@ -173,7 +173,7 @@ public class ConcurrencyTest extends DBBaseTest {
 		int nrWriterThreads = 5;
 		int writerCreateItems = 10000;
 		
-		List<Thread> threads = new ArrayList<Thread>();
+		List<Thread> threads = new ArrayList<>();
 		Map<Thread, ReadThread> readers = createReaderThreads(nrReaderThreads, false);
 		Map<Thread, WriterThread> writers = createWriterThreads(nrWriterThreads, writerCreateItems);
 
@@ -201,7 +201,7 @@ public class ConcurrencyTest extends DBBaseTest {
         int nrWriterThreads = 5;
         int writerCreateItems = 10000;
 
-        List<Thread> threads = new ArrayList<Thread>();
+        List<Thread> threads = new ArrayList<>();
         Map<Thread, ReadThread> readers = createReaderThreads(nrReaderThreads, false);
         Map<Thread, WriterThread> writers = createWriterThreads(nrWriterThreads, writerCreateItems);
         Map<Thread, UpdateThread> updaters = createUpdateThreads(nrUpdateThreads);
@@ -256,7 +256,7 @@ public class ConcurrencyTest extends DBBaseTest {
         int nrWriterThreads = 4;
         int writerCreateItems = 10000;
 
-        List<Thread> threads = new ArrayList<Thread>();
+        List<Thread> threads = new ArrayList<>();
         Map<Thread, ReadThread> readers = createReaderThreads(nrReaderThreads, false);
         Map<Thread, WriterThread> writers = createWriterThreads(nrWriterThreads, writerCreateItems);
         Map<Thread, UpdateThread> updaters = createUpdateThreads(nrUpdateThreads);
@@ -397,7 +397,7 @@ public class ConcurrencyTest extends DBBaseTest {
     }
 
     private static class RemoveThread extends TestThread {
-        private List<String> removeIds = new ArrayList<String>();
+        private List<String> removeIds = new ArrayList<>();
         private String threadId;
         private EntityBag bag;
 
@@ -568,7 +568,7 @@ public class ConcurrencyTest extends DBBaseTest {
 		private EntityBag bag;
 		private int createItems;
 		
-		private List<String> createdIds = new ArrayList<String>();
+		private List<String> createdIds = new ArrayList<>();
 		private long totalTimeWrite;
 		
 		

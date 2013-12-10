@@ -3,6 +3,7 @@ package nl.renarj.jasdb.service;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author Renze de Vries
  */
+@Component
 public class MachineGuidGenerator implements IdGenerator {
     private static final Logger LOG = LoggerFactory.getLogger(MachineGuidGenerator.class);
 

@@ -15,7 +15,10 @@ import nl.renarj.jasdb.storage.transactional.RecordIteratorImpl;
 import nl.renarj.jasdb.storage.transactional.RecordResultImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Renze de Vries
  */
+@Component
 public class JasDBMetadataStore implements MetadataStore {
     private static final Logger LOG = LoggerFactory.getLogger(JasDBMetadataStore.class);
 
@@ -42,16 +46,17 @@ public class JasDBMetadataStore implements MetadataStore {
 
     private boolean lastShutdownClean = true;
 
-    private Map<String, MetaWrapper<Instance>> instanceMetaMap = new ConcurrentHashMap<String, MetaWrapper<Instance>>();
-    private Map<String, MetaWrapper<Bag>> bagMetaMap = new ConcurrentHashMap<String, MetaWrapper<Bag>>();
+    private Map<String, MetaWrapper<Instance>> instanceMetaMap = new ConcurrentHashMap<>();
+    private Map<String, MetaWrapper<Bag>> bagMetaMap = new ConcurrentHashMap<>();
 
-    private Map<String, MetadataProvider> metadataProviders = new ConcurrentHashMap<String, MetadataProvider>();
+    private Map<String, MetadataProvider> metadataProviders = new ConcurrentHashMap<>();
 
     public JasDBMetadataStore() {
 
     }
 
     @Override
+    @PostConstruct
     public void openStore() throws JasDBStorageException {
         datastoreLocation = HomeLocatorUtil.determineDatastoreLocation();
 
@@ -118,6 +123,7 @@ public class JasDBMetadataStore implements MetadataStore {
     }
 
     @Override
+    @PreDestroy
     public void closeStore() throws JasDBStorageException {
         if(writer != null) {
             writer.closeWriter();
@@ -147,7 +153,7 @@ public class JasDBMetadataStore implements MetadataStore {
 
     @Override
     public List<Bag> getBags(String instanceId) throws JasDBStorageException {
-        List<Bag> bags = new ArrayList<Bag>();
+        List<Bag> bags = new ArrayList<>();
         for(Map.Entry<String, MetaWrapper<Bag>> bagEntry : bagMetaMap.entrySet()) {
             if(bagEntry.getKey().startsWith(instanceId)) {
                 bags.add(bagEntry.getValue().getMetadataObject());
@@ -183,7 +189,7 @@ public class JasDBMetadataStore implements MetadataStore {
                 SimpleEntity entity = BagMeta.toEntity(bag);
                 String bagData = SimpleEntity.toJson(entity);
                 long recordPointer = writer.writeRecord(bagData);
-                bagMetaMap.put(bagId, new MetaWrapper<Bag>(bag, recordPointer));
+                bagMetaMap.put(bagId, new MetaWrapper<>(bag, recordPointer));
             } else {
                 throw new JasDBStorageException("Unable to add bag: " + bag.getName() + ", already exists");
             }
@@ -208,7 +214,7 @@ public class JasDBMetadataStore implements MetadataStore {
     public void addBagIndex(String instanceId, String bagName, IndexDefinition indexDefinition) throws JasDBStorageException {
         Bag bag = getBag(instanceId, bagName);
         if(bag != null) {
-            List<IndexDefinition> indexDefinitions = new ArrayList<IndexDefinition>(bag.getIndexDefinitions());
+            List<IndexDefinition> indexDefinitions = new ArrayList<>(bag.getIndexDefinitions());
             if(!indexDefinitions.contains(indexDefinition)) {
                 indexDefinitions.add(indexDefinition);
 
@@ -223,7 +229,7 @@ public class JasDBMetadataStore implements MetadataStore {
     public void removeBagIndex(String instanceId, String bagName, IndexDefinition indexDefinition) throws JasDBStorageException {
         Bag bag = getBag(instanceId, bagName);
         if(bag != null) {
-            List<IndexDefinition> indexDefinitions = new ArrayList<IndexDefinition>(bag.getIndexDefinitions());
+            List<IndexDefinition> indexDefinitions = new ArrayList<>(bag.getIndexDefinitions());
             if(indexDefinitions.contains(indexDefinition)) {
                 indexDefinitions.remove(indexDefinition);
 
@@ -258,7 +264,7 @@ public class JasDBMetadataStore implements MetadataStore {
 
     @Override
     public List<Instance> getInstances() throws JasDBStorageException {
-        List<Instance> instances = new ArrayList<Instance>();
+        List<Instance> instances = new ArrayList<>();
         for(MetaWrapper<Instance> instanceMeta : instanceMetaMap.values()) {
             instances.add(instanceMeta.getMetadataObject());
         }
@@ -287,7 +293,7 @@ public class JasDBMetadataStore implements MetadataStore {
             String jsonData = SimpleEntity.toJson(entity);
             long recordPointer = writer.writeRecord(jsonData);
 
-            instanceMetaMap.put(instance.getInstanceId(), new MetaWrapper<Instance>(instance, recordPointer));
+            instanceMetaMap.put(instance.getInstanceId(), new MetaWrapper<>(instance, recordPointer));
         } else {
             throw new JasDBStorageException("Unable to create instance, already exists");
         }

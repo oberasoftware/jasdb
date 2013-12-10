@@ -7,7 +7,6 @@ import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.api.model.IndexManager;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.core.storage.RecordWriterFactory;
@@ -26,7 +25,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -63,8 +61,8 @@ public class LocalStorageServiceFactoryImplTest {
         when(metadataStore.containsInstance(TEST_INSTANCE)).thenReturn(true);
         when(metadataStore.isLastShutdownClean()).thenReturn(true);
 
-        storageServiceFactory = new LocalStorageServiceFactoryImpl(configuration, recordWriterFactory);
-        storageServiceFactory.initializeServices(kernelContext);
+//        storageServiceFactory = new LocalStorageServiceFactoryImpl(configuration, recordWriterFactory);
+//        storageServiceFactory.initializeServices(kernelContext);
     }
 
     @After
@@ -79,13 +77,13 @@ public class LocalStorageServiceFactoryImplTest {
         when(metadataStore.containsInstance("anotherInstance")).thenReturn(true);
 
         Instance instance = new InstanceMeta("instance", DBBaseTest.jasdbDir.toString());
-        IndexManager indexManager = storageServiceFactory.getIndexManager(instance);
-        assertNotNull(indexManager);
-
-        Instance anotherInstance = new InstanceMeta("anotherInstance", DBBaseTest.jasdbDir.toString());
-        IndexManager anotherIndexManager = storageServiceFactory.getIndexManager(anotherInstance);
-        assertNotNull(anotherIndexManager);
-        assertNotSame(indexManager, anotherIndexManager);
+//        IndexManager indexManager = storageServiceFactory.getIndexManager(instance);
+//        assertNotNull(indexManager);
+//
+//        Instance anotherInstance = new InstanceMeta("anotherInstance", DBBaseTest.jasdbDir.toString());
+//        IndexManager anotherIndexManager = storageServiceFactory.getIndexManager(anotherInstance);
+//        assertNotNull(anotherIndexManager);
+//        assertNotSame(indexManager, anotherIndexManager);
     }
 
     @Test
@@ -93,13 +91,13 @@ public class LocalStorageServiceFactoryImplTest {
         Instance testInstance = new InstanceMeta(TEST_INSTANCE, DBBaseTest.jasdbDir.toString());
         BagMeta bagMeta = new BagMeta(TEST_INSTANCE, TEST_BAG_NAME, new ArrayList<IndexDefinition>());
         when(metadataStore.getInstances()).thenReturn(Lists.newArrayList(testInstance));
-        List<Bag> bags = new ArrayList<Bag>();
+        List<Bag> bags = new ArrayList<>();
         bags.add(bagMeta);
         when(metadataStore.getBags(TEST_INSTANCE)).thenReturn(bags);
         when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(new InstanceMeta(TEST_INSTANCE, DBBaseTest.jasdbDir.toString()));
         when(metadataStore.getBag(TEST_INSTANCE, TEST_BAG_NAME)).thenReturn(bagMeta);
 
-        storageServiceFactory.initializeInstanceBags(TEST_INSTANCE);
+//        storageServiceFactory.initializeInstanceBags(TEST_INSTANCE);
 
         StorageService storageService = storageServiceFactory.getStorageService(TEST_INSTANCE, TEST_BAG_NAME);
         assertNotNull(storageService);
@@ -117,14 +115,14 @@ public class LocalStorageServiceFactoryImplTest {
         Instance testInstance = new InstanceMeta(TEST_INSTANCE, DBBaseTest.jasdbDir.toString());
         BagMeta bagMeta = new BagMeta(TEST_INSTANCE, TEST_BAG_NAME, new ArrayList<IndexDefinition>());
         when(metadataStore.getInstances()).thenReturn(Lists.newArrayList(testInstance));
-        List<Bag> bags = new ArrayList<Bag>();
+        List<Bag> bags = new ArrayList<>();
         bags.add(bagMeta);
         when(metadataStore.getBags(TEST_INSTANCE)).thenReturn(bags);
         when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(new InstanceMeta(TEST_INSTANCE, DBBaseTest.jasdbDir.toString()));
         when(metadataStore.getBag(TEST_INSTANCE, TEST_BAG_NAME)).thenReturn(bagMeta);
         when(metadataStore.getBag(TEST_INSTANCE, NONEXISTING_BAG)).thenReturn(bagMeta);
 
-        storageServiceFactory.initializeInstanceBags(TEST_INSTANCE);
+//        storageServiceFactory.initializeInstanceBags(TEST_INSTANCE);
 
 
         StorageService storageService = storageServiceFactory.getOrCreateStorageService(TEST_INSTANCE, TEST_BAG_NAME);
@@ -146,14 +144,14 @@ public class LocalStorageServiceFactoryImplTest {
         Instance testInstance = new InstanceMeta(TEST_INSTANCE, DBBaseTest.jasdbDir.toString());
         BagMeta bagMeta = new BagMeta(TEST_INSTANCE, TEST_BAG_NAME, new ArrayList<IndexDefinition>());
         when(metadataStore.getInstances()).thenReturn(Lists.newArrayList(testInstance));
-        List<Bag> bags = new ArrayList<Bag>();
+        List<Bag> bags = new ArrayList<>();
         bags.add(bagMeta);
         when(metadataStore.getBags(TEST_INSTANCE)).thenReturn(bags);
         when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(new InstanceMeta(TEST_INSTANCE, DBBaseTest.jasdbDir.toString()));
         when(metadataStore.getBag(TEST_INSTANCE, TEST_BAG_NAME)).thenReturn(bagMeta);
         when(metadataStore.getBag(TEST_INSTANCE, NONEXISTING_BAG)).thenReturn(bagMeta);
 
-        storageServiceFactory.initializeInstanceBags(TEST_INSTANCE);
+//        storageServiceFactory.initializeInstanceBags(TEST_INSTANCE);
 
         StorageService storageService = storageServiceFactory.getOrCreateStorageService(TEST_INSTANCE, TEST_BAG_NAME);
         assertNotNull(storageService);
@@ -174,7 +172,7 @@ public class LocalStorageServiceFactoryImplTest {
         BagMeta bag1Meta = new BagMeta(TEST_INSTANCE, TEST_BAG_NAME, new ArrayList<IndexDefinition>());
         BagMeta bag2Meta = new BagMeta(TEST_INSTANCE, "bag2", new ArrayList<IndexDefinition>());
         when(metadataStore.getInstances()).thenReturn(Lists.newArrayList(testInstance));
-        List<Bag> bags = new ArrayList<Bag>();
+        List<Bag> bags = new ArrayList<>();
         bags.add(bag1Meta);
         bags.add(bag2Meta);
         when(metadataStore.getBags(TEST_INSTANCE)).thenReturn(bags);

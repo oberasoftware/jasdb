@@ -1,28 +1,17 @@
 package nl.renarj.storage.index;
 
-import junit.framework.Assert;
 import nl.renarj.jasdb.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.DBInstance;
 import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.model.IndexManager;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.IndexState;
-import nl.renarj.jasdb.index.keys.factory.KeyFactory;
-import nl.renarj.jasdb.index.keys.impl.StringKey;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.result.IndexSearchResultIterator;
-import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.EqualsCondition;
 import nl.renarj.jasdb.index.search.IndexField;
 import nl.renarj.storage.DBBaseTest;
 import org.junit.After;
@@ -31,13 +20,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class IndexManagementTest extends DBBaseTest {
 
@@ -61,30 +44,30 @@ public class IndexManagementTest extends DBBaseTest {
         bag.ensureIndex(new IndexField("testkey", new StringKeyType()), true, new IndexField("payload", new StringKeyType()));
 
         DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-		IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-		try {
-			File indexFile = new File(jasdbDir, "testbag_testkey.idx");
-			Index index = instance.getIndex("testbag", "testkey");
-			Assert.assertNotNull("Index should have been loaded", index);
-			Assert.assertEquals("Index instances should be the same", index.hashCode(), index.hashCode());
-			
-			index.flushIndex();
-			assertTrue("There should be an index", indexFile.exists());
-			index.insertIntoIndex(new StringKey("JustSomeKey")
-                    .addKey(index.getKeyInfo().getKeyNameMapper(), "payload", new StringKey("testvalue"))
-                    .addKey(index.getKeyInfo().getKeyNameMapper(), "__ID", new UUIDKey(UUID.randomUUID())));
-			instance.shutdownIndexes();
-			
-			index = instance.getIndex("testbag", "testkey");
-			IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(new StringKey("JustSomeKey")), new SearchLimit());
-			assertEquals("One key should be present", 1, result.size());
-			
-			KeyInfo keyInfo = index.getKeyInfo();
-			assertEquals("The key name should be testkey", "testkey", keyInfo.getKeyName());
-			assertEquals("The page size should be 512", index.getPageSize(), 512);
-		} finally {
-			instance.shutdownIndexes();
-		}
+//		IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
+//		try {
+//			File indexFile = new File(jasdbDir, "testbag_testkey.idx");
+//			Index index = instance.getIndex("testbag", "testkey");
+//			Assert.assertNotNull("Index should have been loaded", index);
+//			Assert.assertEquals("Index instances should be the same", index.hashCode(), index.hashCode());
+//
+//			index.flushIndex();
+//			assertTrue("There should be an index", indexFile.exists());
+//			index.insertIntoIndex(new StringKey("JustSomeKey")
+//                    .addKey(index.getKeyInfo().getKeyNameMapper(), "payload", new StringKey("testvalue"))
+//                    .addKey(index.getKeyInfo().getKeyNameMapper(), "__ID", new UUIDKey(UUID.randomUUID())));
+//			instance.shutdownIndexes();
+//
+//			index = instance.getIndex("testbag", "testkey");
+//			IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(new StringKey("JustSomeKey")), new SearchLimit());
+//			assertEquals("One key should be present", 1, result.size());
+//
+//			KeyInfo keyInfo = index.getKeyInfo();
+//			assertEquals("The key name should be testkey", "testkey", keyInfo.getKeyName());
+//			assertEquals("The page size should be 512", index.getPageSize(), 512);
+//		} finally {
+//			instance.shutdownIndexes();
+//		}
 	}
 
     @Test
@@ -96,26 +79,26 @@ public class IndexManagementTest extends DBBaseTest {
         bag.addEntity(new SimpleEntity().addProperty("testkey", "value1").addProperty("testkey2", "testkey2value"));
 
         DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-        IndexManager indexManager = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-        Index index = indexManager.getIndex("testbag", "testkey");
-        Index invertedIndex = indexManager.getIndex("testbag", "testkey2ID");
-        File indexFile = new File(jasdbDir, "testbag_testkey.idx");
-        File invertedIndexBtreeFile = new File(jasdbDir, "testbag_testkey2ID.idx");
-        assertEquals("Expected index state to be OK", IndexState.OK, index.getState());
-        assertEquals("Expected index state to be OK", IndexState.OK, invertedIndex.getState());
-        assertTrue("Index file should exist", indexFile.exists());
-        assertTrue("Index file should exist", invertedIndexBtreeFile.exists());
-
-        bag.removeIndex("testkey");
-        assertEquals("Expected index state to be CLOSED", IndexState.CLOSED, index.getState());
-        assertFalse("Index file should no longer exist", indexFile.exists());
-
-        assertEquals("Expected index state to be OK", IndexState.OK, invertedIndex.getState());
-        assertTrue("Index file should exist", invertedIndexBtreeFile.exists());
-
-        bag.removeIndex("testkey2ID");
-        assertEquals("Expected index state to be OK", IndexState.CLOSED, invertedIndex.getState());
-        assertFalse("Index file should exist", invertedIndexBtreeFile.exists());
+//        IndexManager indexManager = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
+//        Index index = indexManager.getIndex("testbag", "testkey");
+//        Index invertedIndex = indexManager.getIndex("testbag", "testkey2ID");
+//        File indexFile = new File(jasdbDir, "testbag_testkey.idx");
+//        File invertedIndexBtreeFile = new File(jasdbDir, "testbag_testkey2ID.idx");
+//        assertEquals("Expected index state to be OK", IndexState.OK, index.getState());
+//        assertEquals("Expected index state to be OK", IndexState.OK, invertedIndex.getState());
+//        assertTrue("Index file should exist", indexFile.exists());
+//        assertTrue("Index file should exist", invertedIndexBtreeFile.exists());
+//
+//        bag.removeIndex("testkey");
+//        assertEquals("Expected index state to be CLOSED", IndexState.CLOSED, index.getState());
+//        assertFalse("Index file should no longer exist", indexFile.exists());
+//
+//        assertEquals("Expected index state to be OK", IndexState.OK, invertedIndex.getState());
+//        assertTrue("Index file should exist", invertedIndexBtreeFile.exists());
+//
+//        bag.removeIndex("testkey2ID");
+//        assertEquals("Expected index state to be OK", IndexState.CLOSED, invertedIndex.getState());
+//        assertFalse("Index file should exist", invertedIndexBtreeFile.exists());
     }
 	
 	@Test
@@ -126,15 +109,15 @@ public class IndexManagementTest extends DBBaseTest {
 		
 		try {
             DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-
-			Index loadedIndexField1 = instance.getIndex("inverted", "field1ID");
-			Assert.assertNotNull("Index should have been loaded", loadedIndexField1);
-			KeyInfo field1KeyInfo = loadedIndexField1.getKeyInfo();
-			KeyFactory field1KeyFactory = field1KeyInfo.getKeyFactory();
-			Assert.assertNotNull(field1KeyInfo);
-			Assert.assertNotNull(field1KeyFactory);
-			Assert.assertEquals("The header should match", "complexType(field1(stringType:100);__ID(uuidType););", field1KeyFactory.asHeader());
+//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
+//
+//			Index loadedIndexField1 = instance.getIndex("inverted", "field1ID");
+//			Assert.assertNotNull("Index should have been loaded", loadedIndexField1);
+//			KeyInfo field1KeyInfo = loadedIndexField1.getKeyInfo();
+//			KeyFactory field1KeyFactory = field1KeyInfo.getKeyFactory();
+//			Assert.assertNotNull(field1KeyInfo);
+//			Assert.assertNotNull(field1KeyFactory);
+//			Assert.assertEquals("The header should match", "complexType(field1(stringType:100);__ID(uuidType););", field1KeyFactory.asHeader());
 		} finally {
 			SimpleKernel.shutdown();
 		}
@@ -150,15 +133,15 @@ public class IndexManagementTest extends DBBaseTest {
 
         try {
             DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-
-            Index loadedIndexField = instance.getIndex("inverted", "field1field2ID");
-            Assert.assertNotNull("Index should have been loaded", loadedIndexField);
-            KeyInfo fieldKeyInfo = loadedIndexField.getKeyInfo();
-            KeyFactory field1KeyFactory = fieldKeyInfo.getKeyFactory();
-            Assert.assertNotNull(fieldKeyInfo);
-            Assert.assertNotNull(field1KeyFactory);
-            Assert.assertEquals("The header should match", "complexType(field1(stringType:100);field2(longType);__ID(uuidType););", field1KeyFactory.asHeader());
+//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
+//
+//            Index loadedIndexField = instance.getIndex("inverted", "field1field2ID");
+//            Assert.assertNotNull("Index should have been loaded", loadedIndexField);
+//            KeyInfo fieldKeyInfo = loadedIndexField.getKeyInfo();
+//            KeyFactory field1KeyFactory = fieldKeyInfo.getKeyFactory();
+//            Assert.assertNotNull(fieldKeyInfo);
+//            Assert.assertNotNull(field1KeyFactory);
+//            Assert.assertEquals("The header should match", "complexType(field1(stringType:100);field2(longType);__ID(uuidType););", field1KeyFactory.asHeader());
         } finally {
             SimpleKernel.shutdown();
         }
@@ -175,16 +158,16 @@ public class IndexManagementTest extends DBBaseTest {
 		bag.ensureIndex(new IndexField("field3", new StringKeyType(100)), false);
 		
 		try {
-			Set<String> fields = new HashSet<String>();
+			Set<String> fields = new HashSet<>();
 			fields.add("field1");
             DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-
-			Index loadedIndex = instance.getBestMatchingIndex("inverted", fields);
-			
-			List<String> indexFields = loadedIndex.getKeyInfo().getKeyFields();
-			Assert.assertEquals("There should be one field in the index", 2, indexFields.size());
-			Assert.assertEquals("The field should be field1", "field1", indexFields.get(0));
+//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
+//
+//			Index loadedIndex = instance.getBestMatchingIndex("inverted", fields);
+//
+//			List<String> indexFields = loadedIndex.getKeyInfo().getKeyFields();
+//			Assert.assertEquals("There should be one field in the index", 2, indexFields.size());
+//			Assert.assertEquals("The field should be field1", "field1", indexFields.get(0));
 		} finally {
 			SimpleKernel.shutdown();
 		}
@@ -201,15 +184,15 @@ public class IndexManagementTest extends DBBaseTest {
 				), false);
 
             DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-
-            Index index = instance.getIndex("inverted", "field1field2ID");
-            Assert.assertNotNull("Index should have been loaded", index);
-            KeyInfo fieldKeyInfo = index.getKeyInfo();
-            KeyFactory fieldKeyFactory = fieldKeyInfo.getKeyFactory();
-            Assert.assertNotNull(fieldKeyInfo);
-            Assert.assertNotNull(fieldKeyFactory);
-            Assert.assertEquals("The header should match", "complexType(field1(stringType:1024);field2(stringType:1024);__ID(uuidType););", fieldKeyFactory.asHeader());
+//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
+//
+//            Index index = instance.getIndex("inverted", "field1field2ID");
+//            Assert.assertNotNull("Index should have been loaded", index);
+//            KeyInfo fieldKeyInfo = index.getKeyInfo();
+//            KeyFactory fieldKeyFactory = fieldKeyInfo.getKeyFactory();
+//            Assert.assertNotNull(fieldKeyInfo);
+//            Assert.assertNotNull(fieldKeyFactory);
+//            Assert.assertEquals("The header should match", "complexType(field1(stringType:1024);field2(stringType:1024);__ID(uuidType););", fieldKeyFactory.asHeader());
 
         } finally {
 			SimpleKernel.shutdown();

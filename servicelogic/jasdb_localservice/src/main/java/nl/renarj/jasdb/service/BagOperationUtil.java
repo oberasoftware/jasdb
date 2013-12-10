@@ -67,7 +67,7 @@ public class BagOperationUtil {
         if(keyFactory.isMultiValueKey(entity)) {
             insertKeys = keyFactory.createMultivalueKeys(entity);
         } else {
-            insertKeys = new HashSet<Key>();
+            insertKeys = new HashSet<>();
             insertKeys.add(keyFactory.createKey(entity));
         }
         createKey.stop();

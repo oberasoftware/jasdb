@@ -24,7 +24,7 @@ import java.util.Map;
 public class RemoteConnectionFactoryTest {
     @Test
     public void testConnectorLoadingMock1() throws RemoteException {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(RemoteConnectorFactory.CONNECTOR_TYPE, "mock1");
         NodeInformation nodeInformation = new NodeInformation("localhost", "instance1");
         nodeInformation.addServiceInformation(new ServiceInformation("mock1", params));
@@ -35,7 +35,7 @@ public class RemoteConnectionFactoryTest {
 
     @Test
     public void testConnectorLoadingMock2() throws RemoteException {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(RemoteConnectorFactory.CONNECTOR_TYPE, "mock2");
         NodeInformation nodeInformation = new NodeInformation("localhost", "instance1");
         nodeInformation.addServiceInformation(new ServiceInformation("mock2", params));

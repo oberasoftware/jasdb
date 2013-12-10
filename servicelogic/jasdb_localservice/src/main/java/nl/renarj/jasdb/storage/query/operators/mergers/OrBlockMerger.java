@@ -21,7 +21,7 @@ public class OrBlockMerger implements BlockMerger {
 
     @Override
 	public IndexSearchResultIteratorCollection mergeIterators(IndexSearchResultIteratorCollection mergeInto, IndexSearchResultIteratorCollection... results) {
-		List<Key> mergedKeys = new ArrayList<Key>(mergeInto.getKeys()); 
+		List<Key> mergedKeys = new ArrayList<>(mergeInto.getKeys());
 		for(IndexSearchResultIteratorCollection collection : results) {
 			mergeInto(mergedKeys, collection);
 		}

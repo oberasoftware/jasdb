@@ -17,7 +17,7 @@ import java.util.Set;
 public class DistinctCollectionUtil {
     public static IndexSearchResultIteratorCollection distinct(IndexSearchResultIteratorCollection collection) throws JasDBStorageException {
         List<Key> keys = collection.getKeys();
-        Set<Key> documentKeys = new HashSet<Key>();
+        Set<Key> documentKeys = new HashSet<>();
         for(Iterator<Key> distinctIterator = keys.iterator(); distinctIterator.hasNext(); ) {
             Key documentKey = KeyUtil.getDocumentKey(collection.getKeyNameMapper(), distinctIterator.next());
             if(!documentKeys.contains(documentKey)) {

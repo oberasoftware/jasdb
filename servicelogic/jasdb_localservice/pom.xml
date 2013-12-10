@@ -24,6 +24,10 @@
             <groupId>com.obera</groupId>
             <artifactId>jasdb_api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
     </dependencies>
 	<build>
 		<plugins>

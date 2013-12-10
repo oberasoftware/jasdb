@@ -57,7 +57,7 @@ public class RangeSearchOperation implements SearchOperation {
         }
 
         try {
-            List<Key> results = new LinkedList<Key>();
+            List<Key> results = new LinkedList<>();
             boolean keepEvaluating = currentLeave.size() > 0 ? true : false;
             while(keepEvaluating && currentLeave != null) {
                 addFoundKeys(results, currentLeave.getKeyRange(rangeCondition.getStart(), rangeCondition.isStartIncluded(), rangeCondition.getEnd(), rangeCondition.isEndIncluded()), limit);

@@ -17,7 +17,7 @@ public class KeyOrderedTreeTest {
 
     @Test
     public void testBeforeOperation() {
-        KeyOrderedTree<Key> balancedTree = new KeyOrderedTree<Key>();
+        KeyOrderedTree<Key> balancedTree = new KeyOrderedTree<>();
         balancedTree.put(new StringKey("00"), new StringKey("00"));
         balancedTree.put(new StringKey("10"), new StringKey("10"));
         balancedTree.put(new StringKey("2"), new StringKey("2"));

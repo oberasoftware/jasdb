@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SessionManagerImpl implements SessionManager {
     private UserManager userManager;
 
-    private Map<String, SecureUserSession> secureUserSessionMap = new ConcurrentHashMap<String, SecureUserSession>();
+    private Map<String, SecureUserSession> secureUserSessionMap = new ConcurrentHashMap<>();
 
     @Inject
     public SessionManagerImpl(UserManager userManager) {

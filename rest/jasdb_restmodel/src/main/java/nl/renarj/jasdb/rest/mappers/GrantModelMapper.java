@@ -15,7 +15,7 @@ public class GrantModelMapper {
     public static RestGrantObject map(GrantObject grantObject) {
         grantObject.getGrants();
 
-        List<RestGrant> mappedGrants = new ArrayList<RestGrant>();
+        List<RestGrant> mappedGrants = new ArrayList<>();
         for(Grant grant : grantObject.getGrants()) {
             mappedGrants.add(map(grantObject.getObjectName(), grant));
         }

@@ -60,7 +60,7 @@ public class GlobalCachingMemoryManagerTest {
             when(region.reduceBy(anyLong())).thenReturn(MEMORY_SIZE);
             when(region.name()).thenReturn("region1");
 
-            Map<String, String> cachingProperties = new HashMap<String, String>();
+            Map<String, String> cachingProperties = new HashMap<>();
             cachingProperties.put("MaxMemory", "2k"); //2KB
             cachingProperties.put("MemoryMonitorInterval", "1s");
             ManualConfiguration manualConfiguration = new ManualConfiguration("caching", cachingProperties);

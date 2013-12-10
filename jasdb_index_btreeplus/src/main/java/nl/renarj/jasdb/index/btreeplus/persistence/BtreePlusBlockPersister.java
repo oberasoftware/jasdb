@@ -38,7 +38,7 @@ public class BtreePlusBlockPersister implements BlockPersister {
     private LockManager lockManager;
     private final int minBlockSize;
 
-    private final Map<BlockTypes, BlockFactory> blockFactories = new HashMap<BlockTypes, BlockFactory>(3);
+    private final Map<BlockTypes, BlockFactory> blockFactories = new HashMap<>(3);
 
     private Lock lock = new ReentrantLock();
 
@@ -52,7 +52,7 @@ public class BtreePlusBlockPersister implements BlockPersister {
         this.minBlockSize = (int)Math.floor((double)pageSize / 2);
 
         initializeBlockFactories();
-        memoryRegion = new LRURegion<IndexBlockEntry>(keyInfo.getKeyName());
+        memoryRegion = new LRURegion<>(keyInfo.getKeyName());
         GlobalCachingMemoryManager.getGlobalInstance().registerRegion(memoryRegion);
     }
 

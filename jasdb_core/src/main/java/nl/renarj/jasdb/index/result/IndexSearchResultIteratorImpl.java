@@ -40,7 +40,7 @@ public class IndexSearchResultIteratorImpl implements IndexSearchResultIteratorC
         }
 
         if(start < endIndex) {
-        	return new ArrayList<Key>(keys.subList(start, endIndex));
+        	return new ArrayList<>(keys.subList(start, endIndex));
         } else {
         	return Collections.emptyList();
         }        

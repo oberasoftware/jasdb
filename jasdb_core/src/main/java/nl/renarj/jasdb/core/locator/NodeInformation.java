@@ -21,7 +21,7 @@ public class NodeInformation {
     private String instanceId;
     private String gridId;
 
-    private Map<String, ServiceInformation> serviceInformationTypes = new HashMap<String, ServiceInformation>();
+    private Map<String, ServiceInformation> serviceInformationTypes = new HashMap<>();
 
     public NodeInformation(String instanceId, String gridId) {
         this.gridId = gridId;
@@ -41,7 +41,7 @@ public class NodeInformation {
     }
 
     public List<ServiceInformation> getServiceInformationList() {
-        return new ArrayList<ServiceInformation>(serviceInformationTypes.values());
+        return new ArrayList<>(serviceInformationTypes.values());
     }
 
     public ServiceInformation getServiceInformation(String type) {

@@ -75,7 +75,7 @@ public class RestService implements RemoteService {
         try {
             String address = GridLocatorUtil.getPublicAddress().getHostAddress();
 
-            Map<String, String> serviceProperties = new HashMap<String, String>();
+            Map<String, String> serviceProperties = new HashMap<>();
             serviceProperties.put("connectorType", "rest");
             serviceProperties.put("protocol", "http");
             serviceProperties.put("host", address);

@@ -20,7 +20,7 @@ public class OrderParameterParsing {
     public static List<OrderParam> getOrderParams(String orderBy) throws SyntaxException {
         if(StringUtils.stringNotEmpty(orderBy)) {
             Matcher orderMatcher = ORDERBY_PATTERN.matcher(orderBy);
-            List<OrderParam> orderParams = new ArrayList<OrderParam>();
+            List<OrderParam> orderParams = new ArrayList<>();
             while(orderMatcher.find()) {
                 String ascendingField = orderMatcher.group(2);
                 String descendingField = orderMatcher.group(4);

@@ -59,7 +59,7 @@ public class ConfigurableKernel extends AbstractModule {
     @Override
     protected void configure() {
         List<Configuration> moduleConfigurations = configuration.getChildConfigurations("/jasdb/modules/module");
-        Map<String, String> modules = new HashMap<String, String>();
+        Map<String, String> modules = new HashMap<>();
         for(Configuration moduleConfiguration : moduleConfigurations) {
             String moduleType = moduleConfiguration.getAttribute("type");
             String moduleImplementation = moduleConfiguration.getAttribute("class");

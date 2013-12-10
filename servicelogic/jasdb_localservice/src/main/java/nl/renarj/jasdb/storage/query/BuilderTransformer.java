@@ -51,7 +51,7 @@ public class BuilderTransformer {
     }
 
     private static void addQueryFieldToBlock(BlockOperation block, String field, List<QueryField> fields) {
-        List<RangeCondition> rangeConditions = new ArrayList<RangeCondition>();
+        List<RangeCondition> rangeConditions = new ArrayList<>();
         for(QueryField queryField : fields) {
             SearchCondition searchCondition = createCondition(queryField);
             if(searchCondition instanceof RangeCondition) {

@@ -99,7 +99,7 @@ public abstract class AbstractKey implements Key {
 
     @Override
     public Map<String, Key> getKeysByName(KeyNameMapper keyMapper) {
-        Map<String, Key> mappedKeys = new HashMap<String, Key>();
+        Map<String, Key> mappedKeys = new HashMap<>();
         for(int i=0; i<keys.length; i++) {
             mappedKeys.put(keyMapper.getFieldForIndex(i), keys[i]);
         }

@@ -42,7 +42,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndex() throws Exception {
         int indexSize = 28;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -99,7 +99,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteRandomIndex() throws Exception {
         int indexSize = 100000;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -112,7 +112,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
 
         StatisticsMonitor.enableStatistics();
 
-        List<Integer> removeSequence = new ArrayList<Integer>();
+        List<Integer> removeSequence = new ArrayList<>();
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         assertBlocks(index.getLockManager(), index.getPersister(), index.getRootBlock(), index.getPersister().getMaxKeys(), index.getPersister().getMinKeys(), -1);
         try {
@@ -168,7 +168,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure1() throws Exception {
         int indexSize = 28;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -194,7 +194,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure2() throws Exception {
         int indexSize = 28;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -220,7 +220,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure3() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -247,7 +247,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure4() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -289,7 +289,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure5() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -385,7 +385,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure6() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -450,7 +450,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure7() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -515,7 +515,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure8() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -564,7 +564,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure9() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -682,7 +682,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure10() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -745,7 +745,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure11() throws Exception {
         int indexSize = 100;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -782,7 +782,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexFailure12() throws Exception {
         int indexSize = 1000;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
@@ -813,7 +813,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexParentNodes() throws Exception {
         int indexSize = 28;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
 
         long totalInsertTime = 0;
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
@@ -864,7 +864,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
     @Test
     public void testLongReadDeleteIndexRootMerge() throws Exception {
         int indexSize = 20;
-        List<Integer> availableIndexes = new ArrayList<Integer>();
+        List<Integer> availableIndexes = new ArrayList<>();
 
         long totalInsertTime = 0;
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));

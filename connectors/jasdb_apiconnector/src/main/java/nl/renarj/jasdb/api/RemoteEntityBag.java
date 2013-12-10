@@ -122,7 +122,7 @@ public final class RemoteEntityBag implements EntityBag {
     public List<String> getIndexNames() throws JasDBStorageException {
         BagConnector connector = RemoteConnectorFactory.createConnector(nodeInformation, BagConnector.class);
         List<IndexDefinition> indexDefinitions = connector.getIndexDefinitions(context, instance, meta.getName());
-        List<String> indexNames = new ArrayList<String>(indexDefinitions.size());
+        List<String> indexNames = new ArrayList<>(indexDefinitions.size());
         for(IndexDefinition definition : indexDefinitions) {
             indexNames.add(definition.getIndexName());
         }

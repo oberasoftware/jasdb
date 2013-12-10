@@ -184,7 +184,7 @@ public class RootBlock extends TreeBlock implements LeaveBlock {
     @Override
     public List<Key> getKeyRange(Key start, boolean includeStart, Key end, boolean includeEnd) {
         List<TreeNode> foundNodes = treeNodes.range(start, includeStart, end, includeEnd);
-        List<Key> foundKeys = new ArrayList<Key>(foundNodes.size());
+        List<Key> foundKeys = new ArrayList<>(foundNodes.size());
         for(TreeNode node : foundNodes) {
             foundKeys.add(node.getKey());
         }
@@ -193,7 +193,7 @@ public class RootBlock extends TreeBlock implements LeaveBlock {
 
     @Override
     public List<Key> getValues() {
-        List<Key> rootKeys = new ArrayList<Key>(treeNodes.size());
+        List<Key> rootKeys = new ArrayList<>(treeNodes.size());
         for(TreeNode treeNode : treeNodes.values()) {
             rootKeys.add(treeNode.getKey());
         }

@@ -58,7 +58,7 @@ public class PartitionRestConnector extends RemoteRestConnector implements Parti
     @Override
     public QueryResult getPartitionEntities(RemotingContext context, String instance, String bag, String partitionId, int start, int limit) throws RemoteException {
         String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).partition(partitionId).entities().getConnectionString();
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         if(start > 0) params.put("begin", String.valueOf(start));
         if(limit > 0) params.put("top", String.valueOf(limit));
         ClientResponse clientResponse = doRequest(context, connectionString, params);
@@ -76,7 +76,7 @@ public class PartitionRestConnector extends RemoteRestConnector implements Parti
             PartitionCollection partitionCollection = new JsonRestResponseHandler().deserialize(PartitionCollection.class, response.getEntityInputStream());
             List<Partition> partitions = partitionCollection.getPartitions();
 
-            List<BagPartition> mappedPartitions = new ArrayList<BagPartition>();
+            List<BagPartition> mappedPartitions = new ArrayList<>();
             for(Partition partition : partitions) {
                 mappedPartitions.add(PartitionModelMapper.map(partition));
             }

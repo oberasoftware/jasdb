@@ -28,7 +28,7 @@ public class StatisticsModelLoader extends AbstractModelLoader {
     @Override
     public RestEntity loadModel(InputElement input, String begin, String top, List<OrderParam> orderParamList, RequestContext context) throws RestException {
         List<AggregationResult> stats = StatisticsMonitor.getAggregationResults();
-        List<Statistic> mappedStats = new LinkedList<Statistic>();
+        List<Statistic> mappedStats = new LinkedList<>();
         for(AggregationResult stat : stats) {
             mappedStats.add(new Statistic(stat.getName(), stat.getAverage(), stat.getCalls(), stat.getTotalTime(), stat.getLowest(), stat.getHighest()));
         }

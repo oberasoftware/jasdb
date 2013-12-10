@@ -69,12 +69,12 @@ public class CompositeKeyFactory implements KeyFactory {
     @Override
     public Set<Key> createMultivalueKeys(IndexableItem indexableItem) throws JasDBStorageException {
         KeyNameMapper nameMapper = multiKeyloader.getKeyNameMapper();
-        Set<Key> currentKeys = new HashSet<Key>();
+        Set<Key> currentKeys = new HashSet<>();
         currentKeys.add(new CompositeKey());
         for(KeyFactory keyFactory : multiKeyloader.getKeyFactories()) {
             Set<Key> subKeys = keyFactory.createMultivalueKeys(indexableItem);
 
-            Set<Key> productSet = new HashSet<Key>();
+            Set<Key> productSet = new HashSet<>();
             for(Key currentKey : currentKeys) {
                 for(Key subKey : subKeys) {
                     Key key = currentKey.cloneKey(true);

@@ -32,7 +32,7 @@ public class DataPrepare {
 				Random rnd = new Random(System.currentTimeMillis());
 				DBSession dbSession = new LocalDBSession();
 				for(int i=0; i<NUMBER_BAGS; i++) {
-					Map<String, Integer> ageAmounts = new HashMap<String, Integer>();
+					Map<String, Integer> ageAmounts = new HashMap<>();
 					
 					EntityBag bag = dbSession.createOrGetBag("bag" + i);
 					bag.ensureIndex(new IndexField("field1", new StringKeyType()), true);

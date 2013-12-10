@@ -133,7 +133,7 @@ public class PartitionModelLoader extends AbstractModelLoader {
                         PartitioningManager partitioningManager = storageService.getPartitionManager();
                         boolean changeSuccess = partitioningManager.changePartitionStatus(partition.getPartitionId(), targetState);
                         if(changeSuccess) {
-                            List<Partition> partitions = new ArrayList<Partition>();
+                            List<Partition> partitions = new ArrayList<>();
                             Partition mappedPartition = PartitionModelMapper.map(partitioningManager.getLocalPartition(partition.getPartitionId()), partition.getInstance(), partition.getBag());
                             partitions.add(mappedPartition);
 

@@ -10,7 +10,7 @@ public class JasdbRestApplication extends Application {
 
 	@Override
 	public Set<Class<?>> getClasses() {
-		Set<Class<?>> resources = new HashSet<Class<?>>();
+		Set<Class<?>> resources = new HashSet<>();
 		resources.add(JasdbInfoService.class);
 		
 		return resources;

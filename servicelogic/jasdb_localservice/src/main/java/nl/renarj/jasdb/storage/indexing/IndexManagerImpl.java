@@ -12,9 +12,9 @@ import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.model.IndexManager;
+import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.index.Index;
@@ -26,6 +26,9 @@ import nl.renarj.jasdb.index.search.CompositeIndexField;
 import nl.renarj.jasdb.index.search.IndexField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +40,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component("IndexManager")
+@Scope("prototype")
 final public class IndexManagerImpl implements IndexManager {
 	private Logger log = LoggerFactory.getLogger(IndexManagerImpl.class);
 
@@ -45,18 +50,19 @@ final public class IndexManagerImpl implements IndexManager {
 	private static final String INDEX_EXTENSION = ".idx";
 	private static final String INDEX_EXTENSION_MULTI = ".idxm";
 
-	private Map<String, Map<String, Index>> indexes = new ConcurrentHashMap<String, Map<String, Index>>();
+	private Map<String, Map<String, Index>> indexes = new ConcurrentHashMap<>();
 
-    private Instance instance;
+    @Autowired
+    private ConfigurationLoader configurationLoader;
 
-	private Configuration configuration;
+    @Autowired
     private MetadataStore metadataStore;
 
-	public IndexManagerImpl(MetadataStore metadataStore, Instance instance, Configuration configuration) {
-        this.instance = instance;
-		this.configuration = configuration;
-        this.metadataStore = metadataStore;
-	}
+    private final String instanceId;
+
+    public IndexManagerImpl(String instanceId) {
+        this.instanceId = instanceId;
+    }
 
 	@Override
 	public void shutdownIndexes() throws JasDBStorageException {
@@ -70,9 +76,28 @@ final public class IndexManagerImpl implements IndexManager {
 		indexes.clear();
 	}
 
-	@Override
+    @Override
+    public void flush() throws JasDBStorageException {
+        for(Map.Entry<String, Map<String, Index>> entry : indexes.entrySet()) {
+            log.debug("Flushing index for bag: {}", entry.getKey());
+            for(Index index : entry.getValue().values()) {
+                log.debug("Flushing index: {}", index);
+                index.flushIndex();
+            }
+        }
+    }
+
+    @Override
+    public void flush(String bagName) throws JasDBStorageException {
+        for(Index index : getIndexes(bagName).values()) {
+            log.debug("Flushing index: {}", index);
+            index.flushIndex();
+        }
+    }
+
+    @Override
 	public List<Index> getLoadedIndexes() {
-		List<Index> loadedIndexes = new ArrayList<Index>();
+		List<Index> loadedIndexes = new ArrayList<>();
 		Collection<Map<String, Index>> allBagIndexes = indexes.values();
 		for(Map<String, Index> bagIndexes : allBagIndexes) {
 			loadedIndexes.addAll(bagIndexes.values());
@@ -107,7 +132,7 @@ final public class IndexManagerImpl implements IndexManager {
 
 		if(indexes.containsKey(bagName)) {
 			log.debug("Indexes are present and loaded returning for bag: {}", bagName);
-            return new HashMap<String, Index>(indexes.get(bagName));
+            return new HashMap<>(indexes.get(bagName));
 		} else {
 			throw new JasDBStorageException("No indexes found for bag: " + bagName);
 		}
@@ -196,8 +221,8 @@ final public class IndexManagerImpl implements IndexManager {
 	}
 
 	private List<IndexField> guaranteeIdKey(IndexField... valueFields) throws JasDBStorageException {
-		Set<String> fields = new HashSet<String>();
-		List<IndexField> indexFields = new ArrayList<IndexField>();
+		Set<String> fields = new HashSet<>();
+		List<IndexField> indexFields = new ArrayList<>();
 		for(IndexField valueField : valueFields) {
 			fields.add(valueField.getField());
 			indexFields.add(valueField);
@@ -213,12 +238,12 @@ final public class IndexManagerImpl implements IndexManager {
 	private synchronized void loadIndexes(final String bagName) throws JasDBStorageException {
 		log.debug("Loading indexes for bag: {}", bagName);
 		if(!indexes.containsKey(bagName)) {
-            Bag bag = metadataStore.getBag(instance.getInstanceId(), bagName);
+            Bag bag = metadataStore.getBag(instanceId, bagName);
             if(bag != null) {
-                Set<IndexDefinition> indexDefinitions = new HashSet<IndexDefinition>(bag.getIndexDefinitions());
+                Set<IndexDefinition> indexDefinitions = new HashSet<>(bag.getIndexDefinitions());
 
                 log.info("Found {} potential indexes for bag: {}", indexDefinitions.size(), bagName);
-                Map<String, Index> bagIndexes = new HashMap<String, Index>();
+                Map<String, Index> bagIndexes = new HashMap<>();
                 for(IndexDefinition indexDefinition : indexDefinitions) {
                     Index index = loadIndex(bagName, indexDefinition);
                     bagIndexes.put(index.getKeyInfo().getKeyName(), index);
@@ -249,7 +274,8 @@ final public class IndexManagerImpl implements IndexManager {
 	}
 
 	private Index configureIndex(IndexTypes indexType, Index indexPersister) throws ConfigurationException {
-		Configuration indexConfig = this.configuration.getChildConfiguration(INDEX_CONFIG_XPATH + "[@Type='" + indexType.getName() + "']");
+        Configuration configuration = configurationLoader.getConfiguration();
+		Configuration indexConfig = configuration.getChildConfiguration(INDEX_CONFIG_XPATH + "[@Type='" + indexType.getName() + "']");
 
 		if(indexConfig != null) {
 			log.info("Using configuration for index type: {}", indexType.getName());
@@ -260,13 +286,14 @@ final public class IndexManagerImpl implements IndexManager {
 		return indexPersister;
 	}
     
-    private File createIndexFile(String bagName, String indexName, boolean multi) {
+    private File createIndexFile(String bagName, String indexName, boolean multi) throws JasDBStorageException {
         StringBuilder indexFileNameBuilder = new StringBuilder();
         String extension = multi ? INDEX_EXTENSION_MULTI : INDEX_EXTENSION;
 
         indexFileNameBuilder.append(bagName).append(BAG_INDEX_NAME_SPLITTER);
         indexFileNameBuilder.append(indexName).append(extension);
 
-        return new File(instance.getPath(), indexFileNameBuilder.toString());
+        String instancePath = metadataStore.getInstance(instanceId).getPath();
+        return new File(instancePath, indexFileNameBuilder.toString());
     }
 }

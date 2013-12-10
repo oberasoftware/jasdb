@@ -181,7 +181,7 @@ public class BagModelLoader extends AbstractModelLoader {
 	
 	public RestEntity handleList(DBInstance instance) throws RestException {
 		log.debug("Retrieving full list of bags on storage instance: {}", instance.getInstanceId());
-		List<RestBag> bags = new ArrayList<RestBag>();
+		List<RestBag> bags = new ArrayList<>();
 		try {
             StorageServiceFactory storageServiceFactory = SimpleKernel.getStorageServiceFactory();
 			for(Bag bag : instance.getBags()) {

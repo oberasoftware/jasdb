@@ -52,7 +52,7 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
 	public static final String DOCUMENT_ID = "__ID";
 	
 	public SimpleEntity(String internalId) {
-		properties = new TreeMap<String, Property>();
+		properties = new TreeMap<>();
 		setInternalId(internalId);
 	}
 	
@@ -269,7 +269,7 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
     }
 
     public List<Property> getProperties() {
-		return new ArrayList<Property>(properties.values());
+		return new ArrayList<>(properties.values());
 	}
 
     /**
@@ -365,7 +365,7 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
     @Override
     public SimpleEntity clone() {
         SimpleEntity clone = new SimpleEntity(internalId);
-        clone.properties = new HashMap<String, Property>(properties);
+        clone.properties = new HashMap<>(properties);
         return clone;
     }
 

@@ -62,7 +62,7 @@ public class InstanceModelLoader  extends AbstractModelLoader {
     private List<InstanceRest> loadInstances() throws RestException {
         try {
             DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
-            List<InstanceRest> instances = new ArrayList<InstanceRest>();
+            List<InstanceRest> instances = new ArrayList<>();
             for(DBInstance instance : instanceFactory.listInstances()) {
                 instances.add(new InstanceRest(instance.getPath(), "OK", SimpleKernel.getVersion(), instance.getInstanceId()));
             }

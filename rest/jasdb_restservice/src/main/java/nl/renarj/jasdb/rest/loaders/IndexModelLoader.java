@@ -61,7 +61,7 @@ public class IndexModelLoader extends AbstractModelLoader{
                 StatRecord getIndexCounter = StatisticsMonitor.createRecord("getIndexes");
                 Map<String, Index> indexes = indexManager.getIndexes(bag.getName());
                 getIndexCounter.stop();
-                List<IndexEntry> indexEntries = new ArrayList<IndexEntry>(indexes.size());
+                List<IndexEntry> indexEntries = new ArrayList<>(indexes.size());
                 for(Index index : indexes.values()) {
                     KeyInfo keyInfo = index.getKeyInfo();
                     IndexEntry entry = new IndexEntry(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.hasUniqueConstraint(), index.getIndexType());

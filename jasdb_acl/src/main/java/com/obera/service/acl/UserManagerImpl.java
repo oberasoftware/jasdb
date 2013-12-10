@@ -35,7 +35,7 @@ public class UserManagerImpl implements UserManager {
     private static final Logger LOG = LoggerFactory.getLogger(UserManagerImpl.class);
     private CredentialsProvider credentialsProvider;
 
-    private ConcurrentHashMap<String, GrantObject> cachedGrants = new ConcurrentHashMap<String, GrantObject>();
+    private ConcurrentHashMap<String, GrantObject> cachedGrants = new ConcurrentHashMap<>();
 
     @Inject
     public UserManagerImpl(CredentialsProvider credentialsProvider) {
@@ -178,7 +178,7 @@ public class UserManagerImpl implements UserManager {
     @Override
     public List<GrantObject> getGrantObjects(UserSession session) throws JasDBStorageException {
         List<EncryptedGrants> encryptedGrants = getGrantProvider().getGrants();
-        List<GrantObject> grantObjects = new ArrayList<GrantObject>();
+        List<GrantObject> grantObjects = new ArrayList<>();
         for(EncryptedGrants encryptedGrant : encryptedGrants) {
             grantObjects.add(decrypt(session, encryptedGrant));
         }
