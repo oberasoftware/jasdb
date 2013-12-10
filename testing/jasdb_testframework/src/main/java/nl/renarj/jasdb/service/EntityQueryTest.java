@@ -12,8 +12,10 @@ import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
+import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
+import nl.renarj.jasdb.api.properties.EntityValue;
 import nl.renarj.jasdb.api.properties.Property;
 import nl.renarj.jasdb.api.query.BlockType;
 import nl.renarj.jasdb.api.query.Order;
@@ -44,6 +46,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -102,6 +105,9 @@ public abstract class EntityQueryTest {
                 city2 = SimpleBaseTest.possibleCities[rnd.nextInt(SimpleBaseTest.possibleCities.length)];
             }
 
+            EmbeddedEntity embeddedEntity = new EmbeddedEntity();
+            embeddedEntity.addProperty("embeddedProperty", value);
+
             SimpleEntity entity = bag.addEntity(new SimpleEntity()
                     .addProperty("field1", value)
                     .addProperty("field5", lValue)
@@ -109,6 +115,7 @@ public abstract class EntityQueryTest {
                     .addProperty("field7", fieldValue)
                     .addProperty("field8", fieldValue)
                     .addProperty("field9", lValue)
+                    .addEntity("embed", embeddedEntity)
                     .addProperty("age", age)
                     .addProperty("mainCity", city1)
                     .addProperty("city", city1, city2)
@@ -266,6 +273,46 @@ public abstract class EntityQueryTest {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
         }
+    }
+
+    @Test
+    public void testEqualsNestedEntity() throws Exception {
+        DBSession pojoDb = sessionFactory.createSession();
+        EntityBag bag = pojoDb.createOrGetBag("inverted");
+        try {
+            String queryKey = "value50";
+            String expectedId = valueToId.get(queryKey);
+
+            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("embed.embeddedProperty").value(queryKey));
+            long start = System.nanoTime();
+            QueryResult result = executor.execute();
+            long end = System.nanoTime();
+            long passed = end - start;
+            log.info("Query execution took: {}", passed);
+
+            Assert.assertNotNull(result);
+
+            Assert.assertTrue("There should be a result", result.hasNext());
+            SimpleEntity entity = result.next();
+            Assert.assertNotNull("There should be a returned entity", entity);
+            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+
+            Property property = entity.getProperty("embed");
+            assertNotNull("Property should be set", property);
+            assertTrue("Property should be long", property.getFirstValueObject() instanceof EmbeddedEntity);
+
+            EntityValue value = (EntityValue) property.getFirstValue();
+            SimpleEntity embedEntity = value.toEntity();
+
+            assertNotNull("Property should be set", embedEntity);
+
+            String embeddedProperty = embedEntity.getProperty("embeddedProperty").getFirstValue().toString();
+            Assert.assertEquals("The id's should match", queryKey, embeddedProperty);
+        } finally {
+            pojoDb.closeSession();
+            SimpleKernel.shutdown();
+        }
+
     }
 
     @Test

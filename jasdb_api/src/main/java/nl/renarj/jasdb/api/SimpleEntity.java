@@ -46,6 +46,8 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
 
 	private static final long serialVersionUID = 4323161274218796585L;
 
+
+
 	private String internalId;
 	private Map<String, Property> properties;
 	
@@ -263,6 +265,10 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
 		return properties.containsKey(propertyName);
 	}
 
+    public boolean hasEntity(String entityName) {
+        return properties.containsKey(entityName) && properties.get(entityName).getFirstValueObject() instanceof EmbeddedEntity;
+    }
+
     @Override
     public boolean hasValue(String propertyName) {
         return hasProperty(propertyName);
@@ -278,12 +284,33 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
      * @return The property if present, Null if no property present for given name
      */
 	public Property getProperty(String propertyName) {
+        if(propertyName.contains(".")) {
+            String[] pathElements = propertyName.split("\\.");
+
+            SimpleEntity currentEntity = this;
+            for(String pathElement : pathElements) {
+                if(currentEntity.hasEntity(pathElement)) {
+                    currentEntity = currentEntity.getEntity(pathElement);
+                } else if(currentEntity.hasProperty(pathElement)) {
+                    return currentEntity.getProperty(pathElement);
+                }
+            }
+        }
+
 		if(properties.containsKey(propertyName)) {
 			return properties.get(propertyName);
 		}
 		
 		return null;
 	}
+
+    public SimpleEntity getEntity(String embeddedEntityName) {
+        Object value = getValue(embeddedEntityName);
+        if(value != null && value instanceof EmbeddedEntity) {
+            return (EmbeddedEntity) value;
+        }
+        return null;
+    }
 	
 	@Override
 	public Object getValue(String propertyName) {

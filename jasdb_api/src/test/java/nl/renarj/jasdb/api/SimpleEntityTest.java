@@ -83,6 +83,9 @@ public class SimpleEntityTest {
         assertEquals("value3", deserializedEntity.getProperty("multiValueProperty").getValues().get(2).getValue());
         assertEquals(new Long(200), deserializedEntity.getProperty("integerProperty").getFirstValueObject());
 
+        assertNotNull(deserializedEntity.getProperty("embedded.embeddedProperty1"));
+        assertThat(deserializedEntity.getProperty("embedded.embeddedProperty1").getFirstValue().toString(), is("50"));
+
         assertTrue("There should be an embedded entity", deserializedEntity.hasProperty("embedded"));
         Object embedded = deserializedEntity.getProperty("embedded").getFirstValueObject();
         assertNotNull(embedded);

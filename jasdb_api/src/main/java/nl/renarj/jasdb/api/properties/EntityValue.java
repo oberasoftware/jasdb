@@ -27,7 +27,7 @@ public class EntityValue implements Value {
     }
 
     @Override
-    public Object getValue() {
+    public SimpleEntity getValue() {
         return entity;
     }
 
