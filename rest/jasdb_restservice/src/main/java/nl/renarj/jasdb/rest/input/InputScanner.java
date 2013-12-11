@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class InputScanner {
 	private static final Logger LOG = LoggerFactory.getLogger(InputScanner.class);
 
-	private static final Pattern tokenPattern = Pattern.compile("['\\p{L}\\p{N}- _]+|[!|=|>|<\\|,()]");
+	private static final Pattern tokenPattern = Pattern.compile("['\\p{L}.\\p{N}- _]+|[!|=|>|<\\|,()]");
 	private Matcher matcher;
 	
 	public InputScanner(String scanText) {

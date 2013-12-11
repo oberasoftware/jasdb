@@ -89,6 +89,7 @@ public abstract class EntityQueryTest {
         bag.ensureIndex(new IndexField("field6", new LongKeyType()), false);
         bag.ensureIndex(new IndexField("age", new LongKeyType()), false);
         bag.ensureIndex(new IndexField("city", new StringKeyType(200)), false);
+        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType(100)), false);
         bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType(200))), false);
 
         Random rnd = new Random(System.currentTimeMillis());
@@ -107,6 +108,7 @@ public abstract class EntityQueryTest {
 
             EmbeddedEntity embeddedEntity = new EmbeddedEntity();
             embeddedEntity.addProperty("embeddedProperty", value);
+            embeddedEntity.addProperty("embeddedNoIndexProperty", value);
 
             SimpleEntity entity = bag.addEntity(new SimpleEntity()
                     .addProperty("field1", value)
@@ -312,8 +314,48 @@ public abstract class EntityQueryTest {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
         }
+    }
+
+    @Test
+    public void testEqualsNestedEntityNoIndex() throws Exception {
+        DBSession pojoDb = sessionFactory.createSession();
+        EntityBag bag = pojoDb.createOrGetBag("inverted");
+        try {
+            String queryKey = "value50";
+            String expectedId = valueToId.get(queryKey);
+
+            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("embed.embeddedNoIndexProperty").value(queryKey));
+            long start = System.nanoTime();
+            QueryResult result = executor.execute();
+            long end = System.nanoTime();
+            long passed = end - start;
+            log.info("Query execution took: {}", passed);
+
+            Assert.assertNotNull(result);
+
+            Assert.assertTrue("There should be a result", result.hasNext());
+            SimpleEntity entity = result.next();
+            Assert.assertNotNull("There should be a returned entity", entity);
+            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+
+            Property property = entity.getProperty("embed");
+            assertNotNull("Property should be set", property);
+            assertTrue("Property should be long", property.getFirstValueObject() instanceof EmbeddedEntity);
+
+            EntityValue value = (EntityValue) property.getFirstValue();
+            SimpleEntity embedEntity = value.toEntity();
+
+            assertNotNull("Property should be set", embedEntity);
+
+            String embeddedProperty = embedEntity.getProperty("embeddedProperty").getFirstValue().toString();
+            Assert.assertEquals("The id's should match", queryKey, embeddedProperty);
+        } finally {
+            pojoDb.closeSession();
+            SimpleKernel.shutdown();
+        }
 
     }
+
 
     @Test
     public void testAndOperationMultiQueryBuilderTablescan() throws Exception {
