@@ -35,6 +35,12 @@ public class InputScannerTest {
     }
 
     @Test
+    public void testNestedFields() {
+        InputScanner scanner = new InputScanner("embed.field1=test");
+        assertTokens(scanner, "embed.field1", "=", "test");
+    }
+
+    @Test
     public void testDoubleStringEscape() {
         InputScanner scanner = new InputScanner("field1='va'lue'");
         assertTokens(scanner, "field1", "=", "'va'lue'");

@@ -49,7 +49,7 @@ public abstract class EntityBagTest {
 	private Logger log = LoggerFactory.getLogger(EntityBagTest.class);
 	
 	private static final int INITIAL_SIZE = 100;
-	private static final int NUMBER_ENTITIES = 3000000;
+	private static final int NUMBER_ENTITIES = 10000;
 	private static final String searchTestId = "f5533a4a-14e2-42fc-94db-bac3fc0b1712";
     
     private DBSessionFactory sessionFactory;

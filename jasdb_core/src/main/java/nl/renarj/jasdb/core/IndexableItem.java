@@ -16,7 +16,7 @@ public interface IndexableItem {
      * @param propertyName The name of the property to retrieve the value for
      * @return The first value for the given property
      */
-	Object getValue(String propertyName);
+	<T> T getValue(String propertyName);
 
     /**
      * Gets a collection of objects representing the values of a given
@@ -24,7 +24,7 @@ public interface IndexableItem {
      * @param propertyName The name of the property to get the values for
      * @return The collection of property values
      */
-    List<Object> getValues(String propertyName);
+    <T> List<T> getValues(String propertyName);
 
     /**
      * Returns wether a property is multivalue or not
