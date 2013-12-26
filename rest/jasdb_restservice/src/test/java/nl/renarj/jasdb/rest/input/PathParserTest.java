@@ -172,6 +172,17 @@ public class PathParserTest {
     }
 
     @Test
+    public void testPathNestedEntity() throws RestException {
+        PathParser parser = new PathParser("Instance(default)/Bags(inverted)/Entities(embed.field1='value')");
+        List<InputElement> elements = getElements(parser);
+        assertEquals("There should be three elements", 3, elements.size());
+
+        InputElement expectedElement = new InputElement("Entities").setCondition(new FieldCondition("embed.field1", "value"));
+        assertElement(expectedElement, elements.get(2));
+
+    }
+
+    @Test
     public void testPathEscapedMoreQuotesStringValue() throws RestException {
         PathParser parser = new PathParser("Instance(default)/Bags(inverted)/Entities(field1='va'lue')");
         List<InputElement> elements = getElements(parser);

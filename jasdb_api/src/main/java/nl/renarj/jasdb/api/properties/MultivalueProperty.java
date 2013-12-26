@@ -55,10 +55,10 @@ public class MultivalueProperty implements Property {
     }
 
     @Override
-    public List<Object> getValueObjects() {
-        List<Object> valueObjects = new ArrayList<>();
+    public <T> List<T> getValueObjects() {
+        List<T> valueObjects = new ArrayList<T>();
         for(Value value : values) {
-            valueObjects.add(value.getValue());
+            valueObjects.add((T)value.getValue());
         }
         return valueObjects;
     }

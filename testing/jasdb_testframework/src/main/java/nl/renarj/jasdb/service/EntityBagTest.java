@@ -49,7 +49,7 @@ public abstract class EntityBagTest {
 	private Logger log = LoggerFactory.getLogger(EntityBagTest.class);
 	
 	private static final int INITIAL_SIZE = 100;
-	private static final int NUMBER_ENTITIES = 100000;
+	private static final int NUMBER_ENTITIES = 10000;
 	private static final String searchTestId = "f5533a4a-14e2-42fc-94db-bac3fc0b1712";
     
     private DBSessionFactory sessionFactory;
@@ -313,7 +313,7 @@ public abstract class EntityBagTest {
 		DBSession pojoDb = sessionFactory.createSession();
 		EntityBag bag = pojoDb.createOrGetBag("mybag");
 
-		List<String> entityIds = new ArrayList<>();
+		List<String> entityIds = new ArrayList<String>();
 		for(int i=0; i<NUMBER_ENTITIES; i++) {
 			SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
 			entity.addProperty("someProperty" + i, i);
@@ -379,7 +379,7 @@ public abstract class EntityBagTest {
         bag.ensureIndex(new IndexField("itemId", new LongKeyType()), true);
         try {
             Random rnd = new Random();
-            Map<String, Integer> cityCounts = new HashMap<>();
+            Map<String, Integer> cityCounts = new HashMap<String, Integer>();
             for(int i=0; i<testSize; i++) {
                 int cityIdx = rnd.nextInt(cities.length);
                 String city = cities[cityIdx];
@@ -421,7 +421,7 @@ public abstract class EntityBagTest {
         bag.ensureIndex(new IndexField("itemId", new LongKeyType()), true);
         try {
             Random rnd = new Random();
-            Map<String, Integer> cityCounts = new HashMap<>();
+            Map<String, Integer> cityCounts = new HashMap<String, Integer>();
             for(int i=0; i<testSize; i++) {
                 int cityIdx = rnd.nextInt(cities.length);
                 String city = cities[cityIdx];
@@ -513,7 +513,7 @@ public abstract class EntityBagTest {
 		DBSession session = sessionFactory.createSession();
 		EntityBag bag = session.createOrGetBag("testbag");
 
-		List<String> entities = new ArrayList<>();
+		List<String> entities = new ArrayList<String>();
 		try {
 			for(int i=0; i<INITIAL_SIZE; i++) {
 				SimpleEntity entity = bag.addEntity(new SimpleEntity().addProperty("testfield", "test" + i));
