@@ -1,10 +1,16 @@
 package nl.renarj.jasdb.core.platform;
 
+import nl.renarj.core.utilities.configuration.Configuration;
+import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.KernelShutdown;
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
+import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -32,9 +38,11 @@ public class HotspotPlatformManager implements PlatformManager {
     private static final String RELEASE_VERSION = "ReleaseVersion";
     private static final String BUILD_NUMBER = "BuildNumber";
 
+    private ApplicationContext applicationContext;
+
     @Override
-    public boolean platformMatch(String platformName) {
-        return platformName.contains(HOTSPOT_JVM);
+    public boolean platformMatch() {
+        return System.getProperty("java.vm.name").toLowerCase().contains(HOTSPOT_JVM);
     }
 
     @Override
@@ -48,22 +56,25 @@ public class HotspotPlatformManager implements PlatformManager {
     }
 
     @Override
-    public void initializePlatform() throws JasDBStorageException {
+    public void initializePlatform() throws ConfigurationException {
+        applicationContext = new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
+        Configuration configuration = applicationContext.getBean(ConfigurationLoader.class).getConfiguration();
+
+        GlobalCachingMemoryManager cachingMemoryManager = GlobalCachingMemoryManager.getGlobalInstance();
+        Configuration cachingConfiguration = configuration.getChildConfiguration("/jasdb/caching");
+        cachingMemoryManager.configure(cachingConfiguration);
+
         try {
             MBeanServer server = ManagementFactory.getPlatformMBeanServer();
             ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
             if(!server.isRegistered(name)) {
                 server.registerMBean(new KernelShutdown(), name);
             }
-        } catch (InstanceAlreadyExistsException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-        } catch (MBeanRegistrationException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-        } catch (NotCompliantMBeanException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
-        } catch(MalformedObjectNameException e) {
-            throw new JasDBStorageException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
+        } catch (InstanceAlreadyExistsException | NotCompliantMBeanException | MalformedObjectNameException | MBeanRegistrationException e) {
+            throw new ConfigurationException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
         }
+
+        ((ConfigurableApplicationContext)applicationContext).registerShutdownHook();
     }
 
     @Override
@@ -72,13 +83,16 @@ public class HotspotPlatformManager implements PlatformManager {
         try {
             ObjectName name = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
             server.unregisterMBean(name);
-        } catch(MalformedObjectNameException e) {
-            LOG.error("Unable to unregister management bean: {}", e.getMessage());
-        } catch(MBeanRegistrationException e) {
-            LOG.error("Unable to unregister management bean: {}", e.getMessage());
-        } catch(InstanceNotFoundException e) {
+        } catch(MalformedObjectNameException | MBeanRegistrationException | InstanceNotFoundException e) {
             LOG.error("Unable to unregister management bean: {}", e.getMessage());
         }
+
+        ((ConfigurableApplicationContext)applicationContext).close();
+    }
+
+    @Override
+    public <T> T getComponent(Class<T> type) {
+        return applicationContext.getBean(type);
     }
 
     @Override

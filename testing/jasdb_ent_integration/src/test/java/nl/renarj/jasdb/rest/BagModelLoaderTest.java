@@ -7,7 +7,7 @@ import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.remote.BagConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;

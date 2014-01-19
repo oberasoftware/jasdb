@@ -26,6 +26,13 @@ public interface DBInstanceFactory {
 	DBInstance getInstance(String instanceName) throws ConfigurationException;
 
     /**
+     * Returns wether an instanceId exists or not
+     * @param instanceId The instanceId to check for
+     * @return True if the instance exists, False if not
+     */
+    boolean hasInstance(String instanceId);
+
+    /**
      * Retrieves a list of all the instances configured
      * @return The list of all the instances
      */

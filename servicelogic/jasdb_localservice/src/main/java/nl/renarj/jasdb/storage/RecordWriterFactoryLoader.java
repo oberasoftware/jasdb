@@ -8,10 +8,11 @@ import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.core.storage.RecordWriterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -21,15 +22,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Renze de Vries
  */
 @Component
+@Singleton
 public class RecordWriterFactoryLoader {
     private static final Logger LOG = LoggerFactory.getLogger(RecordWriterFactoryLoader.class);
 
     private static final String BAG_EXTENSION = ".pjs";
 
-    @Autowired
+    @Inject
     private ConfigurationLoader configurationLoader;
 
-    @Autowired
+    @Inject
     private MetadataStore metadataStore;
 
     private Map<String, RecordWriter> recordWriters = new ConcurrentHashMap<>();

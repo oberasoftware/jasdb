@@ -7,9 +7,9 @@ import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataProvider;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
 import nl.renarj.jasdb.core.utils.FileUtils;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
 import nl.renarj.jasdb.storage.transactional.FSWriter;
 import nl.renarj.jasdb.storage.transactional.RecordIteratorImpl;
 import nl.renarj.jasdb.storage.transactional.RecordResultImpl;
@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Renze de Vries
  */
 @Component
+@Singleton
 public class JasDBMetadataStore implements MetadataStore {
     private static final Logger LOG = LoggerFactory.getLogger(JasDBMetadataStore.class);
 
@@ -51,12 +52,12 @@ public class JasDBMetadataStore implements MetadataStore {
 
     private Map<String, MetadataProvider> metadataProviders = new ConcurrentHashMap<>();
 
-    public JasDBMetadataStore() {
-
+    public JasDBMetadataStore() throws JasDBStorageException {
+        openStore();
     }
 
     @Override
-    @PostConstruct
+//    @PostConstruct
     public void openStore() throws JasDBStorageException {
         datastoreLocation = HomeLocatorUtil.determineDatastoreLocation();
 

@@ -16,7 +16,7 @@ import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
@@ -68,7 +68,7 @@ public abstract class EntityBagTest {
         System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
         SimpleBaseTest.cleanData();
 	}
-    
+
     protected EntityBagTest(DBSessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }

@@ -8,6 +8,7 @@
 package nl.renarj.jasdb.storage.indexing;
 
 import com.google.common.collect.Lists;
+import com.google.inject.assistedinject.Assisted;
 import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.metadata.Bag;
@@ -26,10 +27,10 @@ import nl.renarj.jasdb.index.search.CompositeIndexField;
 import nl.renarj.jasdb.index.search.IndexField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,15 +53,16 @@ final public class IndexManagerImpl implements IndexManager {
 
 	private Map<String, Map<String, Index>> indexes = new ConcurrentHashMap<>();
 
-    @Autowired
+    @Inject
     private ConfigurationLoader configurationLoader;
 
-    @Autowired
+    @Inject
     private MetadataStore metadataStore;
 
     private final String instanceId;
 
-    public IndexManagerImpl(String instanceId) {
+    @Inject
+    public IndexManagerImpl(@Assisted String instanceId) {
         this.instanceId = instanceId;
     }
 

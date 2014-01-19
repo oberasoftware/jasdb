@@ -104,4 +104,11 @@ public class BagUpdateOperation implements DataOperation {
         
     }
 
+    public void setRecordWriterFactoryLoader(RecordWriterFactoryLoader recordWriterFactoryLoader) {
+        this.recordWriterFactoryLoader = recordWriterFactoryLoader;
+    }
+
+    public void setIndexManagerFactory(IndexManagerFactory indexManagerFactory) {
+        this.indexManagerFactory = indexManagerFactory;
+    }
 }

@@ -7,4 +7,6 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
  */
 public interface IndexManagerFactory {
     IndexManager getIndexManager(String instanceId) throws JasDBStorageException;
+
+    void shutdownIndexes() throws JasDBStorageException;
 }

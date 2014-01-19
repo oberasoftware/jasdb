@@ -17,7 +17,7 @@ import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.impl.StringKey;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.result.SearchLimit;

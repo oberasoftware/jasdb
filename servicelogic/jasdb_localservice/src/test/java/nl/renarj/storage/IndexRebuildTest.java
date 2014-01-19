@@ -6,7 +6,7 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.search.IndexField;
 import nl.renarj.jasdb.service.StorageServiceFactory;

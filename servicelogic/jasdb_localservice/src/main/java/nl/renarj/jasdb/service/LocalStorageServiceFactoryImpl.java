@@ -9,11 +9,9 @@ import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.api.model.IndexManagerFactory;
 import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.service.metadata.BagMeta;
-import nl.renarj.jasdb.service.wrappers.ServiceWrapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,20 +35,14 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
 
     private StorageFlushThread storageFlushThread;
 
-    @Autowired
+    @Inject
     private ConfigurationLoader configurationLoader;
 
-    @Autowired
+    @Inject
     private MetadataStore metadataStore;
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Autowired
-    private ServiceWrapperFactory serviceWrapperFactory;
-
-    @Autowired
-    private IndexManagerFactory indexManagerFactory;
 
     @PostConstruct
     public void initializeServices() throws JasDBStorageException {
@@ -108,10 +101,8 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
                 StorageService serviceInstance = createStorageServiceInstance(instance, bagName);
                 serviceInstance.openService(configurationLoader.getConfiguration());
                 serviceInstance.initializePartitions();
-//                StorageService wrappedInstance = serviceWrapperFactory.wrap(serviceInstance);
 
                 storageServices.put(key, serviceInstance); //wrappedInstance);
-//                return wrappedInstance;
                 return serviceInstance;
             } else {
                 throw new JasDBStorageException("Unable to create bag storage service, instance: " + instanceId + " does not exist");
@@ -120,11 +111,7 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
     }
 	
 	protected StorageService createStorageServiceInstance(Instance instance, String bagName) throws JasDBStorageException {
-//        File bagFile = new File(instance.getPath(), bagName + LocalStorageServiceImpl.BAG_EXTENSION);
-//        RecordWriter recordWriter = recordWriterFactory.createWriter(bagFile);
-
         return (StorageService) applicationContext.getBean("LocalStorageService", instance.getInstanceId(), bagName);
-//		return new LocalStorageServiceImpl(instance.getInstanceId(), bagName); //indexManagerFactory.getIndexManager(instance), recordWriter, metadataStore, bagName);
 	}
 
     @Override

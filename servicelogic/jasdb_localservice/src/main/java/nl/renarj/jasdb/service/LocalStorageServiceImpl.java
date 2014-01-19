@@ -11,6 +11,7 @@ import nl.renarj.jasdb.api.model.IndexManager;
 import nl.renarj.jasdb.api.model.IndexManagerFactory;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
+import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.Index;
@@ -58,7 +59,7 @@ public class LocalStorageServiceImpl implements StorageService {
     private String bagName;
 
     @Autowired
-    protected PartitioningManager partitionManager;
+    private PartitioningManager partitionManager;
 
     @Autowired
     private IdGenerator generator;
@@ -142,6 +143,10 @@ public class LocalStorageServiceImpl implements StorageService {
 	@Override
 	public void  openService(Configuration configuration) throws JasDBStorageException {
         LOGGER.info("Opening storage service for bag: {}", bagName);
+
+        if(!recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).isOpen()) {
+            throw new ConfigurationException("Unable to open record writer for instance/bag: " + instanceId + '/' + bagName);
+        }
 
         if(!metadataStore.isLastShutdownClean() || Boolean.parseBoolean(System.getProperty(FORCE_REBUILD_COMMAND))) {
             LOGGER.info("Previous shutdown of: {} was unclean or forced rebuild triggered, scanning and rebuilding indexes", this);
@@ -370,5 +375,37 @@ public class LocalStorageServiceImpl implements StorageService {
                 "bagName='" + bagName + '\'' +
                 ", instanceId='" + instanceId + '\'' +
                 '}';
+    }
+
+    public void setRecordWriterFactoryLoader(RecordWriterFactoryLoader recordWriterFactoryLoader) {
+        this.recordWriterFactoryLoader = recordWriterFactoryLoader;
+    }
+
+    public void setPartitionManager(PartitioningManager partitionManager) {
+        this.partitionManager = partitionManager;
+    }
+
+    public void setGenerator(IdGenerator generator) {
+        this.generator = generator;
+    }
+
+    public void setBagInsertOperation(DataOperation bagInsertOperation) {
+        this.bagInsertOperation = bagInsertOperation;
+    }
+
+    public void setBagRemoveOperation(DataOperation bagRemoveOperation) {
+        this.bagRemoveOperation = bagRemoveOperation;
+    }
+
+    public void setBagUpdateOperation(DataOperation bagUpdateOperation) {
+        this.bagUpdateOperation = bagUpdateOperation;
+    }
+
+    public void setIndexManagerFactory(IndexManagerFactory indexManagerFactory) {
+        this.indexManagerFactory = indexManagerFactory;
+    }
+
+    public void setMetadataStore(MetadataStore metadataStore) {
+        this.metadataStore = metadataStore;
     }
 }

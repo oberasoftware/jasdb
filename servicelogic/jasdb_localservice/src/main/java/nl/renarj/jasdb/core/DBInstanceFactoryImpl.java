@@ -12,10 +12,9 @@ import nl.renarj.jasdb.service.metadata.InstanceMeta;
 import nl.renarj.jasdb.service.metadata.JasDBMetadataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,13 +26,16 @@ public class DBInstanceFactoryImpl implements DBInstanceFactory {
 
 	private Map<String, DBInstance> instances = new ConcurrentHashMap<>();
 
-    @Autowired
+//    @Inject
     private MetadataStore metadataStore;
-	
-	public DBInstanceFactoryImpl() throws ConfigurationException {
+
+    @Inject
+	public DBInstanceFactoryImpl(MetadataStore metadataStore) throws JasDBStorageException {
+        this.metadataStore = metadataStore;
+        initializeServices();
 	}
 
-    @PostConstruct
+//    @PostConstruct
     public void initializeServices() throws JasDBStorageException {
         for(Instance instanceMeta : metadataStore.getInstances()) {
             LOG.info("Loading instance: {} on path: {}", instanceMeta.getInstanceId(), instanceMeta.getPath());
@@ -88,6 +90,11 @@ public class DBInstanceFactoryImpl implements DBInstanceFactory {
 			}
 		}
 	}
+
+    @Override
+    public boolean hasInstance(String instanceId) {
+        return StringUtils.stringNotEmpty(instanceId) && instances.containsKey(instanceId);
+    }
 
     @Override
 	public List<DBInstance> listInstances() {

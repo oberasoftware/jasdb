@@ -1,7 +1,5 @@
 package nl.renarj.jasdb.core;
 
-import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.model.DBInstanceFactory;
 import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
@@ -10,14 +8,12 @@ import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.LocatorException;
 import nl.renarj.jasdb.core.locator.NodeInformation;
+import nl.renarj.jasdb.core.platform.PlatformManager;
 import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
 import nl.renarj.jasdb.service.StorageServiceFactory;
 import nl.renarj.jasdb.storage.exceptions.RecordStoreInUseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +39,8 @@ public class SimpleKernel {
     private String kernelVersion = "unknown";
     private String gridId;
 
-    private ApplicationContext applicationContext;
+//    private ApplicationContext applicationContext;
+    private PlatformManager platformManager;
 
 //    private Configuration configuration;
 //	private Injector injector;
@@ -63,11 +60,11 @@ public class SimpleKernel {
 	}
 	
 	public static DBInstanceFactory getInstanceFactory() throws ConfigurationException {
-		return getInstance().applicationContext.getBean(DBInstanceFactory.class);
+        return getInstance().platformManager.getComponent(DBInstanceFactory.class);
 	}
 	
 	public static StorageServiceFactory getStorageServiceFactory() throws ConfigurationException {
-		return getInstance().applicationContext.getBean(StorageServiceFactory.class);
+        return getInstance().platformManager.getComponent(StorageServiceFactory.class);
 	}
 
     public static <T> T getKernelModule(Class<T> requiredModuleType) throws JasDBStorageException {
@@ -108,7 +105,7 @@ public class SimpleKernel {
     private void kernelShutdown() throws JasDBException {
         log.info("Shutting down kernel");
 
-        ((ConfigurableApplicationContext)applicationContext).close();
+
 //        KernelContext context = new KernelContext(injector, configuration, nodeInformation, metadataStore);
 //        for(Extension extension : loadedExtensions) {
 //            extension.shutdown(context);
@@ -167,10 +164,12 @@ public class SimpleKernel {
 		log.info("Bootstrapping database kernel");
 
 
+        platformManager = PlatformManagerFactory.getPlatformManager();
+        log.info("Initializing platform: {}", platformManager);
 
-        applicationContext = new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
-        Configuration configuration = applicationContext.getBean(ConfigurationLoader.class).getConfiguration();
-        configure(configuration);
+        platformManager.initializePlatform();
+
+        log.info("Finished platform initialization");
 
 //		String kernelBindingModule = configuration.getAttribute("kernel");
 //		if(StringUtils.stringNotEmpty(kernelBindingModule)) {
@@ -183,9 +182,6 @@ public class SimpleKernel {
 //                this.remoteService = this.injector.getInstance(RemoteService.class);
 //                this.storageServiceFactory = injector.getInstance(StorageServiceFactory.class);
 
-                GlobalCachingMemoryManager cachingMemoryManager = GlobalCachingMemoryManager.getGlobalInstance();
-                Configuration cachingConfiguration = configuration.getChildConfiguration("/jasdb/caching");
-                cachingMemoryManager.configure(cachingConfiguration);
 
 //                this.nodeInformation = new NodeInformation(instanceId, gridId);
 //                this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
@@ -209,7 +205,7 @@ public class SimpleKernel {
 
                 kernelVersion = PlatformManagerFactory.getPlatformManager().getVersionData();
                 log.info("Booting JasDB version: {}", kernelVersion);
-                log.info("JasDB instance id: {}", instanceId);
+                log.info("JasDB process id: {}", instanceId);
                 registerShutdownHooks();
 
 //                ServiceLoader<Extension> extensions = ServiceLoader.load(Extension.class);
@@ -245,12 +241,8 @@ public class SimpleKernel {
     }
 
     private void registerShutdownHooks() throws JasDBStorageException {
-        ((ConfigurableApplicationContext)applicationContext).registerShutdownHook();
-
         Thread shutdownThread = new Thread(new KernelShutdown());
         Runtime.getRuntime().addShutdownHook(shutdownThread);
-
-        PlatformManagerFactory.getPlatformManager().initializePlatform();
     }
 
 	
@@ -272,18 +264,18 @@ public class SimpleKernel {
 //        }
 //	}
 	
-	private void configure(Configuration configuration) throws ConfigurationException {
-		Configuration statConfig = configuration.getChildConfiguration("/jasdb/Statistics");
-		if(statConfig != null && statConfig.getAttribute("enabled", false)) {
-			StatisticsMonitor.enableStatistics();
-		}
-
-        Configuration gridConfiguration = configuration.getChildConfiguration(GRID_CONFIG_PATH);
-        if(gridConfiguration != null) {
-            gridId = gridConfiguration.getAttribute(GRID_ID_CONFIG, null);
-        }
-
-    }
+//	private void configure(Configuration configuration) throws ConfigurationException {
+//		Configuration statConfig = configuration.getChildConfiguration("/jasdb/Statistics");
+//		if(statConfig != null && statConfig.getAttribute("enabled", false)) {
+//			StatisticsMonitor.enableStatistics();
+//		}
+//
+//        Configuration gridConfiguration = configuration.getChildConfiguration(GRID_CONFIG_PATH);
+//        if(gridConfiguration != null) {
+//            gridId = gridConfiguration.getAttribute(GRID_ID_CONFIG, null);
+//        }
+//
+//    }
 
     public static String getVersion() throws ConfigurationException {
         return getInstance().kernelVersion;

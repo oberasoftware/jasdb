@@ -6,7 +6,7 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.rest.input.InputElement;
 import nl.renarj.jasdb.rest.input.OrderParam;
 import nl.renarj.jasdb.rest.input.conditions.FieldCondition;

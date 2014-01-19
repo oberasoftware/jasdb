@@ -23,7 +23,7 @@ import nl.renarj.jasdb.api.query.QueryBuilder;
 import nl.renarj.jasdb.api.query.QueryExecutor;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;

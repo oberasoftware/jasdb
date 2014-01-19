@@ -62,4 +62,11 @@ public class BagInsertOperation implements DataOperation {
 		indexIterator.stop();
 	}
 
+    public void setIndexManagerFactory(IndexManagerFactory indexManagerFactory) {
+        this.indexManagerFactory = indexManagerFactory;
+    }
+
+    public void setRecordWriterFactory(RecordWriterFactoryLoader recordWriterFactory) {
+        this.recordWriterFactory = recordWriterFactory;
+    }
 }
