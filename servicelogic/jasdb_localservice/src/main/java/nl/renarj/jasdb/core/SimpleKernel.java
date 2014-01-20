@@ -6,6 +6,7 @@ import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.LocatorException;
+import nl.renarj.jasdb.core.exceptions.NoComponentFoundException;
 import nl.renarj.jasdb.core.locator.NodeInformation;
 import nl.renarj.jasdb.core.platform.PlatformManager;
 import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
@@ -51,11 +52,11 @@ public class SimpleKernel {
         LOG.debug("Loaded kernel with classloader instance: {}", getClass().getClassLoader().hashCode());
 	}
 	
-	public static DBInstanceFactory getInstanceFactory() throws ConfigurationException {
+	public static DBInstanceFactory getInstanceFactory() throws JasDBStorageException {
         return getInstance().platformManager.getComponent(DBInstanceFactory.class);
 	}
 
-	public static StorageServiceFactory getStorageServiceFactory() throws ConfigurationException {
+	public static StorageServiceFactory getStorageServiceFactory() throws JasDBStorageException {
         return getInstance().platformManager.getComponent(StorageServiceFactory.class);
 	}
 
@@ -98,8 +99,10 @@ public class SimpleKernel {
 //            extension.shutdown(context);
 //        }
 
-        LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
-        remoteService.stopService();
+        if(remoteService != null) {
+            LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
+            remoteService.stopService();
+        }
 
         LOG.debug("Doing kernel shutdown, stopping instance and storage services");
 
@@ -155,13 +158,19 @@ public class SimpleKernel {
         LOG.info("Finished platform initialization");
 
         try {
-            this.remoteService = platformManager.getComponent(RemoteService.class);
-
             this.nodeInformation = new NodeInformation(instanceId, gridId);
-            this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
 
-            LOG.info("Starting remote service: {}", remoteService.getClass().getName());
-            this.remoteService.startService();
+            try {
+                this.remoteService = platformManager.getComponent(RemoteService.class);
+                this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
+
+                LOG.info("Starting remote service: {}", remoteService.getClass().getName());
+                this.remoteService.startService();
+            } catch(NoComponentFoundException e) {
+                LOG.info("No remote service available");
+            }
+
+
 
             kernelVersion = PlatformManagerFactory.getPlatformManager().getVersionData();
             LOG.info("Booting JasDB version: {}", kernelVersion);

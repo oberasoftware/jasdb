@@ -6,8 +6,10 @@ import nl.renarj.jasdb.core.KernelShutdown;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
+import nl.renarj.jasdb.core.exceptions.NoComponentFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -91,8 +93,12 @@ public class HotspotPlatformManager implements PlatformManager {
     }
 
     @Override
-    public <T> T getComponent(Class<T> type) {
-        return applicationContext.getBean(type);
+    public <T> T getComponent(Class<T> type) throws NoComponentFoundException {
+        try {
+            return applicationContext.getBean(type);
+        } catch(NoSuchBeanDefinitionException e) {
+            throw new NoComponentFoundException("Unable to find component", e);
+        }
     }
 
     @Override

@@ -37,7 +37,6 @@ public class JasDBMetadataStoreTest {
         storeLocation = temporaryFolder.newFolder();
         System.setProperty("JASDB_HOME", storeLocation.toString());
         metadataStore = new JasDBMetadataStore();
-        metadataStore.openStore();
     }
 
     @After
@@ -54,7 +53,6 @@ public class JasDBMetadataStoreTest {
 
         metadataStore.closeStore();
         metadataStore = new JasDBMetadataStore();
-        metadataStore.openStore();
 
         assertThat(metadataStore.getInstances().size(), is(2));
         assertThat(getInstanceIds(metadataStore.getInstances()), hasItems("default", "testInstance1"));
@@ -74,7 +72,6 @@ public class JasDBMetadataStoreTest {
         pidFile.createNewFile();
 
         metadataStore = new JasDBMetadataStore();
-        metadataStore.openStore();
         assertFalse(metadataStore.isLastShutdownClean());
     }
 

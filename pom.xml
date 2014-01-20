@@ -318,6 +318,7 @@
                         <version>2.1.2</version>
                         <configuration>
                             <attach>false</attach>
+
                         </configuration>
                     </plugin>
                 </plugins>

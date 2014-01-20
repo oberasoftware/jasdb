@@ -38,9 +38,7 @@ public class JasDBMetadataStore implements MetadataStore {
     private static final String METADATA_FILE = "metadata.pjs";
     private static final String PID_FILE = "metadata.pid";
 
-
     public static final String DEFAULT_INSTANCE = "default";
-
 
     private FSWriter writer;
     private File datastoreLocation;
@@ -56,9 +54,7 @@ public class JasDBMetadataStore implements MetadataStore {
         openStore();
     }
 
-    @Override
-//    @PostConstruct
-    public void openStore() throws JasDBStorageException {
+    private void openStore() throws JasDBStorageException {
         datastoreLocation = HomeLocatorUtil.determineDatastoreLocation();
 
         handleCreateNewPidFile();

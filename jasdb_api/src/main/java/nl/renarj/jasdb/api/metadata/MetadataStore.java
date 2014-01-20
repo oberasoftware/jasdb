@@ -10,12 +10,6 @@ import java.util.List;
  */
 public interface MetadataStore {
     /**
-     * Opens the metadata store
-     * @throws JasDBStorageException If unable to open the store
-     */
-    void openStore() throws JasDBStorageException;
-
-    /**
      * Close the store
      * @throws JasDBStorageException If unable to close the store cleanly
      */
