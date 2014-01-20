@@ -5,7 +5,6 @@ import nl.renarj.jasdb.api.context.RequestContext;
 import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.model.DBInstance;
 import nl.renarj.jasdb.api.model.DBInstanceFactory;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.exceptions.RestException;
@@ -25,14 +24,23 @@ import nl.renarj.jasdb.service.StorageService;
 import nl.renarj.jasdb.service.StorageServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class BagModelLoader extends AbstractModelLoader {
     private static final Logger log = LoggerFactory.getLogger(BagModelLoader.class);
     private static final String FLUSH_OPERATION = "flush";
+
+    @Inject
+    private DBInstanceFactory instanceFactory;
+
+    @Inject
+    private StorageServiceFactory storageServiceFactory;
 
     @Override
 	public String[] getModelNames() {
@@ -62,8 +70,6 @@ public class BagModelLoader extends AbstractModelLoader {
     
     private RestEntity handleConditions(String instanceId, InputElement input) throws RestException {
         try {
-            DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
-
             if(input.getCondition() != null) {
                 return doSearch(instanceFactory.getInstance(instanceId), input);
             } else {
@@ -87,7 +93,6 @@ public class BagModelLoader extends AbstractModelLoader {
             }
         } else {
             try {
-                DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
                 return createBag(instanceFactory.getInstance().getInstanceId(), serializer, rawData);
             } catch(ConfigurationException e) {
                 throw new RestException("Unable to load instance data", e);
@@ -116,8 +121,6 @@ public class BagModelLoader extends AbstractModelLoader {
         if(condition.getTokenType() == TokenType.LITERAL && ((FieldCondition)condition).getField().equals(FieldCondition.ID_PARAM)) {
             FieldCondition idCondition = (FieldCondition) condition;
             try {
-                DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
-
                 DBInstance dbInstance;
                 if(StringUtils.stringEmpty(instance)) {
                     dbInstance = instanceFactory.getInstance();
@@ -125,7 +128,7 @@ public class BagModelLoader extends AbstractModelLoader {
                     dbInstance = instanceFactory.getInstance(instance);
                 }
 
-                SimpleKernel.getStorageServiceFactory().removeStorageService(dbInstance.getInstanceId(), idCondition.getValue());
+                storageServiceFactory.removeStorageService(dbInstance.getInstanceId(), idCondition.getValue());
             } catch(ConfigurationException e) {
                 throw new RestException("Unable to load instance data", e);
             } catch(JasDBStorageException e) {
@@ -141,7 +144,6 @@ public class BagModelLoader extends AbstractModelLoader {
 
         try {
             if(StringUtils.stringNotEmpty(bagData.getName())) {
-                StorageServiceFactory storageServiceFactory = SimpleKernel.getStorageServiceFactory();
                 StorageService storageService = storageServiceFactory.getOrCreateStorageService(instance, bagData.getName());
 
                 return new RestBag(instance, bagData.getName(), storageService.getSize(), storageService.getDiskSize());
@@ -163,7 +165,6 @@ public class BagModelLoader extends AbstractModelLoader {
             String bagName = fieldCondition.getValue();
 
 			try {
-                StorageServiceFactory storageServiceFactory = SimpleKernel.getStorageServiceFactory();
                 StorageService storageService = storageServiceFactory.getStorageService(instance.getInstanceId(), bagName);
 				if(storageService != null) {
 					log.debug("Found a bag with name: {}", bagName);
@@ -183,7 +184,6 @@ public class BagModelLoader extends AbstractModelLoader {
 		log.debug("Retrieving full list of bags on storage instance: {}", instance.getInstanceId());
 		List<RestBag> bags = new ArrayList<>();
 		try {
-            StorageServiceFactory storageServiceFactory = SimpleKernel.getStorageServiceFactory();
 			for(Bag bag : instance.getBags()) {
                 StorageService storageService = storageServiceFactory.getStorageService(instance.getInstanceId(), bag.getName());
 				bags.add(new RestBag(instance.getInstanceId(), bag.getName(), storageService.getSize(), storageService.getDiskSize()));
@@ -205,7 +205,6 @@ public class BagModelLoader extends AbstractModelLoader {
                 RestBag bag = (RestBag) entity;
 
                 try {
-                    StorageServiceFactory storageServiceFactory = SimpleKernel.getStorageServiceFactory();
                     StorageService storageService = storageServiceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
                     storageService.flush();
 

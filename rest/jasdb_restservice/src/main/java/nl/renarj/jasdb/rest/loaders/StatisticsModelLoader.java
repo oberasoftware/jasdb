@@ -10,6 +10,7 @@ import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.model.Statistic;
 import nl.renarj.jasdb.rest.model.StatisticCollection;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  * Date: 1-5-12
  * Time: 21:40
  */
+@Component
 public class StatisticsModelLoader extends AbstractModelLoader {
     @Override
     public String[] getModelNames() {

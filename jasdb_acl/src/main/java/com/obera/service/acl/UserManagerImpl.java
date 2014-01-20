@@ -1,6 +1,5 @@
 package com.obera.service.acl;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import nl.renarj.core.statistics.StatRecord;
 import nl.renarj.core.statistics.StatisticsMonitor;
@@ -14,7 +13,6 @@ import nl.renarj.jasdb.api.metadata.Grant;
 import nl.renarj.jasdb.api.metadata.GrantObject;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.metadata.User;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.crypto.CryptoEngine;
 import nl.renarj.jasdb.core.crypto.CryptoFactory;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
@@ -22,6 +20,8 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.service.metadata.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Renze de Vries
  */
+@Component
 @Singleton
 public class UserManagerImpl implements UserManager {
     private static final Logger LOG = LoggerFactory.getLogger(UserManagerImpl.class);
@@ -37,7 +38,10 @@ public class UserManagerImpl implements UserManager {
 
     private ConcurrentHashMap<String, GrantObject> cachedGrants = new ConcurrentHashMap<>();
 
-    @Inject
+    @Autowired
+    private MetadataStore metadataStore;
+
+    @Autowired
     public UserManagerImpl(CredentialsProvider credentialsProvider) {
         this.credentialsProvider = credentialsProvider;
     }
@@ -215,7 +219,6 @@ public class UserManagerImpl implements UserManager {
     }
 
     private GrantMetadataProvider getGrantProvider() throws JasDBStorageException {
-        MetadataStore metadataStore = SimpleKernel.getMetadataStore();
         return metadataStore.getMetadataProvider(GrantMetadataProvider.GRANT_TYPE);
     }
 

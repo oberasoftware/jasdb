@@ -8,8 +8,6 @@
 package nl.renarj.jasdb.rest.loaders;
 
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.partitions.BagPartition;
 import nl.renarj.jasdb.rest.exceptions.RestException;
@@ -27,20 +25,24 @@ import nl.renarj.jasdb.service.StorageServiceFactory;
 import nl.renarj.jasdb.service.partitioning.PartitioningManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: renarj
- * Date: 1/22/12
- * Time: 2:49 PM
+ * @author Renze de Vries
  */
+@Component
 public class PartitionModelLoader extends AbstractModelLoader {
     private static final String SPLIT_OPERATION = "split";
     private static final String CHANGE_STATUS_OPERATION = "changeState";
 
     private Logger log = LoggerFactory.getLogger(PartitionModelLoader.class);
+
+    @Inject
+    private StorageServiceFactory storageServiceFactory;
 
     @Override
     public String[] getModelNames() {
@@ -120,8 +122,7 @@ public class PartitionModelLoader extends AbstractModelLoader {
                 Partition partition = (Partition) entity;
 
                 try {
-                    StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-                    StorageService storageService = serviceFactory.getOrCreateStorageService(partition.getInstance(), partition.getBag());
+                    StorageService storageService = storageServiceFactory.getOrCreateStorageService(partition.getInstance(), partition.getBag());
 
                     if(operation.equals(SPLIT_OPERATION)) {
                         List<BagPartition> splittedPartitions = storageService.getPartitionManager().splitPartition(PartitionModelMapper.map(partition));
@@ -142,8 +143,6 @@ public class PartitionModelLoader extends AbstractModelLoader {
                             throw new RestException("Unable to modify partition status of: " + partition.getPartitionId());
                         }
                     }
-                } catch(ConfigurationException e) {
-                    log.error("Unable to do partition operation", e);
                 } catch(JasDBStorageException e) {
                     log.error("Unable to do partition operation", e);
                 }

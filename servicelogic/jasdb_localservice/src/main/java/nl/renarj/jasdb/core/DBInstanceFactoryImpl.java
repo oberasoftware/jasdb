@@ -26,7 +26,6 @@ public class DBInstanceFactoryImpl implements DBInstanceFactory {
 
 	private Map<String, DBInstance> instances = new ConcurrentHashMap<>();
 
-//    @Inject
     private MetadataStore metadataStore;
 
     @Inject
@@ -35,7 +34,6 @@ public class DBInstanceFactoryImpl implements DBInstanceFactory {
         initializeServices();
 	}
 
-//    @PostConstruct
     public void initializeServices() throws JasDBStorageException {
         for(Instance instanceMeta : metadataStore.getInstances()) {
             LOG.info("Loading instance: {} on path: {}", instanceMeta.getInstanceId(), instanceMeta.getPath());

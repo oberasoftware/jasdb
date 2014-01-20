@@ -6,7 +6,6 @@ import com.google.inject.Singleton;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.CredentialsProvider;
-import nl.renarj.jasdb.api.kernel.KernelContext;
 import nl.renarj.jasdb.api.metadata.Grant;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.metadata.User;
@@ -17,12 +16,16 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.service.metadata.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.List;
 
 /**
  * @author Renze de Vries
  */
+@Component
 @Singleton
 public class LocalCredentialsProvider implements CredentialsProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LocalCredentialsProvider.class);
@@ -30,10 +33,11 @@ public class LocalCredentialsProvider implements CredentialsProvider {
     private UserMetadataProvider userMetadataProvider;
     private GrantMetadataProvider grantMetadataProvider;
 
-    @Override
-    public void initialize(KernelContext context) throws JasDBStorageException {
-        MetadataStore metadataStore = context.getMetadataStore();
+    @Inject
+    private MetadataStore metadataStore;
 
+    @PostConstruct
+    public void initialize() throws JasDBStorageException {
         userMetadataProvider = metadataStore.getMetadataProvider(UserMetadataProvider.USERMETA_TYPE);
         grantMetadataProvider = metadataStore.getMetadataProvider(GrantMetadataProvider.GRANT_TYPE);
 

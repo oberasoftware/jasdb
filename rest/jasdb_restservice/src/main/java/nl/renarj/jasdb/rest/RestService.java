@@ -1,8 +1,8 @@
 package nl.renarj.jasdb.rest;
 
-import com.google.inject.Inject;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import nl.renarj.core.utilities.configuration.Configuration;
+import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.RemoteService;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
@@ -20,12 +20,18 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
+@Singleton
 public class RestService implements RemoteService {
     private static final Logger LOG = LoggerFactory.getLogger(RestService.class);
 
@@ -47,16 +53,24 @@ public class RestService implements RemoteService {
     private boolean oauthEnabled;
 
 	private Server server;
+
+    @Autowired
+    private ConfigurationLoader configurationLoader;
     
-    @Inject
-    public RestService(Configuration configuration) throws ConfigurationException {
-		Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
+    public RestService() throws ConfigurationException {
+	}
+
+    @PostConstruct
+    public void init() throws ConfigurationException {
+        Configuration configuration = configurationLoader.getConfiguration();
+
+        Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
         portNr = restConfiguration.getAttribute(REST_PORT_CONFIG, DEFAULT_PORT);
         oauthEnabled = restConfiguration.getAttribute(REST_OAUTH_ENABLED, DEFAULT_OAUTH);
 
         loadNodeData();
         sslDetails = loadSSLDetails(configuration);
-	}
+    }
 
     private SSLDetails loadSSLDetails(Configuration configuration) throws ConfigurationException {
         Configuration sslPortConfiguration = configuration.getChildConfiguration(REST_SSL_PORT_PATH);

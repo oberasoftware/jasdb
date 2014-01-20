@@ -1,7 +1,6 @@
 package nl.renarj.jasdb.core.dummy;
 
 import nl.renarj.jasdb.api.acl.CredentialsProvider;
-import nl.renarj.jasdb.api.kernel.KernelContext;
 import nl.renarj.jasdb.api.metadata.User;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 
@@ -32,10 +31,5 @@ public class DummyCredentialsProvider implements CredentialsProvider {
     @Override
     public void deleteUser(String userName) throws JasDBStorageException {
         DummyUserManager.throwNotSupported();
-    }
-
-    @Override
-    public void initialize(KernelContext context) throws JasDBStorageException {
-
     }
 }

@@ -69,11 +69,11 @@ public abstract class AbstractAuthorizationTest {
 
         SimpleKernel.initializeKernel();
 
-        MetadataStore metadataStore = SimpleKernel.getMetadataStore();
+        MetadataStore metadataStore = SimpleKernel.getKernelModule(MetadataStore.class);
 
         LocalCredentialsProvider localCredentialsProvider = new LocalCredentialsProvider();
         userManager = new UserManagerImpl(localCredentialsProvider);
-        sessionManager = new SessionManagerImpl(userManager);
+        sessionManager = new SessionManagerImpl();
         KernelContext kernelContext = mock(KernelContext.class);
         Injector injector = mock(Injector.class);
         wrappedService = mock(StorageService.class);
@@ -84,7 +84,7 @@ public abstract class AbstractAuthorizationTest {
         when(injector.getInstance(UserManager.class)).thenReturn(userManager);
         when(kernelContext.getMetadataStore()).thenReturn(metadataStore);
 
-        localCredentialsProvider.initialize(kernelContext);
+//        localCredentialsProvider.initialize(kernelContext);
         authService = new AuthorizationServiceWrapper();
         authService.wrap(kernelContext, wrappedService);
 

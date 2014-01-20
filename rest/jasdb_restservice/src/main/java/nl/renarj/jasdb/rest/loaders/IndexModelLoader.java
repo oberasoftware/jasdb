@@ -3,10 +3,8 @@ package nl.renarj.jasdb.rest.loaders;
 import nl.renarj.core.statistics.StatRecord;
 import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.model.DBInstance;
 import nl.renarj.jasdb.api.model.IndexManager;
-import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
+import nl.renarj.jasdb.api.model.IndexManagerFactory;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
@@ -28,7 +26,9 @@ import nl.renarj.jasdb.service.StorageService;
 import nl.renarj.jasdb.service.StorageServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +38,16 @@ import java.util.Map;
  * Date: 3-6-12
  * Time: 16:38
  */
+@Component
 public class IndexModelLoader extends AbstractModelLoader{
     private static final int SINGLE_KEY_FIELD = 1;
     private Logger log = LoggerFactory.getLogger(IndexModelLoader.class);
+
+    @Inject
+    private IndexManagerFactory indexManagerFactory;
+
+    @Inject
+    private StorageServiceFactory storageServiceFactory;
 
     @Override
     public String[] getModelNames() {
@@ -54,9 +61,7 @@ public class IndexModelLoader extends AbstractModelLoader{
             RestBag bag = (RestBag) previous.getResult();
 
             try {
-                StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-                DBInstance instance = SimpleKernel.getInstanceFactory().getInstance(bag.getInstanceId());
-                IndexManager indexManager = serviceFactory.getIndexManager(instance);
+                IndexManager indexManager = indexManagerFactory.getIndexManager(bag.getInstanceId());
 
                 StatRecord getIndexCounter = StatisticsMonitor.createRecord("getIndexes");
                 Map<String, Index> indexes = indexManager.getIndexes(bag.getName());
@@ -69,8 +74,6 @@ public class IndexModelLoader extends AbstractModelLoader{
                     indexEntries.add(entry);
                 }
                 return new IndexCollection(indexEntries);
-            } catch(ConfigurationException e) {
-                throw new RestException("Unable to load index data: " + e.getMessage());
             } catch(JasDBStorageException e) {
                 throw new RestException("Unable to load index data: " + e.getMessage());
             }
@@ -88,8 +91,7 @@ public class IndexModelLoader extends AbstractModelLoader{
             IndexEntry indexEntry = serializer.deserialize(IndexEntry.class, rawData);
 
             try {
-                StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-                StorageService storageService = serviceFactory.getStorageService(bag.getInstanceId(), bag.getName());
+                StorageService storageService = storageServiceFactory.getStorageService(bag.getInstanceId(), bag.getName());
 
                 KeyInfo keyInfo = new KeyInfoImpl(indexEntry.getKeyHeader(), indexEntry.getValueHeader());
                 List<IndexField> indexFields = keyInfo.getIndexKeyFields();
@@ -106,8 +108,6 @@ public class IndexModelLoader extends AbstractModelLoader{
                 }
 
                 return indexEntry;
-            } catch(ConfigurationException e) {
-                throw new RestException("Unable to write index data: " + e.getMessage());
             } catch(JasDBStorageException e) {
                 throw new RestException("Unable to write index data: " + e.getMessage());
             }
@@ -127,13 +127,10 @@ public class IndexModelLoader extends AbstractModelLoader{
                 FieldCondition idCondition = (FieldCondition) condition;
 
                 try {
-                    StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-                    StorageService storageService = serviceFactory.getStorageService(bag.getInstanceId(), bag.getName());
+                    StorageService storageService = storageServiceFactory.getStorageService(bag.getInstanceId(), bag.getName());
                     storageService.removeIndex(idCondition.getValue());
 
                     return null;
-                } catch(ConfigurationException e) {
-                    throw new RestException("Unable to remove index data: " + e.getMessage());
                 } catch(JasDBStorageException e) {
                     throw new RestException("Unable to remove index data: " + e.getMessage());
                 }

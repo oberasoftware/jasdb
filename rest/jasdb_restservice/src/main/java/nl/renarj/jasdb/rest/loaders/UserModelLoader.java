@@ -3,7 +3,6 @@ package nl.renarj.jasdb.rest.loaders;
 import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.exceptions.RestException;
 import nl.renarj.jasdb.rest.input.InputElement;
@@ -16,14 +15,20 @@ import nl.renarj.jasdb.rest.model.RestUserList;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
  * @author Renze de Vries
  */
+@Component
 public class UserModelLoader extends AbstractModelLoader {
     private static final Logger LOG = LoggerFactory.getLogger(UserModelLoader.class);
+
+    @Inject
+    private UserManager userManager;
 
     @Override
     public String[] getModelNames() {
@@ -42,7 +47,6 @@ public class UserModelLoader extends AbstractModelLoader {
 
     private RestEntity loadUserList(RequestContext context) throws RestException {
         try {
-            UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
             List<String> userList = userManager.getUsers(context.getUserSession());
 
             return new RestUserList(userList);
@@ -57,7 +61,6 @@ public class UserModelLoader extends AbstractModelLoader {
             RestUser user = serializer.deserialize(RestUser.class, rawData);
             if(StringUtils.stringNotEmpty(user.getUsername()) && StringUtils.stringNotEmpty(user.getAllowedHost()) && StringUtils.stringNotEmpty(user.getPassword())) {
                 try {
-                    UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
                     userManager.addUser(requestContext.getUserSession(), user.getUsername(), user.getAllowedHost(), user.getPassword());
 
                     return new RestUser(user.getUsername(), user.getAllowedHost(), null);
@@ -77,7 +80,6 @@ public class UserModelLoader extends AbstractModelLoader {
     public RestEntity removeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext requestContext) throws RestException {
         if(input.getCondition() != null) {
             try {
-                UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
                 userManager.deleteUser(requestContext.getUserSession(), ((FieldCondition) input.getCondition()).getValue());
 
                 return null;
