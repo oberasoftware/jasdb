@@ -28,6 +28,16 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
+        <dependency>
+            <artifactId>javax.inject</artifactId>
+            <groupId>javax.inject</groupId>
+            <version>1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
+
     </dependencies>
 	<build>
 		<plugins>

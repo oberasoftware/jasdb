@@ -15,11 +15,6 @@
             <artifactId>jasdb_localservice</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
             <scope>compile</scope>
@@ -31,6 +26,12 @@
         <dependency>
             <groupId>com.github.tony19</groupId>
             <artifactId>logback-android-classic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <classifier>no_aop</classifier>
         </dependency>
     </dependencies>
 </project>

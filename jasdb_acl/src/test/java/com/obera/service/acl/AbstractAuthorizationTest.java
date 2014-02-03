@@ -1,6 +1,5 @@
 package com.obera.service.acl;
 
-import com.google.inject.Injector;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.SessionManager;
@@ -8,27 +7,31 @@ import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.api.context.Credentials;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.kernel.KernelContext;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.service.StorageService;
+import nl.renarj.jasdb.service.StorageServiceFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Renze de Vries
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/jasdb-security-test.xml"})
 public abstract class AbstractAuthorizationTest {
     private static final String DEFAULT_ADMIN_PASS = "";
     private static final String ADMIN_USER = "admin";
@@ -43,11 +46,15 @@ public abstract class AbstractAuthorizationTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private AuthorizationServiceWrapper authService;
-
     private StorageService wrappedService;
 
+    @Autowired
     private SessionManager sessionManager;
+
+    @Autowired
+    private StorageServiceFactory storageServiceFactory;
+
+    @Autowired
     private UserManager userManager;
 
     private UserSession adminSession;
@@ -67,26 +74,22 @@ public abstract class AbstractAuthorizationTest {
         System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
         SimpleBaseTest.cleanData();
 
-        SimpleKernel.initializeKernel();
+//        SimpleKernel.initializeKernel();
 
-        MetadataStore metadataStore = SimpleKernel.getKernelModule(MetadataStore.class);
+//        MetadataStore metadataStore = SimpleKernel.getKernelModule(MetadataStore.class);
 
-        LocalCredentialsProvider localCredentialsProvider = new LocalCredentialsProvider();
-        userManager = new UserManagerImpl(localCredentialsProvider);
-        sessionManager = new SessionManagerImpl();
-        KernelContext kernelContext = mock(KernelContext.class);
-        Injector injector = mock(Injector.class);
-        wrappedService = mock(StorageService.class);
+//        LocalCredentialsProvider localCredentialsProvider = new LocalCredentialsProvider();
+//        userManager = SimpleKernel.getKernelModule(UserManager.class);
+//        sessionManager = SimpleKernel.getKernelModule(SessionManager.class);
+
+//        StorageServiceFactory storageServiceFactory = SimpleKernel.getKernelModule(StorageServiceFactory.class);
+        wrappedService = storageServiceFactory.getStorageService(null, null);
         when(wrappedService.getInstanceId()).thenReturn(TEST_INSTANCE);
         when(wrappedService.getBagName()).thenReturn(TEST_BAG);
 
-        when(kernelContext.getInjector()).thenReturn(injector);
-        when(injector.getInstance(UserManager.class)).thenReturn(userManager);
-        when(kernelContext.getMetadataStore()).thenReturn(metadataStore);
-
 //        localCredentialsProvider.initialize(kernelContext);
-        authService = new AuthorizationServiceWrapper();
-        authService.wrap(kernelContext, wrappedService);
+//        authService = new AuthorizationServiceWrapper();
+//        authService.wrap(kernelContext, wrappedService);
 
         adminSession = sessionManager.startSession(new BasicCredentials(ADMIN_USER, LOCALHOST, DEFAULT_ADMIN_PASS));
     }
@@ -99,14 +102,14 @@ public abstract class AbstractAuthorizationTest {
 
     @Test
     public void testOperationAdminGranted() throws JasDBStorageException {
-        getOperation().doOperation(authService, wrappedService, "admin", "");
+        getOperation().doOperation(wrappedService, "admin", "");
     }
 
     @Test(expected = JasDBSecurityException.class)
     public void testOperationNotGranted() throws JasDBStorageException {
         createUser("notGranted", "1234");
 
-        getOperation().doOperation(authService, wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, TEST_USER, "1234");
     }
 
     @Test
@@ -118,7 +121,7 @@ public abstract class AbstractAuthorizationTest {
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE + "/bags/" + TEST_BAG, TEST_USER, notGrantedMode);
 
-        getOperation().doOperation(authService, wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, TEST_USER, "1234");
     }
 
     @Test
@@ -127,7 +130,7 @@ public abstract class AbstractAuthorizationTest {
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE + "/bags/" + TEST_BAG, TEST_USER, grantedMode);
 
-        getOperation().doOperation(authService, wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, TEST_USER, "1234");
     }
 
     @Test
@@ -136,7 +139,7 @@ public abstract class AbstractAuthorizationTest {
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE, TEST_USER, grantedMode);
 
-        getOperation().doOperation(authService, wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, TEST_USER, "1234");
     }
 
     protected RequestContext createContext(String userName, String password, String host) throws JasDBStorageException {

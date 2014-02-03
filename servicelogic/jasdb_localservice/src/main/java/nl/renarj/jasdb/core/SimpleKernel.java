@@ -162,10 +162,10 @@ public class SimpleKernel {
 
             try {
                 this.remoteService = platformManager.getComponent(RemoteService.class);
-                this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
+//                this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
 
                 LOG.info("Starting remote service: {}", remoteService.getClass().getName());
-                this.remoteService.startService();
+//                this.remoteService.startService();
             } catch(NoComponentFoundException e) {
                 LOG.info("No remote service available");
             }

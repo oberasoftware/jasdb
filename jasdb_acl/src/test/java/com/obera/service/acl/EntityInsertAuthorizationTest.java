@@ -25,11 +25,10 @@ public class EntityInsertAuthorizationTest extends AbstractAuthorizationTest {
     protected AuthorizationOperation getOperation() {
         return new AuthorizationOperation() {
             @Override
-            public void doOperation(AuthorizationServiceWrapper authorizationServiceWrapper,
-                                    StorageService wrappedService, String user, String password) throws JasDBStorageException {
+            public void doOperation(StorageService wrappedService, String user, String password) throws JasDBStorageException {
                 SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
 
-                authorizationServiceWrapper.insertEntity(createContext(user, password, "localhost"), entity);
+                wrappedService.insertEntity(createContext(user, password, "localhost"), entity);
 
                 verify(wrappedService, times(1)).insertEntity(any(RequestContext.class), eq(entity));
             }
