@@ -62,14 +62,14 @@ public class RestService implements RemoteService {
 
     @PostConstruct
     public void init() throws ConfigurationException {
-        Configuration configuration = configurationLoader.getConfiguration();
-
-        Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
-        portNr = restConfiguration.getAttribute(REST_PORT_CONFIG, DEFAULT_PORT);
-        oauthEnabled = restConfiguration.getAttribute(REST_OAUTH_ENABLED, DEFAULT_OAUTH);
-
-        loadNodeData();
-        sslDetails = loadSSLDetails(configuration);
+//        Configuration configuration = configurationLoader.getConfiguration();
+//
+//        Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
+//        portNr = restConfiguration.getAttribute(REST_PORT_CONFIG, DEFAULT_PORT);
+//        oauthEnabled = restConfiguration.getAttribute(REST_OAUTH_ENABLED, DEFAULT_OAUTH);
+//
+//        loadNodeData();
+//        sslDetails = loadSSLDetails(configuration);
     }
 
     private SSLDetails loadSSLDetails(Configuration configuration) throws ConfigurationException {

@@ -1,6 +1,5 @@
 package com.obera.service.acl;
 
-import com.google.inject.Singleton;
 import nl.renarj.core.statistics.StatRecord;
 import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.api.SimpleEntity;
@@ -23,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

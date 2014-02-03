@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <aop:aspectj-autoproxy/>
+
+    <context:component-scan base-package="com.obera.service.acl,nl.renarj.jasdb">
+        <context:exclude-filter type="assignable" expression="nl.renarj.jasdb.service.LocalStorageServiceFactoryImpl"/>
+        <context:exclude-filter type="assignable" expression="nl.renarj.jasdb.service.LocalStorageServiceImpl"/>
+    </context:component-scan>
+
+    <bean id="storageServiceFactory" class="com.obera.service.acl.MockLocalStorageFactory"/>
+
+
+    <bean id="dao" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="nl.renarj.jasdb.service.StorageService" />
+    </bean>
+
+    <bean id="securityAspect" class="com.obera.service.acl.AuthorizationServiceWrapper"/>
+</beans>

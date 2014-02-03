@@ -24,10 +24,9 @@ public class EntityGetOperationTest extends AbstractAuthorizationTest {
     protected AuthorizationOperation getOperation() {
         return new AuthorizationOperation() {
             @Override
-            public void doOperation(AuthorizationServiceWrapper authorizationServiceWrapper,
-                                    StorageService wrappedService, String user, String password) throws JasDBStorageException {
+            public void doOperation(StorageService wrappedService, String user, String password) throws JasDBStorageException {
                 String id = UUID.randomUUID().toString();
-                authorizationServiceWrapper.getEntityById(createContext(user, password, "localhost"), id);
+                wrappedService.getEntityById(createContext(user, password, "localhost"), id);
 
                 verify(wrappedService, times(1)).getEntityById(any(RequestContext.class), eq(id));
             }
