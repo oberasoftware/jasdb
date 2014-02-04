@@ -14,10 +14,7 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.service.StorageService;
 import nl.renarj.jasdb.service.StorageServiceFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -69,11 +66,14 @@ public abstract class AbstractAuthorizationTest {
 
     protected abstract AuthorizationOperation getOperation();
 
+    @BeforeClass
+    public static void beforeSetup() {
+        System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
+    }
+
     @Before
     public void before() throws JasDBStorageException {
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
         SimpleBaseTest.cleanData();
-
 //        SimpleKernel.initializeKernel();
 
 //        MetadataStore metadataStore = SimpleKernel.getKernelModule(MetadataStore.class);
@@ -101,19 +101,22 @@ public abstract class AbstractAuthorizationTest {
     }
 
     @Test
-    public void testOperationAdminGranted() throws JasDBStorageException {
+    public void testOperationAdminGranted() throws Exception {
         getOperation().doOperation(wrappedService, "admin", "");
     }
 
-    @Test(expected = JasDBSecurityException.class)
-    public void testOperationNotGranted() throws JasDBStorageException {
+    @Test
+    public void testOperationNotGranted() throws Exception {
+        expectedException.expect(JasDBSecurityException.class);
+        expectedException.expectMessage("notGranted has insufficient privileges");
+
         createUser("notGranted", "1234");
 
-        getOperation().doOperation(wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, "notGranted", "1234");
     }
 
     @Test
-    public void testOperationInsufficientPermission() throws JasDBStorageException {
+    public void testOperationInsufficientPermission() throws Exception {
         expectedException.expect(JasDBSecurityException.class);
         expectedException.expectMessage("insufficient privileges");
 
@@ -125,7 +128,7 @@ public abstract class AbstractAuthorizationTest {
     }
 
     @Test
-    public void testOperationSufficientPermission() throws JasDBStorageException {
+    public void testOperationSufficientPermission() throws Exception {
         createUser(TEST_USER, "1234");
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE + "/bags/" + TEST_BAG, TEST_USER, grantedMode);
@@ -134,7 +137,7 @@ public abstract class AbstractAuthorizationTest {
     }
 
     @Test
-    public void testOperationParentPermission() throws JasDBStorageException {
+    public void testOperationParentPermission() throws Exception {
         createUser(TEST_USER, "1234");
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE, TEST_USER, grantedMode);

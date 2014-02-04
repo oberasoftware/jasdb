@@ -9,5 +9,5 @@ import nl.renarj.jasdb.service.StorageService;
 public interface AuthorizationOperation {
     void doOperation(StorageService wrappedService,
                      String user,
-                     String password) throws JasDBStorageException;
+                     String password) throws Exception;
 }

@@ -73,8 +73,8 @@ public class AuthorizationServiceWrapper {
         jp.proceed();
     }
 
-    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntityById(..)) && args(context, entity) && target(storageService)")
-    public void getEntityById(ProceedingJoinPoint jp, RequestContext context, SimpleEntity entity, StorageService storageService) throws Throwable {
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntityById(..)) && args(context, id) && target(storageService)")
+    public void getEntityById(ProceedingJoinPoint jp, RequestContext context, String id, StorageService storageService) throws Throwable {
         doReadCheck(context, storageService, jp);
     }
 
