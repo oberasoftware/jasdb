@@ -1,9 +1,12 @@
 package com.obera.service.acl;
 
+import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.context.RequestContext;
+import nl.renarj.jasdb.core.ConfigurationLoader;
+import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.service.StorageService;
 import nl.renarj.jasdb.service.metadata.Constants;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -14,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author Renze de Vries
  */
@@ -22,16 +27,33 @@ import org.springframework.stereotype.Component;
 public class AuthorizationServiceWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(AuthorizationServiceWrapper.class);
 
+    private static final String SECURITY_CONFIG = "/jasdb/Security";
+
     @Autowired
     private UserManager userManager;
 
+    @Autowired
+    private ConfigurationLoader configurationLoader;
+
+    private boolean securityEnabled = false;
+
+    @PostConstruct
+    public void intialize() throws ConfigurationException {
+        Configuration configuration = configurationLoader.getConfiguration();
+        Configuration securityConfiguration = configuration.getChildConfiguration(SECURITY_CONFIG);
+
+        this.securityEnabled = securityConfiguration != null && securityConfiguration.getAttribute("Enabled", false);
+    }
+
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.insertEntity(..)) && args(context, entity) && target(storageService)")
     public void insertEntity(ProceedingJoinPoint jp, RequestContext context, SimpleEntity entity, StorageService storageService) throws Throwable {
-        LOG.debug("Insert aspect invoked with context: {}", context);
+        if(securityEnabled) {
+            LOG.debug("Insert aspect invoked with context: {}", context);
 
-        userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.WRITE);
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.WRITE);
 
-        LOG.debug("Authorization done on insert of: {}, proceeding for context: {}", entity, context);
+            LOG.debug("Authorization done on insert of: {}, proceeding for context: {}", entity, context);
+        }
 
         jp.proceed();
     }
@@ -42,33 +64,39 @@ public class AuthorizationServiceWrapper {
 
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.removeEntity(..)) && args(context, entity) && target(storageService)")
     public void removeEntity(ProceedingJoinPoint jp, RequestContext context, SimpleEntity entity, StorageService storageService) throws Throwable {
-        LOG.debug("Remove aspect invoked with context: {}", context);
+        if(securityEnabled) {
+            LOG.debug("Remove aspect invoked with context: {}", context);
 
-        userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.DELETE);
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.DELETE);
 
-        LOG.debug("Authorization done on remove of: {}, proceeding for context: {}", entity, context);
+            LOG.debug("Authorization done on remove of: {}, proceeding for context: {}", entity, context);
+        }
 
         jp.proceed();
     }
 
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.removeEntity(..)) && args(context, internalId) && target(storageService)")
     public void removeEntity(ProceedingJoinPoint jp, RequestContext context, String internalId, StorageService storageService) throws Throwable {
-        LOG.debug("Remove aspect invoked with context: {}", context);
+        if(securityEnabled) {
+            LOG.debug("Remove aspect invoked with context: {}", context);
 
-        userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.DELETE);
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.DELETE);
 
-        LOG.debug("Authorization done on remove of: {}, proceeding for context: {}", internalId, context);
+            LOG.debug("Authorization done on remove of: {}, proceeding for context: {}", internalId, context);
+        }
 
         jp.proceed();
     }
 
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.updateEntity(..)) && args(context, entity) && target(storageService)")
     public void updateEntity(ProceedingJoinPoint jp, RequestContext context, SimpleEntity entity, StorageService storageService) throws Throwable {
-        LOG.debug("Update aspect invoked with context: {}", context);
+        if(securityEnabled) {
+            LOG.debug("Update aspect invoked with context: {}", context);
 
-        userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.UPDATE);
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.UPDATE);
 
-        LOG.debug("Authorization done on update of: {}, proceeding for context: {}", entity, context);
+            LOG.debug("Authorization done on update of: {}, proceeding for context: {}", entity, context);
+        }
 
         jp.proceed();
     }
@@ -94,19 +122,13 @@ public class AuthorizationServiceWrapper {
         doReadCheck(context, storageService, jp);
     }
 
-
     private void doReadCheck(RequestContext requestContext, StorageService storageService, ProceedingJoinPoint jp) throws Throwable {
-        LOG.debug("Remove aspect invoked with context: {}", requestContext);
-        userManager.authorize(requestContext.getUserSession(), getObjectName(storageService), AccessMode.READ);
-        LOG.debug("Authorization done on find operation, proceeding for context: {}", requestContext);
+        if(securityEnabled) {
+            LOG.debug("Remove aspect invoked with context: {}", requestContext);
+            userManager.authorize(requestContext.getUserSession(), getObjectName(storageService), AccessMode.READ);
+            LOG.debug("Authorization done on find operation, proceeding for context: {}", requestContext);
+        }
 
         jp.proceed();
     }
-
-
-//    @Override
-//    public QueryResult search(RequestContext context, BlockOperation blockOperation, SearchLimit limit, List<SortParameter> params) throws JasDBStorageException {
-//        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.READ);
-//        return wrappedService.search(context, blockOperation, limit, params);
-//    }
 }

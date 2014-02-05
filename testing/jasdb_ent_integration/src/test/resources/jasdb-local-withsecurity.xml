@@ -23,6 +23,10 @@
         <Property Name="period" Value="30s"/>
     </flushing>
 
+    <Security Enabled="true">
+        
+    </Security>
+
     <!-- This enables or disables the statistics engine -->
     <Statistics enabled="false"/>
 
