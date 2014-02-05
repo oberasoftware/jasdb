@@ -20,7 +20,7 @@
 
     <!-- Configuration settings for the rest service, like the port number -->
     <Services>
-        <Remote service="rest" port="7050" oauth="false">
+        <Remote service="rest" port="7050" oauth="false" Enabled="true">
             <!--<Property Name="sslPort" Value="7051"/>-->
             <!--<Property Name="sslKeystore" Value=""/>-->
             <!--<Property Name="sslKeystorePassword" Value=""/>-->

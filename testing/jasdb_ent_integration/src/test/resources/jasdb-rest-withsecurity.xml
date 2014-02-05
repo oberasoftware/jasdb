@@ -28,7 +28,7 @@
 
     <!-- Configuration settings for the rest service, like the port number -->
     <Services>
-        <Remote service="rest" port="7050" oauth="true">
+        <Remote service="rest" port="7050" oauth="true" Enabled="true">
             <Property Name="sslPort" Value="7051"/>
             <Property Name="sslKeystore" Value="classpath:keystore.ks"/>
             <Property Name="sslKeystorePassword" Value="123456"/>

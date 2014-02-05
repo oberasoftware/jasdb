@@ -54,6 +54,8 @@ public class RestService implements RemoteService {
 
 	private Server server;
 
+    private boolean restEnabled = false;
+
     @Autowired
     private ConfigurationLoader configurationLoader;
     
@@ -62,14 +64,18 @@ public class RestService implements RemoteService {
 
     @PostConstruct
     public void init() throws ConfigurationException {
-//        Configuration configuration = configurationLoader.getConfiguration();
-//
-//        Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
-//        portNr = restConfiguration.getAttribute(REST_PORT_CONFIG, DEFAULT_PORT);
-//        oauthEnabled = restConfiguration.getAttribute(REST_OAUTH_ENABLED, DEFAULT_OAUTH);
-//
-//        loadNodeData();
-//        sslDetails = loadSSLDetails(configuration);
+        Configuration configuration = configurationLoader.getConfiguration();
+
+        Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
+        restEnabled = restConfiguration != null && restConfiguration.getAttribute("Enabled", false);
+        if(restEnabled) {
+            LOG.info("Rest service is enabled, configuring");
+            portNr = restConfiguration.getAttribute(REST_PORT_CONFIG, DEFAULT_PORT);
+            oauthEnabled = restConfiguration.getAttribute(REST_OAUTH_ENABLED, DEFAULT_OAUTH);
+
+            loadNodeData();
+            sslDetails = loadSSLDetails(configuration);
+        }
     }
 
     private SSLDetails loadSSLDetails(Configuration configuration) throws ConfigurationException {
@@ -102,52 +108,61 @@ public class RestService implements RemoteService {
     }
 
     @Override
+    public boolean isEnabled() {
+        return restEnabled;
+    }
+
+    @Override
     public ServiceInformation getServiceInformation() {
         return serviceInformation;
     }
 
     @Override
     public void startService() throws JasDBException {
-		server = new Server(portNr);
+        if(restEnabled) {
+            server = new Server(portNr);
 
-        if(sslDetails != null) {
-            String keystorePath = FileUtils.resolveResourcePath(sslDetails.getKeystore());
-            LOG.info("Using keystore path: {}", keystorePath);
-            SslContextFactory sslContextFactory = new SslContextFactory(keystorePath);
-            sslContextFactory.setKeyStorePassword(sslDetails.getKeystorePass());
+            if(sslDetails != null) {
+                String keystorePath = FileUtils.resolveResourcePath(sslDetails.getKeystore());
+                LOG.info("Using keystore path: {}", keystorePath);
+                SslContextFactory sslContextFactory = new SslContextFactory(keystorePath);
+                sslContextFactory.setKeyStorePassword(sslDetails.getKeystorePass());
 
-            Connector connector = new SslSelectChannelConnector(sslContextFactory);
-            connector.setPort(sslDetails.getSslPort());
-            server.addConnector(connector);
-            LOG.info("Starting SSL connector: {}", sslDetails);
+                Connector connector = new SslSelectChannelConnector(sslContextFactory);
+                connector.setPort(sslDetails.getSslPort());
+                server.addConnector(connector);
+                LOG.info("Starting SSL connector: {}", sslDetails);
+            }
+
+            ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+            contextHandler.setContextPath("/");
+            server.setHandler(contextHandler);
+
+            if(oauthEnabled) {
+                ServletHolder oauthTokenEndpoint = new ServletHolder(OAuthTokenEndpoint.class);
+                contextHandler.addServlet(oauthTokenEndpoint, "/token");
+                contextHandler.addFilter(OAuthTokenFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+            }
+
+            ServletHolder holder = new ServletHolder(ServletContainer.class);
+            holder.setInitParameter("javax.ws.rs.Application", "nl.renarj.jasdb.rest.JasdbRestApplication");
+            contextHandler.addServlet(holder, "/*");
+
+            try {
+                LOG.info("Starting Jetty Rest service on port: {}", portNr);
+                server.start();
+            } catch(Exception e) {
+                LOG.error("Unable to start nodeInformation", e);
+            }
+        } else {
+            LOG.info("Rest service is not enabled or not configured, skipping start");
         }
-
-		ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-
-		contextHandler.setContextPath("/");
-		server.setHandler(contextHandler);
-
-        if(oauthEnabled) {
-            ServletHolder oauthTokenEndpoint = new ServletHolder(OAuthTokenEndpoint.class);
-            contextHandler.addServlet(oauthTokenEndpoint, "/token");
-            contextHandler.addFilter(OAuthTokenFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-        }
-
-		ServletHolder holder = new ServletHolder(ServletContainer.class);
-		holder.setInitParameter("javax.ws.rs.Application", "nl.renarj.jasdb.rest.JasdbRestApplication");
-		contextHandler.addServlet(holder, "/*");
-
-		try {
-            LOG.info("Starting Jetty Rest service on port: {}", portNr);
-			server.start();
-		} catch(Exception e) {
-			LOG.error("Unable to start nodeInformation", e);
-		}		
 	}
     
     @Override
     public void stopService() throws ServiceException {
-		if(server != null) {
+		if(restEnabled && server != null) {
 			LOG.info("Stopping Rest service");
 			try {
 				server.stop();

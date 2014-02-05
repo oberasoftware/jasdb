@@ -19,6 +19,12 @@ import nl.renarj.jasdb.core.locator.ServiceInformation;
  */
 public interface RemoteService {
     /**
+     * Returns wether this remote service is enabled
+     * @return True is the service is enabled, False if not
+     */
+    boolean isEnabled();
+
+    /**
      * Called during kernel startup, can be used to initialize any servicing components
      * @throws ServiceException If unable to start the remote service
      */

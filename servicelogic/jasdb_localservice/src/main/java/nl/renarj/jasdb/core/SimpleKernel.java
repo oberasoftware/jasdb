@@ -162,15 +162,15 @@ public class SimpleKernel {
 
             try {
                 this.remoteService = platformManager.getComponent(RemoteService.class);
-//                this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
+                if(remoteService.isEnabled()) {
+                    this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
 
-                LOG.info("Starting remote service: {}", remoteService.getClass().getName());
-//                this.remoteService.startService();
+                    LOG.info("Starting remote service: {}", remoteService.getClass().getName());
+                    this.remoteService.startService();
+                }
             } catch(NoComponentFoundException e) {
                 LOG.info("No remote service available");
             }
-
-
 
             kernelVersion = PlatformManagerFactory.getPlatformManager().getVersionData();
             LOG.info("Booting JasDB version: {}", kernelVersion);
