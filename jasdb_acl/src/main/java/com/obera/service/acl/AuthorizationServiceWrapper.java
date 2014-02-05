@@ -102,33 +102,33 @@ public class AuthorizationServiceWrapper {
     }
 
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntityById(..)) && args(context, id) && target(storageService)")
-    public void getEntityById(ProceedingJoinPoint jp, RequestContext context, String id, StorageService storageService) throws Throwable {
-        doReadCheck(context, storageService, jp);
+    public Object getEntityById(ProceedingJoinPoint jp, RequestContext context, String id, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntities(..)) && args(context) && target(storageService)")
-    public void getEntities(ProceedingJoinPoint jp, RequestContext context, StorageService storageService) throws Throwable {
-        doReadCheck(context, storageService, jp);
+    public Object getEntities(ProceedingJoinPoint jp, RequestContext context, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntities(..)) && args(context, max) && target(storageService)")
-    public void getEntities(ProceedingJoinPoint jp, RequestContext context, int max, StorageService storageService) throws Throwable {
-        doReadCheck(context, storageService, jp);
+    public Object getEntities(ProceedingJoinPoint jp, RequestContext context, int max, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
 
     @Around("execution(* nl.renarj.jasdb.service.*StorageService*.removeEntity(..)) && args(context) && target(storageService)")
-    public void search(ProceedingJoinPoint jp, RequestContext context, StorageService storageService) throws Throwable {
-        doReadCheck(context, storageService, jp);
+    public Object search(ProceedingJoinPoint jp, RequestContext context, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
-    private void doReadCheck(RequestContext requestContext, StorageService storageService, ProceedingJoinPoint jp) throws Throwable {
+    private Object doReadCheck(RequestContext requestContext, StorageService storageService, ProceedingJoinPoint jp) throws Throwable {
         if(securityEnabled) {
             LOG.debug("Remove aspect invoked with context: {}", requestContext);
             userManager.authorize(requestContext.getUserSession(), getObjectName(storageService), AccessMode.READ);
             LOG.debug("Authorization done on find operation, proceeding for context: {}", requestContext);
         }
 
-        jp.proceed();
+        return jp.proceed();
     }
 }
