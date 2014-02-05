@@ -8,6 +8,7 @@ import nl.renarj.jasdb.api.model.IndexManager;
 import nl.renarj.jasdb.api.model.IndexManagerFactory;
 import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.DBInstanceFactoryImpl;
+import nl.renarj.jasdb.core.RemoteService;
 import nl.renarj.jasdb.service.JasDBConfigurationLoader;
 import nl.renarj.jasdb.service.StorageServiceFactory;
 import nl.renarj.jasdb.service.metadata.JasDBMetadataStore;
@@ -27,9 +28,10 @@ public class AndroidKernelBinding extends AbstractModule {
         bind(DBInstanceFactory.class).to(DBInstanceFactoryImpl.class);
         bind(PartitioningManager.class).to(LocalPartitionManager.class);
         bind(StorageServiceFactory.class).to(AndroidStorageServiceFactory.class);
-        bind(DataOperationFactory.class); //.to(DataOperationFactory.class);
+        bind(DataOperationFactory.class);
+        bind(RemoteService.class).to(DummyRemoteService.class);
         bind(IndexManagerFactory.class).to(AndroidIndexManagerFactory.class);
-        bind(RecordWriterFactoryLoader.class); //.to(RecordWriterFactoryLoader.class);
+        bind(RecordWriterFactoryLoader.class);
         bind(ConfigurationLoader.class).to(JasDBConfigurationLoader.class);
         install(new FactoryModuleBuilder().implement(IndexManager.class, IndexManagerImpl.class).build(GuiceIndexManagerFactory.class));
     }
