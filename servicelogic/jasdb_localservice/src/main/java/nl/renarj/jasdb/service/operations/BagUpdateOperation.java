@@ -14,6 +14,7 @@ import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.Key;
+import nl.renarj.jasdb.index.keys.KeyUtil;
 import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import nl.renarj.jasdb.service.BagOperationUtil;
 import nl.renarj.jasdb.storage.RecordWriterFactoryLoader;
@@ -68,8 +69,8 @@ public class BagUpdateOperation implements DataOperation {
         for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {
             Index index = indexEntry.getValue();
 
-            boolean dataPresentOldEntity = BagOperationUtil.isDataPresent(oldEntity, index);
-            boolean dataPresentNewEntity = BagOperationUtil.isDataPresent(entity, index);
+            boolean dataPresentOldEntity = KeyUtil.isDataPresent(oldEntity, index);
+            boolean dataPresentNewEntity = KeyUtil.isDataPresent(entity, index);
 
             Set<Key> keys = BagOperationUtil.createEntityKeys(entity, index);
             if(dataPresentNewEntity && dataPresentOldEntity) {

@@ -8,6 +8,7 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.streams.ClonableDataStream;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.Key;
+import nl.renarj.jasdb.index.keys.KeyUtil;
 import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import nl.renarj.jasdb.service.BagOperationUtil;
 import nl.renarj.jasdb.storage.RecordWriterFactoryLoader;
@@ -52,7 +53,7 @@ public class BagInsertOperation implements DataOperation {
 		StatRecord indexIterator = StatisticsMonitor.createRecord("bag:indexForEach");
 		for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {
 			Index index = indexEntry.getValue();
-			if(BagOperationUtil.isDataPresent(entity, index)) {
+			if(KeyUtil.isDataPresent(entity, index)) {
                 Set<Key> insertKeys = BagOperationUtil.createEntityKeys(entity, index);
 				if(!insertKeys.isEmpty()) {
                     BagOperationUtil.doIndexInsert(insertKeys, index);

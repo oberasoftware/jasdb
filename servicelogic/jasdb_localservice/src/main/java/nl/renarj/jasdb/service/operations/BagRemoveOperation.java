@@ -14,6 +14,7 @@ import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.Key;
+import nl.renarj.jasdb.index.keys.KeyUtil;
 import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import nl.renarj.jasdb.service.BagOperationUtil;
 import nl.renarj.jasdb.storage.RecordWriterFactoryLoader;
@@ -59,7 +60,7 @@ public class BagRemoveOperation implements DataOperation {
         for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {
             Index index = indexEntry.getValue();
 
-            if(BagOperationUtil.isDataPresent(removeEntity, index)) {
+            if(KeyUtil.isDataPresent(removeEntity, index)) {
                 Set<Key> removeKeys  = BagOperationUtil.createEntityKeys(removeEntity, index);
                 for(Key removeKey : removeKeys) {
                     index.removeFromIndex(removeKey);

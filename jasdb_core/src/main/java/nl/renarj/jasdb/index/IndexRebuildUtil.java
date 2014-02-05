@@ -3,6 +3,7 @@ package nl.renarj.jasdb.index;
 import nl.renarj.jasdb.core.IndexableItem;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.index.keys.Key;
+import nl.renarj.jasdb.index.keys.KeyUtil;
 import nl.renarj.jasdb.index.keys.factory.KeyFactory;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class IndexRebuildUtil {
                     index.insertIntoIndex(key);
                 }
             } else {
-                if(indexableItem.hasValue(keyFactory.getFieldName())) {
+                if(KeyUtil.isDataPresent(indexableItem, index)) {
                     Key key = keyFactory.createKey(indexableItem);
                     index.insertIntoIndex(key);
                 }

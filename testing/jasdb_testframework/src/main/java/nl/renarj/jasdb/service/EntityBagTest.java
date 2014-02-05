@@ -649,4 +649,29 @@ public abstract class EntityBagTest {
 
         assertTrue(bag.getDiskSize() > sizeBefore);
     }
+
+    @Test
+    public void testPersistIndexNonUniqueQuery() throws JasDBException, InterruptedException {
+        DBSession session = sessionFactory.createSession();
+        EntityBag bag = session.createOrGetBag("testbag");
+
+        bag.addEntity(new SimpleEntity().addProperty("city", "Amsterdam"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Amsterdam"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Rotterdam"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Utrecht"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Utrecht"));
+
+        QueryResult result = bag.find(QueryBuilder.createBuilder().field("city").value("Amsterdam")).execute();
+        assertThat(result.size(), is(2l));
+        result.close();
+
+        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
+
+        //let's give the index some time to build
+        Thread.sleep(5000);
+
+        result = bag.find(QueryBuilder.createBuilder().field("city").value("Amsterdam")).execute();
+        assertThat(result.size(), is(2l));
+        result.close();
+    }
 }
