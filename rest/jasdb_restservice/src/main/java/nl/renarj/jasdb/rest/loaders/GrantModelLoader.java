@@ -4,7 +4,6 @@ import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.context.RequestContext;
 import nl.renarj.jasdb.api.metadata.GrantObject;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.exceptions.RestException;
 import nl.renarj.jasdb.rest.input.InputElement;
@@ -16,6 +15,8 @@ import nl.renarj.jasdb.rest.model.RestGrant;
 import nl.renarj.jasdb.rest.model.RestGrantObject;
 import nl.renarj.jasdb.rest.model.RestGrantObjectCollection;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,12 @@ import java.util.List;
 /**
  * @author Renze de Vries
  */
+@Component
 public class GrantModelLoader extends AbstractModelLoader {
+
+    @Autowired
+    private UserManager userManager;
+
     @Override
     public String[] getModelNames() {
         return new String[] { "Grants" };
@@ -40,7 +46,6 @@ public class GrantModelLoader extends AbstractModelLoader {
 
     private RestEntity loadSpecificGrantObject(RequestContext context, String object) throws RestException {
         try {
-            UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
             GrantObject grantObject = userManager.getGrantObject(context.getUserSession(), object);
 
             return GrantModelMapper.map(grantObject);
@@ -51,7 +56,6 @@ public class GrantModelLoader extends AbstractModelLoader {
 
     private RestEntity loadAllGrantObjects(RequestContext context) throws RestException {
         try {
-            UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
             List<GrantObject> grantObjects = userManager.getGrantObjects(context.getUserSession());
             List<RestGrantObject> restGrantObjects = new ArrayList<>();
             for(GrantObject grantObject : grantObjects) {
@@ -72,7 +76,6 @@ public class GrantModelLoader extends AbstractModelLoader {
 
             if(StringUtils.stringNotEmpty(grant.getObjectName()) && StringUtils.stringNotEmpty(grant.getUsername())) {
                 try {
-                    UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
                     userManager.grantUser(requestContext.getUserSession(), grant.getObjectName(), grant.getUsername(), grant.getMode());
 
                     return loadSpecificGrantObject(requestContext, grant.getObjectName());
@@ -92,7 +95,6 @@ public class GrantModelLoader extends AbstractModelLoader {
         RestGrant grant = serializer.deserialize(RestGrant.class, rawData);
         if(StringUtils.stringNotEmpty(grant.getObjectName()) && StringUtils.stringNotEmpty(grant.getUsername())) {
             try {
-                UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);
                 userManager.revoke(requestContext.getUserSession(), grant.getObjectName(), grant.getUsername());
 
                 return null;
