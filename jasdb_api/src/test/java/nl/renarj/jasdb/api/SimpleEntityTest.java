@@ -29,6 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 
 /**
  * User: renarj
@@ -82,6 +83,13 @@ public class SimpleEntityTest {
         assertEquals("value2", deserializedEntity.getProperty("multiValueProperty").getValues().get(1).getValue());
         assertEquals("value3", deserializedEntity.getProperty("multiValueProperty").getValues().get(2).getValue());
         assertEquals(new Long(200), deserializedEntity.getProperty("integerProperty").getFirstValueObject());
+
+        /* Test embedded property retrieval */
+        assertNotNull(deserializedEntity.getProperty("embedded.embeddedProperty1"));
+        assertThat(deserializedEntity.getProperty("embedded.embeddedProperty1").getFirstValue().toString(), is("50"));
+
+        assertThat(deserializedEntity.getValues("embedded.embeddedMultivalue"), hasItems());
+        assertThat((String)deserializedEntity.getValue("embedded.embeddedString"), is("simpleStringValue"));
 
         assertTrue("There should be an embedded entity", deserializedEntity.hasProperty("embedded"));
         Object embedded = deserializedEntity.getProperty("embedded").getFirstValueObject();
@@ -206,7 +214,7 @@ public class SimpleEntityTest {
     public void testSetBulkProperties() {
         SimpleEntity simpleEntity = new SimpleEntity();
 
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("field1", 100);
         properties.put("field2", 300l);
         properties.put("field3", "Simple String");

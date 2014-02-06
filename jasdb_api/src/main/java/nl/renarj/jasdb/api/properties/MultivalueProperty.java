@@ -21,7 +21,7 @@ public class MultivalueProperty implements Property {
     private String propertyName;
 
     public MultivalueProperty(String propertyName) {
-        this.values = new ArrayList<Value>();
+        this.values = new ArrayList<>();
         this.propertyName = propertyName;
     }
 
@@ -55,10 +55,10 @@ public class MultivalueProperty implements Property {
     }
 
     @Override
-    public List<Object> getValueObjects() {
-        List<Object> valueObjects = new ArrayList<Object>();
+    public <T> List<T> getValueObjects() {
+        List<T> valueObjects = new ArrayList<T>();
         for(Value value : values) {
-            valueObjects.add(value.getValue());
+            valueObjects.add((T)value.getValue());
         }
         return valueObjects;
     }

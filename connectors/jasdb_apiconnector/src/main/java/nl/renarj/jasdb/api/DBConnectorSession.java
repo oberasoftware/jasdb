@@ -166,7 +166,7 @@ public abstract class DBConnectorSession implements DBSession {
     public List<EntityBag> getBags(String instanceId) throws JasDBStorageException {
         BagConnector connector = RemoteConnectorFactory.createConnector(nodeInformation, BagConnector.class);
         List<RemoteBag> bagMetas = connector.getBags(getContext(), instanceId);
-        List<EntityBag> remoteConnectedEntityBags = new LinkedList<EntityBag>();
+        List<EntityBag> remoteConnectedEntityBags = new LinkedList<>();
         for(RemoteBag bagMeta : bagMetas) {
             remoteConnectedEntityBags.add(new RemoteEntityBag(instanceId, getContext(), nodeInformation, bagMeta));
         }

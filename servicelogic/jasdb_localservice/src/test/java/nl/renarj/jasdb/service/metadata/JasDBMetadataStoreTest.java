@@ -37,7 +37,6 @@ public class JasDBMetadataStoreTest {
         storeLocation = temporaryFolder.newFolder();
         System.setProperty("JASDB_HOME", storeLocation.toString());
         metadataStore = new JasDBMetadataStore();
-        metadataStore.openStore();
     }
 
     @After
@@ -54,7 +53,6 @@ public class JasDBMetadataStoreTest {
 
         metadataStore.closeStore();
         metadataStore = new JasDBMetadataStore();
-        metadataStore.openStore();
 
         assertThat(metadataStore.getInstances().size(), is(2));
         assertThat(getInstanceIds(metadataStore.getInstances()), hasItems("default", "testInstance1"));
@@ -74,7 +72,6 @@ public class JasDBMetadataStoreTest {
         pidFile.createNewFile();
 
         metadataStore = new JasDBMetadataStore();
-        metadataStore.openStore();
         assertFalse(metadataStore.isLastShutdownClean());
     }
 
@@ -268,7 +265,7 @@ public class JasDBMetadataStoreTest {
     }
 
     private List<String> getIndexHeaders(List<IndexDefinition> indexDefinitions) {
-        List<String> indexHeaders = new ArrayList<String>();
+        List<String> indexHeaders = new ArrayList<>();
         for(IndexDefinition indexDefinition : indexDefinitions) {
             indexHeaders.add(indexDefinition.toHeader());
         }
@@ -276,7 +273,7 @@ public class JasDBMetadataStoreTest {
     }
 
     private List<String> getBagNames(List<Bag> bags) {
-        List<String> bagNames = new ArrayList<String>();
+        List<String> bagNames = new ArrayList<>();
         for(Bag bag : bags) {
             bagNames.add(bag.getName());
         }
@@ -284,7 +281,7 @@ public class JasDBMetadataStoreTest {
     }
 
     private List<String> getInstanceIds(List<Instance> instances) {
-        List<String> instanceIds = new ArrayList<String>();
+        List<String> instanceIds = new ArrayList<>();
         for(Instance instance : instances) {
             instanceIds.add(instance.getInstanceId());
         }

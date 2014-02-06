@@ -178,7 +178,7 @@ public class LocalDBSession implements DBSession {
 
     private List<EntityBag> getBags(DBInstance bagInstance) throws JasDBStorageException {
         List<Bag> bagMetas = bagInstance.getBags();
-        List<EntityBag> bags = new ArrayList<EntityBag>();
+        List<EntityBag> bags = new ArrayList<>();
         for(Bag bagMeta : bagMetas) {
             bags.add(new EntityBagImpl(bagInstance.getInstanceId(), bagMeta.getName(), userSession));
         }

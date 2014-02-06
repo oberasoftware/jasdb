@@ -51,15 +51,6 @@ public class BagOperationUtil {
         return SimpleEntity.fromStream(stream);
     }
 
-    public static boolean isDataPresent(SimpleEntity sEntity, Index index) {
-        for(String indexField : index.getKeyInfo().getKeyFields()) {
-            if(!sEntity.hasProperty(indexField)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     public static Set<Key> createEntityKeys(SimpleEntity entity, Index index) throws JasDBStorageException {
         StatRecord createKey = StatisticsMonitor.createRecord("bag:createKey");
         KeyFactory keyFactory = index.getKeyInfo().getKeyFactory();
@@ -67,7 +58,7 @@ public class BagOperationUtil {
         if(keyFactory.isMultiValueKey(entity)) {
             insertKeys = keyFactory.createMultivalueKeys(entity);
         } else {
-            insertKeys = new HashSet<Key>();
+            insertKeys = new HashSet<>();
             insertKeys.add(keyFactory.createKey(entity));
         }
         createKey.stop();

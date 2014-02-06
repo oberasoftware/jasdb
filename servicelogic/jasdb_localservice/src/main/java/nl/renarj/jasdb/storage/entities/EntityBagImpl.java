@@ -7,12 +7,9 @@
  */
 package nl.renarj.jasdb.storage.entities;
 
-import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.model.DBInstance;
-import nl.renarj.jasdb.api.model.DBInstanceFactory;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.api.query.CompositeQueryField;
 import nl.renarj.jasdb.api.query.QueryBuilder;
@@ -38,10 +35,16 @@ public class EntityBagImpl implements EntityBag {
 	
 	private String name;
 	
-	private DBInstance instance;
+	private String instanceId;
 	private StorageService storageService;
 
     private UserSession userSession;
+
+    protected EntityBagImpl(String instanceId, String name, StorageService storageService) {
+        this.instanceId = instanceId;
+        this.name = name;
+        this.storageService = storageService;
+    }
 
     public EntityBagImpl(String instanceId, String name, UserSession userSession) throws JasDBStorageException {
         this(instanceId, name);
@@ -50,16 +53,15 @@ public class EntityBagImpl implements EntityBag {
 	
 	public EntityBagImpl(String instanceId, String name) throws JasDBStorageException {
 		this.name = name;
+        this.instanceId = instanceId;
 		
 		try {
-			DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
-			if(StringUtils.stringNotEmpty(instanceId)) {
-				instance = instanceFactory.getInstance(instanceId);
-			} else {
-				instance = instanceFactory.getInstance();
-			}
-			StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-			this.storageService = serviceFactory.getOrCreateStorageService(instanceId, name);
+            if(SimpleKernel.getInstanceFactory().hasInstance(instanceId)) {
+                StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
+                this.storageService = serviceFactory.getOrCreateStorageService(instanceId, name);
+            } else {
+                throw new JasDBStorageException("Unable to load instance, does not exist");
+            }
 		} catch(ConfigurationException e) {
 			throw new JasDBStorageException("Unable to retrieve instance", e);
 		}
@@ -122,7 +124,7 @@ public class EntityBagImpl implements EntityBag {
 		queryBuilder.field(queryField);
 		setSortParams(queryBuilder, params);
 		
-		return new QueryExecutorImpl(getContext(), instance.getInstanceId(), name, queryBuilder);
+		return new QueryExecutorImpl(getContext(), instanceId, name, queryBuilder);
 	}
 	
 	/* (non-Javadoc)
@@ -136,7 +138,7 @@ public class EntityBagImpl implements EntityBag {
 		}
 		setSortParams(queryBuilder, params);
 		
-		return new QueryExecutorImpl(getContext(), instance.getInstanceId(), name, queryBuilder);
+		return new QueryExecutorImpl(getContext(), instanceId, name, queryBuilder);
 	}
 	
 	private void setSortParams(QueryBuilder builder, SortParameter... params) {
@@ -152,7 +154,7 @@ public class EntityBagImpl implements EntityBag {
 	public QueryExecutor find(QueryBuilder queryBuilder) throws JasDBStorageException {
         LOG.debug("Executing query: {}", queryBuilder);
 		
-		return new QueryExecutorImpl(getContext(), instance.getInstanceId(), name, queryBuilder);
+		return new QueryExecutorImpl(getContext(), instanceId, name, queryBuilder);
 	}
 	
 	/* (non-Javadoc)
