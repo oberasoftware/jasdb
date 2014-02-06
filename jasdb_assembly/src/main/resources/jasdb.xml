@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasdb Version="1.0">
+    <Storage>
+        <RecordWriter provider="transactional"/>
+    </Storage>
+
+    <!-- This allows selecting the mode of flushing data to disk -->
+    <flushing mode="interval" enabled="false">
+        <Property Name="period" Value="30s"/>
+    </flushing>
+
+    <!-- This enables or disables the statistics engine -->
+	<Statistics enabled="false"/>
+
+    <Security Enabled="false">
+
+    </Security>
+
+    <!-- Configuration settings for the rest service, like the port number -->
+    <Services>
+        <Remote service="rest" port="7050" oauth="false">
+            <!--<Property Name="sslPort" Value="7051"/>-->
+            <!--<Property Name="sslKeystore" Value=""/>-->
+            <!--<Property Name="sslKeystorePassword" Value=""/>-->
+        </Remote>
+    </Services>
+
+    <caching MaxMemory="256m" MemoryMonitorInterval="10s"/>
+
+    <!-- Configuration settings for the btree index -->
+	<Index Type="btree" pageSize="512">
+		<Caching Enabled="true">
+			<Property Name="MaxCacheMemSize" Value="128m"/>
+			<Property Name="MaxCachedBlocks" Value="20000"/>
+		</Caching>
+	</Index>
+</jasdb>

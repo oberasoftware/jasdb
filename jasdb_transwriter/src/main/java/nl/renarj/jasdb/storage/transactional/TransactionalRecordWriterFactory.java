@@ -11,6 +11,11 @@ import java.io.File;
  */
 public class TransactionalRecordWriterFactory implements RecordWriterFactory {
     @Override
+    public String providerName() {
+        return "transactional";
+    }
+
+    @Override
     public RecordWriter createWriter(File file) throws JasDBStorageException {
         RecordWriter recordWriter = new TransactionalRecordWriter(file);
         return recordWriter;

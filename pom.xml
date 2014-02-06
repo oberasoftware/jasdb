@@ -182,6 +182,11 @@
             </dependency>
             <dependency>
                 <groupId>com.obera</groupId>
+                <artifactId>jasdb_android</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
                 <artifactId>jasdb_restconnector</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -346,6 +351,7 @@
         <module>connectors/jasdb_apiconnector</module>
         <module>testing/jasdb_integration_test</module>
         <module>jasdb_android</module>
+        <module>jasdb_assembly</module>
     </modules>
 
     <profiles>

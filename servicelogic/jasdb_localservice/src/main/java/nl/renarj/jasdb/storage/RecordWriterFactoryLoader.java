@@ -1,5 +1,6 @@
 package nl.renarj.jasdb.storage;
 
+import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
@@ -28,8 +29,9 @@ public class RecordWriterFactoryLoader {
 
     private static final String BAG_EXTENSION = ".pjs";
 
-    @Inject
-    private ConfigurationLoader configurationLoader;
+    private static final String DEFAULT_PROVIDER = "transactional";
+
+    private String recordWriterProvider = DEFAULT_PROVIDER;
 
     @Inject
     private MetadataStore metadataStore;
@@ -38,28 +40,24 @@ public class RecordWriterFactoryLoader {
 
     private RecordWriterFactory recordWriterFactory;
 
-    public RecordWriterFactoryLoader() throws ConfigurationException {
+    @Inject
+    public RecordWriterFactoryLoader(ConfigurationLoader configurationLoader) throws ConfigurationException {
+        Configuration configuration = configurationLoader.getConfiguration();
+        Configuration recordWriterConfiguration = configuration.getChildConfiguration("/jasdb/Storage/RecordWriter");
+        recordWriterProvider = recordWriterConfiguration != null ? recordWriterConfiguration.getAttribute("provider", DEFAULT_PROVIDER) : DEFAULT_PROVIDER;
+
         ServiceLoader<RecordWriterFactory> recordWriterFactories = ServiceLoader.load(RecordWriterFactory.class);
 
-//        Configuration configuration = configurationLoader.getConfiguration();
-//        Configuration recordConfiguration = configuration.getChildConfiguration("/jasdb/modules/module[@type='record']");
-//        String recordWriterClass = recordConfiguration.getAttribute("class");
-
-//        if(StringUtils.stringNotEmpty(recordWriterClass)) {
-            for(RecordWriterFactory recordWriterFactory : recordWriterFactories) {
-//                if(recordWriterFactory.getClass().toString().equals(recordWriterClass)) {
-                    this.recordWriterFactory = recordWriterFactory;
-                    LOG.info("Using RecordWriterFactory: {}", recordWriterFactory);
-//                    break;
-//                }
+        for(RecordWriterFactory recordWriterFactory : recordWriterFactories) {
+            if(recordWriterFactory.providerName().equals(recordWriterProvider)) {
+                this.recordWriterFactory = recordWriterFactory;
+                LOG.info("Using RecordWriterFactory: {}", recordWriterFactory);
             }
+        }
 
         if(recordWriterFactory == null) {
-            throw new ConfigurationException("No record writer factory is available");
+            throw new ConfigurationException("No record writer factory is available, could not load configured provider: " + recordWriterProvider);
         }
-//        } else {
-//            throw new ConfigurationException("Unable to load the record writer factory");
-//        }
     }
 
     @PreDestroy
