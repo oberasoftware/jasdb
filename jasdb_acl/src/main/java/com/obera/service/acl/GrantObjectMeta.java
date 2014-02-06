@@ -30,7 +30,7 @@ public class GrantObjectMeta implements GrantObject {
 
     public GrantObjectMeta(String objectName, Grant... grants) {
         this.objectName = objectName;
-        this.userGrants = new ConcurrentHashMap<String, Grant>();
+        this.userGrants = new ConcurrentHashMap<>();
         for(Grant grant : grants) {
             userGrants.put(grant.getGrantedUsername(), grant);
         }
@@ -38,7 +38,7 @@ public class GrantObjectMeta implements GrantObject {
 
     public static GrantObject fromEntity(SimpleEntity entity) {
         String grantObject = entity.getValue(Constants.GRANT_OBJECT).toString();
-        Map<String, Grant> userGrants = new ConcurrentHashMap<String, Grant>();
+        Map<String, Grant> userGrants = new ConcurrentHashMap<>();
         Property grantsProperty = entity.getProperty(Constants.GRANTS);
         for(Value grantValue : grantsProperty.getValues()) {
             EntityValue entityValue = (EntityValue) grantValue;
@@ -91,7 +91,7 @@ public class GrantObjectMeta implements GrantObject {
 
     @Override
     public List<Grant> getGrants() {
-        return new ArrayList<Grant>(userGrants.values());
+        return new ArrayList<>(userGrants.values());
     }
 
     @Override

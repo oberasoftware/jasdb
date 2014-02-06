@@ -27,7 +27,7 @@ public class PartitionModelMapper {
     }
 
     public static PartitionCollection map(Collection<BagPartition> partitions, String instance, String bag) {
-        List<Partition> mappedPartitions = new ArrayList<Partition>(partitions.size());
+        List<Partition> mappedPartitions = new ArrayList<>(partitions.size());
 
         for(BagPartition partition : partitions) {
             mappedPartitions.add(map(partition, instance, bag));

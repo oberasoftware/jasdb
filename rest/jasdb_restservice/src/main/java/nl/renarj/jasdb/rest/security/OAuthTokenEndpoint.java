@@ -25,6 +25,8 @@ public class OAuthTokenEndpoint extends HttpServlet {
     private static final String GRANT_VALID = "{\"grant\":\"valid\",\"access_token\":\"%s\",\"sessionid\":\"%s\",\"token_type\":\"%s\",\"expires_in\":%d}";
     private static final int UNAUTHORIZED_CODE = 401;
 
+
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         handleErrorResponse(resp, "GET not supported");

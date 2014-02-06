@@ -87,7 +87,7 @@ public class DataBlockImpl implements DataBlock {
                 throw new JasDBStorageException("Unable to load byte stream", e);
             }
 
-            return new DataBlockResult<byte[]>(result.getDataLength(), result.getEndBlock(), result.getNextOffset(), out.toByteArray());
+            return new DataBlockResult<>(result.getDataLength(), result.getEndBlock(), result.getNextOffset(), out.toByteArray());
         } else {
             throw new JasDBStorageException("Unable to load into byte array exceeding maximum byte array length of Max Integer");
         }
@@ -170,17 +170,17 @@ public class DataBlockImpl implements DataBlock {
             long nextDataStream = initialBlock.getHeader().getNextStream();
             int dataStreamOffset = ((int)(nextDataStream % dataBlockFactory.getBlockSize()) - DataBlockHeader.HEADER_SIZE);
 
-            return new DataBlockResult<BlockDataInputStream>(dataLength, dataBlockFactory.loadBlockForDataPosition(nextDataStream), dataStreamOffset, inputStream);
+            return new DataBlockResult<>(dataLength, dataBlockFactory.loadBlockForDataPosition(nextDataStream), dataStreamOffset, inputStream);
         } else {
             //inside same block
-            return new DataBlockResult<BlockDataInputStream>(dataLength, initialBlock, ((int)(offset + dataLength)) - DataBlockHeader.HEADER_SIZE, inputStream);
+            return new DataBlockResult<>(dataLength, initialBlock, ((int)(offset + dataLength)) - DataBlockHeader.HEADER_SIZE, inputStream);
         }
     }
 
     @Override
     public DataBlockResult<Long> loadLong(int offset) throws JasDBStorageException {
         DataBlockResult<byte[]> result = loadBytes(offset);
-        return new DataBlockResult<Long>(result.getDataLength(), result.getEndBlock(), result.getNextOffset(), convertLong(result.getValue()));
+        return new DataBlockResult<>(result.getDataLength(), result.getEndBlock(), result.getNextOffset(), convertLong(result.getValue()));
     }
 
     @Override

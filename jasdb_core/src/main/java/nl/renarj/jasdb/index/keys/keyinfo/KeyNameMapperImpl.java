@@ -17,13 +17,13 @@ public class KeyNameMapperImpl implements KeyNameMapper {
     private int valueMarker;
 
     public KeyNameMapperImpl() {
-        fieldIndexes = new HashMap<String, Integer>();
-        indexFields = new HashMap<Integer, String>();
+        fieldIndexes = new HashMap<>();
+        indexFields = new HashMap<>();
     }
 
     private KeyNameMapperImpl(Map<String, Integer> fieldIndexes, Map<Integer, String> indexFields) {
-        this.fieldIndexes = new HashMap<String, Integer>(fieldIndexes);
-        this.indexFields = new HashMap<Integer, String>(indexFields);
+        this.fieldIndexes = new HashMap<>(fieldIndexes);
+        this.indexFields = new HashMap<>(indexFields);
     }
 
     public static KeyNameMapperImpl create(KeyFactory[] keyFactories) {
@@ -73,7 +73,7 @@ public class KeyNameMapperImpl implements KeyNameMapper {
 
     @Override
     public Set<String> getFieldSet() {
-        return new HashSet<String>(fieldIndexes.keySet());
+        return new HashSet<>(fieldIndexes.keySet());
     }
 
     @Override

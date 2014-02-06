@@ -31,8 +31,8 @@ public class LRURegion<T extends CacheEntry> implements CacheRegion<Long, T> {
     private String name;
 
     public LRURegion(String name) {
-        this.cachedBlocks = new OrderedBalancedTree<Long, EntryWrapper>();
-        this.blockAccessTime = new OrderedBalancedTree<Long, Long>();
+        this.cachedBlocks = new OrderedBalancedTree<>();
+        this.blockAccessTime = new OrderedBalancedTree<>();
         this.name = name;
     }
 
@@ -71,7 +71,7 @@ public class LRURegion<T extends CacheEntry> implements CacheRegion<Long, T> {
         long targetMemory = initialMemory - reduceSize;
         targetMemory = targetMemory > 0 ? targetMemory : 0; //should never be negative
         LOG.debug("Target memory: {}", targetMemory);
-        Set<Long> checkedKeys = new HashSet<Long>();
+        Set<Long> checkedKeys = new HashSet<>();
         while(memorySize() > targetMemory) {
             Long key = blockAccessTime.first();
 

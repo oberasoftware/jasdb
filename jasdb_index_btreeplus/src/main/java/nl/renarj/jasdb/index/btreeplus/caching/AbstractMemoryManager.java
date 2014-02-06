@@ -34,7 +34,7 @@ public abstract class AbstractMemoryManager implements MemoryManager {
 
     protected AbstractMemoryManager(String index) {
         this.index = index;
-        this.idleBlocks = new OrderedBalancedTree<Long, AbstractMemoryBlock>();
+        this.idleBlocks = new OrderedBalancedTree<>();
         this.cachingConfig = CachingConfig.getDefaultCachingConfig();
     }
 

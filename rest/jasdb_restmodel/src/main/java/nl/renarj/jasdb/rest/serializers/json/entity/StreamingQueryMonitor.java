@@ -23,7 +23,7 @@ public class StreamingQueryMonitor implements Runnable {
     private Thread monitor;
     private Lock lock = new ReentrantLock();
 
-    private List<StreamableQueryResult> monitoredQueryResults = new LinkedList<StreamableQueryResult>();
+    private List<StreamableQueryResult> monitoredQueryResults = new LinkedList<>();
     private static final StreamingQueryMonitor instance = new StreamingQueryMonitor();
 
     public static void registerQueryCurors(StreamableQueryResult qResult) {
@@ -84,7 +84,7 @@ public class StreamingQueryMonitor implements Runnable {
         List<StreamableQueryResult> checkMonitors = Collections.emptyList();
         lock.lock();
         try {
-            checkMonitors = new ArrayList<StreamableQueryResult>(monitoredQueryResults);
+            checkMonitors = new ArrayList<>(monitoredQueryResults);
         } finally {
             lock.unlock();
         }

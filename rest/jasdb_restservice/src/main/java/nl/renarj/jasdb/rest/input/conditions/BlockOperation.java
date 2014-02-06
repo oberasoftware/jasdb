@@ -7,7 +7,7 @@ public abstract class BlockOperation implements InputCondition {
 	private List<InputCondition> childConditions;
 	
 	public BlockOperation() {
-		this.childConditions = new ArrayList<InputCondition>();
+		this.childConditions = new ArrayList<>();
 	}
 	
 	public BlockOperation addInputCondition(InputCondition condition) {

@@ -18,7 +18,7 @@ public class NodeInfoMapper {
             mappedNode.setGridId(nodeInformation.getGridId());
             mappedNode.setInstanceId(nodeInformation.getInstanceId());
 
-            List<NodeServiceInformation> nodeServices = new ArrayList<NodeServiceInformation>();
+            List<NodeServiceInformation> nodeServices = new ArrayList<>();
             for(ServiceInformation serviceInformation : nodeInformation.getServiceInformationList()) {
                 NodeServiceInformation nodeService = new NodeServiceInformation();
                 nodeService.setProperties(serviceInformation.getNodeProperties());

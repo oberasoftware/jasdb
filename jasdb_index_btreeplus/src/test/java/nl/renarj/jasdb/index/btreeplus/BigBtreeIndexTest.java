@@ -83,7 +83,7 @@ public class BigBtreeIndexTest extends IndexBaseTest {
         BufferedReader bufferedReader = new BufferedReader(reader);
 
 
-        Set<String> categories = new HashSet<String>();
+        Set<String> categories = new HashSet<>();
         String category;
         while((category = bufferedReader.readLine()) != null) {
             categories.add(category.trim().toLowerCase());

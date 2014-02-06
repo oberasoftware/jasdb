@@ -5,158 +5,130 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.kernel.KernelContext;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.result.SearchLimit;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
+import nl.renarj.jasdb.core.ConfigurationLoader;
+import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.service.StorageService;
 import nl.renarj.jasdb.service.metadata.Constants;
-import nl.renarj.jasdb.service.partitioning.PartitioningManager;
-import nl.renarj.jasdb.service.wrappers.ServiceWrapper;
-import nl.renarj.jasdb.storage.query.operators.BlockOperation;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
+import javax.annotation.PostConstruct;
 
 /**
  * @author Renze de Vries
  */
-public class AuthorizationServiceWrapper implements ServiceWrapper {
-    private StorageService wrappedService;
+@Aspect
+@Component
+public class AuthorizationServiceWrapper {
+    private static final Logger LOG = LoggerFactory.getLogger(AuthorizationServiceWrapper.class);
+
+    private static final String SECURITY_CONFIG = "/jasdb/Security";
+
+    @Autowired
     private UserManager userManager;
 
-    @Override
-    public void wrap(KernelContext kernelContext, StorageService storageService) throws JasDBStorageException {
-        this.wrappedService = storageService;
-        this.userManager =  kernelContext.getInjector().getInstance(UserManager.class);
+    @Autowired
+    private ConfigurationLoader configurationLoader;
+
+    private boolean securityEnabled = false;
+
+    @PostConstruct
+    public void intialize() throws ConfigurationException {
+        Configuration configuration = configurationLoader.getConfiguration();
+        Configuration securityConfiguration = configuration.getChildConfiguration(SECURITY_CONFIG);
+
+        this.securityEnabled = securityConfiguration != null && securityConfiguration.getAttribute("Enabled", false);
     }
 
-    @Override
-    public StorageService unwrap() throws JasDBStorageException {
-        return wrappedService;
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.insertEntity(..)) && args(context, entity) && target(storageService)")
+    public void insertEntity(ProceedingJoinPoint jp, RequestContext context, SimpleEntity entity, StorageService storageService) throws Throwable {
+        if(securityEnabled) {
+            LOG.debug("Insert aspect invoked with context: {}", context);
+
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.WRITE);
+
+            LOG.debug("Authorization done on insert of: {}, proceeding for context: {}", entity, context);
+        }
+
+        jp.proceed();
     }
 
-    @Override
-    public String getBagName() {
-        return wrappedService.getBagName();
+    private String getObjectName(StorageService storageService) {
+        return Constants.OBJECT_SEPARATOR + storageService.getInstanceId() + "/bags/" + storageService.getBagName();
     }
 
-    @Override
-    public String getInstanceId() {
-        return wrappedService.getInstanceId();
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.removeEntity(..)) && args(context, entity) && target(storageService)")
+    public void removeEntity(ProceedingJoinPoint jp, RequestContext context, SimpleEntity entity, StorageService storageService) throws Throwable {
+        if(securityEnabled) {
+            LOG.debug("Remove aspect invoked with context: {}", context);
+
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.DELETE);
+
+            LOG.debug("Authorization done on remove of: {}, proceeding for context: {}", entity, context);
+        }
+
+        jp.proceed();
     }
 
-    @Override
-    public void openService(Configuration configuration) throws JasDBStorageException {
-        wrappedService.openService(configuration);
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.removeEntity(..)) && args(context, internalId) && target(storageService)")
+    public void removeEntity(ProceedingJoinPoint jp, RequestContext context, String internalId, StorageService storageService) throws Throwable {
+        if(securityEnabled) {
+            LOG.debug("Remove aspect invoked with context: {}", context);
+
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.DELETE);
+
+            LOG.debug("Authorization done on remove of: {}, proceeding for context: {}", internalId, context);
+        }
+
+        jp.proceed();
     }
 
-    @Override
-    public void closeService() throws JasDBStorageException {
-        wrappedService.closeService();
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.updateEntity(..)) && args(context, entity) && target(storageService)")
+    public void updateEntity(ProceedingJoinPoint jp, RequestContext context, SimpleEntity entity, StorageService storageService) throws Throwable {
+        if(securityEnabled) {
+            LOG.debug("Update aspect invoked with context: {}", context);
+
+            userManager.authorize(context.getUserSession(), getObjectName(storageService), AccessMode.UPDATE);
+
+            LOG.debug("Authorization done on update of: {}, proceeding for context: {}", entity, context);
+        }
+
+        jp.proceed();
     }
 
-    @Override
-    public void flush() throws JasDBStorageException {
-        wrappedService.flush();
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntityById(..)) && args(context, id) && target(storageService)")
+    public Object getEntityById(ProceedingJoinPoint jp, RequestContext context, String id, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
-    @Override
-    public void remove() throws JasDBStorageException {
-        wrappedService.remove();
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntities(..)) && args(context) && target(storageService)")
+    public Object getEntities(ProceedingJoinPoint jp, RequestContext context, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
-    @Override
-    public void initializePartitions() throws JasDBStorageException {
-        wrappedService.initializePartitions();
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.getEntities(..)) && args(context, max) && target(storageService)")
+    public Object getEntities(ProceedingJoinPoint jp, RequestContext context, int max, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
-    @Override
-    public PartitioningManager getPartitionManager() {
-        return wrappedService.getPartitionManager();
+
+    @Around("execution(* nl.renarj.jasdb.service.*StorageService*.removeEntity(..)) && args(context) && target(storageService)")
+    public Object search(ProceedingJoinPoint jp, RequestContext context, StorageService storageService) throws Throwable {
+        return doReadCheck(context, storageService, jp);
     }
 
-    @Override
-    public void insertEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
-        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.WRITE);
-        wrappedService.insertEntity(context, entity);
-    }
+    private Object doReadCheck(RequestContext requestContext, StorageService storageService, ProceedingJoinPoint jp) throws Throwable {
+        if(securityEnabled) {
+            LOG.debug("Remove aspect invoked with context: {}", requestContext);
+            userManager.authorize(requestContext.getUserSession(), getObjectName(storageService), AccessMode.READ);
+            LOG.debug("Authorization done on find operation, proceeding for context: {}", requestContext);
+        }
 
-    private String getObjectName() {
-        return Constants.OBJECT_SEPARATOR + getInstanceId() + "/bags/" + getBagName();
-    }
-
-    @Override
-    public void removeEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
-        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.DELETE);
-        wrappedService.removeEntity(context, entity);
-    }
-
-    @Override
-    public void removeEntity(RequestContext context, String internalId) throws JasDBStorageException {
-        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.DELETE);
-        wrappedService.removeEntity(context, internalId);
-    }
-
-    @Override
-    public void updateEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
-        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.UPDATE);
-        wrappedService.updateEntity(context, entity);
-    }
-
-    @Override
-    public long getSize() throws JasDBStorageException {
-        return wrappedService.getSize();
-    }
-
-    @Override
-    public long getDiskSize() throws JasDBStorageException {
-        return wrappedService.getDiskSize();
-    }
-
-    @Override
-    public SimpleEntity getEntityById(RequestContext requestContext, String id) throws JasDBStorageException {
-        userManager.authorize(requestContext.getUserSession(), getObjectName(), AccessMode.READ);
-        return wrappedService.getEntityById(requestContext, id);
-    }
-
-    @Override
-    public QueryResult getEntities(RequestContext context) throws JasDBStorageException {
-        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.READ);
-        return wrappedService.getEntities(context);
-    }
-
-    @Override
-    public QueryResult getEntities(RequestContext context, int max) throws JasDBStorageException {
-        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.READ);
-        return wrappedService.getEntities(context, max);
-    }
-
-    @Override
-    public QueryResult search(RequestContext context, BlockOperation blockOperation, SearchLimit limit, List<SortParameter> params) throws JasDBStorageException {
-        userManager.authorize(context.getUserSession(), getObjectName(), AccessMode.READ);
-        return wrappedService.search(context, blockOperation, limit, params);
-    }
-
-    @Override
-    public void ensureIndex(IndexField indexField, boolean isUnique, IndexField... valueFields) throws JasDBStorageException {
-        wrappedService.ensureIndex(indexField, isUnique, valueFields);
-    }
-
-    @Override
-    public void ensureIndex(CompositeIndexField indexField, boolean isUnique, IndexField... valueFields) throws JasDBStorageException {
-        wrappedService.ensureIndex(indexField, isUnique, valueFields);
-    }
-
-    @Override
-    public List<String> getIndexNames() throws JasDBStorageException {
-        return wrappedService.getIndexNames();
-    }
-
-    @Override
-    public void removeIndex(String indexName) throws JasDBStorageException {
-        wrappedService.removeIndex(indexName);
+        return jp.proceed();
     }
 }

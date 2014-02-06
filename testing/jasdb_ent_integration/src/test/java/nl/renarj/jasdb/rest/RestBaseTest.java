@@ -57,7 +57,7 @@ public class RestBaseTest {
     }
     
     protected NodeInformation constructNode(int portNr) {
-        Map<String, String> gridProperties = new HashMap<String, String>();
+        Map<String, String> gridProperties = new HashMap<>();
         gridProperties.put("connectorType", "rest");
         gridProperties.put("protocol", "http");
         gridProperties.put("host", "localhost");

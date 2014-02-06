@@ -19,19 +19,21 @@ import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class InstanceModelLoader  extends AbstractModelLoader {
     private static final Logger LOG = LoggerFactory.getLogger(InstanceModelLoader.class);
 
 	private static final String MODEL_NAME = "Instance";
     private static final String INSTANCES = "Instances";
 
-    public InstanceModelLoader() {
-		
-	}
+    @Inject
+    private DBInstanceFactory instanceFactory;
 
 	@Override
 	public String[] getModelNames() {
@@ -61,8 +63,7 @@ public class InstanceModelLoader  extends AbstractModelLoader {
 
     private List<InstanceRest> loadInstances() throws RestException {
         try {
-            DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
-            List<InstanceRest> instances = new ArrayList<InstanceRest>();
+            List<InstanceRest> instances = new ArrayList<>();
             for(DBInstance instance : instanceFactory.listInstances()) {
                 instances.add(new InstanceRest(instance.getPath(), "OK", SimpleKernel.getVersion(), instance.getInstanceId()));
             }
@@ -74,7 +75,6 @@ public class InstanceModelLoader  extends AbstractModelLoader {
     
     private InstanceRest getInstance(String instanceId) throws RestException {
         try {
-            DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
             DBInstance dbInstance = instanceFactory.getInstance(instanceId);
             InstanceRest instance = new InstanceRest(dbInstance.getPath(), "OK", SimpleKernel.getVersion(), dbInstance.getInstanceId());
 
@@ -88,7 +88,6 @@ public class InstanceModelLoader  extends AbstractModelLoader {
 	public RestEntity writeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context) throws RestException {
         InstanceRest dbInstance = serializer.deserialize(InstanceRest.class, rawData);
         try {
-            DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
             instanceFactory.addInstance(dbInstance.getInstanceId(), dbInstance.getPath());
 
             return getInstance(dbInstance.getInstanceId());
@@ -104,7 +103,6 @@ public class InstanceModelLoader  extends AbstractModelLoader {
             FieldCondition idCondition = (FieldCondition) condition;
 
             try {
-                DBInstanceFactory instanceFactory = SimpleKernel.getInstanceFactory();
                 instanceFactory.deleteInstance(idCondition.getValue());
 
                 return null;

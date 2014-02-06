@@ -18,7 +18,7 @@ public class GrantMetadataProvider implements MetadataProvider {
     public static final String GRANT_TYPE = "grantMetadata";
 
     private MetadataStore metadataStore;
-    private Map<String, MetaWrapper<EncryptedGrants>> grantMetaMap = new ConcurrentHashMap<String, MetaWrapper<EncryptedGrants>>();
+    private Map<String, MetaWrapper<EncryptedGrants>> grantMetaMap = new ConcurrentHashMap<>();
 
     @Override
     public void setMetadataStore(MetadataStore metadataStore) {
@@ -33,7 +33,7 @@ public class GrantMetadataProvider implements MetadataProvider {
     @Override
     public void registerMetadataEntity(SimpleEntity entity, long recordPointer) throws JasDBStorageException {
         EncryptedGrants encryptedGrants = EncryptedGrants.fromEntity(entity);
-        grantMetaMap.put(encryptedGrants.getObjectName(), new MetaWrapper<EncryptedGrants>(encryptedGrants, recordPointer));
+        grantMetaMap.put(encryptedGrants.getObjectName(), new MetaWrapper<>(encryptedGrants, recordPointer));
     }
 
     public boolean hasGrant(String objectName) throws JasDBStorageException {
@@ -41,7 +41,7 @@ public class GrantMetadataProvider implements MetadataProvider {
     }
 
     public List<EncryptedGrants> getGrants() throws JasDBStorageException {
-        List<EncryptedGrants> grants = new ArrayList<EncryptedGrants>();
+        List<EncryptedGrants> grants = new ArrayList<>();
         for(MetaWrapper<EncryptedGrants> grantWrapper : grantMetaMap.values()) {
             grants.add(grantWrapper.getMetadataObject());
         }
@@ -52,10 +52,10 @@ public class GrantMetadataProvider implements MetadataProvider {
         if(grantMetaMap.containsKey(encryptedGrants.getObjectName())) {
             MetaWrapper<EncryptedGrants> grantsMetaWrapper = grantMetaMap.get(encryptedGrants.getObjectName());
             long updatedPointer = metadataStore.updateMetadataEntity(EncryptedGrants.toEntity(encryptedGrants), grantsMetaWrapper.getRecordPointer());
-            grantMetaMap.put(encryptedGrants.getObjectName(), new MetaWrapper<EncryptedGrants>(encryptedGrants, updatedPointer));
+            grantMetaMap.put(encryptedGrants.getObjectName(), new MetaWrapper<>(encryptedGrants, updatedPointer));
         } else {
             long recordPointer = metadataStore.addMetadataEntity(EncryptedGrants.toEntity(encryptedGrants));
-            grantMetaMap.put(encryptedGrants.getObjectName(), new MetaWrapper<EncryptedGrants>(encryptedGrants, recordPointer));
+            grantMetaMap.put(encryptedGrants.getObjectName(), new MetaWrapper<>(encryptedGrants, recordPointer));
         }
     }
 

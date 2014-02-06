@@ -24,7 +24,7 @@ public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable
     
     public void put(T item, V value) {
         if(root == null) {
-            root = new TreeNode<T, V>(item, value);
+            root = new TreeNode<>(item, value);
         } else {
             root.add(item, value);
         }
@@ -88,7 +88,7 @@ public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable
 
     public List<V> range(T start, boolean includeStart, T end, boolean includeEnd) {
         if(root != null) {
-            List<V> values = new ArrayList<V>(size());
+            List<V> values = new ArrayList<>(size());
             root.range(values, start, includeStart, end, includeEnd);
             return values;
         }
@@ -97,7 +97,7 @@ public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable
     }
     
     public List<V> values() {
-        List<V> values = new ArrayList<V>(size());
+        List<V> values = new ArrayList<>(size());
 
         if(root != null) {
             root.values(values);
@@ -109,8 +109,8 @@ public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable
     @SuppressWarnings("unchecked")
     public List<V>[] split() {
         int maxSize = size / 2;
-        List<V> firstValues = new ArrayList<V>(maxSize);
-        List<V> secondValues = new ArrayList<V>(maxSize);
+        List<V> firstValues = new ArrayList<>(maxSize);
+        List<V> secondValues = new ArrayList<>(maxSize);
 
         if(root != null) {
             root.split(firstValues, secondValues, maxSize);
@@ -125,7 +125,7 @@ public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable
     }
 
     public List<T> keys() {
-        List<T> keys = new ArrayList<T>(size());
+        List<T> keys = new ArrayList<>(size());
         
         if(root != null) {
             root.keys(keys);

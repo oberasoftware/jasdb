@@ -13,11 +13,11 @@ import static org.junit.Assert.assertTrue;
 public class LRURegionTest {
     @Test
     public void testLastRegionAccess() {
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         long lastAccess = region.lastRegionAccess();
         int testSize = 100000;
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(9999, (long)i * 2));
+            region.putEntry((long)i, new MockCacheEntry<>(9999, (long)i * 2));
 
         }
 
@@ -28,9 +28,9 @@ public class LRURegionTest {
     public void testRegionPut() {
         int testSize = 100000;
         long blockSize = 9999;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(blockSize, (long)i * 2));
+            region.putEntry((long)i, new MockCacheEntry<>(blockSize, (long)i * 2));
 
         }
         assertThat(region.size(), is(testSize));
@@ -40,9 +40,9 @@ public class LRURegionTest {
     @Test
     public void testRegionGet() {
         int testSize = 100000;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(9999, (long)i * 2));
+            region.putEntry((long)i, new MockCacheEntry<>(9999, (long)i * 2));
         }
 
         for(int i=0; i<testSize; i++) {
@@ -54,9 +54,9 @@ public class LRURegionTest {
     @Test
     public void testRegionRemove() {
         int testSize = 100000;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(9999, (long)i * 2));
+            region.putEntry((long)i, new MockCacheEntry<>(9999, (long)i * 2));
         }
 
         for(int i=0; i<testSize; i++) {
@@ -74,9 +74,9 @@ public class LRURegionTest {
     @Test
     public void testRegionClear() {
         int testSize = 100000;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(9999, (long)i * 2));
+            region.putEntry((long)i, new MockCacheEntry<>(9999, (long)i * 2));
         }
 
         region.clear();
@@ -92,9 +92,9 @@ public class LRURegionTest {
     public void testReduceBy() {
         int testSize = 100000;
         long blockSize = 9999;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(blockSize, (long)i * 2));
+            region.putEntry((long)i, new MockCacheEntry<>(blockSize, (long)i * 2));
         }
 
         region.reduceBy(10 * blockSize);
@@ -107,9 +107,9 @@ public class LRURegionTest {
     public void testReduceMoreThanAvailable() {
         int testSize = 100;
         long blockSize = 9999;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(blockSize, (long)i * 2));
+            region.putEntry((long)i, new MockCacheEntry<>(blockSize, (long)i * 2));
         }
 
         region.reduceBy(1000 * blockSize);
@@ -122,9 +122,9 @@ public class LRURegionTest {
     public void testReduceBlocksInUse() {
         int testSize = 100;
         long blockSize = 9999;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(blockSize, (long)i, true));
+            region.putEntry((long)i, new MockCacheEntry<>(blockSize, (long)i, true));
         }
         long before = region.memorySize();
         long reduced = region.reduceBy(1000 * blockSize);
@@ -137,9 +137,9 @@ public class LRURegionTest {
     public void testValues() {
         int testSize = 100000;
         long blockSize = 9999;
-        LRURegion<MockCacheEntry<Long>> region = new LRURegion<MockCacheEntry<Long>>("region");
+        LRURegion<MockCacheEntry<Long>> region = new LRURegion<>("region");
         for(int i=0; i<testSize; i++) {
-            region.putEntry((long)i, new MockCacheEntry<Long>(blockSize, (long)i));
+            region.putEntry((long)i, new MockCacheEntry<>(blockSize, (long)i));
         }
 
         Collection<MockCacheEntry<Long>> entries = region.values();

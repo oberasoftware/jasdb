@@ -43,8 +43,8 @@ public class IndexScanRebuildTest extends IndexBaseTest {
     public void testIndexScan() throws JasDBStorageException {
         int testSize = 100000;
         String testField = "field1";
-        List<IndexableItem> indexableItemList = new ArrayList<IndexableItem>(testSize);
-        List<Integer> insertedKeys = new ArrayList<Integer>(testSize);
+        List<IndexableItem> indexableItemList = new ArrayList<>(testSize);
+        List<Integer> insertedKeys = new ArrayList<>(testSize);
         for(int i=0; i<testSize; i++) {
             indexableItemList.add(new MockIndexableItem(testField, i, i + 1000));
             insertedKeys.add(i);
@@ -82,8 +82,8 @@ public class IndexScanRebuildTest extends IndexBaseTest {
         int testSize = 100000;
         int initialFill = testSize / 4;
         String testField = "field1";
-        List<IndexableItem> indexableItemList = new ArrayList<IndexableItem>(testSize);
-        List<Integer> insertedKeys = new ArrayList<Integer>(testSize);
+        List<IndexableItem> indexableItemList = new ArrayList<>(testSize);
+        List<Integer> insertedKeys = new ArrayList<>(testSize);
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("field1", new LongKeyType()), new IndexField("RECORD_POINTER", new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_field1.idx"), keyInfo);
         try {

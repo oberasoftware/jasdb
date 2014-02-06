@@ -36,7 +36,7 @@ public class BagMeta implements Bag {
         String instance = entity.getValue(Constants.INSTANCE).toString();
         String name = entity.getValue(Constants.NAME).toString();
 
-        List<IndexDefinition> indexDefinitionList = new ArrayList<IndexDefinition>();
+        List<IndexDefinition> indexDefinitionList = new ArrayList<>();
         if(entity.hasProperty(Constants.INDEXES)) {
             for(Object indexDefinition : entity.getValues(Constants.INDEXES)) {
                 indexDefinitionList.add(IndexDefinition.fromHeader(indexDefinition.toString()));

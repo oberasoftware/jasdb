@@ -3,7 +3,7 @@ package nl.renarj.jasdb;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.storage.DBBaseTest;
 import org.junit.After;
 import org.junit.Before;

@@ -63,7 +63,7 @@ public class RestQueryGeneratorTest {
 
     @Test
     public void testGenerateOrderParams() {
-        List<SortParameter> sortParameterList = new ArrayList<SortParameter>();
+        List<SortParameter> sortParameterList = new ArrayList<>();
         sortParameterList.add(new SortParameter("field1", Order.ASCENDING));
 
         assertEquals("Unexpected order params", "field1 ASC", RestQueryGenerator.generateOrderParams(sortParameterList));

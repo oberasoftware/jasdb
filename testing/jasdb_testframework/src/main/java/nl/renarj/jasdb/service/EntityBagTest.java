@@ -16,7 +16,7 @@ import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
@@ -68,7 +68,7 @@ public abstract class EntityBagTest {
         System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
         SimpleBaseTest.cleanData();
 	}
-    
+
     protected EntityBagTest(DBSessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -648,5 +648,30 @@ public abstract class EntityBagTest {
         bag.flush();
 
         assertTrue(bag.getDiskSize() > sizeBefore);
+    }
+
+    @Test
+    public void testPersistIndexNonUniqueQuery() throws JasDBException, InterruptedException {
+        DBSession session = sessionFactory.createSession();
+        EntityBag bag = session.createOrGetBag("testbag");
+
+        bag.addEntity(new SimpleEntity().addProperty("city", "Amsterdam"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Amsterdam"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Rotterdam"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Utrecht"));
+        bag.addEntity(new SimpleEntity().addProperty("city", "Utrecht"));
+
+        QueryResult result = bag.find(QueryBuilder.createBuilder().field("city").value("Amsterdam")).execute();
+        assertThat(result.size(), is(2l));
+        result.close();
+
+        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
+
+        //let's give the index some time to build
+        Thread.sleep(5000);
+
+        result = bag.find(QueryBuilder.createBuilder().field("city").value("Amsterdam")).execute();
+        assertThat(result.size(), is(2l));
+        result.close();
     }
 }

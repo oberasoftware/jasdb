@@ -21,7 +21,7 @@ public class MultivalueProperty implements Property {
     private String propertyName;
 
     public MultivalueProperty(String propertyName) {
-        this.values = new ArrayList<Value>();
+        this.values = new ArrayList<>();
         this.propertyName = propertyName;
     }
 
@@ -31,8 +31,8 @@ public class MultivalueProperty implements Property {
     }
 
     @Override
-    public <T> T getFirstValueObject() {
-        return (T)getFirstValue().getValue();
+    public Object getFirstValueObject() {
+        return getFirstValue().getValue();
     }
 
     @Override

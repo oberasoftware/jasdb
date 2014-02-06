@@ -87,8 +87,8 @@ public class KeyInfoImpl implements KeyInfo {
             this.keyFactory = keyFactories[0];
             LOG.debug("Loaded key index for field: {} and factory: {}", keyFactory.getFieldName(), keyFactory);
 
-			this.fields = new LinkedList<String>();
-            this.valueFields = new LinkedList<String>();
+			this.fields = new LinkedList<>();
+            this.valueFields = new LinkedList<>();
             if(this.keyFactory instanceof CompositeKeyFactory) {
                 MultiKeyloader multiKeyloader = ((CompositeKeyFactory)keyFactory).getMultiKeyloader();
                 this.fields.addAll(multiKeyloader.getFields());
@@ -150,7 +150,7 @@ public class KeyInfoImpl implements KeyInfo {
     @Override
     public List<IndexField> getIndexKeyFields() {
         if(keyFactory instanceof CompositeKeyFactory) {
-            List<IndexField> valueFields = new ArrayList<IndexField>();
+            List<IndexField> valueFields = new ArrayList<>();
             for(KeyFactory vKeyFactory : ((CompositeKeyFactory)keyFactory).getMultiKeyloader().getKeyFactories()) {
                 valueFields.add(new IndexField(vKeyFactory.getFieldName(), vKeyFactory.getKeyType()));
             }
@@ -162,7 +162,7 @@ public class KeyInfoImpl implements KeyInfo {
 
     @Override
     public List<IndexField> getIndexValueFields() {
-        List<IndexField> valueFields = new ArrayList<IndexField>();
+        List<IndexField> valueFields = new ArrayList<>();
         for(KeyFactory vKeyFactory : multiValueKeyLoader.getKeyFactories()) {
             valueFields.add(new IndexField(vKeyFactory.getFieldName(), vKeyFactory.getKeyType()));
         }

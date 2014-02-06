@@ -1,40 +1,40 @@
 package nl.renarj.jasdb.rest.loaders;
 
 import nl.renarj.jasdb.rest.exceptions.SyntaxException;
-import nl.renarj.jasdb.rest.input.InputElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
+@Component
 public class ModelLoaderFactory {
 	private static final Logger LOG = LoggerFactory.getLogger(ModelLoaderFactory.class);
 	
-	private static final ModelLoaderFactory INSTANCE = new ModelLoaderFactory();
-	
-	private ServiceLoader<PathModelLoader> serviceLoader = ServiceLoader.load(PathModelLoader.class);
-	private Map<String, PathModelLoader> modelLoaders = new HashMap<String, PathModelLoader>();
-	
-	private ModelLoaderFactory() {
-		for(PathModelLoader modelLoader : serviceLoader) {
+	private Map<String, PathModelLoader> modelLoaderMap = new HashMap<>();
+
+    @Autowired
+    private List<PathModelLoader> modelLoaders;
+
+    @PostConstruct
+	public void init() {
+		for(PathModelLoader modelLoader : modelLoaders) {
 			for(String modelName : modelLoader.getModelNames()) {
 				LOG.info("Loaded element: {} modelloader: {}", modelName, modelLoader);
-				modelLoaders.put(modelName, modelLoader);
+                modelLoaderMap.put(modelName, modelLoader);
 			}
 		}
 	}
 	
-	private PathModelLoader getModelLoader(String element) throws SyntaxException {
-		if(modelLoaders.containsKey(element)) {
-			return modelLoaders.get(element);
+	public PathModelLoader getModelLoader(String element) throws SyntaxException {
+		if(modelLoaderMap.containsKey(element)) {
+			return modelLoaderMap.get(element);
 		} else {
 			throw new SyntaxException("Unknown input element: " + element);
 		}
-	}
-	
-	public static PathModelLoader getModelLoader(InputElement element) throws SyntaxException {
-		return INSTANCE.getModelLoader(element.getElementName());
 	}
 }

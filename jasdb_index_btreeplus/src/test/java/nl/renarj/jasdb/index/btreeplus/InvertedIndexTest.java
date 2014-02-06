@@ -52,7 +52,7 @@ public class InvertedIndexTest extends IndexBaseTest {
 	public void testInvertedIndex() throws Exception {
 		int NUMBER_ENTITIES = 20000;
 		File indexLocation = new File(tmpDir, "inverted.idx");
-        Map<Integer, Integer> keyAmounts = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> keyAmounts = new HashMap<>();
 
 		KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("field1", new StringKeyType()), new IndexField("__ID", new UUIDKeyType())), new ArrayList<IndexField>());
 		Index invertedIndex = new BTreeIndex(indexLocation, keyInfo);
@@ -101,7 +101,7 @@ public class InvertedIndexTest extends IndexBaseTest {
         int maxKey = 8;
         int maxAge = 100;
         File indexLocation = new File(tmpDir, "inverted.idx");
-        Map<String, Integer> keyAmounts = new HashMap<String, Integer>();
+        Map<String, Integer> keyAmounts = new HashMap<>();
 
         KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
                     new IndexField("field", new StringKeyType(200)),
@@ -237,7 +237,7 @@ public class InvertedIndexTest extends IndexBaseTest {
         int NUMBER_ENTITIES = 20000;
         int REMOVE_ENTITIES = 2000;
         File indexLocation = new File(tmpDir, "inverted.idx");
-        Map<Integer, Integer> amounts = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> amounts = new HashMap<>();
 
         KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(
                 new IndexField("field1", new StringKeyType()),

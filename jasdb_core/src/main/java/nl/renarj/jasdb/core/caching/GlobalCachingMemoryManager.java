@@ -24,7 +24,7 @@ public class GlobalCachingMemoryManager {
     private static final String DEFAULT_MONITOR_INTERVAL = "10s";
 
     private ConcurrentHashMap<String, CacheRegion<? extends Comparable, ? extends CacheEntry>> regionMap =
-            new ConcurrentHashMap<String, CacheRegion<? extends Comparable, ? extends CacheEntry>>();
+            new ConcurrentHashMap<>();
 
     private long maximumMemory;
 

@@ -39,7 +39,7 @@ public class TreeBlock implements IndexBlock {
     }
 
     public TreeBlock(BlockPersister persister, DataBlock dataBlock, long parentPointer, boolean modified) {
-        treeNodes = new KeyOrderedTree<TreeNode>();
+        treeNodes = new KeyOrderedTree<>();
         this.lockManager = new ReadWriteLock();
         this.persister = persister;
         this.dataBlock = dataBlock;

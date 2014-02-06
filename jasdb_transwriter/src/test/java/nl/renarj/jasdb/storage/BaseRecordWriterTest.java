@@ -165,7 +165,7 @@ public abstract class BaseRecordWriterTest extends BaseTest {
     }
 
     private List<UUIDKey> createTestRecords(String recordContent, RecordWriter recordWriter, int testSize) throws JasDBStorageException {
-        List<UUIDKey> recordPointers = new ArrayList<UUIDKey>(testSize);
+        List<UUIDKey> recordPointers = new ArrayList<>(testSize);
         for(int i=0; i<testSize; i++) {
             UUIDKey documentKey = new UUIDKey(UUID.randomUUID());
 

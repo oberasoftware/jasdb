@@ -88,7 +88,7 @@ public class EntityRestConnector extends RemoteRestConnector implements EntityCo
         String orderParams = RestQueryGenerator.generateOrderParams(sortParams);
         String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities(query).getConnectionString();
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         if(limit.getBegin() > 0) {
             params.put("begin", String.valueOf(limit.getBegin()));
         }
@@ -112,7 +112,7 @@ public class EntityRestConnector extends RemoteRestConnector implements EntityCo
     @Override
     public QueryResult find(RemotingContext context, String instance, String bag, int limit) throws RemoteException {
         String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities().getConnectionString();
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         if(limit > 0) {
             params.put("top", "" + limit);
         }

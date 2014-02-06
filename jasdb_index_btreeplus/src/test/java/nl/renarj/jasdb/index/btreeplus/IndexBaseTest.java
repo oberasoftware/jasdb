@@ -31,7 +31,7 @@ public abstract class IndexBaseTest {
 	private static final Logger LOG = LoggerFactory.getLogger(IndexBaseTest.class);
 
     public static ManualConfiguration createCachingConfiguration(String cacheEnabled, String maxCachedBlocks, String maxCachedSize) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("Enabled", cacheEnabled);
 
         ManualConfiguration config = new ManualConfiguration("Caching", params);
@@ -48,7 +48,7 @@ public abstract class IndexBaseTest {
     }
 
     private static ManualConfiguration createProperty(ManualConfiguration config, String name, String value) {
-        Map<String, String> maxCacheBlocksAttribs = new HashMap<String, String>();
+        Map<String, String> maxCacheBlocksAttribs = new HashMap<>();
         maxCacheBlocksAttribs.put("Value", value);
         maxCacheBlocksAttribs.put("Name", name);
 

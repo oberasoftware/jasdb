@@ -268,7 +268,7 @@ public class PathParserTest {
 	}
 	
 	private List<InputElement> getElements(PathParser parser) {
-		List<InputElement> elements = new ArrayList<InputElement>();
+		List<InputElement> elements = new ArrayList<>();
 		for(InputElement element : parser) {
 			elements.add(element);
 		}

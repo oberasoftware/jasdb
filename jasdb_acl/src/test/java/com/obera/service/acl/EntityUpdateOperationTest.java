@@ -5,6 +5,7 @@ import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.context.RequestContext;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.service.StorageService;
+import org.springframework.aop.framework.Advised;
 
 import java.util.UUID;
 
@@ -25,13 +26,13 @@ public class EntityUpdateOperationTest extends AbstractAuthorizationTest {
     protected AuthorizationOperation getOperation() {
         return new AuthorizationOperation() {
             @Override
-            public void doOperation(AuthorizationServiceWrapper authorizationServiceWrapper,
-                                    StorageService wrappedService, String user, String password) throws JasDBStorageException {
+            public void doOperation(StorageService wrappedService, String user, String password) throws Exception {
                 SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
 
-                authorizationServiceWrapper.updateEntity(createContext(user, password, "localhost"), entity);
-
-                verify(wrappedService, times(1)).updateEntity(any(RequestContext.class), eq(entity));
+                wrappedService.updateEntity(createContext(user, password, "localhost"), entity);
+                Advised advised = (Advised) wrappedService;
+                StorageService mock = (StorageService) advised.getTargetSource().getTarget();
+                verify(mock, times(1)).updateEntity(any(RequestContext.class), eq(entity));
             }
         };
     }

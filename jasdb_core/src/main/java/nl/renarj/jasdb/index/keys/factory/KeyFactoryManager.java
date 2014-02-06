@@ -47,7 +47,7 @@ public class KeyFactoryManager {
 	
 	private static synchronized void loadKeyFactories() {
 		try {
-			Map<String, KeyFactoryDefinition> definitions = new HashMap<String, KeyFactoryDefinition>();
+			Map<String, KeyFactoryDefinition> definitions = new HashMap<>();
 			Configuration keyFactoriesConfig = Configuration.loadConfiguration("db_keyfactories.xml");
 			List<Configuration> keyFactoryConfigs = keyFactoriesConfig.getChildConfigurations("/keyFactories/keyFactory");
 			for(Configuration keyFactoryConfig : keyFactoryConfigs) {
@@ -72,7 +72,7 @@ public class KeyFactoryManager {
         if(StringUtils.stringNotEmpty(headerDescriptor)) {
             Matcher matcher = KEY_PATTERN.matcher(headerDescriptor);
 
-            List<KeyFactory> keyFactoryList = new ArrayList<KeyFactory>();
+            List<KeyFactory> keyFactoryList = new ArrayList<>();
             while(matcher.find()) {
                 String keyName = matcher.group(1) != null ? matcher.group(1) : matcher.group(3);
                 String keyValue = matcher.group(2) != null ? matcher.group(2) : matcher.group(4);
@@ -111,7 +111,7 @@ public class KeyFactoryManager {
 					definition.getKeyFactoryId());
 			log.debug("Using arguments: {}", keyArgs);
 			
-			List<String> arguments = new ArrayList<String>();
+			List<String> arguments = new ArrayList<>();
 			arguments.add(field);
 			arguments.addAll(Arrays.asList(keyArgs));
 			

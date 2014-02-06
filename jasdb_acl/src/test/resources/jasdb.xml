@@ -17,6 +17,8 @@
     <!-- This enables or disables the statistics engine -->
     <Statistics enabled="false"/>
 
+    <Security Enabled="true"/>
+
     <!-- Configuration settings for the rest service, like the port number -->
     <Remote service="rest" port="7050"/>
 

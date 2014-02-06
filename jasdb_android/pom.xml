@@ -27,5 +27,11 @@
             <groupId>com.github.tony19</groupId>
             <artifactId>logback-android-classic</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <classifier>no_aop</classifier>
+        </dependency>
     </dependencies>
 </project>

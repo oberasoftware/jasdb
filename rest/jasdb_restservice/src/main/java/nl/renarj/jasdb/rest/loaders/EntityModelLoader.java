@@ -8,7 +8,6 @@ import nl.renarj.jasdb.api.query.Order;
 import nl.renarj.jasdb.api.query.QueryBuilder;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.rest.exceptions.RestException;
@@ -31,17 +30,23 @@ import nl.renarj.jasdb.service.StorageServiceFactory;
 import nl.renarj.jasdb.storage.query.BuilderTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class EntityModelLoader extends AbstractModelLoader {
     private enum OPERATION_TYPE {
         UPDATE,
         INSERT
     }
 	private static final Logger log = LoggerFactory.getLogger(EntityModelLoader.class);
+
+    @Inject
+    private StorageServiceFactory storageServiceFactory;
 	
 	@Override
 	public String[] getModelNames() {
@@ -72,8 +77,7 @@ public class EntityModelLoader extends AbstractModelLoader {
     }
 
     private RestEntity handleBagRelation(RestBag bag, InputElement input, int begin, int max, List<OrderParam> orderParams, RequestContext requestContext) throws JasDBStorageException {
-        StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-        StorageService storageService = serviceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
+        StorageService storageService = storageServiceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
 
         if(input.getCondition() != null) {
             return handleQuery(storageService, input, begin, max, orderParams, requestContext);
@@ -99,8 +103,7 @@ public class EntityModelLoader extends AbstractModelLoader {
 
                 try {
                     log.debug("Doing remove of entity with id: {}", idCondition.getValue());
-                    StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-                    StorageService storageService = serviceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
+                    StorageService storageService = storageServiceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
 
                     storageService.removeEntity(context, idCondition.getValue());
                     return null;
@@ -129,8 +132,7 @@ public class EntityModelLoader extends AbstractModelLoader {
             SimpleEntity storeEntity = streamedEntity.getEntity();
 
             try {
-                StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-                StorageService storageService = serviceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
+                StorageService storageService = storageServiceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
 
                 if(type == OPERATION_TYPE.UPDATE) {
                     log.debug("Updating entity with id: {}", storeEntity.getInternalId());
@@ -237,10 +239,9 @@ public class EntityModelLoader extends AbstractModelLoader {
 	}
     
     private StreamableEntityCollection handlePartitionEntities(Partition partition, RequestContext context, int begin, int max) throws JasDBStorageException {
-        StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
-        StorageService storageService = serviceFactory.getOrCreateStorageService(partition.getInstance(), partition.getBag());
+        StorageService storageService = storageServiceFactory.getOrCreateStorageService(partition.getInstance(), partition.getBag());
 
-        log.debug("Retrieving entities for partition: {} begin: {} max: {}", new Object[] {partition.getPartitionId(), begin, max});
+        log.debug("Retrieving entities for partition: {} begin: {} max: {}", partition.getPartitionId(), begin, max);
 
         QueryBuilder partitionQuery = QueryBuilder.createBuilder().field(StorageService.PARTITION_PROPERTY).value(partition.getPartitionId());
         long start = System.currentTimeMillis();

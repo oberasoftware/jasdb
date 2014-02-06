@@ -69,14 +69,14 @@ public class BTreeIndexTest extends IndexBaseTest {
         int nrThreads = 20;
         int nrRecords = 10000;
 
-        Map<String, String> p = new HashMap<String, String>();
+        Map<String, String> p = new HashMap<>();
         p.put("MaxMemory", "32m");
         GlobalCachingMemoryManager.getGlobalInstance().configure(new ManualConfiguration("Caching", p));
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new StringKeyType()), new IndexField("RECORD_POINTER", new LongKeyType()));
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
 
         try {
-            Map<Thread, BTreeIndexWriterThread> writers = new HashMap<Thread, BTreeIndexWriterThread>();
+            Map<Thread, BTreeIndexWriterThread> writers = new HashMap<>();
             for(int i=0; i<nrThreads; i++) {
                 BTreeIndexWriterThread writer = new BTreeIndexWriterThread(index, i * nrRecords, nrRecords);
                 Thread writerThread = new Thread(writer, "WriterThread" + i);
@@ -153,7 +153,7 @@ public class BTreeIndexTest extends IndexBaseTest {
 		long totalInsertTime = 0;
 		KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new LongKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
 		BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("pageSize", "512");
         index.configure(new ManualConfiguration("btree", params));
         long start = System.currentTimeMillis();
@@ -530,7 +530,7 @@ public class BTreeIndexTest extends IndexBaseTest {
 
 	@Test
 	public void testLongReadWriteRandomIndex() throws Exception {
-		Map<Long, Long> longRecords = new HashMap<Long, Long>();
+		Map<Long, Long> longRecords = new HashMap<>();
 
 		int indexSize = 1000;
 		long totalInsertTime = 0;
@@ -587,7 +587,7 @@ public class BTreeIndexTest extends IndexBaseTest {
 	
 	@Test
 	public void testUUIDReadWriteIndex() throws Exception {
-		Map<UUID, Long> uuidRecords = new HashMap<UUID, Long>();
+		Map<UUID, Long> uuidRecords = new HashMap<>();
 		int indexSize = 100000;
 		long totalInsertTime = 0;
 		KeyInfo keyInfo = new KeyInfoImpl(new IndexField("uuid", new UUIDKeyType()), new IndexField(RECORD_POINTER, new LongKeyType()));
@@ -637,7 +637,7 @@ public class BTreeIndexTest extends IndexBaseTest {
 	
 	@Test
 	public void testStringReadWriteIndex() throws Exception {
-		Map<String, Long> uuidRecords = new HashMap<String, Long>();
+		Map<String, Long> uuidRecords = new HashMap<>();
 		int indexSize = 100000;
 		long totalInsertTime = 0;
 		KeyInfo keyInfo = new KeyInfoImpl(new IndexField("string", new StringKeyType(100)), new IndexField(RECORD_POINTER, new LongKeyType()));

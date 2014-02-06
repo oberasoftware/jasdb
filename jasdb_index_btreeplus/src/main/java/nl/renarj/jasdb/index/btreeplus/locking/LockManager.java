@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * @author Renze de Vries
  */
 public class LockManager {
-    private final ThreadLocal<LockChain> currentLockChain = new ThreadLocal<LockChain>();
+    private final ThreadLocal<LockChain> currentLockChain = new ThreadLocal<>();
 
     private final BlockPersister persister;
 
@@ -51,8 +51,8 @@ public class LockManager {
         private LinkedList<IndexBlock> usedBlocks;
 
         private LockChain() {
-            lockEntries = new LinkedList<LockEntry>();
-            usedBlocks = new LinkedList<IndexBlock>();
+            lockEntries = new LinkedList<>();
+            usedBlocks = new LinkedList<>();
         }
 
         public void registerBlockUsage(IndexBlock block) {

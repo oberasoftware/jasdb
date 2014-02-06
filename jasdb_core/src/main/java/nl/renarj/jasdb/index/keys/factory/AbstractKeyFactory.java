@@ -30,7 +30,7 @@ public abstract class AbstractKeyFactory implements KeyFactory {
     @Override
     public Set<Key> createMultivalueKeys(IndexableItem indexableItem) throws JasDBStorageException {
         List<Object> values = indexableItem.getValues(field);
-        Set<Key> keys = new HashSet<Key>(values.size());
+        Set<Key> keys = new HashSet<>(values.size());
         for(Object value : values) {
             keys.add(convertToKey(value));
         }

@@ -54,7 +54,7 @@ public class EqualsSearchOperation implements SearchOperation {
     }
 
     private IndexSearchResultIteratorCollection doLeaveSearch(LeaveBlock leaveBlock, Key desiredKey) {
-        List<Key> results = new ArrayList<Key>(1);
+        List<Key> results = new ArrayList<>(1);
 
         if(leaveBlock.contains(desiredKey)) {
             results.add(leaveBlock.getKey(desiredKey));

@@ -70,7 +70,7 @@ public class RestDBSession extends DBConnectorSession {
     }
 
     public static NodeInformation createNodeInformation(String hostname, boolean ssl, boolean verifyCert, int port) {
-        Map<String, String> serviceDetails = new HashMap<String, String>();
+        Map<String, String> serviceDetails = new HashMap<>();
         serviceDetails.put("connectorType", "rest");
         String protocol = "http";
         if(ssl) {

@@ -61,7 +61,7 @@ public class JasdbInfoService {
             RestEntity entity = null;
             InputElement element = parser.next();
             while(element != null) {
-                PathModelLoader loader = ModelLoaderFactory.getModelLoader(element);
+                PathModelLoader loader = SimpleKernel.getKernelModule(ModelLoaderFactory.class).getModelLoader(element.getElementName());
                 log.debug("Input element: {} using loader: {}", element, loader);
                 entity = loader.loadModel(element, begin, top, orderParamList, getRequestContext(request));
                 element.setResult(entity);
@@ -82,7 +82,7 @@ public class JasdbInfoService {
             }
 
             return ServiceOutputHandler.createResponse(entity);
-		} catch(RestException e) {
+		} catch(JasDBStorageException | RestException e) {
             log.trace("Invalid syntax stack:", e);
 			log.debug("Invalid syntax:", e.getMessage());
 			
@@ -121,14 +121,14 @@ public class JasdbInfoService {
                 InputElement lastElement = processPath(pathInfo, getRequestContext(request));
 
                 if(lastElement != null) {
-                    PathModelLoader loader = ModelLoaderFactory.getModelLoader(lastElement);
+                    PathModelLoader loader = SimpleKernel.getKernelModule(ModelLoaderFactory.class).getModelLoader(lastElement.getElementName());
                     RestEntity entity = loader.writeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
 
                     return ServiceOutputHandler.createResponse(entity);
                 } else {
                     throw new SyntaxException("No path specified for write operation: " + pathInfo);
                 }
-            } catch(RestException e) {
+            } catch(JasDBStorageException | RestException e) {
                 log.trace("Invalid write operation", e);
 
                 return ServiceOutputHandler.handleError("Unable to write to model: " + e.getMessage());
@@ -138,14 +138,14 @@ public class JasdbInfoService {
         }
 	}
 
-    private InputElement processPath(String pathInfo, RequestContext requestContext) throws RestException {
+    private InputElement processPath(String pathInfo, RequestContext requestContext) throws JasDBStorageException, RestException {
         PathParser parser = new PathParser(pathInfo);
         InputElement lastElement = null;
         List<OrderParam> emptyOrderParams = Collections.emptyList();
         for(InputElement element : parser) {
             lastElement = element;
             if(element.getNext() != null) {
-                PathModelLoader loader = ModelLoaderFactory.getModelLoader(lastElement);
+                PathModelLoader loader = SimpleKernel.getKernelModule(ModelLoaderFactory.class).getModelLoader(lastElement.getElementName());
                 element.setResult(loader.loadModel(element, null, "", emptyOrderParams, requestContext));
             }
         }
@@ -164,14 +164,14 @@ public class JasdbInfoService {
             try {
                 InputElement lastElement = processPath(pathInfo, getRequestContext(request));
                 if(lastElement != null) {
-                    PathModelLoader loader = ModelLoaderFactory.getModelLoader(lastElement);
+                    PathModelLoader loader = SimpleKernel.getKernelModule(ModelLoaderFactory.class).getModelLoader(lastElement.getElementName());
                     loader.removeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
 
                     return Response.status(Response.Status.NO_CONTENT).type(ServiceOutputHandler.getResponseHandler().getMediaType()).build();
                 } else {
                     throw new SyntaxException("No path specified for remove operation: " + pathInfo);
                 }
-            } catch(RestException e) {
+            } catch(RestException | JasDBStorageException e) {
                 return ServiceOutputHandler.handleError("Unable to remove in model: " + e.getMessage());
             }
         } finally {
@@ -189,14 +189,14 @@ public class JasdbInfoService {
             try {
                 InputElement lastElement = processPath(pathInfo, getRequestContext(request));
                 if(lastElement != null) {
-                    PathModelLoader loader = ModelLoaderFactory.getModelLoader(lastElement);
+                    PathModelLoader loader = SimpleKernel.getKernelModule(ModelLoaderFactory.class).getModelLoader(lastElement.getElementName());
                     RestEntity entity = loader.updateEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
 
                     return ServiceOutputHandler.createResponse(entity);
                 } else {
                     throw new SyntaxException("No path specified for remove operation: " + pathInfo);
                 }
-            } catch(RestException e) {
+            } catch(JasDBStorageException | RestException e) {
                 return ServiceOutputHandler.handleError("Unable to remove in model: " + e.getMessage());
             }
         } finally {

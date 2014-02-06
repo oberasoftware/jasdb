@@ -9,7 +9,7 @@ import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;

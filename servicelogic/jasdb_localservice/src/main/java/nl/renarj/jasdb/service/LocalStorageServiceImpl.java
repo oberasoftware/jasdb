@@ -6,11 +6,12 @@ import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.context.RequestContext;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.model.IndexManager;
+import nl.renarj.jasdb.api.model.IndexManagerFactory;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
+import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.Index;
@@ -18,19 +19,20 @@ import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
 import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
 import nl.renarj.jasdb.index.search.IndexField;
-import nl.renarj.jasdb.service.operations.BagInsertOperation;
-import nl.renarj.jasdb.service.operations.BagRemoveOperation;
-import nl.renarj.jasdb.service.operations.BagUpdateOperation;
-import nl.renarj.jasdb.service.partitioning.LocalPartitionManager;
+import nl.renarj.jasdb.service.operations.DataOperation;
 import nl.renarj.jasdb.service.partitioning.PartitioningManager;
 import nl.renarj.jasdb.service.search.EntityRetrievalOperation;
 import nl.renarj.jasdb.service.search.QuerySearchOperation;
+import nl.renarj.jasdb.storage.RecordWriterFactoryLoader;
 import nl.renarj.jasdb.storage.indexing.IndexScanAndRecovery;
 import nl.renarj.jasdb.storage.query.operators.BlockOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +41,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+@Component("LocalStorageService")
+@Scope("prototype")
 public class LocalStorageServiceImpl implements StorageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalStorageServiceImpl.class);
     public static final String BAG_EXTENSION = ".pjs";
@@ -47,33 +51,58 @@ public class LocalStorageServiceImpl implements StorageService {
     private ExecutorService indexRebuilder = Executors.newFixedThreadPool(INDEX_REBUILD_THREADS);
 
     private static final int INDEX_REBUILD_THREADS = 2;
-	private IndexManager indexManager;
-    private RecordWriter recordWriter;
-    private MetadataStore metadataStore;
+
+    @Autowired
+    private RecordWriterFactoryLoader recordWriterFactoryLoader;
 
     private String instanceId;
     private String bagName;
-    private File bagFile;
 
-    protected PartitioningManager partitionManager;
+    @Autowired
+    private PartitioningManager partitionManager;
+
+    @Autowired
     private IdGenerator generator;
+
     private ResourceLockManager resourceLockManager = new ResourceLockManager();
 
-	protected LocalStorageServiceImpl(Instance instance, IndexManager indexManager, RecordWriter recordWriter, MetadataStore metadataStore, String bagName) throws JasDBStorageException {
-		this.bagFile = new File(instance.getPath(), bagName + BAG_EXTENSION);
-        File parentDir = bagFile.getParentFile();
-		if(parentDir.exists() || parentDir.mkdirs()) {
-            this.recordWriter = recordWriter;
-            this.indexManager = indexManager;
-            this.metadataStore = metadataStore;
-            this.bagName = bagName;
-            this.instanceId = instance.getInstanceId();
-            this.generator = new MachineGuidGenerator();
-            this.partitionManager = new LocalPartitionManager(generator, metadataStore);
-        } else {
-            throw new JasDBStorageException("Unable to create directory for bag storage file: " + bagFile.toString());
-        }
-	}
+    @Autowired
+    @Qualifier("insertOperation")
+    private DataOperation bagInsertOperation;
+
+    @Autowired
+    @Qualifier("removeOperation")
+    private DataOperation bagRemoveOperation;
+
+    @Autowired
+    @Qualifier("updateOperation")
+    private DataOperation bagUpdateOperation;
+
+    @Autowired
+    private IndexManagerFactory indexManagerFactory;
+
+    @Autowired
+    private MetadataStore metadataStore;
+
+//	protected LocalStorageServiceImpl(Instance instance, IndexManager indexManager, RecordWriter recordWriter, MetadataStore metadataStore, String bagName) throws JasDBStorageException {
+//		this.bagFile = new File(instance.getPath(), bagName + BAG_EXTENSION);
+//        File parentDir = bagFile.getParentFile();
+//		if(parentDir.exists() || parentDir.mkdirs()) {
+//            this.recordWriter = recordWriter;
+//            this.indexManager = indexManager;
+//            this.metadataStore = metadataStore;
+//            this.bagName = bagName;
+//            this.instanceId = instance.getInstanceId();
+//            this.generator = new MachineGuidGenerator();
+//            this.partitionManager = new LocalPartitionManager(generator, metadataStore);
+//        } else {
+//            throw new JasDBStorageException("Unable to create directory for bag storage file: " + bagFile.toString());
+//        }
+//	}
+    public LocalStorageServiceImpl(String instanceId, String bagName) {
+        this.bagName = bagName;
+        this.instanceId = instanceId;
+    }
 
     @Override
     public String getBagName() {
@@ -99,12 +128,9 @@ public class LocalStorageServiceImpl implements StorageService {
     public void flush() throws JasDBStorageException {
         resourceLockManager.exclusiveLock();
         try {
-            LOGGER.debug("Flushing record storage: {}", recordWriter);
-            recordWriter.flush();
-            for(Index index : indexManager.getIndexes(bagName).values()) {
-                LOGGER.debug("Flushing index: {}", index);
-                index.flushIndex();
-            }
+            LOGGER.debug("Flushing bag data: {}", bagName);
+            recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).flush();
+            indexManagerFactory.getIndexManager(instanceId).flush(bagName);
         } finally {
             resourceLockManager.exclusiveUnlock(false);
         }
@@ -112,14 +138,15 @@ public class LocalStorageServiceImpl implements StorageService {
 
     private void closeAndReleaseResources() throws JasDBStorageException {
         indexRebuilder.shutdown();
-        recordWriter.closeWriter();
-        indexManager.shutdownIndexes();
     }
 
 	@Override
 	public void  openService(Configuration configuration) throws JasDBStorageException {
         LOGGER.info("Opening storage service for bag: {}", bagName);
-        recordWriter.openWriter();
+
+        if(!recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).isOpen()) {
+            throw new ConfigurationException("Unable to open record writer for instance/bag: " + instanceId + '/' + bagName);
+        }
 
         if(!metadataStore.isLastShutdownClean() || Boolean.parseBoolean(System.getProperty(FORCE_REBUILD_COMMAND))) {
             LOGGER.info("Previous shutdown of: {} was unclean or forced rebuild triggered, scanning and rebuilding indexes", this);
@@ -133,10 +160,9 @@ public class LocalStorageServiceImpl implements StorageService {
         resourceLockManager.exclusiveLock();
         try {
             indexRebuilder.shutdown();
-            recordWriter.closeWriter();
-            if(!this.bagFile.delete()) {
-                this.bagFile.deleteOnExit();
-            }
+            recordWriterFactoryLoader.remove(instanceId, bagName);
+
+            IndexManager indexManager = indexManagerFactory.getIndexManager(instanceId);
             Collection<Index> indexes = indexManager.getIndexes(bagName).values();
             for(Index index : indexes) {
                 indexManager.removeIndex(bagName, index.getName());
@@ -147,18 +173,16 @@ public class LocalStorageServiceImpl implements StorageService {
     }
 
     private void handleIndexScanAndRebuild() throws JasDBStorageException {
-        Collection<Index> indexes = indexManager.getIndexes(bagName).values();
-        List<Future<?>> indexRebuilds = new ArrayList<Future<?>>(indexes.size());
-        LOGGER.info("Doing index scan for: {} items", recordWriter.getSize());
+        Collection<Index> indexes = getIndexManager().getIndexes(bagName).values();
+        List<Future<?>> indexRebuilds = new ArrayList<>(indexes.size());
+        LOGGER.info("Doing index scan for: {} items", getSize());
         for(final Index index : indexes) {
-            indexRebuilds.add(indexRebuilder.submit(new IndexScanAndRecovery(index, recordWriter.readAllRecords())));
+            indexRebuilds.add(indexRebuilder.submit(new IndexScanAndRecovery(index, getRecordWriter().readAllRecords())));
         }
         for(Future<?> indexRebuild : indexRebuilds) {
             try {
                 indexRebuild.get();
-            } catch(ExecutionException e) {
-                throw new JasDBStorageException("Unable to initialize bag, index rebuild failed", e);
-            } catch (InterruptedException e) {
+            } catch(ExecutionException | InterruptedException e) {
                 throw new JasDBStorageException("Unable to initialize bag, index rebuild failed", e);
             }
         }
@@ -182,7 +206,7 @@ public class LocalStorageServiceImpl implements StorageService {
                 entity.setInternalId(generator.generateNewId());
             }
 
-            new BagInsertOperation(bagName, indexManager, recordWriter).doDataOperation(entity);
+            bagInsertOperation.doDataOperation(instanceId, bagName, entity);
         } finally {
             resourceLockManager.sharedUnlock();
         }
@@ -193,7 +217,7 @@ public class LocalStorageServiceImpl implements StorageService {
         resourceLockManager.sharedLock();
         try {
             if(StringUtils.stringNotEmpty(entity.getInternalId())) {
-                new BagRemoveOperation(bagName, indexManager, recordWriter).doDataOperation(entity);
+                bagRemoveOperation.doDataOperation(instanceId, bagName, entity);
             } else {
                 throw new JasDBStorageException("Unable to remove record, entity has no id specified");
             }
@@ -212,7 +236,7 @@ public class LocalStorageServiceImpl implements StorageService {
         resourceLockManager.sharedLock();
         try {
             if(StringUtils.stringNotEmpty(entity.getInternalId())) {
-                new BagUpdateOperation(bagName, indexManager, recordWriter).doDataOperation(entity);
+                bagUpdateOperation.doDataOperation(instanceId, bagName, entity);
             } else {
                 throw new JasDBStorageException("Unable to update record, entity has no id specified");
             }
@@ -223,19 +247,19 @@ public class LocalStorageServiceImpl implements StorageService {
 
 	@Override
 	public long getSize() throws JasDBStorageException {
-		return recordWriter.getSize();
+		return recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).getSize();
 	}
 
 	@Override
 	public long getDiskSize() throws JasDBStorageException {
-		return recordWriter.getDiskSize();
+		return recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).getDiskSize();
 	}
 
 	@Override
 	public SimpleEntity getEntityById(RequestContext requestContext, String id) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
-		    return new EntityRetrievalOperation(recordWriter).getEntityById(id);
+		    return new EntityRetrievalOperation(getRecordWriter()).getEntityById(id);
         } finally {
             resourceLockManager.sharedUnlock();
         }
@@ -245,7 +269,7 @@ public class LocalStorageServiceImpl implements StorageService {
 	public QueryResult getEntities(RequestContext context) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
-		    return new EntityRetrievalOperation(recordWriter).getEntities();
+		    return new EntityRetrievalOperation(getRecordWriter()).getEntities();
         } finally {
             resourceLockManager.sharedUnlock();
         }
@@ -255,7 +279,7 @@ public class LocalStorageServiceImpl implements StorageService {
 	public QueryResult getEntities(RequestContext context, int max) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
-		    return new EntityRetrievalOperation(recordWriter).getEntities(max);
+		    return new EntityRetrievalOperation(getRecordWriter()).getEntities(max);
         } finally {
             resourceLockManager.sharedUnlock();
         }
@@ -265,7 +289,7 @@ public class LocalStorageServiceImpl implements StorageService {
 	public QueryResult search(RequestContext context, BlockOperation blockOperation, SearchLimit limit, List<SortParameter> params) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
-		    return new QuerySearchOperation(bagName, indexManager, recordWriter).search(blockOperation, limit, params);
+		    return new QuerySearchOperation(bagName, getIndexManager(), getRecordWriter()).search(blockOperation, limit, params);
         } finally {
             resourceLockManager.sharedUnlock();
         }
@@ -275,7 +299,7 @@ public class LocalStorageServiceImpl implements StorageService {
     public void ensureIndex(IndexField indexField, boolean isUnique, IndexField... valueFields) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
-            Index index = indexManager.createIndex(bagName, indexField, isUnique, valueFields);
+            Index index = getIndexManager().createIndex(bagName, indexField, isUnique, valueFields);
             initializeIndex(index);
         } finally {
             resourceLockManager.sharedUnlock();
@@ -286,7 +310,7 @@ public class LocalStorageServiceImpl implements StorageService {
     public void ensureIndex(CompositeIndexField indexField, boolean isUnique, IndexField... valueFields) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
-            Index index = indexManager.createIndex(bagName, indexField, isUnique, valueFields);
+            Index index = getIndexManager().createIndex(bagName, indexField, isUnique, valueFields);
             initializeIndex(index);
         } finally {
             resourceLockManager.sharedUnlock();
@@ -300,10 +324,8 @@ public class LocalStorageServiceImpl implements StorageService {
             metadataStore.addBagIndex(instanceId, bagName, definition);
 
             try {
-                indexRebuilder.submit(new IndexScanAndRecovery(index, recordWriter.readAllRecords(), true)).get();
-            } catch(ExecutionException e) {
-                throw new JasDBStorageException("Unable to initialize index, index rebuild failed", e);
-            } catch(InterruptedException e) {
+                indexRebuilder.submit(new IndexScanAndRecovery(index, getRecordWriter().readAllRecords(), true)).get();
+            } catch(ExecutionException | InterruptedException e) {
                 throw new JasDBStorageException("Unable to initialize index, index rebuild failed", e);
             }
         }
@@ -311,8 +333,8 @@ public class LocalStorageServiceImpl implements StorageService {
 
     @Override
     public List<String> getIndexNames() throws JasDBStorageException {
-        Collection<Index> indexes = indexManager.getIndexes(bagName).values();
-        List<String> indexNames = new ArrayList<String>(indexes.size());
+        Collection<Index> indexes = getIndexManager().getIndexes(bagName).values();
+        List<String> indexNames = new ArrayList<>(indexes.size());
         for(Index index : indexes) {
             indexNames.add(index.getName());
         }
@@ -323,6 +345,7 @@ public class LocalStorageServiceImpl implements StorageService {
     public void removeIndex(String indexName) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
+            IndexManager indexManager = getIndexManager();
             Index index = indexManager.getIndex(bagName, indexName);
             if(index != null) {
                 KeyInfo keyInfo = index.getKeyInfo();
@@ -338,11 +361,51 @@ public class LocalStorageServiceImpl implements StorageService {
         }
     }
 
+    private IndexManager getIndexManager() throws JasDBStorageException {
+        return indexManagerFactory.getIndexManager(instanceId);
+    }
+
+    private RecordWriter getRecordWriter() throws JasDBStorageException {
+        return recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName);
+    }
+
     @Override
     public String toString() {
         return "LocalStorageServiceImpl{" +
                 "bagName='" + bagName + '\'' +
                 ", instanceId='" + instanceId + '\'' +
                 '}';
+    }
+
+    public void setRecordWriterFactoryLoader(RecordWriterFactoryLoader recordWriterFactoryLoader) {
+        this.recordWriterFactoryLoader = recordWriterFactoryLoader;
+    }
+
+    public void setPartitionManager(PartitioningManager partitionManager) {
+        this.partitionManager = partitionManager;
+    }
+
+    public void setGenerator(IdGenerator generator) {
+        this.generator = generator;
+    }
+
+    public void setBagInsertOperation(DataOperation bagInsertOperation) {
+        this.bagInsertOperation = bagInsertOperation;
+    }
+
+    public void setBagRemoveOperation(DataOperation bagRemoveOperation) {
+        this.bagRemoveOperation = bagRemoveOperation;
+    }
+
+    public void setBagUpdateOperation(DataOperation bagUpdateOperation) {
+        this.bagUpdateOperation = bagUpdateOperation;
+    }
+
+    public void setIndexManagerFactory(IndexManagerFactory indexManagerFactory) {
+        this.indexManagerFactory = indexManagerFactory;
+    }
+
+    public void setMetadataStore(MetadataStore metadataStore) {
+        this.metadataStore = metadataStore;
     }
 }

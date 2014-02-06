@@ -4,8 +4,6 @@
         <!-- Set the used kernel modules -->
         <module type="record" class="nl.renarj.jasdb.storage.transactional.TransactionalRecordWriterFactory"/>
 
-        <module type="remote" class="nl.renarj.jasdb.core.dummy.DummyRemoteService"/>
-
         <module type="storageservice" class="nl.renarj.jasdb.service.LocalStorageServiceFactoryImpl"/>
     </modules>
 

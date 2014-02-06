@@ -1,7 +1,6 @@
-package nl.renarj.jasdb.core.utils;
+package nl.renarj.jasdb.core.platform;
 
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

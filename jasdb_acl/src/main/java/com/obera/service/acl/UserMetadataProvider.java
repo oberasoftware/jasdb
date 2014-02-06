@@ -21,7 +21,7 @@ public class UserMetadataProvider implements MetadataProvider {
 
     private MetadataStore metadataStore;
 
-    private Map<String, MetaWrapper<User>> userMetaMap = new ConcurrentHashMap<String, MetaWrapper<User>>();
+    private Map<String, MetaWrapper<User>> userMetaMap = new ConcurrentHashMap<>();
 
     @Override
     public void setMetadataStore(MetadataStore metadataStore) {
@@ -41,7 +41,7 @@ public class UserMetadataProvider implements MetadataProvider {
     }
 
     public List<User> getUsers() throws JasDBStorageException {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
         for(MetaWrapper<User> user : userMetaMap.values()) {
             users.add(user.getMetadataObject());
         }
@@ -51,7 +51,7 @@ public class UserMetadataProvider implements MetadataProvider {
     public void addUser(User user) throws JasDBStorageException {
         SimpleEntity entity = UserMeta.toEntity(user);
         long recordPointer = metadataStore.addMetadataEntity(entity);
-        userMetaMap.put(user.getUsername(), new MetaWrapper<User>(user, recordPointer));
+        userMetaMap.put(user.getUsername(), new MetaWrapper<>(user, recordPointer));
     }
 
     public void delUser(String username) throws JasDBStorageException {
@@ -72,6 +72,6 @@ public class UserMetadataProvider implements MetadataProvider {
     @Override
     public void registerMetadataEntity(SimpleEntity entity, long recordPointer) throws JasDBStorageException {
         User user = UserMeta.fromEntity(entity);
-        userMetaMap.put(user.getUsername(), new MetaWrapper<User>(user, recordPointer));
+        userMetaMap.put(user.getUsername(), new MetaWrapper<>(user, recordPointer));
     }
 }

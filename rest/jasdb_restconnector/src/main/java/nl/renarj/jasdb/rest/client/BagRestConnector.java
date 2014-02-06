@@ -61,7 +61,7 @@ public class BagRestConnector extends RemoteRestConnector implements BagConnecto
 
         try {
             BagCollection bagCollection = new JsonRestResponseHandler().deserialize(BagCollection.class, clientResponse.getEntityInputStream());
-            List<RemoteBag> mappedBags = new ArrayList<RemoteBag>();
+            List<RemoteBag> mappedBags = new ArrayList<>();
             for(RestBag bag : bagCollection.getBags()) {
                 mappedBags.add(new RemoteBag(new BagMeta(bag.getInstanceId(), bag.getName(), new ArrayList<IndexDefinition>()), bag.getSize(), bag.getDiskSize()));
             }
@@ -128,7 +128,7 @@ public class BagRestConnector extends RemoteRestConnector implements BagConnecto
 
         try {
             IndexCollection indexCollection = new JsonRestResponseHandler().deserialize(IndexCollection.class, clientResponse.getEntityInputStream());
-            List<IndexDefinition> indexDefinitions = new ArrayList<IndexDefinition>();
+            List<IndexDefinition> indexDefinitions = new ArrayList<>();
             for(IndexEntry entry : indexCollection.getIndexEntryList()) {
                 indexDefinitions.add(IndexModelMapper.map(entry));
             }

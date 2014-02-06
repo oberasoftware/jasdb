@@ -23,8 +23,8 @@ public abstract class AbstractBlock implements BlockOperation {
 	private Set<BlockOperation> blockOperations;
 	
 	protected AbstractBlock() {
-		conditions = new HashMap<String, Set<SearchCondition>>();
-		blockOperations = new HashSet<BlockOperation>();
+		conditions = new HashMap<>();
+		blockOperations = new HashSet<>();
 	}
 	
 	public void addChildBlock(BlockOperation operation) {
@@ -49,7 +49,7 @@ public abstract class AbstractBlock implements BlockOperation {
 	public void addCondition(String field, SearchCondition condition) {
 		Set<SearchCondition> fieldConditions = null;
 		if(!this.conditions.containsKey(field)) {
-			fieldConditions = new HashSet<SearchCondition>();
+			fieldConditions = new HashSet<>();
 			
 			this.conditions.put(field, fieldConditions);
 		} else {
@@ -80,7 +80,7 @@ public abstract class AbstractBlock implements BlockOperation {
 
     @Override
     public Set<SearchCondition> getConditions(KeyNameMapper mapper, List<String> fields) {
-        Set<SearchCondition> currentConditions = new HashSet<SearchCondition>();
+        Set<SearchCondition> currentConditions = new HashSet<>();
         if(fields.size() == 1) {
             currentConditions = getConditions(fields.get(0));
         } else if(fields.size() > 1) {
@@ -101,7 +101,7 @@ public abstract class AbstractBlock implements BlockOperation {
     }
 
     private Set<SearchCondition> mergeConditions(KeyNameMapper nameMapper, String field1, Set<SearchCondition> conditionSet1, String field2, Set<SearchCondition> conditionSet2) {
-        Set<SearchCondition> mergedConditions = new HashSet<SearchCondition>();
+        Set<SearchCondition> mergedConditions = new HashSet<>();
         for(SearchCondition condition1 : conditionSet1) {
             for(SearchCondition condition2 : conditionSet2) {
                 mergedConditions.add(condition1.mergeCondition(nameMapper, field1, field2, condition2));

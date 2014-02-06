@@ -14,7 +14,7 @@ public class RestUserList implements RestEntity {
     }
 
     public RestUserList(List<String> userList) {
-        users = new ArrayList<RestUser>(userList.size());
+        users = new ArrayList<>(userList.size());
         for(String user: userList) {
             users.add(new RestUser(user, null, null));
         }

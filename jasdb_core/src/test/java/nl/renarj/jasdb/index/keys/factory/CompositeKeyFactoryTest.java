@@ -61,7 +61,7 @@ public class CompositeKeyFactoryTest {
     }
 
     private class MockedIndexableItem implements IndexableItem {
-        private Map<String, List<String>> properties = new HashMap<String, List<String>>();
+        private Map<String, List<String>> properties = new HashMap<>();
 
         private MockedIndexableItem(Map<String, List<String>> properties) {
             this.properties = properties;

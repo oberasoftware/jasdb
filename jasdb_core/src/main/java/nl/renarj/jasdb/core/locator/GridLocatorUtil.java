@@ -26,7 +26,7 @@ import java.util.List;
 public class GridLocatorUtil {
     private static final Logger logger = LoggerFactory.getLogger(GridLocatorUtil.class);
     public static List<InetAddress> getAdresses() throws ConfigurationException {
-        List<InetAddress> networkInetAdresses = new ArrayList<InetAddress>();
+        List<InetAddress> networkInetAdresses = new ArrayList<>();
         try {
             Enumeration<NetworkInterface> networkInterfaceEnumerator = NetworkInterface.getNetworkInterfaces();
             while(networkInterfaceEnumerator.hasMoreElements()) {

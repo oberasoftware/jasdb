@@ -7,8 +7,10 @@
  */
 package nl.renarj.jasdb.index.keys;
 
+import nl.renarj.jasdb.core.IndexableItem;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
 
@@ -26,6 +28,16 @@ public class KeyUtil {
             throw new JasDBStorageException("No DocumentId present in key value");
         }
     }
+
+    public static boolean isDataPresent(IndexableItem sEntity, Index index) {
+        for(String indexField : index.getKeyInfo().getKeyFields()) {
+            if(!sEntity.hasValue(indexField)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 	
     public static byte[] getUnicodeBytes(String data) {
         try {

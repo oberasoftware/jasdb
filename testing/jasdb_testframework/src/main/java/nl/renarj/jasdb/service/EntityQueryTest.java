@@ -23,7 +23,7 @@ import nl.renarj.jasdb.api.query.QueryBuilder;
 import nl.renarj.jasdb.api.query.QueryExecutor;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
@@ -60,10 +60,10 @@ public abstract class EntityQueryTest {
     private static final int NUMBER_ENTITIES = 1000;
     private static final int MAX_AGE = 50;
 
-    private Map<Long, String> longToId = new HashMap<Long, String>();
-    private Map<String, String> valueToId = new HashMap<String, String>();
-    private Map<Long, Integer> ageAmounts = new HashMap<Long, Integer>();
-    private Map<String, Integer> cityCounters = new HashMap<String, Integer>();
+    private Map<Long, String> longToId = new HashMap<>();
+    private Map<String, String> valueToId = new HashMap<>();
+    private Map<Long, Integer> ageAmounts = new HashMap<>();
+    private Map<String, Integer> cityCounters = new HashMap<>();
 
     private DBSessionFactory sessionFactory;
 
@@ -795,7 +795,7 @@ public abstract class EntityQueryTest {
     }
 
     private List<SimpleEntity> aggregateResult(QueryResult result) {
-        List<SimpleEntity> entities = new ArrayList<SimpleEntity>();
+        List<SimpleEntity> entities = new ArrayList<>();
 
         for(SimpleEntity entity : result) {
             entities.add(entity);
@@ -805,7 +805,7 @@ public abstract class EntityQueryTest {
     }
 
     private List<String> assertResult(int start, int amount, QueryResult result) {
-        List<String> keysFoundInOrder = new ArrayList<String>();
+        List<String> keysFoundInOrder = new ArrayList<>();
 
         for(int i=start; i<(start + amount) && result.hasNext(); i++) {
             SimpleEntity entity = result.next();
@@ -840,7 +840,7 @@ public abstract class EntityQueryTest {
                 int amount = 18;
                 List<String> keysInOrder = assertResult(start, amount, result);
 
-                List<String> expectedOrder = new ArrayList<String>();
+                List<String> expectedOrder = new ArrayList<>();
                 for(int i=start; i<amount + start; i++) {
                     String id = valueToId.get("value" + i);
                     expectedOrder.add(id);

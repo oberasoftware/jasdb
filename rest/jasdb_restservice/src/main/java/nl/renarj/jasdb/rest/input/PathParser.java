@@ -25,7 +25,7 @@ public class PathParser implements Iterable<InputElement>, Iterator<InputElement
 	
 	public PathParser(String path) throws SyntaxException {
 		this.path = path;
-		pathElements = new LinkedList<InputElement>();
+		pathElements = new LinkedList<>();
 		parse();
 	}
 	

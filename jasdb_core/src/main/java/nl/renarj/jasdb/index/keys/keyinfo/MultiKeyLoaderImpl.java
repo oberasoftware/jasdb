@@ -31,7 +31,7 @@ public class MultiKeyLoaderImpl implements MultiKeyloader {
 		this.keyFactories = keyFactories;
 		calculateKeySize();
 
-        this.fields = new ArrayList<String>();
+        this.fields = new ArrayList<>();
         for(KeyFactory keyFactory : keyFactories) {
             this.fields.add(keyFactory.getFieldName());
         }

@@ -34,7 +34,7 @@ public class KeyInfoImplTest {
 	@Test
 	public void testSimpleKeyInfoMatchTest() throws JasDBStorageException {
 		KeyInfoImpl keyInfo = new KeyInfoImpl("testField(stringType:200);", "valueField(stringType:200);field1(stringType:1000);");
-		Set<String> searchMatchFields = new HashSet<String>();
+		Set<String> searchMatchFields = new HashSet<>();
 		searchMatchFields.add("testField");
 		
 		int matchRatio = keyInfo.match(searchMatchFields);
@@ -89,7 +89,7 @@ public class KeyInfoImplTest {
 	
 	@Test
 	public void testSimpleKeyInfoToHeader() throws JasDBStorageException {
-		List<IndexField> indexValues = new ArrayList<IndexField>();
+		List<IndexField> indexValues = new ArrayList<>();
 		indexValues.add(new IndexField("POINTER", new StringKeyType(20)));
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new StringKeyType(16)), indexValues);
 		
@@ -101,7 +101,7 @@ public class KeyInfoImplTest {
 	
 	@Test
 	public void testComplexKeyInfoToHeader() throws JasDBStorageException {
-		List<IndexField> indexValues = new ArrayList<IndexField>();
+		List<IndexField> indexValues = new ArrayList<>();
 		indexValues.add(new IndexField("POINTER", new StringKeyType(20)));
 		indexValues.add(new IndexField("field1", new LongKeyType()));
 		indexValues.add(new IndexField("testValue", new LongKeyType()));
@@ -117,7 +117,7 @@ public class KeyInfoImplTest {
 	
 	@Test
 	public void testReadWriteStringKey() throws JasDBStorageException {
-		List<IndexField> indexValues = new ArrayList<IndexField>();
+		List<IndexField> indexValues = new ArrayList<>();
 		indexValues.add(new IndexField("POINTER", new StringKeyType(20)));
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new StringKeyType(16)), indexValues);
 		
@@ -139,7 +139,7 @@ public class KeyInfoImplTest {
 	
 	@Test
 	public void testReadWriteUUIDKey() throws JasDBStorageException {
-		List<IndexField> indexValues = new ArrayList<IndexField>();
+		List<IndexField> indexValues = new ArrayList<>();
 		indexValues.add(new IndexField("POINTER", new LongKeyType()));
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new UUIDKeyType()), indexValues);
 		
@@ -173,7 +173,7 @@ public class KeyInfoImplTest {
 	
 	@Test
 	public void testReadWriteLongKey() throws JasDBStorageException {
-		List<IndexField> indexValues = new ArrayList<IndexField>();
+		List<IndexField> indexValues = new ArrayList<>();
 		indexValues.add(new IndexField("POINTER", new LongKeyType()));
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new LongKeyType()), indexValues);
 		
@@ -241,7 +241,7 @@ public class KeyInfoImplTest {
     @Test
 	public void testComplexKeyInfo() throws JasDBStorageException {
 		int numberOfKeys = 10;
-		List<IndexField> indexValues = new ArrayList<IndexField>();
+		List<IndexField> indexValues = new ArrayList<>();
 		indexValues.add(new IndexField("POINTER", new LongKeyType()));
 		indexValues.add(new IndexField("SOME_VALUE", new StringKeyType(255)));
 		
@@ -285,7 +285,7 @@ public class KeyInfoImplTest {
 	@Test
 	public void testSimpleKeyInfo() throws JasDBStorageException {
 		int numberOfKeys = 10;
-		List<IndexField> indexValues = new ArrayList<IndexField>();
+		List<IndexField> indexValues = new ArrayList<>();
 		indexValues.add(new IndexField("POINTER", new LongKeyType()));
 		
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new LongKeyType()), indexValues);
