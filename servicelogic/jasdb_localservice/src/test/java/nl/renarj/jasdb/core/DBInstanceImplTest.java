@@ -5,7 +5,7 @@ import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.model.DBInstance;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.service.StorageServiceFactory;
 import nl.renarj.jasdb.service.metadata.InstanceMeta;
 import nl.renarj.storage.DBBaseTest;

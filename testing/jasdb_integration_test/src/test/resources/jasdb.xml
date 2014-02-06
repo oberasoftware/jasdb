@@ -33,6 +33,8 @@
         </instance>
     </instances>
 
+    <caching MaxMemory="32m" MemoryMonitorInterval="10s"/>
+
     <!-- Configuration settings for the btree index -->
     <Index Type="btree" pageSize="512">
         <Caching Enabled="true">

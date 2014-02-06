@@ -2,8 +2,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>jasdb</artifactId>
-		<groupId>nl.renarj</groupId>
-        <version>0.9-SNAPSHOT</version>
+		<groupId>com.obera</groupId>
+        <version>1.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>jasdb_localservice</artifactId>
@@ -13,7 +13,7 @@
 
 	<dependencies>
         <dependency>
-            <groupId>nl.renarj</groupId>
+            <groupId>com.obera</groupId>
             <artifactId>jasdb_transwriter</artifactId>
         </dependency>
         <dependency>
@@ -21,10 +21,23 @@
             <artifactId>jasdb_index_btreeplus</artifactId>
         </dependency>
         <dependency>
-            <groupId>nl.renarj</groupId>
+            <groupId>com.obera</groupId>
             <artifactId>jasdb_api</artifactId>
-            <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <artifactId>javax.inject</artifactId>
+            <groupId>javax.inject</groupId>
+            <version>1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
+
     </dependencies>
 	<build>
 		<plugins>

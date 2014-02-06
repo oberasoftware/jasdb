@@ -33,7 +33,7 @@ public class PropertyKeyMapper {
     
     protected static Set<Key> mapToKeys(Property property) throws JasDBStorageException {
         List<Value> values = property.getValues();
-        Set<Key> mappedKeys = new HashSet<Key>(values.size());
+        Set<Key> mappedKeys = new HashSet<>(values.size());
         for(Value value : values) {
             mappedKeys.add(mapToKey(value));
         }

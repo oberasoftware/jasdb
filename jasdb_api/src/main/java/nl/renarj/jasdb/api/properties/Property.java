@@ -32,7 +32,7 @@ public interface Property {
      * any value type (String, Integer, Long, etc.)
      * @return The value object
      */
-    Object getFirstValueObject();
+    <T> T getFirstValueObject();
 
     /**
      * Gets the Value object wrapper of the first value
@@ -50,7 +50,7 @@ public interface Property {
      * Gets a list of all the value objects
      * @return the list of all the value objects
      */
-    List<Object> getValueObjects();
+    <T> List<T> getValueObjects();
 
     /**
      * Returns if this property has multiple values

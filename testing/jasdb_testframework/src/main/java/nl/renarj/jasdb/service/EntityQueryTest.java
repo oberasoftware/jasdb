@@ -12,8 +12,10 @@ import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
+import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
+import nl.renarj.jasdb.api.properties.EntityValue;
 import nl.renarj.jasdb.api.properties.Property;
 import nl.renarj.jasdb.api.query.BlockType;
 import nl.renarj.jasdb.api.query.Order;
@@ -21,7 +23,7 @@ import nl.renarj.jasdb.api.query.QueryBuilder;
 import nl.renarj.jasdb.api.query.QueryExecutor;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.utils.HomeLocatorUtil;
+import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
@@ -44,6 +46,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -57,10 +60,10 @@ public abstract class EntityQueryTest {
     private static final int NUMBER_ENTITIES = 1000;
     private static final int MAX_AGE = 50;
 
-    private Map<Long, String> longToId = new HashMap<Long, String>();
-    private Map<String, String> valueToId = new HashMap<String, String>();
-    private Map<Long, Integer> ageAmounts = new HashMap<Long, Integer>();
-    private Map<String, Integer> cityCounters = new HashMap<String, Integer>();
+    private Map<Long, String> longToId = new HashMap<>();
+    private Map<String, String> valueToId = new HashMap<>();
+    private Map<Long, Integer> ageAmounts = new HashMap<>();
+    private Map<String, Integer> cityCounters = new HashMap<>();
 
     private DBSessionFactory sessionFactory;
 
@@ -86,6 +89,7 @@ public abstract class EntityQueryTest {
         bag.ensureIndex(new IndexField("field6", new LongKeyType()), false);
         bag.ensureIndex(new IndexField("age", new LongKeyType()), false);
         bag.ensureIndex(new IndexField("city", new StringKeyType(200)), false);
+        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType(100)), false);
         bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType(200))), false);
 
         Random rnd = new Random(System.currentTimeMillis());
@@ -102,6 +106,10 @@ public abstract class EntityQueryTest {
                 city2 = SimpleBaseTest.possibleCities[rnd.nextInt(SimpleBaseTest.possibleCities.length)];
             }
 
+            EmbeddedEntity embeddedEntity = new EmbeddedEntity();
+            embeddedEntity.addProperty("embeddedProperty", value);
+            embeddedEntity.addProperty("embeddedNoIndexProperty", value);
+
             SimpleEntity entity = bag.addEntity(new SimpleEntity()
                     .addProperty("field1", value)
                     .addProperty("field5", lValue)
@@ -109,6 +117,7 @@ public abstract class EntityQueryTest {
                     .addProperty("field7", fieldValue)
                     .addProperty("field8", fieldValue)
                     .addProperty("field9", lValue)
+                    .addEntity("embed", embeddedEntity)
                     .addProperty("age", age)
                     .addProperty("mainCity", city1)
                     .addProperty("city", city1, city2)
@@ -267,6 +276,86 @@ public abstract class EntityQueryTest {
             SimpleKernel.shutdown();
         }
     }
+
+    @Test
+    public void testEqualsNestedEntity() throws Exception {
+        DBSession pojoDb = sessionFactory.createSession();
+        EntityBag bag = pojoDb.createOrGetBag("inverted");
+        try {
+            String queryKey = "value50";
+            String expectedId = valueToId.get(queryKey);
+
+            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("embed.embeddedProperty").value(queryKey));
+            long start = System.nanoTime();
+            QueryResult result = executor.execute();
+            long end = System.nanoTime();
+            long passed = end - start;
+            log.info("Query execution took: {}", passed);
+
+            Assert.assertNotNull(result);
+
+            Assert.assertTrue("There should be a result", result.hasNext());
+            SimpleEntity entity = result.next();
+            Assert.assertNotNull("There should be a returned entity", entity);
+            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+
+            Property property = entity.getProperty("embed");
+            assertNotNull("Property should be set", property);
+            assertTrue("Property should be long", property.getFirstValueObject() instanceof EmbeddedEntity);
+
+            EntityValue value = (EntityValue) property.getFirstValue();
+            SimpleEntity embedEntity = value.toEntity();
+
+            assertNotNull("Property should be set", embedEntity);
+
+            String embeddedProperty = embedEntity.getProperty("embeddedProperty").getFirstValue().toString();
+            Assert.assertEquals("The id's should match", queryKey, embeddedProperty);
+        } finally {
+            pojoDb.closeSession();
+            SimpleKernel.shutdown();
+        }
+    }
+
+    @Test
+    public void testEqualsNestedEntityNoIndex() throws Exception {
+        DBSession pojoDb = sessionFactory.createSession();
+        EntityBag bag = pojoDb.createOrGetBag("inverted");
+        try {
+            String queryKey = "value50";
+            String expectedId = valueToId.get(queryKey);
+
+            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("embed.embeddedNoIndexProperty").value(queryKey));
+            long start = System.nanoTime();
+            QueryResult result = executor.execute();
+            long end = System.nanoTime();
+            long passed = end - start;
+            log.info("Query execution took: {}", passed);
+
+            Assert.assertNotNull(result);
+
+            Assert.assertTrue("There should be a result", result.hasNext());
+            SimpleEntity entity = result.next();
+            Assert.assertNotNull("There should be a returned entity", entity);
+            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+
+            Property property = entity.getProperty("embed");
+            assertNotNull("Property should be set", property);
+            assertTrue("Property should be long", property.getFirstValueObject() instanceof EmbeddedEntity);
+
+            EntityValue value = (EntityValue) property.getFirstValue();
+            SimpleEntity embedEntity = value.toEntity();
+
+            assertNotNull("Property should be set", embedEntity);
+
+            String embeddedProperty = embedEntity.getProperty("embeddedProperty").getFirstValue().toString();
+            Assert.assertEquals("The id's should match", queryKey, embeddedProperty);
+        } finally {
+            pojoDb.closeSession();
+            SimpleKernel.shutdown();
+        }
+
+    }
+
 
     @Test
     public void testAndOperationMultiQueryBuilderTablescan() throws Exception {
@@ -706,7 +795,7 @@ public abstract class EntityQueryTest {
     }
 
     private List<SimpleEntity> aggregateResult(QueryResult result) {
-        List<SimpleEntity> entities = new ArrayList<SimpleEntity>();
+        List<SimpleEntity> entities = new ArrayList<>();
 
         for(SimpleEntity entity : result) {
             entities.add(entity);
@@ -716,7 +805,7 @@ public abstract class EntityQueryTest {
     }
 
     private List<String> assertResult(int start, int amount, QueryResult result) {
-        List<String> keysFoundInOrder = new ArrayList<String>();
+        List<String> keysFoundInOrder = new ArrayList<>();
 
         for(int i=start; i<(start + amount) && result.hasNext(); i++) {
             SimpleEntity entity = result.next();
@@ -751,7 +840,7 @@ public abstract class EntityQueryTest {
                 int amount = 18;
                 List<String> keysInOrder = assertResult(start, amount, result);
 
-                List<String> expectedOrder = new ArrayList<String>();
+                List<String> expectedOrder = new ArrayList<>();
                 for(int i=start; i<amount + start; i++) {
                     String id = valueToId.get("value" + i);
                     expectedOrder.add(id);

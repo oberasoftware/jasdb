@@ -20,7 +20,7 @@ public class StorageFlushThreadTest {
     @Test
     public void testFlushInterval() throws JasDBStorageException, InterruptedException {
         StorageService storageService = mock(StorageService.class);
-        Map<String, StorageService> storageServiceMap = new HashMap<String, StorageService>();
+        Map<String, StorageService> storageServiceMap = new HashMap<>();
         storageServiceMap.put("storageService", storageService);
 
         StorageFlushThread storageFlushThread = new StorageFlushThread(storageServiceMap, INTERVAL);
