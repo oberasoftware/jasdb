@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasdb Version="1.0">
     <Storage>
+        <!--<RecordWriter provider="inmemory"/>-->
         <RecordWriter provider="transactional"/>
     </Storage>
 
