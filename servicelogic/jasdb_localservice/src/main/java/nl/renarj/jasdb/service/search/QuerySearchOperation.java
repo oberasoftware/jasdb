@@ -101,13 +101,13 @@ public class QuerySearchOperation {
 			List<Key> right = results.subList(half, listSize);
 			right = doMergeSort(right, field, order, keyNameMapper);
 			
-			return merge(left, right, field, keyNameMapper);
+			return merge(left, right, field, order, keyNameMapper);
 		} else {
 			return results;
 		}
 	}
 	
-	private List<Key> merge(List<Key> left, List<Key> right, String field, KeyNameMapper keyNameMapper) {
+	private List<Key> merge(List<Key> left, List<Key> right, final String field, final Order order, final KeyNameMapper keyNameMapper) {
 		List<Key> results = new ArrayList<>(left.size() + right.size());
 		int currentLeft = 0;
 		int currentRight = 0;
@@ -123,7 +123,7 @@ public class QuerySearchOperation {
 				Key leftValue = firstLeft.getKey(keyNameMapper, field);
 				Key rightValue = firstRight.getKey(keyNameMapper, field);
 				
-				if(leftValue.compareTo(rightValue) <= 0 ) {
+				if((order == Order.ASCENDING && leftValue.compareTo(rightValue) <= 0) || (order == Order.DESCENDING && leftValue.compareTo(rightValue) >= 0) ) {
 					results.add(firstLeft);
 					currentLeft++;
 				} else {
