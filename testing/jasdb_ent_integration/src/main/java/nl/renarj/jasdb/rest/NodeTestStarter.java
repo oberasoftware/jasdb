@@ -1,5 +1,8 @@
 package nl.renarj.jasdb.rest;
 
+import nl.renarj.jasdb.LocalDBSession;
+import nl.renarj.jasdb.api.SimpleEntity;
+import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
@@ -19,6 +22,12 @@ public class NodeTestStarter {
             //System.setProperty("test.discovery.enabled", "true");
             //System.setProperty("test.grid.enabled", "true");
 			SimpleKernel.initializeKernel();
+
+            EntityBag bag = new LocalDBSession("test").createOrGetBag("blabla");
+            bag.addEntity(new SimpleEntity());
+            bag.addEntity(new SimpleEntity());
+            bag.addEntity(new SimpleEntity());
+
 
 //            SessionManager sessionManager = SimpleKernel.getKernelModule(SessionManager.class);
 //            UserSession userSession = sessionManager.startSession(new BasicCredentials("admin", "localhost", ""));

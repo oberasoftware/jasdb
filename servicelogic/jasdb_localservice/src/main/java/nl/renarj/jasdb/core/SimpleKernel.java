@@ -41,8 +41,6 @@ public class SimpleKernel {
 
     private PlatformManager platformManager;
 
-    private RemoteService remoteService;
-
     private List<Extension> loadedExtensions;
 
     private CountDownLatch latch = new CountDownLatch(1);
@@ -99,9 +97,12 @@ public class SimpleKernel {
 //            extension.shutdown(context);
 //        }
 
-        if(remoteService != null) {
-            LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
-            remoteService.stopService();
+        List<RemoteService> remoteServices = platformManager.getComponents(RemoteService.class);
+        if(remoteServices != null) {
+            for(RemoteService remoteService : remoteServices) {
+                LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
+                remoteService.stopService();
+            }
         }
 
         LOG.debug("Doing kernel shutdown, stopping instance and storage services");
@@ -161,12 +162,17 @@ public class SimpleKernel {
             this.nodeInformation = new NodeInformation(instanceId, gridId);
 
             try {
-                this.remoteService = platformManager.getComponent(RemoteService.class);
-                if(remoteService.isEnabled()) {
-                    this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
+                List<RemoteService> remoteServices = platformManager.getComponents(RemoteService.class);
+                if(remoteServices != null) {
+                    for(RemoteService remoteService : remoteServices) {
+                        if(remoteService.isEnabled()) {
+                            this.nodeInformation.addServiceInformation(remoteService.getServiceInformation());
 
-                    LOG.info("Starting remote service: {}", remoteService.getClass().getName());
-                    this.remoteService.startService();
+                            LOG.info("Starting remote service: {}", remoteService.getClass().getName());
+
+                            remoteService.startService();
+                        }
+                    }
                 }
             } catch(NoComponentFoundException e) {
                 LOG.info("No remote service available");

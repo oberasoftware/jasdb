@@ -7,4 +7,8 @@ public class NoComponentFoundException extends JasDBStorageException {
     public NoComponentFoundException(String message, Throwable throwable) {
         super(message, throwable);
     }
+
+    public NoComponentFoundException(String message) {
+        super(message);
+    }
 }

@@ -12,9 +12,7 @@ import nl.renarj.jasdb.core.locator.ServiceInformation;
 import nl.renarj.jasdb.core.utils.FileUtils;
 import nl.renarj.jasdb.rest.security.OAuthTokenEndpoint;
 import nl.renarj.jasdb.rest.security.OAuthTokenFilter;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -128,10 +126,10 @@ public class RestService implements RemoteService {
                 SslContextFactory sslContextFactory = new SslContextFactory(keystorePath);
                 sslContextFactory.setKeyStorePassword(sslDetails.getKeystorePass());
 
-                Connector connector = new SslSelectChannelConnector(sslContextFactory);
-                connector.setPort(sslDetails.getSslPort());
-                server.addConnector(connector);
-                LOG.info("Starting SSL connector: {}", sslDetails);
+//                Connector connector = new SslSelectChannelConnector(sslContextFactory);
+//                connector.setPort(sslDetails.getSslPort());
+//                server.addConnector(connector);
+//                LOG.info("Starting SSL connector: {}", sslDetails);
             }
 
             ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);

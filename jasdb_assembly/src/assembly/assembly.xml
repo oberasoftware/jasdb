@@ -10,6 +10,7 @@
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
                 <include>com.obera:jasdb_restservice</include>
+                <include>com.obera:jasdb_console</include>
             </includes>
             <binaries>
                 <outputDirectory>lib</outputDirectory>

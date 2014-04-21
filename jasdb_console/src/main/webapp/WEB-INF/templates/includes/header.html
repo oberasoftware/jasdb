@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <title th:if="${title}" th:text="'JasDB Admin Console - ' + ${title}">Page title</title>
+    <title th:if="!${title}">JasDB Admin Console</title>
+
+    <link th:href="@{/static/images/favicon.ico}" rel="shortcut icon" href="/webapp/static/images/favicon.ico" title="Favicon"/>
+
+    <link th:href="@{/static/bootstrap/css/bootstrap.min.css}" href="/webapp/static/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <script th:src="@{/static/javascript/jquery-2.1.0.min.js}" src="/webapp/static/javascript/jquery-2.1.0.min.js"></script>
+
+    <script th:src="@{/static/bootstrap/js/bootstrap.min.js}" src="/webapp/static/bootstrap/js/bootstrap.min.js"></script>
+</head>
+
+
+    <nav class="navbar navbar-default" role="navigation" th:fragment="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#"><img height="" th:src="@{/static/images/obera.png}"/></a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a th:href="@{'/data/'}">Data</a></li>
+                    <li><a th:href="@{'/security/'}">Security</a></li>
+                </ul>
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" disabled="true" class="form-control" placeholder="Search"/>
+                    </div>
+                    <button type="submit" disabled="true" class="btn btn-default">Submit</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+<div id="version" th:fragment="footer">
+    <p class="text-center">&#169; Copyright 2014 Oberasoftware, version: <span>1.0</span></p>
+</div>
+
+</html>

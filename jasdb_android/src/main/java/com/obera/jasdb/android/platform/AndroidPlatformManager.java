@@ -8,12 +8,15 @@ import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.api.model.IndexManagerFactory;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
+import nl.renarj.jasdb.core.exceptions.NoComponentFoundException;
 import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import nl.renarj.jasdb.core.platform.PlatformManager;
 import nl.renarj.jasdb.service.StorageServiceFactory;
 import nl.renarj.jasdb.storage.RecordWriterFactoryLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author Renze de Vries
@@ -66,6 +69,11 @@ public class AndroidPlatformManager implements PlatformManager {
     @Override
     public <T> T getComponent(Class<T> type) {
         return injector.getInstance(type);
+    }
+
+    @Override
+    public <T> List<T> getComponents(Class<T> type) throws NoComponentFoundException {
+        throw new NoComponentFoundException("No support for multi-component architecture");
     }
 
     @Override
