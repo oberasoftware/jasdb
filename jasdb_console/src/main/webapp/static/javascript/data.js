@@ -12,4 +12,10 @@ $(document).ready(function() {
         var bagName = $(this).data('id');
         $(".modal-body #bag").val( bagName );
     });
+
+    $(document).on("click", ".showDocument", function () {
+        var json = $(this).data('content');
+
+        $(".modal-body #dataContent").JSONView(json);
+    });
 });

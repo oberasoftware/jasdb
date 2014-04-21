@@ -118,7 +118,8 @@ public class AndroidDBSession implements DBSession {
         }
     }
 
-    private DBInstance getInstance(String instanceId) throws JasDBStorageException {
+    @Override
+    public DBInstance getInstance(String instanceId) throws JasDBStorageException {
         try {
             return instanceFactory.getInstance(instanceId);
         } catch(ConfigurationException e) {

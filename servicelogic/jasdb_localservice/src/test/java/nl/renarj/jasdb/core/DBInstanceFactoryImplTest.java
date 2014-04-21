@@ -9,7 +9,9 @@ import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.storage.DBBaseTest;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
@@ -28,6 +30,10 @@ import static org.mockito.Mockito.when;
  * @author Renze de Vries
  */
 public class DBInstanceFactoryImplTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Before
     public void before() throws Exception {
         System.setProperty(HomeLocatorUtil.JASDB_HOME, DBBaseTest.tmpDir.toString());
@@ -70,6 +76,17 @@ public class DBInstanceFactoryImplTest {
         assertThat(instanceArgumentCaptor.getValue().getPath(), is("/some/path"));
 
         assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1"));
+    }
+
+    @Test
+    public void testAddInstanceInvalidPath() throws JasDBStorageException {
+        expectedException.expect(JasDBStorageException.class);
+        expectedException.expectMessage("The directory provided does not exist or is not a directory");
+
+        MetadataStore metadataStore = mock(MetadataStore.class);
+
+        DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore);
+        instanceFactory.addInstance("instance1", "\\someinvalidpath");
     }
 
     @Test(expected = JasDBStorageException.class)

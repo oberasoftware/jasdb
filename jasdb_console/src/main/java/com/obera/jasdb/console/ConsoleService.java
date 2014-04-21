@@ -43,7 +43,7 @@ public class ConsoleService implements RemoteService {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
     }
 
     @Override

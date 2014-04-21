@@ -300,8 +300,12 @@ public class JasDBMetadataStore implements MetadataStore {
     public void removeInstance(String instanceId) throws JasDBStorageException {
         if(!DEFAULT_INSTANCE.equalsIgnoreCase(instanceId)) {
             MetaWrapper<Instance> instanceMetaWrapper = instanceMetaMap.get(instanceId);
-            writer.removeRecord(instanceMetaWrapper.getRecordPointer());
-            instanceMetaMap.remove(instanceId);
+            if(instanceMetaWrapper != null) {
+                writer.removeRecord(instanceMetaWrapper.getRecordPointer());
+                instanceMetaMap.remove(instanceId);
+            } else {
+                throw new JasDBStorageException("Unable to delete non existing instance: " + instanceId);
+            }
         } else {
             throw new JasDBStorageException("Not allowed to remove default instance");
         }

@@ -113,7 +113,7 @@ public class LocalDBSession implements DBSession {
     @Override
     public Instance deleteInstance(String instanceId) throws JasDBStorageException {
         Instance deleteInstance = getInstance(instanceId);
-        //in case we are deleting the current connected instance let's switch
+        //in case we are deleting the current connected instance let's switch to default context
         if(this.instance != null && deleteInstance.getInstanceId().equals(this.instance.getInstanceId())) {
             this.instance = instanceFactory.getInstance();
         }
@@ -158,7 +158,8 @@ public class LocalDBSession implements DBSession {
         }
     }
 
-    private DBInstance getInstance(String instanceId) throws JasDBStorageException {
+    @Override
+    public DBInstance getInstance(String instanceId) throws JasDBStorageException {
         try {
             return instanceFactory.getInstance(instanceId);
         } catch(ConfigurationException e) {

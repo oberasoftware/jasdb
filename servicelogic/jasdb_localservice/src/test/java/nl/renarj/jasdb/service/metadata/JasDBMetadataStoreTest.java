@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
@@ -28,6 +29,9 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 public class JasDBMetadataStoreTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private File storeLocation;
     private JasDBMetadataStore metadataStore;
@@ -143,8 +147,16 @@ public class JasDBMetadataStoreTest {
         assertThat(metadataStore.getInstance("testInstance1"), nullValue());
     }
 
-    @Test(expected = JasDBStorageException.class)
+    @Test
+    public void testRemoveNotExistingInstance() throws JasDBStorageException {
+        expectedException.expect(JasDBStorageException.class);
+        expectedException.expectMessage("Unable to delete non existing instance:");
+        metadataStore.removeInstance("NonExistingInstance");
+    }
+
+    @Test
     public void testCannotRemoveDefault() throws JasDBStorageException {
+        expectedException.expect(JasDBStorageException.class);
         metadataStore.removeInstance("default");
     }
 
