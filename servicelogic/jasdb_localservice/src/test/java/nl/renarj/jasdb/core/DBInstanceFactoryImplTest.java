@@ -12,8 +12,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,9 @@ public class DBInstanceFactoryImplTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
     public void before() throws Exception {
@@ -64,16 +69,18 @@ public class DBInstanceFactoryImplTest {
     }
 
     @Test
-    public void testAddInstance() throws JasDBStorageException {
+    public void testAddInstance() throws JasDBStorageException, IOException {
         MetadataStore metadataStore = mock(MetadataStore.class);
 
+        String tempFolder = temporaryFolder.newFolder().toString();
+
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore);
-        instanceFactory.addInstance("instance1", "/some/path");
+        instanceFactory.addInstance("instance1", tempFolder);
 
         ArgumentCaptor<Instance> instanceArgumentCaptor = ArgumentCaptor.forClass(Instance.class);
         verify(metadataStore).addInstance(instanceArgumentCaptor.capture());
         assertThat(instanceArgumentCaptor.getValue().getInstanceId(), is("instance1"));
-        assertThat(instanceArgumentCaptor.getValue().getPath(), is("/some/path"));
+        assertThat(instanceArgumentCaptor.getValue().getPath(), is(tempFolder));
 
         assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1"));
     }
@@ -101,11 +108,13 @@ public class DBInstanceFactoryImplTest {
     }
 
     @Test
-    public void testDeleteInstance() throws JasDBStorageException {
+    public void testDeleteInstance() throws JasDBStorageException, IOException {
         MetadataStore metadataStore = mock(MetadataStore.class);
 
+        String tempFolder = temporaryFolder.newFolder().toString();
+
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore);
-        instanceFactory.addInstance("instance1", "/some/path");
+        instanceFactory.addInstance("instance1", tempFolder);
         assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1"));
 
         when(metadataStore.containsInstance("instance1")).thenReturn(true);

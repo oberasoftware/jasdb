@@ -1,201 +1,273 @@
 package nl.renarj.storage.index;
 
-import nl.renarj.jasdb.LocalDBSession;
-import nl.renarj.jasdb.api.DBSession;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.DBInstance;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
+import nl.renarj.jasdb.api.metadata.Bag;
+import nl.renarj.jasdb.api.metadata.IndexDefinition;
+import nl.renarj.jasdb.api.metadata.Instance;
+import nl.renarj.jasdb.api.metadata.MetadataStore;
+import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
+import nl.renarj.jasdb.index.Index;
+import nl.renarj.jasdb.index.IndexState;
+import nl.renarj.jasdb.index.keys.impl.StringKey;
+import nl.renarj.jasdb.index.keys.impl.UUIDKey;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
+import nl.renarj.jasdb.index.keys.types.UUIDKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
 import nl.renarj.jasdb.index.search.IndexField;
-import nl.renarj.storage.DBBaseTest;
-import org.junit.After;
+import nl.renarj.jasdb.storage.indexing.IndexManagerImpl;
+import nl.renarj.jasdb.storage.indexing.IndexTypes;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.UUID;
 
-public class IndexManagementTest extends DBBaseTest {
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-	@After
-	public void tearDown() throws JasDBException {
-		super.tearDown();
-        cleanData();
-	}
-	
-	@Before
-	public void setup() throws Exception {
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, DBBaseTest.tmpDir.toString());
+@RunWith(MockitoJUnitRunner.class)
+public class IndexManagementTest {
 
-        cleanData();
-	}
-	
-	@Test
-	public void testLoadIndex() throws JasDBStorageException {
-        DBSession pojoDb = new LocalDBSession();
-        EntityBag bag = pojoDb.createOrGetBag("testbag");
-        bag.ensureIndex(new IndexField("testkey", new StringKeyType()), true, new IndexField("payload", new StringKeyType()));
+    private static final String TEST_INSTANCE = "DEFAULT_INSTANCE";
+    private static final String TESTBAG = "testbag";
 
-        DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-//		IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-//		try {
-//			File indexFile = new File(jasdbDir, "testbag_testkey.idx");
-//			Index index = instance.getIndex("testbag", "testkey");
-//			Assert.assertNotNull("Index should have been loaded", index);
-//			Assert.assertEquals("Index instances should be the same", index.hashCode(), index.hashCode());
-//
-//			index.flushIndex();
-//			assertTrue("There should be an index", indexFile.exists());
-//			index.insertIntoIndex(new StringKey("JustSomeKey")
-//                    .addKey(index.getKeyInfo().getKeyNameMapper(), "payload", new StringKey("testvalue"))
-//                    .addKey(index.getKeyInfo().getKeyNameMapper(), "__ID", new UUIDKey(UUID.randomUUID())));
-//			instance.shutdownIndexes();
-//
-//			index = instance.getIndex("testbag", "testkey");
-//			IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(new StringKey("JustSomeKey")), new SearchLimit());
-//			assertEquals("One key should be present", 1, result.size());
-//
-//			KeyInfo keyInfo = index.getKeyInfo();
-//			assertEquals("The key name should be testkey", "testkey", keyInfo.getKeyName());
-//			assertEquals("The page size should be 512", index.getPageSize(), 512);
-//		} finally {
-//			instance.shutdownIndexes();
-//		}
-	}
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    @Test
-    public void testIndexRemove() throws JasDBStorageException {
-        DBSession pojoDb = new LocalDBSession();
-        EntityBag bag = pojoDb.createOrGetBag("testbag");
-        bag.ensureIndex(new IndexField("testkey", new StringKeyType()), true);
-        bag.ensureIndex(new IndexField("testkey2", new StringKeyType()), false);
-        bag.addEntity(new SimpleEntity().addProperty("testkey", "value1").addProperty("testkey2", "testkey2value"));
+    @Mock
+    private ConfigurationLoader configurationLoader;
 
-        DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-//        IndexManager indexManager = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-//        Index index = indexManager.getIndex("testbag", "testkey");
-//        Index invertedIndex = indexManager.getIndex("testbag", "testkey2ID");
-//        File indexFile = new File(jasdbDir, "testbag_testkey.idx");
-//        File invertedIndexBtreeFile = new File(jasdbDir, "testbag_testkey2ID.idx");
-//        assertEquals("Expected index state to be OK", IndexState.OK, index.getState());
-//        assertEquals("Expected index state to be OK", IndexState.OK, invertedIndex.getState());
-//        assertTrue("Index file should exist", indexFile.exists());
-//        assertTrue("Index file should exist", invertedIndexBtreeFile.exists());
-//
-//        bag.removeIndex("testkey");
-//        assertEquals("Expected index state to be CLOSED", IndexState.CLOSED, index.getState());
-//        assertFalse("Index file should no longer exist", indexFile.exists());
-//
-//        assertEquals("Expected index state to be OK", IndexState.OK, invertedIndex.getState());
-//        assertTrue("Index file should exist", invertedIndexBtreeFile.exists());
-//
-//        bag.removeIndex("testkey2ID");
-//        assertEquals("Expected index state to be OK", IndexState.CLOSED, invertedIndex.getState());
-//        assertFalse("Index file should exist", invertedIndexBtreeFile.exists());
+    @Mock
+    private MetadataStore metadataStore;
+
+    @Mock
+    private Configuration indexConfiguration;
+
+    @InjectMocks
+    private IndexManagerImpl indexManager;
+
+    @Before
+    public void setup() throws Exception {
+        indexManager = new IndexManagerImpl(TEST_INSTANCE);
+        MockitoAnnotations.initMocks(this);
+
+        when(configurationLoader.getConfiguration()).thenReturn(indexConfiguration);
+        when(indexConfiguration.getChildConfiguration(anyString())).thenReturn(null);
     }
-	
-	@Test
-	public void testBagIndexCreate() throws Exception {
-		DBSession pojoDb = new LocalDBSession();
-		EntityBag bag = pojoDb.createOrGetBag("inverted");
-		bag.ensureIndex(new IndexField("field1", new StringKeyType(100)), false);
-		
-		try {
-            DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-//
-//			Index loadedIndexField1 = instance.getIndex("inverted", "field1ID");
-//			Assert.assertNotNull("Index should have been loaded", loadedIndexField1);
-//			KeyInfo field1KeyInfo = loadedIndexField1.getKeyInfo();
-//			KeyFactory field1KeyFactory = field1KeyInfo.getKeyFactory();
-//			Assert.assertNotNull(field1KeyInfo);
-//			Assert.assertNotNull(field1KeyFactory);
-//			Assert.assertEquals("The header should match", "complexType(field1(stringType:100);__ID(uuidType););", field1KeyFactory.asHeader());
-		} finally {
-			SimpleKernel.shutdown();
-		}
-		
-		assertFileExists(new File(jasdbDir, "inverted_field1ID.idx"), true);
-	}
 
     @Test
-    public void testBagIndexCompositeCreate() throws Exception {
-        DBSession pojoDb = new LocalDBSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-        bag.ensureIndex(new CompositeIndexField(new IndexField("field1", new StringKeyType(100)), new IndexField("field2", new LongKeyType())), false);
-
+    public void testCreateIndex() throws JasDBStorageException, IOException {
         try {
-            DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-//
-//            Index loadedIndexField = instance.getIndex("inverted", "field1field2ID");
-//            Assert.assertNotNull("Index should have been loaded", loadedIndexField);
-//            KeyInfo fieldKeyInfo = loadedIndexField.getKeyInfo();
-//            KeyFactory field1KeyFactory = fieldKeyInfo.getKeyFactory();
-//            Assert.assertNotNull(fieldKeyInfo);
-//            Assert.assertNotNull(field1KeyFactory);
-//            Assert.assertEquals("The header should match", "complexType(field1(stringType:100);field2(longType);__ID(uuidType););", field1KeyFactory.asHeader());
+            File instanceDirectory = temporaryFolder.newFolder();
+
+            Bag bag = mock(Bag.class);
+            when(bag.getIndexDefinitions()).thenReturn(new ArrayList<IndexDefinition>());
+            when(metadataStore.getBag(TEST_INSTANCE, TESTBAG)).thenReturn(bag);
+
+            Instance instance = mock(Instance.class);
+            when(instance.getPath()).thenReturn(instanceDirectory.toString());
+            when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
+
+            Index createdIndex = indexManager.createIndex(TESTBAG, new IndexField("testkey", new StringKeyType()), true, new IndexField("payload", new StringKeyType()));
+
+            File indexFile = new File(instanceDirectory, "testbag_testkey.idx");
+
+            Index index = indexManager.getIndex("testbag", "testkey");
+            assertNotNull("Index should have been loaded", index);
+            assertEquals("Index instances should be the same", createdIndex.hashCode(), index.hashCode());
+
+            index.flushIndex();
+            assertTrue("There should be an index", indexFile.exists());
+
+            index.insertIntoIndex(new StringKey("JustSomeKey")
+                    .addKey(index.getKeyInfo().getKeyNameMapper(), "payload", new StringKey("testvalue"))
+                    .addKey(index.getKeyInfo().getKeyNameMapper(), "__ID", new UUIDKey(UUID.randomUUID())));
+
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("testkey", new StringKeyType())), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
+
+            verify(metadataStore, times(1)).addBagIndex(TEST_INSTANCE, TESTBAG, definition);
         } finally {
-            SimpleKernel.shutdown();
+            indexManager.shutdownIndexes();
         }
-
-        assertFileExists(new File(jasdbDir, "inverted_field1field2ID.idx"), true);
     }
-	
-	@Test
-	public void testBestIndexMatch() throws Exception {
-		DBSession pojoDb = new LocalDBSession();
-		EntityBag bag = pojoDb.createOrGetBag("inverted");
-		bag.ensureIndex(new IndexField("field1", new StringKeyType(100)), false);
-		bag.ensureIndex(new IndexField("field2", new StringKeyType(100)), false);
-		bag.ensureIndex(new IndexField("field3", new StringKeyType(100)), false);
-		
-		try {
-			Set<String> fields = new HashSet<>();
-			fields.add("field1");
-            DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-//
-//			Index loadedIndex = instance.getBestMatchingIndex("inverted", fields);
-//
-//			List<String> indexFields = loadedIndex.getKeyInfo().getKeyFields();
-//			Assert.assertEquals("There should be one field in the index", 2, indexFields.size());
-//			Assert.assertEquals("The field should be field1", "field1", indexFields.get(0));
-		} finally {
-			SimpleKernel.shutdown();
-		}
-	}
 
-	@Test
-	public void testBagIndexMultiKeyCreate() throws Exception {
-		DBSession pojoDb = new LocalDBSession();
-		EntityBag bag = pojoDb.createOrGetBag("inverted");
-		try {
-			bag.ensureIndex(new CompositeIndexField(
-					new IndexField("field1", new StringKeyType()), 
-					new IndexField("field2", new StringKeyType())
-				), false);
+    @Test
+    public void testLoadIndexes() throws Exception {
+        try {
+            File instanceDirectory = temporaryFolder.newFolder();
 
-            DBInstance dbinstance = SimpleKernel.getInstanceFactory().getInstance();
-//            IndexManager instance = SimpleKernel.getStorageServiceFactory().getIndexManager(dbinstance);
-//
-//            Index index = instance.getIndex("inverted", "field1field2ID");
-//            Assert.assertNotNull("Index should have been loaded", index);
-//            KeyInfo fieldKeyInfo = index.getKeyInfo();
-//            KeyFactory fieldKeyFactory = fieldKeyInfo.getKeyFactory();
-//            Assert.assertNotNull(fieldKeyInfo);
-//            Assert.assertNotNull(fieldKeyFactory);
-//            Assert.assertEquals("The header should match", "complexType(field1(stringType:1024);field2(stringType:1024);__ID(uuidType););", fieldKeyFactory.asHeader());
+            Instance instance = mock(Instance.class);
+            when(instance.getPath()).thenReturn(instanceDirectory.toString());
+            when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
 
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("testkey", new StringKeyType())), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), IndexTypes.BTREE.getType());
+
+            Bag bag = mock(Bag.class);
+            when(bag.getIndexDefinitions()).thenReturn(Lists.newArrayList(definition));
+            when(metadataStore.getBag(TEST_INSTANCE, TESTBAG)).thenReturn(bag);
+
+            Map<String, Index> indexes = indexManager.getIndexes(TESTBAG);
+            assertThat(indexes.size(), is(1));
+
+            assertThat(indexes.get(keyInfo.getKeyName()), notNullValue());
+
+            indexes.get(keyInfo.getKeyName()).openIndex();
+
+            assertThat(indexes.get(keyInfo.getKeyName()).getState(), is(IndexState.OK));
+
+            File indexFile = new File(instanceDirectory, "testbag_testkey.idx");
+            assertThat(indexFile.exists(), is(true));
         } finally {
-			SimpleKernel.shutdown();
-		}
-	}
+            indexManager.shutdownIndexes();
+        }
+    }
+
+    @Test
+    public void testIndexRemove() throws JasDBStorageException, IOException {
+        try {
+            File instanceDirectory = temporaryFolder.newFolder();
+
+            Instance instance = mock(Instance.class);
+            when(instance.getPath()).thenReturn(instanceDirectory.toString());
+            when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
+
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("testkey", new StringKeyType())), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), IndexTypes.BTREE.getType());
+
+            Bag bag = mock(Bag.class);
+            when(bag.getIndexDefinitions()).thenReturn(Lists.newArrayList(definition));
+            when(metadataStore.getBag(TEST_INSTANCE, TESTBAG)).thenReturn(bag);
+
+            Map<String, Index> indexes = indexManager.getIndexes(TESTBAG);
+            assertThat(indexes.size(), is(1));
+            indexes.get(keyInfo.getKeyName()).openIndex();
+
+            File indexFile = new File(instanceDirectory, "testbag_testkey.idx");
+            assertThat(indexFile.exists(), is(true));
+
+            indexManager.removeIndex(TESTBAG, keyInfo.getKeyName());
+
+            assertThat(indexFile.exists(), is(false));
+            verify(metadataStore, times(1)).removeBagIndex(TEST_INSTANCE, TESTBAG, definition);
+        } finally {
+            indexManager.shutdownIndexes();
+        }
+    }
+
+    @Test
+    public void testCreateUniqueComplexIndex() throws JasDBStorageException, IOException {
+        try {
+            CompositeIndexField complexIndexField = new CompositeIndexField(new IndexField("field1", new StringKeyType(100)), new IndexField("field2", new LongKeyType()));
+
+            File instanceDirectory = temporaryFolder.newFolder();
+
+            Bag bag = mock(Bag.class);
+            when(bag.getIndexDefinitions()).thenReturn(new ArrayList<IndexDefinition>());
+            when(metadataStore.getBag(TEST_INSTANCE, TESTBAG)).thenReturn(bag);
+
+            Instance instance = mock(Instance.class);
+            when(instance.getPath()).thenReturn(instanceDirectory.toString());
+            when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
+
+            Index createdIndex = indexManager.createIndex(TESTBAG, complexIndexField, true, new IndexField("payload", new StringKeyType()));
+
+            File indexFile = new File(instanceDirectory, "testbag_field1field2.idx");
+
+            Index index = indexManager.getIndex("testbag", "field1field2");
+            assertNotNull("Index should have been loaded", index);
+            assertEquals("Index instances should be the same", createdIndex.hashCode(), index.hashCode());
+
+            index.flushIndex();
+            assertTrue("There should be an index", indexFile.exists());
+
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(complexIndexField.getIndexFields()), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
+
+            verify(metadataStore, times(1)).addBagIndex(TEST_INSTANCE, TESTBAG, definition);
+        } finally {
+            indexManager.shutdownIndexes();
+        }
+    }
+
+    @Test
+    public void testBestIndexMatch() throws Exception {
+        try {
+            File instanceDirectory = temporaryFolder.newFolder();
+
+            Bag bag = mock(Bag.class);
+            when(bag.getIndexDefinitions()).thenReturn(new ArrayList<IndexDefinition>());
+            when(metadataStore.getBag(TEST_INSTANCE, TESTBAG)).thenReturn(bag);
+
+            Instance instance = mock(Instance.class);
+            when(instance.getPath()).thenReturn(instanceDirectory.toString());
+            when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
+
+            indexManager.createIndex(TESTBAG, new IndexField("field1", new StringKeyType(100)), false);
+            indexManager.createIndex(TESTBAG, new IndexField("field2", new StringKeyType(100)), false);
+            indexManager.createIndex(TESTBAG, new IndexField("field3", new StringKeyType(100)), false);
+
+            assertThat(indexManager.getIndexes(TESTBAG).size(), is(3));
+
+            assertThat(indexManager.getBestMatchingIndex(TESTBAG, Sets.newHashSet("field1")), notNullValue());
+            assertThat(indexManager.getBestMatchingIndex(TESTBAG, Sets.newHashSet("field1")).getKeyInfo().getKeyName(), is("field1ID"));
+            assertThat(indexManager.getBestMatchingIndex(TESTBAG, Sets.newHashSet("field2")), notNullValue());
+            assertThat(indexManager.getBestMatchingIndex(TESTBAG, Sets.newHashSet("field2")).getKeyInfo().getKeyName(), is("field2ID"));
+            assertThat(indexManager.getBestMatchingIndex(TESTBAG, Sets.newHashSet("field3")), notNullValue());
+            assertThat(indexManager.getBestMatchingIndex(TESTBAG, Sets.newHashSet("field3")).getKeyInfo().getKeyName(), is("field3ID"));
+        } finally {
+            indexManager.shutdownIndexes();
+        }
+    }
+
+    @Test
+    public void testBagIndexMultiKeyCreate() throws Exception {
+        try {
+            File instanceDirectory = temporaryFolder.newFolder();
+
+            Bag bag = mock(Bag.class);
+            when(bag.getIndexDefinitions()).thenReturn(new ArrayList<IndexDefinition>());
+            when(metadataStore.getBag(TEST_INSTANCE, TESTBAG)).thenReturn(bag);
+
+            Instance instance = mock(Instance.class);
+            when(instance.getPath()).thenReturn(instanceDirectory.toString());
+            when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
+
+            indexManager.createIndex(TESTBAG, new IndexField("field1", new StringKeyType()), false);
+            indexManager.createIndex(TESTBAG, new CompositeIndexField(new IndexField("field1", new StringKeyType()), new IndexField("field2", new StringKeyType())), false);
+
+            Map<String, Index> indexes = indexManager.getIndexes(TESTBAG);
+            assertThat(indexes.containsKey("field1ID"), is(true));
+            assertThat(indexes.containsKey("field1field2ID"), is(true));
+        } finally {
+            indexManager.shutdownIndexes();
+        }
+    }
 }

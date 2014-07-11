@@ -29,10 +29,5 @@
 			<artifactId>jasdb_testframework</artifactId>
             <scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>com.obera</groupId>
-            <artifactId>jasdb_console</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 	</dependencies>
 </project>

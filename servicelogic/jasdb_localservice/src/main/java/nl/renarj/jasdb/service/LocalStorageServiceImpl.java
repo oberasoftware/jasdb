@@ -331,16 +331,7 @@ public class LocalStorageServiceImpl implements StorageService {
         resourceLockManager.sharedLock();
         try {
             IndexManager indexManager = getIndexManager();
-            Index index = indexManager.getIndex(bagName, indexName);
-            if(index != null) {
-                KeyInfo keyInfo = index.getKeyInfo();
-                IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
-
-                metadataStore.removeBagIndex(instanceId, bagName, definition);
-                indexManager.removeIndex(bagName, indexName);
-            } else {
-                throw new JasDBStorageException("Unable to remove index with name: " + indexName + ", could not be found");
-            }
+            indexManager.removeIndex(bagName, indexName);
         } finally {
             resourceLockManager.sharedUnlock();
         }
