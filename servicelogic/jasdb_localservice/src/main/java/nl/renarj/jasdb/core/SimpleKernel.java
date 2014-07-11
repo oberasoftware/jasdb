@@ -81,12 +81,16 @@ public class SimpleKernel {
         LOG.info("Shutting down kernel");
 
 
-        List<RemoteService> remoteServices = platformManager.getComponents(RemoteService.class);
-        if(remoteServices != null) {
-            for(RemoteService remoteService : remoteServices) {
-                LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
-                remoteService.stopService();
+        try {
+            List<RemoteService> remoteServices = platformManager.getComponents(RemoteService.class);
+            if (remoteServices != null) {
+                for (RemoteService remoteService : remoteServices) {
+                    LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
+                    remoteService.stopService();
+                }
             }
+        } catch(NoComponentFoundException e) {
+            LOG.info("No Active RemoteService components found to stop");
         }
 
         LOG.debug("Doing kernel shutdown, stopping instance and storage services");
