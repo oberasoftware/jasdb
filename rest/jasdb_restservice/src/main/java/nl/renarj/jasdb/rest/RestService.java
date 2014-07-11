@@ -12,7 +12,12 @@ import nl.renarj.jasdb.core.locator.ServiceInformation;
 import nl.renarj.jasdb.core.utils.FileUtils;
 import nl.renarj.jasdb.rest.security.OAuthTokenEndpoint;
 import nl.renarj.jasdb.rest.security.OAuthTokenFilter;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -126,10 +131,22 @@ public class RestService implements RemoteService {
                 SslContextFactory sslContextFactory = new SslContextFactory(keystorePath);
                 sslContextFactory.setKeyStorePassword(sslDetails.getKeystorePass());
 
-//                Connector connector = new SslSelectChannelConnector(sslContextFactory);
-//                connector.setPort(sslDetails.getSslPort());
-//                server.addConnector(connector);
-//                LOG.info("Starting SSL connector: {}", sslDetails);
+                HttpConfiguration http_config = new HttpConfiguration();
+                http_config.setSecureScheme("https");
+                http_config.setSecurePort(sslDetails.getSslPort());
+                http_config.setOutputBufferSize(32768);
+
+                HttpConfiguration https_config = new HttpConfiguration(http_config);
+                https_config.addCustomizer(new SecureRequestCustomizer());
+
+                ServerConnector https = new ServerConnector(server,
+                        new SslConnectionFactory(sslContextFactory,"http/1.1"),
+                        new HttpConnectionFactory(https_config));
+                https.setPort(sslDetails.getSslPort());
+                https.setIdleTimeout(500000);
+
+                server.addConnector(https);
+                LOG.info("Starting SSL connector: {}", sslDetails);
             }
 
             ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);

@@ -29,7 +29,6 @@ public class SimpleKernel {
     private String instanceId = PlatformManagerFactory.getPlatformManager().getProcessId();
     private NodeInformation nodeInformation;
     private String kernelVersion = "unknown";
-    private String gridId;
 
     private PlatformManager platformManager;
 
@@ -144,7 +143,7 @@ public class SimpleKernel {
         LOG.info("Finished platform initialization");
 
         try {
-            this.nodeInformation = new NodeInformation(instanceId, gridId);
+            this.nodeInformation = new NodeInformation(instanceId, null);
 
             try {
                 List<RemoteService> remoteServices = platformManager.getComponents(RemoteService.class);
