@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:with="title=Index" th:substituteby="includes/header :: header">
+    <title th:if="${title}" th:text="'JasDB Admin Console - ' + ${title}">Page title</title>
+    <title th:if="!${title}">JasDB Admin Console</title>
+
+    <link th:href="@{/static/bootstrap/css/bootstrap.min.css}" href="/webapp/static/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+
+    <script th:src="@{/static/bootstrap/js/bootstrap.min.js}" src="/webapp/static/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<script th:src="@{/static/javascript/data.js}" src="/webapp/static/javascript/data.js"></script>
+<div class="container">
+    <div th:substituteby="includes/header :: navigation"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="documentLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="documentLabel">Document contents</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="dataContent">
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <span th:if="${page.message} != null" th:text="${page.message}"></span>
+
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data</th>
+                        <th>Controls</th>
+                    </tr>
+                    </thead>
+                    <tr th:each="entity : ${page.entities}">
+                        <td th:text="${entity.id}">Doc ID</td>
+                        <td>
+                            <a href="#" data-toggle="modal" data-target="#dataModal" data-id="" th:attr="data-content=${entity.data}" class="showDocument" title="Show full Document">
+                                <span th:text="${#strings.abbreviate(entity.data,100)}"></span>
+                            </a>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:substituteby="includes/header :: footer"></div>
+</div>
+
+</body>
+</html>

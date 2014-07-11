@@ -1,35 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasdb kernel="nl.renarj.jasdb.core.ConfigurableKernel">
-    <modules>
-        <!-- Set the used kernel modules -->
-        <module type="record" class="nl.renarj.jasdb.storage.transactional.TransactionalRecordWriterFactory"/>
-        <!--<module type="record" class="nl.renarj.jasdb.storage.btree.BTreeRecordWriterFactory"/>-->
-
-        <module type="remote" class="nl.renarj.jasdb.rest.RestService"/>
-
-        <module type="credentialsprovider" class="com.obera.service.acl.LocalCredentialsProvider"/>
-        <module type="usermanager" class="com.obera.service.acl.UserManagerImpl"/>
-        <module type="sessionmanager" class="com.obera.service.acl.SessionManagerImpl"/>
-
-        <module type="storageservice" class="nl.renarj.jasdb.service.LocalStorageServiceFactoryImpl">
-            <!--<wrappers>-->
-                <!--<wrapper class="nl.renarj.jasdb.service.acl.AuthorizationServiceWrapper"/>-->
-            <!--</wrappers>-->
-        </module>
-    </modules>
+    <Storage>
+        <!--<RecordWriter provider="inmemory"/>-->
+        <RecordWriter provider="transactional"/>
+    </Storage>
 
     <!-- This allows selecting the mode of flushing data to disk -->
     <flushing mode="interval" enabled="false">
         <Property Name="period" Value="30s"/>
     </flushing>
 
+    <Security Enabled="false">
+
+    </Security>
+
     <!-- This enables or disables the statistics engine -->
     <Statistics enabled="false"/>
 
     <!-- Configuration settings for the rest service, like the port number -->
     <Services>
-        <Remote service="rest" port="7050">
-            <Property Name="port" Value="7050"/>
+        <Remote service="rest" port="7050" Enabled="true">
+            <!--<Property Name="port" Value="7050"/>-->
             <!--<Property Name="sslPort" Value="7051"/>-->
             <!--<Property Name="sslKeystore" Value="/Users/renzedevries/jasdb.kst"/>-->
             <!--<Property Name="sslKeystorePassword" Value="s34LP0c2"/>-->

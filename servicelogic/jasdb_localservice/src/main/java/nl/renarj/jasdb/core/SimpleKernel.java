@@ -15,7 +15,6 @@ import nl.renarj.jasdb.storage.exceptions.RecordStoreInUseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.Lock;
@@ -24,26 +23,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SimpleKernel {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleKernel.class);
 
-    private static final String FALLBACK_JASDB_XML = "default-jasdb.xml";
-    private static final String JASDB_CONFIG = "jasdb.xml";
-
-
-    private static final String GRID_CONFIG_PATH = "/jasdb/Grid";
-    private static final String GRID_ID_CONFIG = "id";
-
     private static final Lock reconfigureLock = new ReentrantLock();
     private static SimpleKernel INSTANCE;
 
     private String instanceId = PlatformManagerFactory.getPlatformManager().getProcessId();
     private NodeInformation nodeInformation;
     private String kernelVersion = "unknown";
-    private String gridId;
 
     private PlatformManager platformManager;
-
-    private RemoteService remoteService;
-
-    private List<Extension> loadedExtensions;
 
     private CountDownLatch latch = new CountDownLatch(1);
 
@@ -94,14 +81,12 @@ public class SimpleKernel {
         LOG.info("Shutting down kernel");
 
 
-//        KernelContext context = new KernelContext(injector, configuration, nodeInformation, metadataStore);
-//        for(Extension extension : loadedExtensions) {
-//            extension.shutdown(context);
-//        }
-
-        if(remoteService != null) {
-            LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
-            remoteService.stopService();
+        List<RemoteService> remoteServices = platformManager.getComponents(RemoteService.class);
+        if(remoteServices != null) {
+            for(RemoteService remoteService : remoteServices) {
+                LOG.debug("Stopping remote service endpoint: {}", remoteService.getClass().getName());
+                remoteService.stopService();
+            }
         }
 
         LOG.debug("Doing kernel shutdown, stopping instance and storage services");
@@ -158,15 +143,20 @@ public class SimpleKernel {
         LOG.info("Finished platform initialization");
 
         try {
-            this.nodeInformation = new NodeInformation(instanceId, gridId);
+            this.nodeInformation = new NodeInformation(instanceId, null);
 
             try {
-                this.remoteService = platformManager.getComponent(RemoteService.class);
-                if(remoteService.isEnabled()) {
-                    this.nodeInformation.addServiceInformation(this.remoteService.getServiceInformation());
+                List<RemoteService> remoteServices = platformManager.getComponents(RemoteService.class);
+                if(remoteServices != null) {
+                    for(RemoteService remoteService : remoteServices) {
+                        if(remoteService.isEnabled()) {
+                            this.nodeInformation.addServiceInformation(remoteService.getServiceInformation());
 
-                    LOG.info("Starting remote service: {}", remoteService.getClass().getName());
-                    this.remoteService.startService();
+                            LOG.info("Starting remote service: {}", remoteService.getClass().getName());
+
+                            remoteService.startService();
+                        }
+                    }
                 }
             } catch(NoComponentFoundException e) {
                 LOG.info("No remote service available");
@@ -177,13 +167,6 @@ public class SimpleKernel {
             LOG.info("JasDB process id: {}", instanceId);
             registerShutdownHooks();
 
-//                ServiceLoader<Extension> extensions = ServiceLoader.load(Extension.class);
-            this.loadedExtensions = new ArrayList<>();
-//                for(Extension extension : extensions) {
-//                    LOG.info("Loading extension: {}", extension);
-//                    extension.load(kernelContext);
-//                    this.loadedExtensions.add(extension);
-//                }
         } catch (LocatorException e) {
             handleBootupError("Unable to load kernel, unable to start locator service", e);
         } catch(RecordStoreInUseException e) {
@@ -205,38 +188,6 @@ public class SimpleKernel {
         Thread shutdownThread = new Thread(new KernelShutdown());
         Runtime.getRuntime().addShutdownHook(shutdownThread);
     }
-
-	
-//	private void loadConfiguration() throws ConfigurationException {
-//        try {
-//            String overrideConfigProperty = System.getProperty("jasdb-config");
-//            if(StringUtils.stringEmpty(overrideConfigProperty)) {
-//		        this.configuration = Configuration.loadConfiguration(JASDB_CONFIG);
-//            } else {
-//                LOG.info("Override configuration path specified: {}", overrideConfigProperty);
-//                this.configuration = Configuration.loadConfiguration(overrideConfigProperty);
-//            }
-//        } catch (CoreConfigException e) {
-//            try {
-//                this.configuration = Configuration.loadConfiguration(FALLBACK_JASDB_XML);
-//            } catch(CoreConfigException ex) {
-//                throw new ConfigurationException("Unable to load Default JasDB configuration file", ex);
-//            }
-//        }
-//	}
-	
-//	private void configure(Configuration configuration) throws ConfigurationException {
-//		Configuration statConfig = configuration.getChildConfiguration("/jasdb/Statistics");
-//		if(statConfig != null && statConfig.getAttribute("enabled", false)) {
-//			StatisticsMonitor.enableStatistics();
-//		}
-//
-//        Configuration gridConfiguration = configuration.getChildConfiguration(GRID_CONFIG_PATH);
-//        if(gridConfiguration != null) {
-//            gridId = gridConfiguration.getAttribute(GRID_ID_CONFIG, null);
-//        }
-//
-//    }
 
     public static String getVersion() throws ConfigurationException {
         return getInstance().kernelVersion;

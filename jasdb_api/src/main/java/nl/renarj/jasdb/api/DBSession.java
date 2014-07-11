@@ -33,6 +33,13 @@ public interface DBSession {
     List<Instance> getInstances() throws JasDBStorageException;
 
     /**
+     * Gets the metadata of a specific instance
+     * @return The metadata of a specific instance
+     * @throws JasDBStorageException If unable to load the metadata of the instance
+     */
+    Instance getInstance(String instanceId) throws JasDBStorageException;
+
+    /**
      * Adds a new instance with the given path to the DB. The session still
      * is attached to the original connecting instance. @see switchInstance or @see addAndSwitchInstance
      * for switching to another instance.
