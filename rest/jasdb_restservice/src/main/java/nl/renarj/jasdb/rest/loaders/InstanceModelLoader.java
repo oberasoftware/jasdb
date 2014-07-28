@@ -103,6 +103,7 @@ public class InstanceModelLoader  extends AbstractModelLoader {
             FieldCondition idCondition = (FieldCondition) condition;
 
             try {
+                LOG.debug("Receiving a instance delete operation for instance: {}", idCondition.getValue());
                 instanceFactory.deleteInstance(idCondition.getValue());
 
                 return null;

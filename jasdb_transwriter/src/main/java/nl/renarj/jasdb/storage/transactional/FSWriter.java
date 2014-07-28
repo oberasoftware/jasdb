@@ -20,6 +20,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import static com.google.common.base.Preconditions.checkState;
+
 /**
  * @author Renze de Vries
  */
@@ -56,6 +58,9 @@ public class FSWriter implements Writer {
     @Override
     public void openWriter() throws DatastoreException {
         try {
+            File parentDir = recordLocation.getParentFile();
+            checkState(parentDir.exists() || parentDir.mkdirs());
+
             this.randomAccess = new RandomAccessFile(recordLocation, "rw");
             this.channel = randomAccess.getChannel();
             LOG.debug("Acquiring exclusive file lock on: {}", recordLocation);

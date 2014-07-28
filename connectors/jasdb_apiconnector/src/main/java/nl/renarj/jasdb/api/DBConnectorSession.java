@@ -74,6 +74,13 @@ public abstract class DBConnectorSession implements DBSession {
     }
 
     @Override
+    public Instance getInstance(String instanceId) throws JasDBStorageException {
+        InstanceConnector instanceConnector = RemoteConnectorFactory.createConnector(nodeInformation, InstanceConnector.class);
+
+        return instanceConnector.getInstance(getContext(), instanceId);
+    }
+
+    @Override
     public void addInstance(String instanceId, String path) throws JasDBStorageException {
         InstanceConnector instanceConnector = RemoteConnectorFactory.createConnector(nodeInformation, InstanceConnector.class);
         instanceConnector.addInstance(getContext(), instanceId, path);
@@ -99,12 +106,12 @@ public abstract class DBConnectorSession implements DBSession {
 
     @Override
     public Instance deleteInstance(String instanceId) throws JasDBStorageException {
+        if(this.instance.equals(instanceId)) {
+            throw new JasDBStorageException("Cannot delete active instance over remote connection, switch to another instance of default instance");
+        }
+
         InstanceConnector instanceConnector = RemoteConnectorFactory.createConnector(nodeInformation, InstanceConnector.class);
         instanceConnector.removeInstance(getContext(), instanceId);
-
-        if(!this.instance.equals(instanceId)) {
-            this.instance = null;
-        }
 
         return instanceConnector.getInstance(getContext(), instance);
 

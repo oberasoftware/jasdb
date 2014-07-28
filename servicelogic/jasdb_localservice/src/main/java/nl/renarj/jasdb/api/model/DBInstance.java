@@ -13,12 +13,6 @@ import java.util.List;
  * @author Renze de Vries
  */
 public interface DBInstance extends Instance {
-//    /**
-//     * Retrieves the caching manager used for this instance
-//     * @return The caching manager used for this instance
-//     */
-//	CacheManager getCacheManager();
-
     /**
      * Retrieves the bag metadata for a bag with given name in this instance
      * @param bagName The name of the bag to retrieve metadata for
@@ -42,22 +36,4 @@ public interface DBInstance extends Instance {
      * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to remove the bag
      */
     void removeBag(String bagName) throws JasDBStorageException;
-
-////    /**
-////     * Gets the start time of this instance
-////     * @return The start time of this instance
-////     */
-////	long getStartTime();
-//
-//    /**
-//     * Perform a shutdown of this instance and all its used resources like Bags and Indexes
-//     * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to perform a clean shutdown
-//     */
-//	void shutdown() throws JasDBStorageException;
-//
-//    /**
-//     * Indicates if the previous shutdown was done cleanly
-//     * @return True if the previous shutdown was clean and False if not
-//     */
-//    boolean lastShutdownClean();
 }

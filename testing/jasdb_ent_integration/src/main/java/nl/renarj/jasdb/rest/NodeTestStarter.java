@@ -20,6 +20,12 @@ public class NodeTestStarter {
             //System.setProperty("test.grid.enabled", "true");
 			SimpleKernel.initializeKernel();
 
+//            EntityBag bag = new LocalDBSession("test").createOrGetBag("blabla");
+//            bag.addEntity(new SimpleEntity());
+//            bag.addEntity(new SimpleEntity());
+//            bag.addEntity(new SimpleEntity());
+
+
 //            SessionManager sessionManager = SimpleKernel.getKernelModule(SessionManager.class);
 //            UserSession userSession = sessionManager.startSession(new BasicCredentials("admin", "localhost", ""));
 //            UserManager userManager = SimpleKernel.getKernelModule(UserManager.class);

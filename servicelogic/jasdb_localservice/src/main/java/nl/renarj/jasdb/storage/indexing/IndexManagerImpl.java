@@ -164,10 +164,18 @@ final public class IndexManagerImpl implements IndexManager {
     @Override
     public void removeIndex(String bagName, String keyName) throws JasDBStorageException {
         Index index = getIndex(bagName, keyName);
-        Map<String, Index> bagIndexes = indexes.get(bagName);
-        bagIndexes.remove(keyName);
+        if(index != null) {
+            Map<String, Index> bagIndexes = indexes.get(bagName);
+            bagIndexes.remove(keyName);
 
-        index.removeIndex();
+            KeyInfo keyInfo = index.getKeyInfo();
+            IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
+            metadataStore.removeBagIndex(instanceId, bagName, definition);
+
+            index.removeIndex();
+        } else {
+            throw new JasDBStorageException("Could not remove index, does not exist");
+        }
     }
 
     @Override
@@ -208,6 +216,9 @@ final public class IndexManagerImpl implements IndexManager {
 			try {
 				Index index = new BTreeIndex(indexFile, keyInfo);
 				configureIndex(IndexTypes.BTREE, index);
+
+                IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
+                metadataStore.addBagIndex(instanceId, bagName, definition);
 
 				bagIndexes.put(keyInfo.getKeyName(), index);
 				return index;

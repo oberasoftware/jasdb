@@ -15,7 +15,7 @@
         <jasdb.core.version>0.8</jasdb.core.version>
         <corelib.version>0.6.2</corelib.version>
         <jersey.version>1.13</jersey.version>
-        <jetty.version>8.1.5.v20120716</jetty.version>
+        <jetty.version>9.1.2.v20140210</jetty.version>
         <logback.version>1.0.13</logback.version>
         <slf4j.version>1.7.5</slf4j.version>
         <guava.version>16.0</guava.version>
@@ -81,6 +81,12 @@
                 <artifactId>spring-test</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjrt</artifactId>
@@ -215,6 +221,16 @@
 				<artifactId>jetty-servlet</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-deploy</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
 
             <!-- android related libraries -->
             <dependency>
@@ -352,6 +368,7 @@
         <module>testing/jasdb_integration_test</module>
         <module>jasdb_android</module>
         <module>jasdb_assembly</module>
+        <module>jasdb_console</module>
     </modules>
 
     <profiles>

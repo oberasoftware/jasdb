@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,11 @@ public class DBInstanceFactoryImpl implements DBInstanceFactory {
     }
 
 	private void addInstance(String instanceId, DBInstance instance) throws JasDBStorageException {
+        File instanceDirectory = new File(instance.getPath());
+        if(!instanceDirectory.exists() || !instanceDirectory.isDirectory()) {
+            throw new JasDBStorageException("The directory provided does not exist or is not a directory: " + instance.getPath());
+        }
+
         if(!metadataStore.containsInstance(instanceId)) {
             metadataStore.addInstance(new InstanceMeta(instanceId, instance.getPath()));
 		    this.instances.put(instanceId, instance);
@@ -63,6 +69,7 @@ public class DBInstanceFactoryImpl implements DBInstanceFactory {
                 storageServiceFactory.removeAllStorageService(instanceId);
 
                 metadataStore.removeInstance(instanceId);
+                instances.remove(instanceId);
             } catch(ConfigurationException e) {
                 throw new JasDBStorageException("Unable to remove bags from instance: " + instanceId, e);
             }

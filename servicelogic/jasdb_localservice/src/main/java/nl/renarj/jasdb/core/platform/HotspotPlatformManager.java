@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Manifest;
 
 /**
@@ -96,6 +98,15 @@ public class HotspotPlatformManager implements PlatformManager {
     public <T> T getComponent(Class<T> type) throws NoComponentFoundException {
         try {
             return applicationContext.getBean(type);
+        } catch(NoSuchBeanDefinitionException e) {
+            throw new NoComponentFoundException("Unable to find component", e);
+        }
+    }
+
+    @Override
+    public <T> List<T> getComponents(Class<T> type) throws NoComponentFoundException {
+        try {
+            return new ArrayList<>(applicationContext.getBeansOfType(type).values());
         } catch(NoSuchBeanDefinitionException e) {
             throw new NoComponentFoundException("Unable to find component", e);
         }

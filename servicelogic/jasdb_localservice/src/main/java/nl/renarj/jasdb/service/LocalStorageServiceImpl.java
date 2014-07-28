@@ -84,21 +84,6 @@ public class LocalStorageServiceImpl implements StorageService {
     @Autowired
     private MetadataStore metadataStore;
 
-//	protected LocalStorageServiceImpl(Instance instance, IndexManager indexManager, RecordWriter recordWriter, MetadataStore metadataStore, String bagName) throws JasDBStorageException {
-//		this.bagFile = new File(instance.getPath(), bagName + BAG_EXTENSION);
-//        File parentDir = bagFile.getParentFile();
-//		if(parentDir.exists() || parentDir.mkdirs()) {
-//            this.recordWriter = recordWriter;
-//            this.indexManager = indexManager;
-//            this.metadataStore = metadataStore;
-//            this.bagName = bagName;
-//            this.instanceId = instance.getInstanceId();
-//            this.generator = new MachineGuidGenerator();
-//            this.partitionManager = new LocalPartitionManager(generator, metadataStore);
-//        } else {
-//            throw new JasDBStorageException("Unable to create directory for bag storage file: " + bagFile.toString());
-//        }
-//	}
     public LocalStorageServiceImpl(String instanceId, String bagName) {
         this.bagName = bagName;
         this.instanceId = instanceId;
@@ -346,16 +331,7 @@ public class LocalStorageServiceImpl implements StorageService {
         resourceLockManager.sharedLock();
         try {
             IndexManager indexManager = getIndexManager();
-            Index index = indexManager.getIndex(bagName, indexName);
-            if(index != null) {
-                KeyInfo keyInfo = index.getKeyInfo();
-                IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
-
-                metadataStore.removeBagIndex(instanceId, bagName, definition);
-                indexManager.removeIndex(bagName, indexName);
-            } else {
-                throw new JasDBStorageException("Unable to remove index with name: " + indexName + ", could not be found");
-            }
+            indexManager.removeIndex(bagName, indexName);
         } finally {
             resourceLockManager.sharedUnlock();
         }
