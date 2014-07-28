@@ -217,12 +217,17 @@ public abstract class EntityQueryTest {
     }
 
     @Test
-    public void testSortDescending() throws Exception {
+    public void testSortDescendingInvalidType() throws Exception {
         DBSession session = sessionFactory.createSession();
         try{
             EntityBag bag = session.createOrGetBag("Bag");
 
             SimpleEntity entity = new SimpleEntity();
+            entity.addProperty("name", "xxx");
+            entity.addProperty("v", "3");
+            bag.addEntity(entity);
+
+            entity = new SimpleEntity();
             entity.addProperty("name", 1);
             entity.addProperty("v", "1");
             bag.addEntity(entity);
@@ -239,17 +244,15 @@ public abstract class EntityQueryTest {
             QueryResult result = executor.execute();
             assertThat(result.size(), is(2l));
 
+            assertThat((String)result.next().getValue("v"), is("3"));
             assertThat((String)result.next().getValue("v"), is("2"));
-
-            assertThat((String)result.next().getValue("v"), is("1"));
-
         } finally {
             SimpleKernel.shutdown();
         }
     }
 
     @Test
-    public void testQueryNonExistingField() throws Exception {
+    public void testSortByNonExistingField() throws Exception {
         DBSession session = sessionFactory.createSession();
         try{
             EntityBag bag = session.createOrGetBag("Bag");
@@ -266,18 +269,14 @@ public abstract class EntityQueryTest {
 
 
             QueryBuilder innerQuery = QueryBuilder.createBuilder();
-//            innerQuery.field("name").value("xxx").sortBy("v",Order.DESCENDING);
             innerQuery.field("name").value("xxx").sortBy("_id",Order.DESCENDING).sortBy("id",Order.DESCENDING);
 
             QueryExecutor executor = bag.find(innerQuery);
             QueryResult result = executor.execute();
-            assertThat(result.size(), is(0l));
-
+            assertThat(result.size(), is(2l));
         } finally {
             SimpleKernel.shutdown();
         }
-
-
     }
 
     @Test

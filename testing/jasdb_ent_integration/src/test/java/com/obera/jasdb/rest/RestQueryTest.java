@@ -7,10 +7,11 @@
  */
 package com.obera.jasdb.rest;
 
-import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.service.EntityQueryTest;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * @author Renze de Vries
@@ -19,6 +20,9 @@ public class RestQueryTest extends EntityQueryTest {
     public RestQueryTest() {
         super(new TestRestDBSessionFactory());
     }
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Override
     public void tearDown() throws Exception {
@@ -29,7 +33,7 @@ public class RestQueryTest extends EntityQueryTest {
     @Override
     public void setUp() throws Exception {
         System.setProperty("jasdb-config", "jasdb-rest.xml");
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
+        System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
         SimpleKernel.initializeKernel();
 
         super.setUp();

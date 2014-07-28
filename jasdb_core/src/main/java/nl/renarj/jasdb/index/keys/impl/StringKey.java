@@ -73,7 +73,7 @@ public class StringKey extends AbstractKey {
                     LongKey localKey = new LongKey(Long.parseLong(getKey()));
                     result = localKey.compareTo(longKey);
                 } catch(NumberFormatException e) {
-                    throw new RuntimeJasDBException("Unable to compare long key: " + o.toString() + " to local string key: " + getKey());
+                    result = -1;
                 }
             } else if(o instanceof  UUIDKey) {
                 UUIDKey uuidKey = (UUIDKey) o;
@@ -85,7 +85,8 @@ public class StringKey extends AbstractKey {
             return new CompareResult(result);
         } else {
             throw new RuntimeJasDBException("Cannot compare null Key");
-        }    }
+        }
+    }
 
     private int compare(byte[] left, byte[] right) {
         for (int i = 0, j = 0; i < left.length && j < right.length; i++, j++) {
