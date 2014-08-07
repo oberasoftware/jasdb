@@ -21,6 +21,10 @@
         </dependency>
         <dependency>
             <groupId>com.obera</groupId>
+            <artifactId>jasdb_console</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.obera</groupId>
             <artifactId>jasdb_restconnector</artifactId>
         </dependency>
     </dependencies>

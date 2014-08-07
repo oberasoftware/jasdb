@@ -188,6 +188,11 @@
             </dependency>
             <dependency>
                 <groupId>com.obera</groupId>
+                <artifactId>jasdb_console</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.obera</groupId>
                 <artifactId>jasdb_android</artifactId>
                 <version>${project.version}</version>
             </dependency>
