@@ -305,14 +305,14 @@ public class LocalStorageServiceImpl implements StorageService {
     private void initializeIndex(Index index) throws JasDBStorageException {
         KeyInfo keyInfo = index.getKeyInfo();
         IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
-        if(!metadataStore.containsIndex(instanceId, bagName, definition)) {
-            metadataStore.addBagIndex(instanceId, bagName, definition);
-
+        if(metadataStore.containsIndex(instanceId, bagName, definition)) {
             try {
                 indexRebuilder.submit(new IndexScanAndRecovery(index, getRecordWriter().readAllRecords(), true)).get();
             } catch(ExecutionException | InterruptedException e) {
                 throw new JasDBStorageException("Unable to initialize index, index rebuild failed", e);
             }
+        } else {
+            throw new JasDBStorageException("Cannot initialize index, does not exist in store");
         }
     }
 
