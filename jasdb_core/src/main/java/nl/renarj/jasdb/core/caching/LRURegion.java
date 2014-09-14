@@ -2,7 +2,7 @@ package nl.renarj.jasdb.core.caching;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import nl.renarj.core.utilities.collections.OrderedBalancedTree;
+import nl.renarj.jasdb.core.collections.OrderedBalancedTree;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import org.slf4j.Logger;
