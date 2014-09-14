@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Caching Enabled="true" CheckInterval="30s">
+	<Property Name="CacheLifetime" Value="10m" />
+	<Property Name="MaxCacheMemSize" Value="128m" />
+	<Property Name="MaxItems" Value="200" />
+	
+	<Bucket Name="testBucket" Enabled="true">
+		<Property Name="CacheLifetime" Value="10m" />
+		<Property Name="MaxCacheMemSize" Value="16m" />
+		<Property Name="MaxItems" Value="2000" />
+	</Bucket>
+</Caching>
