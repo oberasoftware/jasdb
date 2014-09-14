@@ -60,9 +60,23 @@ public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable
         return null;
     }
 
+    public T firstKey() {
+        if(root != null) {
+            return root.min().getKey();
+        }
+        return null;
+    }
+
     public V last() {
         if(root != null) {
             return root.max().getValue();
+        }
+        return null;
+    }
+
+    public T lastKey() {
+        if(root != null) {
+            return root.max().getKey();
         }
         return null;
     }

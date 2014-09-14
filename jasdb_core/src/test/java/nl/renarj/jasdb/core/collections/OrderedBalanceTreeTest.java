@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -382,32 +384,30 @@ public class OrderedBalanceTreeTest {
         int testSize = 1000;
         OrderedBalancedTree<Long, Long> ol = createTree();
 
-        for(int i=0; i<testSize; i++) {
-            Long val = new Long(i);
-            ol.put(val, val);
+        for(long i=0; i<testSize; i++) {
+            ol.put(i, i);
         }
 
-        Assert.assertFalse(ol.contains(new Long(testSize + 1)));
+        Assert.assertFalse(ol.contains(testSize + 1l));
 
-        Long fValue = ol.first();
-        assertNotNull("There should be a first value", fValue);
-        assertEquals("Unexpected value", new Long(0), fValue);
-        Long lValue = ol.last();
-        assertNotNull("There should be a last value", lValue);
-        assertEquals("Unexpected value", new Long(testSize - 1), lValue);
+        assertThat(ol.first(), notNullValue());
+        assertThat(ol.first(), is(0l));
+        assertThat(ol.firstKey(), is(0l));
+
+        assertThat(ol.last(), notNullValue());
+        assertThat(ol.last(), is(testSize - 1l));
+        assertThat(ol.lastKey(), is(testSize - 1l));
 
         long totalTime = 0;
-        for(int i=0; i<testSize; i++) {
-            Long val = new Long(i);
-
-            assertTrue(ol.contains(val));
+        for(long i=0; i<testSize; i++) {
+            assertTrue(ol.contains(i));
             long start = System.nanoTime();
-            Long ret = ol.get(val);
+            Long ret = ol.get(i);
             long end = System.nanoTime();
             totalTime += (end - start);
 
-            assertNotNull("Expected a return value for: " + val, ret);
-            assertEquals("Unexpected return value", val, ret);
+            assertThat(ret, notNullValue());
+            assertThat(ret, is(i));
         }
         log.info("Average get time: {}", (totalTime / testSize));
     }
