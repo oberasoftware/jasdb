@@ -9,15 +9,15 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>com.obera:jasdb_restservice</include>
-                <include>com.obera:jasdb_console</include>
+                <include>com.oberasoftware:jasdb_restservice</include>
+                <include>com.oberasoftware:jasdb_console</include>
             </includes>
             <binaries>
                 <outputDirectory>lib</outputDirectory>
                 <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
                 <unpack>false</unpack>
                 <excludes>
-                    <exclude>com.obera:jasdb_android</exclude>
+                    <exclude>com.oberasoftware:jasdb_android</exclude>
                     <exclude>com.google.android:android</exclude>
                     <exclude>org.khronos:opengl-api</exclude>
                     <exclude>com.github.tony19:apktool-lib</exclude>
@@ -36,7 +36,7 @@
                 <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
                 <unpack>false</unpack>
                 <includes>
-                    <include>com.obera:*</include>
+                    <include>com.oberasoftware:*</include>
                     <include>com.sun.jersey:*</include>
                     <include>com.sun.jersey.contribs:*</include>
                     <include>org.codehaus.jackson:*</include>
@@ -44,13 +44,13 @@
                     <include>ch.qos.logback:*</include>
                 </includes>
                 <excludes>
-                    <exclude>com.obera:jasdb_android</exclude>
-                    <exclude>com.obera:jasdb_localservice</exclude>
-                    <exclude>com.obera:jasdb_transwriter</exclude>
-                    <exclude>com.obera:jasdb_index_btreeplus</exclude>
-                    <exclude>com.obera:jasdb_memorywriter</exclude>
+                    <exclude>com.oberasoftware:jasdb_android</exclude>
+                    <exclude>com.oberasoftware:jasdb_localservice</exclude>
+                    <exclude>com.oberasoftware:jasdb_transwriter</exclude>
+                    <exclude>com.oberasoftware:jasdb_index_btreeplus</exclude>
+                    <exclude>com.oberasoftware:jasdb_memorywriter</exclude>
                     <exclude>com.sun.jersey:jersey-server</exclude>
-                    <exclude>com.obera:jasdb_index_btreeplus</exclude>
+                    <exclude>com.oberasoftware:jasdb_index_btreeplus</exclude>
                 </excludes>
             </binaries>
         </moduleSet>
@@ -93,13 +93,12 @@
                 <include>org.slf4j:slf4j-api</include>
                 <include>org.springframework:spring-core</include>
                 <include>org.springframework.security:spring-security-core</include>
-                <include>com.obera:jasdb_android</include>
-                <include>com.obera:jasdb_localservice</include>
-                <include>com.obera:jasdb_index_btreeplus</include>
-                <include>com.obera:jasdb_core</include>
-                <include>com.obera:jasdb_api</include>
-                <include>com.obera:jasdb_transwriter</include>
-                <include>com.obera:ren_core</include>
+                <include>com.oberasoftware:jasdb_android</include>
+                <include>com.oberasoftware:jasdb_localservice</include>
+                <include>com.oberasoftware:jasdb_index_btreeplus</include>
+                <include>com.oberasoftware:jasdb_core</include>
+                <include>com.oberasoftware:jasdb_api</include>
+                <include>com.oberasoftware:jasdb_transwriter</include>
             </includes>
         </dependencySet>
     </dependencySets>

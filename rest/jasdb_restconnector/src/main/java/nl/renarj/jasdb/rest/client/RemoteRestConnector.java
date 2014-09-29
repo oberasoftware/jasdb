@@ -125,9 +125,7 @@ public class RemoteRestConnector implements RemoteConnector {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch(NoSuchAlgorithmException e) {
-            throw new ConfigurationException("Unable to disable SSL verification", e);
-        } catch (KeyManagementException e) {
+        } catch(NoSuchAlgorithmException | KeyManagementException e) {
             throw new ConfigurationException("Unable to disable SSL verification", e);
         }
 
