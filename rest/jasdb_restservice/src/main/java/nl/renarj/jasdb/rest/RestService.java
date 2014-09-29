@@ -168,7 +168,7 @@ public class RestService implements RemoteService {
                 LOG.info("Starting Jetty Rest service on port: {}", portNr);
                 server.start();
             } catch(Exception e) {
-                LOG.error("Unable to start nodeInformation", e);
+                LOG.error("Unable to start REST Service", e);
             }
         } else {
             LOG.info("Rest service is not enabled or not configured, skipping start");

@@ -76,7 +76,7 @@ public class CacheBucketTest {
 	@Test
 	public void testConcurrentReadWrite() throws Exception {
 		int cacheMaxSize = 100000;
-		int nrThreads = 40;
+		int nrThreads = 10;
 		int maxAllowedCached = 1000;
 		
 		Map<String, String> configurationOptions = new HashMap<String, String>();

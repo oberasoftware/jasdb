@@ -210,8 +210,10 @@ public final class CacheBucket implements Bucket {
 			
 			try {
 				CacheElement cachedElement = cachedItems.get(lruItems.first());
-				log.debug("Removing last item from the list: {}", cachedElement.getKey());
-				remove(cachedElement.getKey());
+                if(cachedElement != null) {
+                    log.debug("Removing last item from the list: {}", cachedElement.getKey());
+                    remove(cachedElement.getKey());
+                }
 			} finally {
 				lock.unlock();
 				cacheOverflowRemove.stop();
