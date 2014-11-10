@@ -8,11 +8,7 @@
 package nl.renarj.jasdb.api.serializer.json;
 
 import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.properties.EntityValue;
-import nl.renarj.jasdb.api.properties.IntegerValue;
-import nl.renarj.jasdb.api.properties.LongValue;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.Value;
+import nl.renarj.jasdb.api.properties.*;
 import nl.renarj.jasdb.api.serializer.EntitySerializer;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
 import org.codehaus.jackson.JsonFactory;
@@ -65,8 +61,10 @@ public class JsonEntitySerializer implements EntitySerializer {
                             generator.writeNumber(((LongValue) value).toLong());
                         } else if(value instanceof IntegerValue) {
                             generator.writeNumber(((IntegerValue)value).toInteger());
+                        } else if(value instanceof BooleanValue) {
+                            generator.writeBoolean(((BooleanValue)value).toBoolean());
                         } else if(value instanceof EntityValue) {
-                            serializeEntity(((EntityValue)value).toEntity(), generator);
+                            serializeEntity(((EntityValue) value).toEntity(), generator);
                         } else {
                             generator.writeString(value.toString());
                         }

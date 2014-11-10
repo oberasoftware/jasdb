@@ -9,13 +9,7 @@
 package nl.renarj.jasdb.api;
 
 import nl.renarj.core.caching.CachableItem;
-import nl.renarj.jasdb.api.properties.EntityValue;
-import nl.renarj.jasdb.api.properties.IntegerValue;
-import nl.renarj.jasdb.api.properties.LongValue;
-import nl.renarj.jasdb.api.properties.MultivalueProperty;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.StringValue;
-import nl.renarj.jasdb.api.properties.Value;
+import nl.renarj.jasdb.api.properties.*;
 import nl.renarj.jasdb.api.serializer.EntityDeserializer;
 import nl.renarj.jasdb.api.serializer.EntitySerializer;
 import nl.renarj.jasdb.api.serializer.json.JsonEntityDeserializer;
@@ -119,6 +113,11 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
         addValueToProperty(propertyName, new LongValue(longValue));
         return this;
 	}
+
+    public SimpleEntity addProperty(String propertyName, boolean booleanValue) {
+        addValueToProperty(propertyName, new BooleanValue(booleanValue));
+        return this;
+    }
 
     /**
      * Adds a property with a collection of long values
