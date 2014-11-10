@@ -7,10 +7,7 @@
  */
 package nl.renarj.jasdb.api;
 
-import nl.renarj.jasdb.api.properties.EntityValue;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.StringValue;
-import nl.renarj.jasdb.api.properties.Value;
+import nl.renarj.jasdb.api.properties.*;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,6 +45,11 @@ public class SimpleEntityTest {
         entity.addProperty("test3", 1L);
         entity.addProperty("test3", 2L);
         entity.addProperty("test4", 1L);
+        entity.addProperty("booleanValueFalse", false);
+        entity.addProperty("booleanValueTrue", true);
+        entity.addProperty("booleanMultiValue", true);
+        entity.addProperty("booleanMultiValue", true);
+        entity.addProperty("booleanMultiValue", false);
         assertEntity(entity);
 
         String serializedEntity = SimpleEntity.toJson(entity);
@@ -237,40 +239,32 @@ public class SimpleEntityTest {
     }
 
     private void assertEntity(SimpleEntity entity) {
+        assertThat(entity.hasProperty("test1"), is(true));
+        assertThat(entity.hasProperty("test2"), is(true));
+        assertThat(entity.hasProperty("test3"), is(true));
+        assertThat(entity.hasProperty("test4"), is(true));
+        assertThat(entity.hasProperty("booleanValueFalse"), is(true));
+        assertThat(entity.hasProperty("booleanValueTrue"), is(true));
+        assertThat(entity.hasProperty("booleanMultiValue"), is(true));
+
         Property property1 = entity.getProperty("test1");
         Property property2 = entity.getProperty("test2");
         Property property3 = entity.getProperty("test3");
         Property property4 = entity.getProperty("test4");
-        Assert.assertNotNull("Property should be present", property1);
-        Assert.assertNotNull("Property should be present", property2);
-        Assert.assertNotNull("Property should be present", property3);
-        Assert.assertNotNull("Property should be present", property4);
 
-        Assert.assertEquals("Unexpected nr. of values", 2, property1.getValues().size());
-        Assert.assertEquals("Unexpected nr. of values", 1, property2.getValues().size());
-        Assert.assertEquals("Unexpected nr. of values", 2, property3.getValues().size());
-        Assert.assertEquals("Unexpected nr. of values", 1, property4.getValues().size());
-        
-        Value property1Value1 = property1.getValues().get(0);
-        Assert.assertNotNull("Value should be present", property1Value1);
-        Assert.assertEquals("Value is unexpected", "value1", property1Value1.getValue());
-        Value property1Value2 = property1.getValues().get(1);
-        Assert.assertNotNull("Value should be present", property1Value2);
-        Assert.assertEquals("Value is unexpected", "value2", property1Value2.getValue());
+        assertThat(property1.getValues().size(), is(2));
+        assertThat(property2.getValues().size(), is(1));
+        assertThat(property3.getValues().size(), is(2));
+        assertThat(property4.getValues().size(), is(1));
 
-        Value property2Value1 = property2.getValues().get(0);
-        Assert.assertNotNull("Value should be present", property2Value1);
-        Assert.assertEquals("Value is unexpected", "someValue", property2Value1.getValue());
+        assertThat(entity.getProperty("booleanValueFalse").getValues(), hasItems((Value)new BooleanValue(false)));
+        assertThat(entity.getProperty("booleanValueTrue").getValues(), hasItems((Value)new BooleanValue(true)));
+        assertThat(entity.getProperty("booleanMultiValue").getValues(), hasItems((Value)new BooleanValue(true), new BooleanValue(true), new BooleanValue(false)));
 
-        Value property3Value1 = property3.getValues().get(0);
-        Assert.assertNotNull("Value should be present", property3Value1);
-        Assert.assertEquals("Value is unexpected", new Long(1), property3Value1.getValue());
-        Value property3Value2 = property3.getValues().get(1);
-        Assert.assertNotNull("Value should be present", property3Value2);
-        Assert.assertEquals("Value is unexpected", new Long(2), property3Value2.getValue());
 
-        Value property4Value1 = property4.getValues().get(0);
-        Assert.assertNotNull("Value should be present", property4Value1);
-        Assert.assertEquals("Value is unexpected", new Long(1), property4Value1.getValue());
+        assertThat(entity.getProperty("test1").getValues(), hasItems((Value) new StringValue("value1"), new StringValue("value2")));
+        assertThat(entity.getProperty("test2").getValues(), hasItems((Value) new StringValue("someValue")));
+        assertThat(entity.getProperty("test3").getValues(), hasItems((Value) new LongValue(1l), new LongValue(2l)));
+        assertThat(entity.getProperty("test4").getValues(), hasItems((Value)new LongValue(1l)));
     }
 }

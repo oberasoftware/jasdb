@@ -100,6 +100,8 @@ public class JsonEntityDeserializer implements EntityDeserializer {
             if(token.isNumeric()) {
                 long value = parser.getLongValue();
                 entity.addProperty(field, value);
+            } else if(token == JsonToken.VALUE_TRUE || token == JsonToken.VALUE_FALSE) {
+                entity.addProperty(field, parser.getBooleanValue());
             } else if(token == JsonToken.START_OBJECT) {
                 EmbeddedEntity embeddedEntity = new EmbeddedEntity();
                 if(handleProperties(parser, embeddedEntity) != null) {
