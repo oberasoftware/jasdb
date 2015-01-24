@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
 
 /**
  * @author Renze de Vries
@@ -111,6 +109,42 @@ public abstract class BaseRecordWriterTest extends BaseTest {
     }
 
     @Test
+    public void testRecordUpdate() throws JasDBStorageException {
+        int testSize = 100;
+        RecordWriter recordWriter = createRecordWriter(new File(BaseTest.tmpDir, "teststore.pjs"));
+        recordWriter.openWriter();
+
+        try {
+            List<UUIDKey> documentIds = createTestRecords(recordWriter, testSize);
+            for(UUIDKey documentId : documentIds) {
+                RecordResult result = recordWriter.readRecord(documentId);
+                assertNotNull("Record: " + documentId + " was null", result);
+
+                recordWriter.updateRecord(documentId, RecordStreamUtil.toStream("updated content: " + documentId.getValue()));
+            }
+
+            assertThat(recordWriter.getSize(), is((long)testSize));
+
+            for(UUIDKey documentId : documentIds) {
+                RecordResult result = recordWriter.readRecord(documentId);
+                assertNotNull("Record: " + documentId + " was null", result);
+
+                recordWriter.updateRecord(documentId, RecordStreamUtil.toStream("updated content: " + documentId.getValue()));
+
+                String recordContents = RecordStreamUtil.toString(result);
+                assertNotNull("There should be record contents", recordContents);
+                assertEquals("Unexpected record content", "updated content: " + documentId.getValue(), recordContents);
+            }
+
+            assertThat(recordWriter.getSize(), is((long)testSize));
+
+        } finally {
+            recordWriter.closeWriter();
+        }
+
+    }
+
+    @Test
     public void testRecordRemove() throws JasDBStorageException {
         int testSize = 100;
         RecordWriter recordWriter = createRecordWriter(new File(BaseTest.tmpDir, "teststore.pjs"));
@@ -129,6 +163,8 @@ public abstract class BaseRecordWriterTest extends BaseTest {
 
                 assertRecordsFound(recordWriter.readAllRecords(), expected);
             }
+
+            assertThat(recordWriter.getSize(), is(0L));
         } finally {
             recordWriter.closeWriter();
         }
@@ -173,6 +209,7 @@ public abstract class BaseRecordWriterTest extends BaseTest {
             assertEquals(i + 1, recordWriter.getSize());
             recordPointers.add(documentKey);
         }
+        assertThat(recordWriter.getSize(), is((long)testSize));
         LOG.info("Finished creating test records");
 
         return recordPointers;

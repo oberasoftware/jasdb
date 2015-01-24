@@ -69,8 +69,8 @@ public class BagUpdateOperation implements DataOperation {
         for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {
             Index index = indexEntry.getValue();
 
-            boolean dataPresentOldEntity = KeyUtil.isDataPresent(oldEntity, index);
-            boolean dataPresentNewEntity = KeyUtil.isDataPresent(entity, index);
+            boolean dataPresentOldEntity = KeyUtil.isAnyDataPresent(oldEntity, index);
+            boolean dataPresentNewEntity = KeyUtil.isAnyDataPresent(entity, index);
 
             Set<Key> keys = BagOperationUtil.createEntityKeys(entity, index);
             if(dataPresentNewEntity && dataPresentOldEntity) {

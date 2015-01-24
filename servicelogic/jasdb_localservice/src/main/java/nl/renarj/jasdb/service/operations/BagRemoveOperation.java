@@ -60,7 +60,7 @@ public class BagRemoveOperation implements DataOperation {
         for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {
             Index index = indexEntry.getValue();
 
-            if(KeyUtil.isDataPresent(removeEntity, index)) {
+            if(KeyUtil.isAnyDataPresent(removeEntity, index)) {
                 Set<Key> removeKeys  = BagOperationUtil.createEntityKeys(removeEntity, index);
                 for(Key removeKey : removeKeys) {
                     index.removeFromIndex(removeKey);

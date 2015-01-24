@@ -1,6 +1,7 @@
 package nl.renarj.jasdb.index.btreeplus;
 
 import com.google.common.collect.Lists;
+import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.core.utilities.configuration.ManualConfiguration;
 import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
@@ -683,6 +684,75 @@ public class BTreeIndexTest extends IndexBaseTest {
 			index.closeIndex();
 		}
 	}
+
+    @Test
+    public void testIndexWithEmptyFields() throws Exception {
+        String[] cities = {"", "Amsterdam", "Utrecht", "Rotterdam", "Haarlem", "Den Haag"};
+        int maxAge = 120;
+
+        KeyInfo keyInfo = new KeyInfoImpl(
+                Lists.newArrayList(
+                        new IndexField("age", new LongKeyType()),
+                        new IndexField("city", new StringKeyType(30)),
+                        new IndexField(RECORD_POINTER, new LongKeyType()))
+                , new ArrayList<IndexField>());
+        KeyNameMapper keyNameMapper = keyInfo.getKeyNameMapper();
+        BTreeIndex index = new BTreeIndex(new File(tmpDir, "index_compound.idx"), keyInfo);
+        try {
+            long counter = 0;
+            for(String city : cities) {
+                for(int age=0; age<maxAge; age++) {
+                    CompositeKey key = new CompositeKey();
+                            key.addKey(keyNameMapper, "age", new LongKey(age))
+                            .addKey(keyNameMapper, RECORD_POINTER, new LongKey(counter));
+
+                    if(StringUtils.stringEmpty(city)) {
+                        key.addKey(keyNameMapper, "city", new StringKey(new byte[0]));
+                    } else {
+                        key.addKey(keyNameMapper, "city", new StringKey(city));
+                    }
+
+                    index.insertIntoIndex(key);
+
+                    counter++;
+                }
+            }
+        } finally {
+            index.closeIndex();
+        }
+
+        index = new BTreeIndex(new File(tmpDir, "index_compound.idx"), keyInfo);
+        try {
+            long counter = 0;
+            long total = 0;
+            for(String city : cities) {
+                for(int age=0; age<maxAge; age++) {
+                    long start = System.currentTimeMillis();
+                    IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(new CompositeKey()
+                            .addKey(keyNameMapper, "age", new LongKey(age))
+                            .addKey(keyNameMapper, "city", new StringKey(city))), Index.NO_SEARCH_LIMIT);
+                    long end = System.currentTimeMillis();
+                    assertTrue(result.hasNext());
+                    assertEquals(new LongKey(counter), result.next().getKey(keyNameMapper, RECORD_POINTER));
+                    counter++;
+                    total += (end - start);
+                }
+            }
+            log.info("Finished querying of: {} items in: {} ms.", counter, total);
+
+            IndexSearchResultIterator result = index.searchIndex(new RangeCondition(new LongKey(10), true, new LongKey(20), false), Index.NO_SEARCH_LIMIT);
+            counter = 0;
+            while(result.hasNext()) {
+                Key key = result.next();
+                assertNotNull(key);
+                counter++;
+            }
+            assertEquals(10 * cities.length, counter);
+        } finally {
+            index.closeIndex();
+        }
+
+    }
 
     @Test
     public void testCompoundKeyIndex() throws Exception {

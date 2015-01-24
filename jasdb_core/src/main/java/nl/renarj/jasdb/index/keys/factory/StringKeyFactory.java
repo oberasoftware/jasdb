@@ -107,9 +107,9 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
             } else {
                 return key;
             }
+        } else {
+            return new StringKey(new byte[0]);
         }
-
-        throw new JasDBStorageException("Unable to create key for field: " + this.field);
     }
 
     @Override

@@ -321,6 +321,8 @@ public class FSWriter implements Writer {
                 recordLength = recordLength.putInt(HEADER_RECORD_FLAG, RECORD_FLAG.UPDATED.getFlag());
                 channel.write(recordLength, recordPointer);
 
+                recordCount.decrementAndGet();
+
                 return writeRecord(recordContents);
             }
             LOG.debug("Record update for: {} not possible, reinstering at new position", recordPointer);

@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * @author Renze de Vries
  *
- * @NonThreadSafe
  */
 public class ManualConfiguration extends Configuration {
 	private Map<String, String> attributes;
