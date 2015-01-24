@@ -53,7 +53,7 @@ public class BagInsertOperation implements DataOperation {
 		StatRecord indexIterator = StatisticsMonitor.createRecord("bag:indexForEach");
 		for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {
 			Index index = indexEntry.getValue();
-			if(KeyUtil.isDataPresent(entity, index)) {
+			if(KeyUtil.isAnyDataPresent(entity, index)) {
                 Set<Key> insertKeys = BagOperationUtil.createEntityKeys(entity, index);
 				if(!insertKeys.isEmpty()) {
                     BagOperationUtil.doIndexInsert(insertKeys, index);

@@ -29,13 +29,13 @@ public class KeyUtil {
         }
     }
 
-    public static boolean isDataPresent(IndexableItem sEntity, Index index) {
+    public static boolean isAnyDataPresent(IndexableItem sEntity, Index index) {
         for(String indexField : index.getKeyInfo().getKeyFields()) {
-            if(!sEntity.hasValue(indexField)) {
-                return false;
+            if(sEntity.hasValue(indexField)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
 	

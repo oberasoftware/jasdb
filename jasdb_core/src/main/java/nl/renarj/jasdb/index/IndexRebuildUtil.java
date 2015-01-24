@@ -32,7 +32,7 @@ public class IndexRebuildUtil {
                     index.insertIntoIndex(key);
                 }
             } else {
-                if(KeyUtil.isDataPresent(indexableItem, index)) {
+                if(KeyUtil.isAnyDataPresent(indexableItem, index)) {
                     Key key = keyFactory.createKey(indexableItem);
                     index.insertIntoIndex(key);
                 }

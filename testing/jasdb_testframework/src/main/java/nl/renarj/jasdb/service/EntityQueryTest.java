@@ -17,11 +17,7 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.api.properties.EntityValue;
 import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.query.BlockType;
-import nl.renarj.jasdb.api.query.Order;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
+import nl.renarj.jasdb.api.query.*;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
@@ -34,21 +30,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Renze de Vries
@@ -991,6 +979,67 @@ public abstract class EntityQueryTest {
             assertTrue(result.hasNext());
             SimpleEntity entity = result.next();
             assertEquals("coëfficiënt van Poisson", entity.getProperty("field1").getFirstValueObject());
+            assertFalse(result.hasNext());
+        } finally {
+            pojoDb.closeSession();
+            SimpleKernel.shutdown();
+        }
+    }
+
+    @Test
+    public void testPartialIndexes() throws Exception {
+        DBSession pojoDb = sessionFactory.createSession();
+        EntityBag bag = pojoDb.createOrGetBag("homeautotest");
+
+        bag.ensureIndex(
+                new CompositeIndexField(
+                        new IndexField("controllerId", new StringKeyType()),
+                        new IndexField("pluginId", new StringKeyType()),
+                        new IndexField("deviceId", new StringKeyType()),
+                        new IndexField("type", new StringKeyType())
+                ), false);
+
+        QueryBuilder query = QueryBuilder.createBuilder()
+                .field("controllerId").value("Renzes-MacBook-Pro-2.local")
+                .field("pluginId").value("zwave").field("type").value("plugin");
+
+        String controllerEntityId = bag.addEntity(new SimpleEntity().addProperty("controllerId", "Renzes-MacBook-Pro-2.local")
+                .addProperty("plugins", "7158f3ec-681f-4d9b-9ab1-6ab6c60288e3").addProperty("type", "controller")).getInternalId();
+
+        String pluginEntityId = bag.addEntity(new SimpleEntity()
+                .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
+                .addProperty("name", "ZWave provider").addProperty("type", "plugin")).getInternalId();
+
+        String deviceEntityId = bag.addEntity(new SimpleEntity()
+                .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
+                .addProperty("name", "ZWave provider").addProperty("deviceId", "13").addProperty("type", "device")
+        ).getInternalId();
+
+
+
+        QueryExecutor executor = bag.find(query);
+        QueryResult result = executor.execute();
+        assertTrue(result.hasNext());
+        SimpleEntity entity = result.next();
+        assertEquals("Renzes-MacBook-Pro-2.local", entity.getProperty("controllerId").getFirstValueObject());
+        assertFalse(result.hasNext());
+
+
+        bag.updateEntity(new SimpleEntity(controllerEntityId).addProperty("controllerId", "Renzes-MacBook-Pro-2.local")
+                .addProperty("plugins", "7158f3ec-681f-4d9b-9ab1-6ab6c60288e3").addProperty("type", "controller"));
+
+        bag.updateEntity(new SimpleEntity(pluginEntityId)
+                .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
+                .addProperty("name", "ZWave provider").addProperty("type", "plugin"));
+
+        try {
+            executor = bag.find(query);
+            result = executor.execute();
+
+            assertTrue(result.hasNext());
+            entity = result.next();
+
+            assertEquals("Renzes-MacBook-Pro-2.local", entity.getProperty("controllerId").getFirstValueObject());
             assertFalse(result.hasNext());
         } finally {
             pojoDb.closeSession();

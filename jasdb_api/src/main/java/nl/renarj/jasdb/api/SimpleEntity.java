@@ -93,6 +93,19 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
     }
 
     /**
+     * Adds a property with a list of String values
+     * @param propertyName The name of the property
+     * @param stringValues The list of string values to add to the property
+     * @return The entity the property has been added to
+     */
+    public SimpleEntity addProperty(String propertyName, List<String> stringValues) {
+        for(String value : stringValues) {
+            addValueToProperty(propertyName, new StringValue(value));
+        }
+        return this;
+    }
+
+    /**
      * Adds a property with an Integer value
      * @param propertyName The name of the property
      * @param intValue The integer value to add to the property
