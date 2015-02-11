@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class StringKey extends AbstractKey {
+    private static final int BIT_MASK = 0xff;
     private byte[] unicodeBytes;
 	
 	public StringKey(String stringIndex) {
@@ -89,9 +90,13 @@ public class StringKey extends AbstractKey {
     }
 
     private int compare(byte[] left, byte[] right) {
+//        if(left.length != 0 && right.length == 0) {
+//            return 0;
+//        }
+
         for (int i = 0, j = 0; i < left.length && j < right.length; i++, j++) {
-            int a = (left[i] & 0xff);
-            int b = (right[j] & 0xff);
+            int a = (left[i] & BIT_MASK);
+            int b = (right[j] & BIT_MASK);
             if (a != b) {
                 return a - b;
             }

@@ -12,7 +12,7 @@ import nl.renarj.jasdb.index.keys.impl.CompositeKey;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
 
 public class EqualsCondition implements SearchCondition {
-	protected Key key;
+	private Key key;
 	
 	public EqualsCondition(Key key) {
 		this.key = key;
@@ -37,16 +37,20 @@ public class EqualsCondition implements SearchCondition {
                 compositeKey = new CompositeKey();
                 compositeKey.addKey(nameMapper, sourceField, key);
             }
-            return new EqualsCondition(compositeKey.addKey(nameMapper, mergeField, ((EqualsCondition)condition).getKey()));
+            return new EqualsCondition(compositeKey.addKey(nameMapper, mergeField, ((EqualsCondition) condition).getKey()));
         } else if(condition instanceof RangeCondition) {
             RangeCondition rangeCondition = (RangeCondition) condition;
 
             Key startKey = null, endKey = null;
             if(rangeCondition.getStart() != null) {
-                startKey = new CompositeKey().addKey(nameMapper, sourceField, key).addKey(nameMapper, mergeField, rangeCondition.getStart());
+                startKey = new CompositeKey()
+                        .addKey(nameMapper, sourceField, key)
+                        .addKey(nameMapper, mergeField, rangeCondition.getStart());
             }
             if(rangeCondition.getEnd() != null) {
-                endKey = new CompositeKey().addKey(nameMapper, sourceField, key).addKey(nameMapper, mergeField, rangeCondition.getEnd());
+                endKey = new CompositeKey()
+                        .addKey(nameMapper, sourceField, key)
+                        .addKey(nameMapper, mergeField, rangeCondition.getEnd());
             }
             return new RangeCondition(startKey, rangeCondition.isStartIncluded(), endKey, rangeCondition.isEndIncluded());
         }
@@ -56,9 +60,6 @@ public class EqualsCondition implements SearchCondition {
 
     @Override
 	public String toString() {
-		StringBuilder conditionBuilder = new StringBuilder();
-		conditionBuilder.append("Equals: ").append(key);
-		
-		return conditionBuilder.toString();
+        return "Equals: " + key;
 	}
 }

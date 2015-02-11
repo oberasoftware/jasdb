@@ -39,10 +39,7 @@ public class UUIDKeyFactory extends AbstractKeyFactory implements KeyFactory {
 	
 	@Override
 	public String asHeader() {
-		StringBuilder headerBuilder = new StringBuilder();
-		headerBuilder.append(field).append("(").append(getKeyId()).append(");");
-		
-		return headerBuilder.toString();
+        return field + "(" + getKeyId() + ");";
 	}
 
 	@Override
@@ -94,6 +91,11 @@ public class UUIDKeyFactory extends AbstractKeyFactory implements KeyFactory {
 	}
 
     @Override
+    public Key createEmptyKey() {
+        return null;
+    }
+
+    @Override
     protected Key convertToKey(Object value) throws JasDBStorageException {
         if(value != null) {
             if(value instanceof String) {
@@ -111,8 +113,10 @@ public class UUIDKeyFactory extends AbstractKeyFactory implements KeyFactory {
 
     @Override
 	public Key convertKey(Key key) throws JasDBStorageException {
-        if(key instanceof StringKey) {
-            return new UUIDKey(UUID.fromString((String)key.getValue()));
+        if(key instanceof UUIDKey) {
+            return key;
+        } else if(key instanceof StringKey) {
+            return new UUIDKey(UUID.fromString((String) key.getValue()));
         } else {
 		    throw new JasDBStorageException("Unsupported conversion of key types");
         }

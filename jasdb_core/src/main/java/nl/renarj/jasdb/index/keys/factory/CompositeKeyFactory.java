@@ -50,6 +50,11 @@ public class CompositeKeyFactory implements KeyFactory {
     }
 
     @Override
+    public Key createEmptyKey() {
+        return new CompositeKey();
+    }
+
+    @Override
     public KeyLoadResult loadKey(int offset, DataBlock dataBlock) throws JasDBStorageException {
         CompositeKey compositeKey = new CompositeKey();
         KeyLoadResult result = multiKeyloader.loadKeys(compositeKey, offset, dataBlock);
@@ -109,6 +114,12 @@ public class CompositeKeyFactory implements KeyFactory {
                 if(partialKey != null && !keyFactory.supportsKey(partialKey)) {
                     Key convertedKey = keyFactory.convertKey(partialKey);
                     compositeKey.addKey(mapper, keyFactory.getFieldName(), convertedKey);
+                } else if(partialKey == null) {
+                    Key nillableKey = keyFactory.createEmptyKey();
+                    //it could be that this key is not nillable (UUID)
+                    if (nillableKey != null) {
+                        compositeKey.addKey(mapper, keyFactory.getFieldName(), nillableKey);
+                    }
                 }
             }
 
@@ -132,7 +143,7 @@ public class CompositeKeyFactory implements KeyFactory {
             KeyNameMapper mapper = multiKeyloader.getKeyNameMapper();
             for(KeyFactory keyFactory : multiKeyloader.getKeyFactories()) {
                 Key partialKey = compositeKey.getKey(mapper, keyFactory.getFieldName());
-                if(partialKey != null && !keyFactory.supportsKey(partialKey)) {
+                if(partialKey == null || !keyFactory.supportsKey(partialKey)) {
                     return false;
                 }
             }

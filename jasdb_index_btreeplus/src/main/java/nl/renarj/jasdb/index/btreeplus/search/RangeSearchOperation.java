@@ -58,7 +58,7 @@ public class RangeSearchOperation implements SearchOperation {
 
         try {
             List<Key> results = new LinkedList<>();
-            boolean keepEvaluating = currentLeave.size() > 0 ? true : false;
+            boolean keepEvaluating = currentLeave.size() > 0;
             while(keepEvaluating && currentLeave != null) {
                 addFoundKeys(results, currentLeave.getKeyRange(rangeCondition.getStart(), rangeCondition.isStartIncluded(), rangeCondition.getEnd(), rangeCondition.isEndIncluded()), limit);
 
@@ -74,7 +74,7 @@ public class RangeSearchOperation implements SearchOperation {
                 }
 
                 long nextBlockPointer = currentLeave.getProperties().getNextBlock();
-                currentLeave = nextBlockPointer != -1 ? (LeaveBlock)persister.loadBlock(nextBlockPointer) : null;
+                currentLeave = nextBlockPointer != -1 ? (LeaveBlock) persister.loadBlock(nextBlockPointer) : null;
                 if(currentLeave != null) lockManager.acquireLock(LockIntentType.READ, currentLeave);
             }
 

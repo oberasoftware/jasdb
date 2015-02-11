@@ -66,7 +66,7 @@ public class DataKeyFactory extends AbstractKeyFactory {
 
     @Override
     public Key convertKey(Key key) throws JasDBStorageException {
-        throw new JasDBStorageException("Unable to create key for field: " + this.field);
+        throw new JasDBStorageException("Unable to create key for field: " + getField());
     }
 
     @Override
@@ -80,17 +80,18 @@ public class DataKeyFactory extends AbstractKeyFactory {
     }
 
     @Override
+    public Key createEmptyKey() {
+        return null;
+    }
+
+    @Override
     public KeyType getKeyType() {
         return new DataKeyType();
     }
 
     @Override
     public String asHeader() {
-        StringBuilder headerBuilder = new StringBuilder();
-        headerBuilder.append(getFieldName()).append("(");
-        headerBuilder.append(getKeyId()).append(");");
-
-        return headerBuilder.toString();
+        return getFieldName() + "(" + getKeyId() + ");";
     }
 
     @Override
@@ -100,7 +101,7 @@ public class DataKeyFactory extends AbstractKeyFactory {
 
     @Override
     public String getFieldName() {
-        return this.field;
+        return getField();
     }
 
     @Override

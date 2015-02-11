@@ -21,10 +21,14 @@ import java.util.Set;
  * Time: 9:37 PM
  */
 public abstract class AbstractKeyFactory implements KeyFactory {
-    protected String field;
+    private String field;
     
     protected AbstractKeyFactory(String field) {
         this.field = field;
+    }
+
+    public String getField() {
+        return field;
     }
 
     @Override

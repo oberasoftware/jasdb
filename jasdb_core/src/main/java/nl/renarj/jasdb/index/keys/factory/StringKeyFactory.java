@@ -98,6 +98,11 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
 	}
 
     @Override
+    public Key createEmptyKey() {
+        return new StringKey(new byte[0]);
+    }
+
+    @Override
     protected Key convertToKey(Object value) throws JasDBStorageException {
         if(value != null) {
             String fieldValue = value.toString();
@@ -114,7 +119,9 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
 
     @Override
 	public Key convertKey(Key key) throws JasDBStorageException {
-		if(key instanceof LongKey) {
+        if(key instanceof StringKey) {
+            return key;
+        } else if(key instanceof LongKey) {
 			return new StringKey(key.getValue().toString());
 		} else {
 			throw new JasDBStorageException("Unsupported conversion from: " + key.getClass().getName() + " to StringKey");
@@ -128,11 +135,7 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
 
 	@Override
 	public String asHeader() {
-		StringBuilder headerBuilder = new StringBuilder();
-		headerBuilder.append(getFieldName()).append("(");
-		headerBuilder.append(getKeyId()).append(":").append(maxSize).append(");");
-
-		return headerBuilder.toString();
+        return getFieldName() + "(" + getKeyId() + ":" + maxSize + ");";
 	}
 
     @Override

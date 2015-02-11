@@ -14,21 +14,31 @@ import nl.renarj.jasdb.index.keys.CompareMethod;
 import nl.renarj.jasdb.index.keys.CompareResult;
 import nl.renarj.jasdb.index.keys.Key;
 
+import java.util.Arrays;
+
+import static nl.renarj.core.utilities.conversion.LongUtils.bytesToLong;
+import static nl.renarj.core.utilities.conversion.LongUtils.longToBytes;
+
 public class LongKey extends AbstractKey {
-	private long key;
+	//private long key;
+    private final byte[] key;
 	
 	public LongKey(long key) {
-		this.key = key;
+		this.key = longToBytes(key);
 	}
 
+    public LongKey(byte[] bytes) {
+        this.key = bytes;
+    }
+
 	public long getKey() {
-		return key;
+		return bytesToLong(key);
 	}
 	
     @Override
     public String toString() {
         return "LongKey{" +
-                "key=" + key +
+                "key=" + getKey() +
                 '}';
     }
 
@@ -54,11 +64,11 @@ public class LongKey extends AbstractKey {
         if(o instanceof LongKey) {
             LongKey longIndexPointer = (LongKey) o;
 
-            result = (key < longIndexPointer.getKey()) ? -1 : ((key == longIndexPointer.getKey()) ? 0 : 1);
+            result = (getKey() < longIndexPointer.getKey()) ? -1 : ((getKey() == longIndexPointer.getKey()) ? 0 : 1);
         } else if(o instanceof  StringKey) {
             StringKey stringKey = (StringKey) o;
             try {
-                result = Long.valueOf(key).compareTo(Long.parseLong(stringKey.getKey()));
+                result = Long.valueOf(getKey()).compareTo(Long.parseLong(stringKey.getKey()));
             } catch(NumberFormatException e) {}
         }
 
@@ -77,7 +87,7 @@ public class LongKey extends AbstractKey {
 
     @Override
 	public int hashCode() {
-		return Long.valueOf(key).hashCode();
+		return Arrays.hashCode(key);
 	}
 
 	@Override
@@ -85,7 +95,7 @@ public class LongKey extends AbstractKey {
 		if(obj instanceof LongKey) {
 			LongKey longIndexPointer = (LongKey) obj;
 
-			return longIndexPointer.getKey() == key;
+			return longIndexPointer.getKey() == getKey();
 		} else {
 			return false;
 		}
@@ -104,6 +114,6 @@ public class LongKey extends AbstractKey {
 
     @Override
     public Long getValue() {
-        return key;
+        return getKey();
     }
 }

@@ -74,9 +74,10 @@ public class AggregationResult implements Comparable<AggregationResult> {
 		}
 	}
 
+	@Override
 	public int compareTo(AggregationResult o) {
-		if(o instanceof AggregationResult) {
-			return getName().compareTo(((AggregationResult)o).getName());
+		if(o != null) {
+			return getName().compareTo(o.getName());
 		} else {
 			return -1;
 		}

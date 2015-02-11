@@ -15,13 +15,13 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class XMLReader {
-	private static final Logger log = LoggerFactory.getLogger(XMLReader.class);
+	private static final Logger LOG = LoggerFactory.getLogger(XMLReader.class);
 	
 	public static Document getDocument(String configFile) throws CoreConfigException {
 		URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource(configFile);
         
 		if(resourceUrl != null) {
-            log.debug("Reading XML file: " + resourceUrl.toString());
+            LOG.debug("Reading XML file: " + resourceUrl.toString());
             return parseDocument(resourceUrl);
 		} else {
 			throw new ConfigurationNotFoundException("Unable to load configuration, could not be found on classpath");

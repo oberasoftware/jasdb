@@ -14,20 +14,21 @@ public class NotEqualsCondition extends EqualsCondition {
 
     @Override
     public boolean keyQualifies(Key key) {
-        return this.key.compareTo(key) != 0;
+        return getKey().compareTo(key) != 0;
     }
 
     @Override
     public SearchCondition mergeCondition(KeyNameMapper nameMapper, String sourceField, String mergeField, SearchCondition condition) {
         if(condition instanceof NotEqualsCondition) {
             CompositeKey compositeKey;
+            Key key = getKey();
             if(key instanceof CompositeKey) {
                 compositeKey = (CompositeKey) key;
             } else {
                 compositeKey = new CompositeKey();
                 compositeKey.addKey(nameMapper, sourceField, key);
             }
-            return new NotEqualsCondition(compositeKey.addKey(nameMapper, mergeField, ((EqualsCondition)condition).getKey()));
+            return new NotEqualsCondition(compositeKey.addKey(nameMapper, mergeField, ((EqualsCondition) condition).getKey()));
         }
 
         return null;

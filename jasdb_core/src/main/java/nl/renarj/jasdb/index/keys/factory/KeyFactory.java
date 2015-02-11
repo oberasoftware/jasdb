@@ -28,6 +28,7 @@ public interface KeyFactory {
 	boolean supportsKey(Key key);
 	
 	Key createKey(IndexableItem indexableItem) throws JasDBStorageException;
+	Key createEmptyKey();
     Set<Key> createMultivalueKeys(IndexableItem indexableItem) throws JasDBStorageException;
 
     KeyType getKeyType();

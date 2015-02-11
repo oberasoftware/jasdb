@@ -31,7 +31,7 @@ import java.util.Set;
  * @author Renze de Vries
  */
 public class BagOperationUtil {
-    private static final Logger log = LoggerFactory.getLogger(BagOperationUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BagOperationUtil.class);
 
     private static final String ENTITY_ENCODING = "UTF8";
 
@@ -66,7 +66,7 @@ public class BagOperationUtil {
     }
     
     public static void doIndexInsert(Set<Key> keys, Index index) throws JasDBStorageException {
-        log.trace("Inserting {} keys into index: {}", keys.size(), index.getKeyInfo().getKeyName());
+        LOG.trace("Inserting {} keys into index: {}", keys.size(), index.getKeyInfo().getKeyName());
         StatRecord indexInsert = StatisticsMonitor.createRecord("bag:indexInsert");
         for(Key key : keys) {
             index.insertIntoIndex(key);

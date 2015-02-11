@@ -1,6 +1,5 @@
 package nl.renarj.jasdb.service;
 
-import junit.framework.Assert;
 import nl.renarj.core.utilities.ResourceUtil;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
@@ -21,29 +20,17 @@ import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
 import nl.renarj.jasdb.index.search.IndexField;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public abstract class EntityBagTest {
 	private Logger log = LoggerFactory.getLogger(EntityBagTest.class);
@@ -135,11 +122,11 @@ public abstract class EntityBagTest {
 			
 			long endTime = System.currentTimeMillis();
 			log.info("Took: {} ms. to read: {} entities from 'testbag'", (endTime - startTime), foundEntities);
-			Assert.assertEquals("Unexpected number of entities found", NUMBER_ENTITIES + 1, foundEntities);
+			assertEquals("Unexpected number of entities found", NUMBER_ENTITIES + 1, foundEntities);
 			
 			result = bag.getEntities(20);
 			foundEntities = getResultSize(result);
-			Assert.assertEquals("Unexpected number of entities found", 20, foundEntities);
+			assertEquals("Unexpected number of entities found", 20, foundEntities);
 		} finally {
 			SimpleKernel.shutdown();
 		}
@@ -169,7 +156,7 @@ public abstract class EntityBagTest {
 			log.info("Search finished in: {}", (endSearch - startSearch));
 
 			Assert.assertNotNull("An entity should have been found for id: " + searchTestId, entity);
-			Assert.assertEquals(searchTestId, entity.getInternalId());
+			assertEquals(searchTestId, entity.getInternalId());
 			
 			log.info("Starting search for random: {}", someRandomId);
 			startSearch = System.nanoTime();
@@ -178,7 +165,7 @@ public abstract class EntityBagTest {
 			log.info("Search finished for random: {}", (endSearch - startSearch));
 
 			Assert.assertNotNull("An entity should have been found", entity);
-			Assert.assertEquals(someRandomId, entity.getInternalId());
+			assertEquals(someRandomId, entity.getInternalId());
 		} finally {
 			SimpleKernel.shutdown();
 		}
@@ -313,7 +300,7 @@ public abstract class EntityBagTest {
 		DBSession pojoDb = sessionFactory.createSession();
 		EntityBag bag = pojoDb.createOrGetBag("mybag");
 
-		List<String> entityIds = new ArrayList<String>();
+		List<String> entityIds = new ArrayList<>();
 		for(int i=0; i<NUMBER_ENTITIES; i++) {
 			SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
 			entity.addProperty("someProperty" + i, i);
@@ -326,9 +313,9 @@ public abstract class EntityBagTest {
 			for(String id : entityIds) {
 				SimpleEntity entity = bag.getEntity(id);
 				Assert.assertNotNull("Entity for id: " + id + " should be found", entity);
-				Assert.assertEquals("Id should match expected id", id, entity.getInternalId());
+				assertEquals("Id should match expected id", id, entity.getInternalId());
 				Assert.assertNotNull("There should be a property doubleId", entity.getProperty("doubleId"));
-				Assert.assertEquals("Property doubleId should match expected id", id, entity.getProperty("doubleId").getFirstValueObject());
+				assertEquals("Property doubleId should match expected id", id, entity.getProperty("doubleId").getFirstValueObject());
 			}
 		} finally {
 			SimpleKernel.shutdown();
@@ -354,16 +341,16 @@ public abstract class EntityBagTest {
             entity = bag.getEntity(entityId);
             Property property = entity.getProperty("field1");
             Assert.assertNotNull(property);
-            Assert.assertEquals("The object should be multivalue", true, property.isMultiValue());
-            Assert.assertEquals("There should be three properties", 3, property.getValues().size());
-            Assert.assertEquals("Unexpected value", "value1", property.getValues().get(0).getValue());
-            Assert.assertEquals("Unexpected value", "value2", property.getValues().get(1).getValue());
-            Assert.assertEquals("Unexpected value", "value3", property.getValues().get(2).getValue());
+            assertEquals("The object should be multivalue", true, property.isMultiValue());
+            assertEquals("There should be three properties", 3, property.getValues().size());
+            assertEquals("Unexpected value", "value1", property.getValues().get(0).getValue());
+            assertEquals("Unexpected value", "value2", property.getValues().get(1).getValue());
+            assertEquals("Unexpected value", "value3", property.getValues().get(2).getValue());
             property = entity.getProperty("number");
-            Assert.assertEquals("The object should be multivalue", true, property.isMultiValue());
-            Assert.assertEquals("There should be three properties", 2, property.getValues().size());
-            Assert.assertEquals("Unexpected value", 100l, property.getValues().get(0).getValue());
-            Assert.assertEquals("Unexpected value", 500l, property.getValues().get(1).getValue());
+            assertEquals("The object should be multivalue", true, property.isMultiValue());
+            assertEquals("There should be three properties", 2, property.getValues().size());
+            assertEquals("Unexpected value", 100l, property.getValues().get(0).getValue());
+            assertEquals("Unexpected value", 500l, property.getValues().get(1).getValue());
         } finally {
             SimpleKernel.shutdown();
         }
@@ -379,7 +366,7 @@ public abstract class EntityBagTest {
         bag.ensureIndex(new IndexField("itemId", new LongKeyType()), true);
         try {
             Random rnd = new Random();
-            Map<String, Integer> cityCounts = new HashMap<String, Integer>();
+            Map<String, Integer> cityCounts = new HashMap<>();
             for(int i=0; i<testSize; i++) {
                 int cityIdx = rnd.nextInt(cities.length);
                 String city = cities[cityIdx];
@@ -483,7 +470,7 @@ public abstract class EntityBagTest {
             }
 
             result = bag.find(QueryBuilder.createBuilder().field("city").value(city)).execute();
-            Assert.assertEquals("There should no longer be any entity", (long)0, result.size());
+            assertEquals("There should no longer be any entity", (long) 0, result.size());
         }
     }
     
@@ -491,7 +478,7 @@ public abstract class EntityBagTest {
         for(String city : cities) {
             QueryResult r = bag.find(QueryBuilder.createBuilder().field("city").value(city)).execute();
             int expectedCount = expectedCounts.get(city);
-            Assert.assertEquals("Counts are unexpected for city: " + city, expectedCount, r.size());
+            assertEquals("Counts are unexpected for city: " + city, expectedCount, r.size());
         }
     }
     
@@ -535,7 +522,7 @@ public abstract class EntityBagTest {
 			for(String id : entities) {
 				SimpleEntity entity = bag.getEntity(id);
 				Assert.assertNotNull("Entity for id: " + id + " should be found", entity);
-				Assert.assertEquals("Id should match expected id", id, entity.getInternalId());
+				assertEquals("Id should match expected id", id, entity.getInternalId());
 				Assert.assertNotNull("There should be a property doubleId", entity.getProperty("testfield").getFirstValueObject());
 			}
 			
@@ -545,7 +532,7 @@ public abstract class EntityBagTest {
 				recordsFound++;
 			}
 			
-			Assert.assertEquals("Unexpected amount of entities", INITIAL_SIZE + NUMBER_ENTITIES, recordsFound);
+			assertEquals("Unexpected amount of entities", INITIAL_SIZE + NUMBER_ENTITIES, recordsFound);
 		} finally {
 			SimpleKernel.shutdown();
 		}

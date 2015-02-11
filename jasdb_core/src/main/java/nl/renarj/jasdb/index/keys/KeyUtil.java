@@ -16,14 +16,16 @@ import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
 
 import java.io.UnsupportedEncodingException;
 
-public class KeyUtil {
+public final class KeyUtil {
     public static final String DEFAULT_ENCODING = "UTF8";
 	public static final String RECORD_POINTER = "RECORD_POINTER";
+
+    private KeyUtil() {}
 	
     public static UUIDKey getDocumentKey(KeyNameMapper keyNameMapper, Key key) throws JasDBStorageException {
         Key documentKey = key.getKey(keyNameMapper, "__ID");
         if(documentKey != null) {
-            return (UUIDKey)documentKey;
+            return (UUIDKey) documentKey;
         } else {
             throw new JasDBStorageException("No DocumentId present in key value");
         }

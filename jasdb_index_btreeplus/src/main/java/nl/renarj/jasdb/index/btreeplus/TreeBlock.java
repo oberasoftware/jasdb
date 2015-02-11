@@ -24,7 +24,7 @@ import java.util.List;
  * @author Renze de Vries
  */
 public class TreeBlock implements IndexBlock {
-    private static final Logger log = LoggerFactory.getLogger(TreeBlock.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TreeBlock.class);
 
     protected final KeyOrderedTree<TreeNode> treeNodes;
     protected final BlockPersister persister;
@@ -187,7 +187,7 @@ public class TreeBlock implements IndexBlock {
 
     protected void removeBlockPointer(Key minBlockValue, IndexBlock removedBlock) throws JasDBStorageException {
         TreeNode removeNode = treeNodes.getBefore(minBlockValue);
-//        log.info("Closest remove node: {} nodes: {}", removeNode, treeNodes.size());
+//        LOG.info("Closest remove node: {} nodes: {}", removeNode, treeNodes.size());
         TreeNode next = treeNodes.next(removeNode.getKey());
 
         if(next != null && removeNode.getLeft() != removedBlock.getPosition()) {
@@ -202,7 +202,7 @@ public class TreeBlock implements IndexBlock {
 
     protected void handleBlockUnderflow() throws JasDBStorageException {
         if(treeNodes.size() < persister.getMinKeys()) {
-            log.debug("Handling block underflow");
+            LOG.debug("Handling block underflow");
             TreeBlock parentBlock = (TreeBlock) persister.loadBlock(parentPointer);
             long leftSibblingPointer = parentBlock.getLeftSibbling(this);
             long rightSibblingPointer = parentBlock.getRightSibbling(this);
