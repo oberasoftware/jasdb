@@ -128,7 +128,8 @@ public class LongKeyFactory extends AbstractKeyFactory implements KeyFactory {
 				throw new JasDBStorageException("Unable to convert String to Long");
 			}
 		} else {
-			throw new JasDBStorageException("Unsupported conversion from: " + key.getClass().getName() + " to LongKey");
+			//unsupported conversion
+			return key;
 		}
 	}
 

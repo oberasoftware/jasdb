@@ -118,7 +118,8 @@ public class UUIDKeyFactory extends AbstractKeyFactory implements KeyFactory {
         } else if(key instanceof StringKey) {
             return new UUIDKey(UUID.fromString((String) key.getValue()));
         } else {
-		    throw new JasDBStorageException("Unsupported conversion of key types");
+            //unsupported conversion
+		    return key;
         }
 	}
 

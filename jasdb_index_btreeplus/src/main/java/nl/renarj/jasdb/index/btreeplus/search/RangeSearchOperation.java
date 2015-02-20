@@ -15,7 +15,10 @@ import nl.renarj.jasdb.index.btreeplus.locking.LockIntentType;
 import nl.renarj.jasdb.index.btreeplus.locking.LockManager;
 import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.factory.KeyFactory;
+import nl.renarj.jasdb.index.keys.impl.CompositeKey;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
+import nl.renarj.jasdb.index.keys.impl.AnyKey;
 import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
 import nl.renarj.jasdb.index.result.IndexSearchResultIteratorImpl;
 import nl.renarj.jasdb.index.result.SearchLimit;
@@ -112,10 +115,24 @@ public class RangeSearchOperation implements SearchOperation {
 
     private Key validateKey(KeyFactory factory, Key key) throws JasDBStorageException {
         if(key != null && !factory.supportsKey(key)) {
-            return factory.convertKey(key);
+            return fillEmptyFields(factory.convertKey(key));
         } else {
-            return key;
+            return fillEmptyFields(key);
         }
     }
 
+    private Key fillEmptyFields(Key key) throws JasDBStorageException {
+        if(key instanceof CompositeKey) {
+            KeyNameMapper mapper = keyInfo.getKeyNameMapper();
+            //missing fields
+            Key[] keys = key.getKeys();
+            for(String field : keyInfo.getKeyFields()) {
+                int index = mapper.getIndexForField(field);
+                if(keys == null || keys.length <= index || keys[index] == null) {
+                    key.addKey(mapper, field, new AnyKey());
+                }
+            }
+        }
+        return key;
+    }
 }

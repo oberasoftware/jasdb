@@ -48,7 +48,7 @@ public class BtreeKeyTypesTest extends IndexBaseTest {
         index.insertIntoIndex(new StringKey("Ѯ").addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(3)));
         index.insertIntoIndex(new StringKey("ß").addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(4)));
         index.insertIntoIndex(new StringKey("국").addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(5)));
-        index.closeIndex();
+        index.close();
 
         Assert.assertEquals("Index state should be closed", IndexState.CLOSED, index.getState());
         index = new BTreeIndex(new File(tmpDir, "indexbag_string.idx"), keyInfo);
@@ -59,7 +59,7 @@ public class BtreeKeyTypesTest extends IndexBaseTest {
             assertKey(new StringKey("ß"), index.searchIndex(new EqualsCondition(new StringKey("ß")), Index.NO_SEARCH_LIMIT));
             assertKey(new StringKey("국"), index.searchIndex(new EqualsCondition(new StringKey("국")), Index.NO_SEARCH_LIMIT));
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -70,7 +70,7 @@ public class BtreeKeyTypesTest extends IndexBaseTest {
         UUID uuid = new UUID(1, 1);
         index.insertIntoIndex(new UUIDKey(uuid).addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(1)));
         assertKey(new UUIDKey(uuid), index.searchIndex(new EqualsCondition(new StringKey(uuid.toString())), Index.NO_SEARCH_LIMIT));
-        index.closeIndex();
+        index.close();
     }
 
     @Test
@@ -79,7 +79,7 @@ public class BtreeKeyTypesTest extends IndexBaseTest {
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_randomlong.idx"), keyInfo);
         index.insertIntoIndex(new LongKey(50l).addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(1)));
         assertKey(new LongKey(50l), index.searchIndex(new EqualsCondition(new StringKey("50")), Index.NO_SEARCH_LIMIT));
-        index.closeIndex();
+        index.close();
 
     }
 
@@ -89,7 +89,7 @@ public class BtreeKeyTypesTest extends IndexBaseTest {
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_string.idx"), keyInfo);
         index.insertIntoIndex(new StringKey("50").addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(1)));
         assertKey(new StringKey("50"), index.searchIndex(new EqualsCondition(new LongKey(50)), Index.NO_SEARCH_LIMIT));
-        index.closeIndex();
+        index.close();
     }
 
     @Test
@@ -98,7 +98,7 @@ public class BtreeKeyTypesTest extends IndexBaseTest {
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_string.idx"), keyInfo);
         index.insertIntoIndex(new StringKey("#").addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(1)));
         assertKey(new StringKey("#"), index.searchIndex(new EqualsCondition(new StringKey("#")), Index.NO_SEARCH_LIMIT));
-        index.closeIndex();
+        index.close();
     }
 
     private void assertKey(Key expected, IndexSearchResultIterator result) {

@@ -53,7 +53,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class BTreeIndexTest extends IndexBaseTest {
-	private Logger log = LoggerFactory.getLogger(BTreeIndexTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BTreeIndexTest.class);
 	
 	@After
 	public void tearDown() throws ConfigurationException {
@@ -74,32 +74,29 @@ public class BTreeIndexTest extends IndexBaseTest {
         p.put("MaxMemory", "32m");
         GlobalCachingMemoryManager.getGlobalInstance().configure(new ManualConfiguration("Caching", p));
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new StringKeyType()), new IndexField("RECORD_POINTER", new LongKeyType()));
-        BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
 
-        try {
+        try (BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo)) {
             Map<Thread, BTreeIndexWriterThread> writers = new HashMap<>();
-            for(int i=0; i<nrThreads; i++) {
+            for (int i = 0; i < nrThreads; i++) {
                 BTreeIndexWriterThread writer = new BTreeIndexWriterThread(index, i * nrRecords, nrRecords);
                 Thread writerThread = new Thread(writer, "WriterThread" + i);
                 writers.put(writerThread, writer);
             }
 
-            for(Thread thread : writers.keySet()) {
+            for (Thread thread : writers.keySet()) {
                 thread.start();
             }
 
-            for(Map.Entry<Thread, BTreeIndexWriterThread> writerEntry : writers.entrySet()) {
+            for (Map.Entry<Thread, BTreeIndexWriterThread> writerEntry : writers.entrySet()) {
                 writerEntry.getKey().join();
 
                 BTreeIndexWriterThread writer = writerEntry.getValue();
-                log.info("Average time: {} ({} ms.)", writer.getAverage(), (double)writer.getAverage() / (double)(1000 * 1000));
+                LOG.info("Average time: {} ({} ms.)", writer.getAverage(), (double) writer.getAverage() / (double) (1000 * 1000));
                 Assert.assertEquals("Expected no failures in insert operation", 0, writer.getFailures());
             }
 
-            log.info("Using: {} bytes", GlobalCachingMemoryManager.getGlobalInstance().calculateMemorySize());
-            log.info("Used memory: {}", Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
-        } finally {
-            index.closeIndex();
+            LOG.info("Using: {} bytes", GlobalCachingMemoryManager.getGlobalInstance().calculateMemorySize());
+            LOG.info("Used memory: {}", Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
         }
 
     }
@@ -140,7 +137,7 @@ public class BTreeIndexTest extends IndexBaseTest {
 
                     currentRecordId++;
                 } catch(JasDBStorageException e) {
-                    log.error("Unable to store in index", e);
+                    LOG.error("Unable to store in index", e);
                     failures++;
                 }
             }
@@ -166,17 +163,17 @@ public class BTreeIndexTest extends IndexBaseTest {
 			totalInsertTime += (endInsert - startInsert);
 		}
         assertBlocks(index.getLockManager(), index.getPersister(), index.getRootBlock(), index.getPersister().getMaxKeys(), index.getPersister().getMinKeys(), -1);
-        log.info("Index: {}", index.toString());
+        LOG.info("Index: {}", index.toString());
         long end = System.currentTimeMillis();
-        log.info("Total insert took: {}", (end - start));
+        LOG.info("Total insert took: {}", (end - start));
         double averageInsertTime = ((double)totalInsertTime / indexSize);
-		log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+		LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
 
 		long startCommit = System.nanoTime();
 		index.flushIndex();
 		long endCommit  = System.nanoTime();
-		log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-		index.closeIndex();
+		LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+		index.close();
 
 		try {
 			index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
@@ -192,25 +189,19 @@ public class BTreeIndexTest extends IndexBaseTest {
 				totalTime += (endSearch - startSearch);
 			}
 			double averageTime = ((double)totalTime / indexSize);
-			log.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
+			LOG.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
 		} catch(Throwable e) {
-            log.error("", e);
+            LOG.error("", e);
         } finally {
-			index.closeIndex();
+			index.close();
 		}
 	}
 
     @Test
-    public void testStringNotInIndex() throws Exception {
-
-    }
-
-    @Test
     public void testIndexInsertDataKeyAndRead() throws Exception {
         KeyInfo keyInfo = new KeyInfoImpl(new IndexField("somekey", new StringKeyType()), new IndexField("DATA", new DataKeyType()));
-        BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
 
-        try {
+        try (BTreeIndex index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo)) {
             index.insertIntoIndex(new StringKey("Amsterdam").addKey(keyInfo.getKeyNameMapper(), "DATA",
                     new DataKey("My Great piece of text".getBytes(Charset.forName("utf8")))));
 
@@ -218,8 +209,6 @@ public class BTreeIndexTest extends IndexBaseTest {
             assertEquals("My Great piece of text", loadDataKey(index, "Amsterdam"));
             assertEquals("My Great piece of text", loadDataKey(index, "Amsterdam"));
             assertEquals("My Great piece of text", loadDataKey(index, "Amsterdam"));
-        } finally {
-            index.closeIndex();
         }
     }
 
@@ -257,14 +246,14 @@ public class BTreeIndexTest extends IndexBaseTest {
             totalInsertTime += (endInsert - startInsert);
         }
         double averageInsertTime = ((double)totalInsertTime / indexSize);
-        log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
-        log.debug(index.toString());
+        LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+        LOG.debug(index.toString());
 
         long startCommit = System.nanoTime();
         index.flushIndex();
         long endCommit  = System.nanoTime();
-        log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-        index.closeIndex();
+        LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+        index.close();
 
         try {
             index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
@@ -279,7 +268,7 @@ public class BTreeIndexTest extends IndexBaseTest {
             }
             assertEquals(indexSize, i);
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -299,14 +288,14 @@ public class BTreeIndexTest extends IndexBaseTest {
             totalInsertTime += (endInsert - startInsert);
         }
         double averageInsertTime = ((double)totalInsertTime / indexSize);
-        log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
-        log.debug(index.toString());
+        LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+        LOG.debug(index.toString());
 
         long startCommit = System.nanoTime();
         index.flushIndex();
         long endCommit  = System.nanoTime();
-        log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-        index.closeIndex();
+        LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+        index.close();
 
         try {
             index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
@@ -321,7 +310,7 @@ public class BTreeIndexTest extends IndexBaseTest {
             }
             assertEquals(indexSize, i);
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -342,21 +331,21 @@ public class BTreeIndexTest extends IndexBaseTest {
 			totalInsertTime += (endInsert - startInsert);
 		}
 		double averageInsertTime = ((double)totalInsertTime / indexSize);
-		log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
-		log.debug(index.toString());
+		LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+		LOG.debug(index.toString());
 		
 		long startCommit = System.nanoTime();
 		index.flushIndex();
 		long endCommit  = System.nanoTime();
-		log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-		index.closeIndex();
+		LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+		index.close();
 		
 		try {
 			index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
 			
 			long totalTime = 0;
 			for(int i=0; i<indexSize; i = i + 25) {
-				log.debug("Searching from: {} till: {}", i, i+25);
+				LOG.debug("Searching from: {} till: {}", i, i + 25);
 				long startSearch = System.nanoTime();
 				IndexSearchResultIterator results = index.searchIndex(new RangeCondition(new LongKey(i), true, new LongKey(i + 25), true), new SearchLimit());
 				long endSearch = System.nanoTime();
@@ -364,14 +353,14 @@ public class BTreeIndexTest extends IndexBaseTest {
 				Assert.assertEquals("There should be 26 results, iteration: " + i, 26, results.size());
 				
 				long timeSearched = (endSearch - startSearch);
-				log.debug("Search took: {}", timeSearched);
+				LOG.debug("Search took: {}", timeSearched);
 				totalTime += timeSearched;
 			}
 			
 			double averageTime = ((double)totalTime / (indexSize / 25));
-			log.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
+			LOG.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
 		} finally {
-			index.closeIndex();
+			index.close();
 		}
 	}
 
@@ -391,14 +380,14 @@ public class BTreeIndexTest extends IndexBaseTest {
             totalInsertTime += (endInsert - startInsert);
         }
         double averageInsertTime = ((double)totalInsertTime / indexSize);
-        log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
-        log.debug(index.toString());
+        LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+        LOG.debug(index.toString());
 
         long startCommit = System.nanoTime();
         index.flushIndex();
         long endCommit  = System.nanoTime();
-        log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-        index.closeIndex();
+        LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+        index.close();
 
 
         try {
@@ -412,10 +401,10 @@ public class BTreeIndexTest extends IndexBaseTest {
                 totalTime += (endNotIn - startNotIn);
             }
             double averageTime = ((double)totalTime / (indexSize));
-            log.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
+            LOG.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
 
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -449,14 +438,14 @@ public class BTreeIndexTest extends IndexBaseTest {
             }
         }
         double averageInsertTime = ((double)totalInsertTime / indexSize);
-        log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
-        log.debug(index.toString());
+        LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+        LOG.debug(index.toString());
 
         long startCommit = System.nanoTime();
         index.flushIndex();
         long endCommit  = System.nanoTime();
-        log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-        index.closeIndex();
+        LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+        index.close();
 
         try {
             index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
@@ -466,7 +455,7 @@ public class BTreeIndexTest extends IndexBaseTest {
                 assertThat(index.searchIndex(new NotEqualsCondition(new StringKey(url)), Index.NO_SEARCH_LIMIT).size(), is(expectedSize));
             }
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -480,7 +469,7 @@ public class BTreeIndexTest extends IndexBaseTest {
             index.insertIntoIndex(new LongKey(i).addKey(keyNameMapper, RECORD_POINTER, new LongKey(100 + i)));
         }
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         try {
             index = new BTreeIndex(new File(tmpDir, "indexbag_somekey.idx"), keyInfo);
@@ -496,7 +485,7 @@ public class BTreeIndexTest extends IndexBaseTest {
                 Assert.assertEquals("Unexpected key", new LongKey(((i + batchSize) - 1)), lastKey);
             }
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -509,9 +498,9 @@ public class BTreeIndexTest extends IndexBaseTest {
         for(int i=0; i<indexSize; i++) {
             index.insertIntoIndex(new LongKey(i).addKey(keyNameMapper, RECORD_POINTER, new LongKey(100 + i)));
         }
-        log.debug("Index after insert: \n{}", index.toString());
+        LOG.debug("Index after insert: \n{}", index.toString());
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_update.idx"), keyInfo);
         try {
@@ -525,7 +514,7 @@ public class BTreeIndexTest extends IndexBaseTest {
                         RECORD_POINTER));
             }
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -554,14 +543,14 @@ public class BTreeIndexTest extends IndexBaseTest {
 			totalInsertTime += (endInsert - startInsert);
 		}
 		double averageInsertTime = ((double)totalInsertTime / indexSize);
-		log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
-		log.trace(index.toString());
+		LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+		LOG.trace(index.toString());
 		
 		long startCommit = System.nanoTime();
 		index.flushIndex();
 		long endCommit  = System.nanoTime();
-		log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-		index.closeIndex();
+		LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+		index.close();
 		
 		try {
 			index = new BTreeIndex(new File(tmpDir, "indexbag_randomlong.idx"), keyInfo);
@@ -579,10 +568,10 @@ public class BTreeIndexTest extends IndexBaseTest {
 			}
 			
 			double averageTime = ((double)totalTime / indexSize);
-			log.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
+			LOG.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
 		} finally {
-			log.trace(index.toString());
-			index.closeIndex();
+			LOG.trace(index.toString());
+			index.close();
 		}
 	}
 	
@@ -601,18 +590,18 @@ public class BTreeIndexTest extends IndexBaseTest {
 			index.insertIntoIndex(uuidPointer);
 			long endInsert = System.nanoTime();
 			
-			uuidRecords.put(uuid, Long.valueOf(i));
+			uuidRecords.put(uuid, (long) i);
 			totalInsertTime += (endInsert - startInsert);
 		}
 		double averageInsertTime = ((double)totalInsertTime / indexSize);
-		log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+		LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
 
-		log.debug(index.toString());
+		LOG.debug(index.toString());
 		long startCommit = System.nanoTime();
 		index.flushIndex();
 		long endCommit  = System.nanoTime();
-		log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-		index.closeIndex();
+		LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+		index.close();
 		
 		
 		index = new BTreeIndex(new File(tmpDir, "indexbag_uuid.idx"), keyInfo);
@@ -623,16 +612,16 @@ public class BTreeIndexTest extends IndexBaseTest {
 				IndexSearchResultIterator foundRecords = index.searchIndex(new EqualsCondition(new UUIDKey(entry.getKey())), new SearchLimit());
 				long endSearch = System.nanoTime();
 				Assert.assertEquals("There should be one found record for uuid: " + entry.getKey(), 1, foundRecords.size());
-				Assert.assertEquals("Record pointer should be " + entry.getValue(), 
-							Long.valueOf(entry.getValue()), Long.valueOf(((LongKey)foundRecords.next().getKey(keyNameMapper, RECORD_POINTER)).getKey()));
+				Assert.assertEquals("Record pointer should be " + entry.getValue(),
+                        entry.getValue(), Long.valueOf(((LongKey)foundRecords.next().getKey(keyNameMapper, RECORD_POINTER)).getKey()));
 				totalTime += (endSearch - startSearch);
 			}
 			
 			double averageTime = ((double)totalTime / indexSize);
-			log.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
+			LOG.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
 		} finally {
-			log.debug(index.toString());
-			index.closeIndex();
+			LOG.debug(index.toString());
+			index.close();
 		}
 	}
 	
@@ -651,18 +640,18 @@ public class BTreeIndexTest extends IndexBaseTest {
 			index.insertIntoIndex(stringPointer);
 			long endInsert = System.nanoTime();
 			
-			uuidRecords.put(key, new Long(i + 100));
+			uuidRecords.put(key, (long) (i + 100));
 			totalInsertTime += (endInsert - startInsert);
 		}
 		double averageInsertTime = ((double)totalInsertTime / indexSize);
-		log.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
+		LOG.info("Average insert time: {} ns. ({} ms.)", averageInsertTime, (averageInsertTime / (1000 * 1000)));
 
-		log.debug(index.toString());
+		LOG.debug(index.toString());
 		long startCommit = System.nanoTime();
 		index.flushIndex();
 		long endCommit  = System.nanoTime();
-		log.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
-		index.closeIndex();
+		LOG.info("Took: {} ms. to flush index", ((endCommit - startCommit) / (1000 * 1000)));
+		index.close();
 		
 		
 		index = new BTreeIndex(new File(tmpDir, "indexbag_string.idx"), keyInfo);
@@ -674,16 +663,47 @@ public class BTreeIndexTest extends IndexBaseTest {
 				long endSearch = System.nanoTime();
 				Assert.assertEquals("There should be one found record for uuid: " + entry.getKey(), 1, foundRecords.size());
 				Assert.assertEquals("Record pointer should be " + entry.getValue(),
-						Long.valueOf(entry.getValue()), getRecordValue(keyNameMapper, foundRecords.next()));
+                        entry.getValue(), getRecordValue(keyNameMapper, foundRecords.next()));
 				totalTime += (endSearch - startSearch);
 			}
 
 			double averageTime = ((double)totalTime / indexSize);
-			log.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
+			LOG.info("Average search time: {} ns. ({} ms.)", averageTime, (averageTime / (1000 * 1000)));
 		} finally {
-			index.closeIndex();
+			index.close();
 		}
 	}
+
+    @Test
+    public void testWriteNillKeysIndex() throws Exception {
+        int indexSize = 100000;
+        KeyInfo keyInfo = new KeyInfoImpl(
+                Lists.newArrayList(new IndexField("string", new StringKeyType(100)), new IndexField("nillable", new StringKeyType())),
+                Lists.newArrayList(new IndexField(RECORD_POINTER, new LongKeyType())));
+        KeyNameMapper keyNameMapper = keyInfo.getKeyNameMapper();
+        BTreeIndex index = new BTreeIndex(new File(tmpDir, "index_nillable.idx"), keyInfo);
+        for(int i=0; i<indexSize; i++) {
+            String key = "SomeKey" + i;
+            CompositeKey compositeKey = new CompositeKey();
+            compositeKey.addKey(keyNameMapper, "string", new StringKey(key))
+                    .addKey(keyNameMapper, "nillable", new StringKey((byte[])null))
+            .addKey(keyNameMapper, RECORD_POINTER, new LongKey(i));
+
+            index.insertIntoIndex(compositeKey);
+        }
+        index.close();
+
+        index = new BTreeIndex(new File(tmpDir, "index_nillable.idx"), keyInfo);
+        try {
+            CompositeKey compositeKey = new CompositeKey();
+            compositeKey.addKey(keyNameMapper, "nillable", new StringKey((byte[])null));
+
+            IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(compositeKey), new SearchLimit());
+            assertThat(result.size(), is(indexSize));
+        } finally {
+            index.close();
+        }
+    }
 
     @Test
     public void testIndexWithEmptyFields() throws Exception {
@@ -718,7 +738,7 @@ public class BTreeIndexTest extends IndexBaseTest {
                 }
             }
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
         index = new BTreeIndex(new File(tmpDir, "index_compound.idx"), keyInfo);
@@ -727,18 +747,20 @@ public class BTreeIndexTest extends IndexBaseTest {
             long total = 0;
             for(String city : cities) {
                 for(int age=0; age<maxAge; age++) {
+
                     long start = System.currentTimeMillis();
                     IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(new CompositeKey()
                             .addKey(keyNameMapper, "age", new LongKey(age))
                             .addKey(keyNameMapper, "city", new StringKey(city))), Index.NO_SEARCH_LIMIT);
                     long end = System.currentTimeMillis();
+                    LOG.info("Doing query for city: {} and age: {} results: {}", city, age, result.size());
                     assertTrue(result.hasNext());
                     assertEquals(new LongKey(counter), result.next().getKey(keyNameMapper, RECORD_POINTER));
                     counter++;
                     total += (end - start);
                 }
             }
-            log.info("Finished querying of: {} items in: {} ms.", counter, total);
+            LOG.info("Finished querying of: {} items in: {} ms.", counter, total);
 
             IndexSearchResultIterator result = index.searchIndex(new RangeCondition(new LongKey(10), true, new LongKey(20), false), Index.NO_SEARCH_LIMIT);
             counter = 0;
@@ -749,7 +771,7 @@ public class BTreeIndexTest extends IndexBaseTest {
             }
             assertEquals(10 * cities.length, counter);
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
     }
@@ -776,7 +798,7 @@ public class BTreeIndexTest extends IndexBaseTest {
                 }
             }
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
         index = new BTreeIndex(new File(tmpDir, "index_compound.idx"), keyInfo);
@@ -796,7 +818,7 @@ public class BTreeIndexTest extends IndexBaseTest {
                     total += (end - start);
                 }
             }
-            log.info("Finished querying of: {} items in: {} ms.", counter, total);
+            LOG.info("Finished querying of: {} items in: {} ms.", counter, total);
 
             IndexSearchResultIterator result = index.searchIndex(new RangeCondition(new LongKey(10), true, new LongKey(20), false), Index.NO_SEARCH_LIMIT);
             counter = 0;
@@ -807,11 +829,11 @@ public class BTreeIndexTest extends IndexBaseTest {
             }
             assertEquals(10 * cities.length, counter);
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
     private Long getRecordValue(KeyNameMapper keyNameMapper, Key key) {
-		return Long.valueOf(((LongKey)key.getKey(keyNameMapper, RECORD_POINTER)).getKey());
+		return ((LongKey) key.getKey(keyNameMapper, RECORD_POINTER)).getKey();
 	}
 }

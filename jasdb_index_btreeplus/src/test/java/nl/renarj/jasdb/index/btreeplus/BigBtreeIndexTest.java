@@ -59,14 +59,14 @@ public class BigBtreeIndexTest extends IndexBaseTest {
 
             assertIndex(categories, index);
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
         index = new BTreeIndex(new File(tmpDir, "category.idx"), keyInfo);
         try {
             assertIndex(categories, index);
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
     }

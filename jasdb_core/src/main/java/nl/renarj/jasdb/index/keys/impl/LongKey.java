@@ -60,16 +60,24 @@ public class LongKey extends AbstractKey {
     }
 
     private CompareResult evaluateKey(Key o) {
-        int result = -1;
+        int result;
         if(o instanceof LongKey) {
             LongKey longIndexPointer = (LongKey) o;
 
-            result = (getKey() < longIndexPointer.getKey()) ? -1 : ((getKey() == longIndexPointer.getKey()) ? 0 : 1);
+            if(key.length == 0) {
+                result = 0;
+            } else {
+                result = (getKey() < longIndexPointer.getKey()) ? -1 : ((getKey() == longIndexPointer.getKey()) ? 0 : 1);
+            }
         } else if(o instanceof  StringKey) {
             StringKey stringKey = (StringKey) o;
             try {
                 result = Long.valueOf(getKey()).compareTo(Long.parseLong(stringKey.getKey()));
-            } catch(NumberFormatException e) {}
+            } catch(NumberFormatException ignored) {
+                result = -1;
+            }
+        } else {
+            result = -1;
         }
 
         return new CompareResult(result);

@@ -24,7 +24,8 @@ import java.util.Arrays;
 public class DataBlockImpl implements DataBlock {
     private static final Logger LOG = LoggerFactory.getLogger(DataBlockImpl.class);
 
-    public static final int STREAM_HEADER_SPACE = MEMORY_CONSTANTS.LONG_BYTE_SIZE; // + MEMORY_CONSTANTS.DATA_SLOT_OFFSET;
+    public static final int STREAM_HEADER_SPACE = MEMORY_CONSTANTS.LONG_BYTE_SIZE;
+    private static final int BUFFER_SIZE = 4096;
 
     private MappedByteBuffer mappedByteBuffer;
     private DataBlockFactory dataBlockFactory;
@@ -70,18 +71,14 @@ public class DataBlockImpl implements DataBlock {
     public DataBlockResult<byte[]> loadBytes(int offset) throws JasDBStorageException {
         DataBlockResult<BlockDataInputStream> result = loadStream(offset);
         if(result.getDataLength() < Integer.MAX_VALUE) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream((int)result.getDataLength());
-            BlockDataInputStream inputStream = result.getValue();
+            ByteArrayOutputStream out = new ByteArrayOutputStream((int) result.getDataLength());
             try {
-
-                try {
-                    byte[] buffer = new byte[4096];
+                try (BlockDataInputStream inputStream = result.getValue()) {
+                    byte[] buffer = new byte[BUFFER_SIZE];
                     int read;
-                    while((read = inputStream.read(buffer)) != -1) {
+                    while ((read = inputStream.read(buffer)) != -1) {
                         out.write(buffer, 0, read);
                     }
-                } finally {
-                    inputStream.close();
                 }
             } catch(IOException e) {
                 throw new JasDBStorageException("Unable to load byte stream", e);
@@ -111,7 +108,7 @@ public class DataBlockImpl implements DataBlock {
 
     private int getRelativePosition(long absolutePosition) throws JasDBStorageException {
         if(absolutePosition > position && (absolutePosition < getPosition() + dataBlockFactory.getBlockSize())) {
-            return (int)(absolutePosition % dataBlockFactory.getBlockSize()) - DataBlockHeader.HEADER_SIZE;
+            return (int) (absolutePosition % dataBlockFactory.getBlockSize()) - DataBlockHeader.HEADER_SIZE;
         } else {
             throw new JasDBStorageException("Unable to load bytes from this block, absolute position falls outside block");
         }
@@ -143,7 +140,7 @@ public class DataBlockImpl implements DataBlock {
         int available = dataBlockFactory.getBlockSize() - offSetWithHeader;
 
         if(available < STREAM_HEADER_SPACE) {
-            byte[] valueBytes = new byte[8];
+            byte[] valueBytes = new byte[Long.BYTES];
             mappedByteBuffer.position(offSetWithHeader);
             mappedByteBuffer.get(valueBytes, 0, available);
             int remaining = MEMORY_CONSTANTS.LONG_BYTE_SIZE - available;
@@ -168,12 +165,12 @@ public class DataBlockImpl implements DataBlock {
         if(((offset + dataLength) - DataBlockHeader.HEADER_SIZE) > capacity()) {
             //data will cross block boundry
             long nextDataStream = initialBlock.getHeader().getNextStream();
-            int dataStreamOffset = ((int)(nextDataStream % dataBlockFactory.getBlockSize()) - DataBlockHeader.HEADER_SIZE);
+            int dataStreamOffset = ((int) (nextDataStream % dataBlockFactory.getBlockSize()) - DataBlockHeader.HEADER_SIZE);
 
             return new DataBlockResult<>(dataLength, dataBlockFactory.loadBlockForDataPosition(nextDataStream), dataStreamOffset, inputStream);
         } else {
             //inside same block
-            return new DataBlockResult<>(dataLength, initialBlock, ((int)(offset + dataLength)) - DataBlockHeader.HEADER_SIZE, inputStream);
+            return new DataBlockResult<>(dataLength, initialBlock, ((int) (offset + dataLength)) - DataBlockHeader.HEADER_SIZE, inputStream);
         }
     }
 
@@ -208,7 +205,7 @@ public class DataBlockImpl implements DataBlock {
         LOG.debug("Writing data stream: {}, delegate: {}", stream, isDelegate);
         if(available() > STREAM_HEADER_SPACE) {
             DataBlockImpl currentBlock = this;
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[BUFFER_SIZE];
             try {
                 int blockSize = dataBlockFactory.getBlockSize();
                 long bytesWritten = 0;
@@ -251,7 +248,7 @@ public class DataBlockImpl implements DataBlock {
                     }
                 }
                 if(!isDelegate) {
-                    mappedByteBuffer.putLong((int)(dataPosition - position), bytesWritten);
+                    mappedByteBuffer.putLong((int) (dataPosition - position), bytesWritten);
                     header.setNextStream(currentBlock.getPosition() + DataBlockHeader.HEADER_SIZE + currentBlock.getHeader().marker());
                 }
 

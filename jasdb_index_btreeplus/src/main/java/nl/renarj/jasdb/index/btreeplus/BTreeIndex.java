@@ -365,7 +365,7 @@ public class BTreeIndex implements Index {
     }
 
     @Override
-    public void closeIndex() throws JasDBStorageException {
+    public void close() throws JasDBStorageException {
         openIndex();
 
         fullLock.lock();

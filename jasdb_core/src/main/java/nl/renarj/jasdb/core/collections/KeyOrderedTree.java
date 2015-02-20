@@ -8,8 +8,8 @@ import nl.renarj.jasdb.index.keys.Key;
  */
 public class KeyOrderedTree<V> extends OrderedBalancedTree<Key, V> {
     public V getBefore(Key key) {
-        if(root != null) {
-            return before(root, key);
+        if(getRoot() != null) {
+            return before(getRoot(), key);
         }
         return null;
     }

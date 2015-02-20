@@ -81,7 +81,7 @@ public class ThroughputTest extends DBBaseTest {
         try {
             runTest(20, 100000, action);
         } finally {
-            index.closeIndex();
+            index.close();
             dataFile.deleteOnExit();
         }
     }

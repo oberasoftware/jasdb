@@ -51,7 +51,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         }
         log.debug("Index after insert: \n{}", index.toString());
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -92,7 +92,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -108,7 +108,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         }
         log.debug("Index after insert: \n{}", index.toString());
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         StatisticsMonitor.enableStatistics();
 
@@ -155,7 +155,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flushing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
 
             StringBuilder removeSequenceStringBuilder = new StringBuilder();
             for(Integer sequenceItem : removeSequence) {
@@ -178,7 +178,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -187,7 +187,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.debug("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -203,7 +203,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         }
         log.debug("Index after insert: \n{}", index.toString());
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -213,7 +213,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -230,7 +230,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -240,7 +240,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -257,7 +257,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -282,7 +282,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -299,7 +299,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -378,7 +378,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -395,7 +395,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -443,7 +443,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -460,7 +460,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -508,7 +508,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -525,7 +525,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -557,7 +557,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -574,7 +574,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -675,7 +675,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -692,7 +692,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -738,7 +738,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -755,7 +755,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug("Index after insert: \n{}", index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -775,7 +775,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -791,7 +791,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         }
         log.debug("Index after insert: \n{}", index.toString());
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -806,7 +806,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -831,7 +831,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug(index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         try {
@@ -857,7 +857,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -882,7 +882,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         log.debug(index.toString());
 
         index.flushIndex();
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_longdelete.idx"), keyInfo);
         index.openIndex();
@@ -916,7 +916,7 @@ public class BtreeIndexRemoveTest extends IndexBaseTest {
         } finally {
             log.info("Finishing test, flusing index and closing");
             index.flushIndex();
-            index.closeIndex();
+            index.close();
         }
     }
 

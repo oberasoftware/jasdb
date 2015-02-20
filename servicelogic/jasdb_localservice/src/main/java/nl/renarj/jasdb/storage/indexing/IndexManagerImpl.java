@@ -72,7 +72,7 @@ final public class IndexManagerImpl implements IndexManager {
 		for(String bagName : indexes.keySet()) {
 			for(Index index : indexes.get(bagName).values()) {
 				log.debug("Closing index: {} on bag: {}", index.getKeyInfo().getKeyName(), bagName);
-				index.closeIndex();
+				index.close();
 			}
 		}
 		indexes.clear();

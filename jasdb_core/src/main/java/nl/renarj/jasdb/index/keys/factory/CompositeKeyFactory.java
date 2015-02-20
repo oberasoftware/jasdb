@@ -114,12 +114,6 @@ public class CompositeKeyFactory implements KeyFactory {
                 if(partialKey != null && !keyFactory.supportsKey(partialKey)) {
                     Key convertedKey = keyFactory.convertKey(partialKey);
                     compositeKey.addKey(mapper, keyFactory.getFieldName(), convertedKey);
-                } else if(partialKey == null) {
-                    Key nillableKey = keyFactory.createEmptyKey();
-                    //it could be that this key is not nillable (UUID)
-                    if (nillableKey != null) {
-                        compositeKey.addKey(mapper, keyFactory.getFieldName(), nillableKey);
-                    }
                 }
             }
 
