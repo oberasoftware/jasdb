@@ -117,14 +117,23 @@ public class KeyInfoImpl implements KeyInfo {
 	public int match(Set<String> searchFields) {
 		int matches = 0;
 		int valueMatches = 0;
+
+        int misMatch = 0;
 		
 		/* because we can only match in same order as found in index, 
 		 * we break after next fields is no longer a match */
-		for(String field : this.fields) {
+        boolean missedField = false;
+ 		for(String field : this.fields) {
 			if(searchFields.contains(field)) {
 				matches++;
+
+                if(missedField) {
+                    return 0;
+                }
 			} else {
-				break;
+                missedField = true;
+
+//                break;
 			}
 		}
 
@@ -136,10 +145,10 @@ public class KeyInfoImpl implements KeyInfo {
 		
 		int possibleMatches = searchFields.size();
 		
-		double fieldMatchesPerc =  matches > 0 ? (double)matches / possibleMatches : 0.0;
-		double valueMatchesPerc =  valueMatches > 0 ? (double)valueMatches / possibleMatches : 0.0;
+		double fieldMatchesPerc =  matches > 0 ? (double) matches / possibleMatches : 0.0;
+		double valueMatchesPerc =  valueMatches > 0 ? (double) valueMatches / possibleMatches : 0.0;
 		
-		return (int)((fieldMatchesPerc + valueMatchesPerc) * 100);
+		return (int) ((fieldMatchesPerc + valueMatchesPerc) * 100);
 	}
 
 	@Override

@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -183,19 +182,13 @@ public class BTreeIndex implements Index {
 
                 this.persister = new BtreePlusBlockPersister(dataBlockFactory, indexHeader.getPageSize(), keyInfo);
                 this.lockManager = persister.getLockManager();
-            } catch(FileNotFoundException e) {
-                state = IndexState.INVALID;
-                throw new JasDBStorageException("Unable to open index", e);
-            } catch (IOException e) {
-                state = IndexState.INVALID;
-                throw new JasDBStorageException("Unable to open index", e);
-            } catch(ConfigurationException e) {
+            } catch(ConfigurationException | IOException e) {
                 state = IndexState.INVALID;
                 throw new JasDBStorageException("Unable to open index", e);
             }
 
             if(createNew) {
-                this.rootBlock = (RootBlock)persister.createBlock(BlockTypes.ROOTBLOCK, -1);
+                this.rootBlock = (RootBlock) persister.createBlock(BlockTypes.ROOTBLOCK, -1);
                 this.rootBlock.setModified(true);
             } else {
                 this.rootBlock = (RootBlock) persister.loadBlock(indexHeader.getHeaderSize());
@@ -219,7 +212,7 @@ public class BTreeIndex implements Index {
         } else if(searchCondition instanceof NotEqualsCondition) {
             searchOperation = notEqualsSearchOperation;
         } else if(searchCondition instanceof EqualsCondition){
-            condition = handleEqualsToRange((EqualsCondition)searchCondition);
+            condition = handleEqualsToRange((EqualsCondition) searchCondition);
             if(condition == searchCondition) {
                 searchOperation = equalsSearchOperation;
             } else {
@@ -372,7 +365,7 @@ public class BTreeIndex implements Index {
     }
 
     @Override
-    public void closeIndex() throws JasDBStorageException {
+    public void close() throws JasDBStorageException {
         openIndex();
 
         fullLock.lock();

@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.collect.Maps.newHashMap;
+
 /**
  * @author Renze de Vries
  */
@@ -38,6 +40,11 @@ public class KeyNameMapperImpl implements KeyNameMapper {
     @Override
     public int getIndexForField(String field) {
         return fieldIndexes.get(field);
+    }
+
+    @Override
+    public Map<Integer, String> getMappings() {
+        return newHashMap(indexFields);
     }
 
     @Override

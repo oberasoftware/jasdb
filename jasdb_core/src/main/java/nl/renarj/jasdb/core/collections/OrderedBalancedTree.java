@@ -16,10 +16,14 @@ import java.util.List;
  * @author Renze de Vries
  */
 public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable<V> {
-    protected TreeNode<T, V> root;
+    private TreeNode<T, V> root;
     private int size;
 
     public OrderedBalancedTree() {
+    }
+
+    protected TreeNode<T, V> getRoot() {
+        return this.root;
     }
     
     public void put(T item, V value) {
@@ -149,7 +153,9 @@ public class OrderedBalancedTree<T extends Comparable<T>, V> implements Iterable
     }
 
     public void reset() {
-        if(root != null) root.reset();
+        if(root != null) {
+            root.reset();
+        }
         root = null;
         size = 0;
     }

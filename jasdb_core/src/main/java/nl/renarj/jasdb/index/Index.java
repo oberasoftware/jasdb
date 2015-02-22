@@ -30,8 +30,8 @@ import java.util.Set;
  * @author Renze de Vries
  *
  */
-public interface Index {
-    static final SearchLimit NO_SEARCH_LIMIT = new SearchLimit();
+public interface Index extends AutoCloseable {
+    SearchLimit NO_SEARCH_LIMIT = new SearchLimit();
 
 	/**
 	 * Configure the index with configuration settings found in global configuration
@@ -128,7 +128,7 @@ public interface Index {
 	 * Close the index and all its used resources
 	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to cleanly close the index
 	 */
-	void closeIndex() throws JasDBStorageException;
+	void close() throws JasDBStorageException;
 
     /**
      * Removes the index and all used resources

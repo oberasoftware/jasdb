@@ -9,14 +9,13 @@ import nl.renarj.jasdb.api.query.Order;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordIterator;
 import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.keys.impl.CompositeKey;
 import nl.renarj.jasdb.index.keys.impl.UUIDKey;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapperImpl;
 import nl.renarj.jasdb.index.result.IndexSearchResultIterator;
@@ -32,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -126,7 +124,7 @@ public class QuerySearchOperation {
 				Key leftValue = firstLeft.getKey(keyNameMapper, field);
 				Key rightValue = firstRight.getKey(keyNameMapper, field);
 				
-				if((order == Order.ASCENDING && leftValue.compareTo(rightValue) <= 0) || (order == Order.DESCENDING && leftValue.compareTo(rightValue) >= 0) ) {
+				if((order == Order.ASCENDING && leftValue.compareTo(rightValue) <= 0) || (order == Order.DESCENDING && leftValue.compareTo(rightValue) >= 0)) {
 					results.add(firstLeft);
 					currentLeft++;
 				} else {
@@ -189,7 +187,10 @@ public class QuerySearchOperation {
 		return results;
 	}
 	
-	private IndexSearchResultIteratorCollection doBlockOperation(BlockOperation blockOperation, SearchLimit limit, Set<String> fields, IndexSearchResultIteratorCollection currentResults) throws JasDBStorageException {
+	private IndexSearchResultIteratorCollection doBlockOperation(BlockOperation blockOperation, SearchLimit limit,
+																 Set<String> fields,
+																 IndexSearchResultIteratorCollection currentResults)
+			throws JasDBStorageException {
 		if(!fields.isEmpty()) {
 			Index bestIndexMatch = indexManager.getBestMatchingIndex(bagName, fields);
 			
@@ -200,7 +201,7 @@ public class QuerySearchOperation {
 				IndexSearchResultIteratorCollection results = null;
 				BlockMerger merger = blockOperation.getMerger();
 				
-				Set<SearchCondition> conditions = blockOperation.getConditions(bestIndexMatch.getKeyInfo().getKeyNameMapper(), bestIndexMatch.getKeyInfo().getKeyFields());
+				Set<SearchCondition> conditions = getSearchConditions(blockOperation, bestIndexMatch);
 				for(SearchCondition condition : conditions) {
 					StatRecord record = StatisticsMonitor.createRecord("bag:search:indexcondition");
 					IndexSearchResultIteratorCollection indexResults = bestIndexMatch.searchIndex(condition, limit);
@@ -221,93 +222,15 @@ public class QuerySearchOperation {
 				
 				return results;
 			} else {
-				return doTableScan(blockOperation, fields, currentResults);
+				return new TableScanOperation(recordWriter).doTableScan(blockOperation, fields, currentResults);
 			}
 		} else {
 			return null;
 		}
 	}
-	
-	private IndexSearchResultIteratorCollection doTableScan(BlockOperation operation, Set<String> fields, IndexSearchResultIteratorCollection currentResults) throws JasDBStorageException {
-		BlockMerger merger = operation.getMerger();
-		List<Key> foundKeys = new ArrayList<>();
 
-		Set<String> payloadFields = new HashSet<>(fields);
-		payloadFields.add(SimpleEntity.DOCUMENT_ID);
-
-        for(Iterator<String> fieldIterator = payloadFields.iterator(); fieldIterator.hasNext();) {
-            String field = fieldIterator.next();
-            if(!operation.hasConditions(field)) {
-                fieldIterator.remove();
-            }
-        }
-
-        KeyNameMapperImpl keyNameMapper = new KeyNameMapperImpl();
-        keyNameMapper.addMappedField(0, SimpleEntity.DOCUMENT_ID);
-        if(currentResults != null) {
-			LOG.debug("Doing table scan for fields: {} with limited set: {}", fields, currentResults.size());
-			for(Key key : currentResults) {
-				RecordResult result = recordWriter.readRecord(KeyUtil.getDocumentKey(currentResults.getKeyNameMapper(), key));
-				doTableScanConditions(operation, merger, foundKeys, result, fields, keyNameMapper);
-			}
-		} else {
-			LOG.debug("Doing a full table scan for fields: {}", fields);
-			RecordIterator recordIterator = recordWriter.readAllRecords();
-
-			for(RecordResult result : recordIterator) {
-				doTableScanConditions(operation, merger, foundKeys, result, payloadFields, keyNameMapper);
-			}
-		}
-		
-		return new IndexSearchResultIteratorImpl(foundKeys, keyNameMapper);
+	private Set<SearchCondition> getSearchConditions(BlockOperation blockOperation, Index index) {
+		KeyInfo keyInfo = index.getKeyInfo();
+		return blockOperation.getConditions(keyInfo.getKeyNameMapper(), keyInfo.getKeyFields());
 	}
-	
-	private void doTableScanConditions(BlockOperation operation, BlockMerger merger, List<Key> foundKeys, RecordResult result, Set<String> fields, KeyNameMapper keyNameMapper) throws JasDBStorageException {
-		SimpleEntity entity = SimpleEntity.fromStream(result.getStream());
-
-		boolean first = true;
-		boolean match = false;
-		
-		for(String field : fields) {
-			Property property = entity.getProperty(field);
-			if(property != null) {
-                Set<Key> keys = PropertyKeyMapper.mapToKeys(property);
-				
-				Set<SearchCondition> conditions = operation.getConditions(field);
-				for(SearchCondition condition : conditions) {
-					boolean newmatch = checkCondition(condition, keys);
-					
-                    if(first && newmatch) {
-                        match = true;
-                    } else {
-                        match = merger.includeResult(match, newmatch);
-                    }
-
-                    first = false;
-
-                    if(!merger.continueEvaluation(match)) {
-                        return;
-                    }
-				}
-			} else if(!merger.continueEvaluation(false)) {
-                //in this case when no property we should stop evaluating
-                return;
-            }
-		}
-		
-		if(match) {
-            CompositeKey compositeKey = new CompositeKey();
-            compositeKey.addKey(keyNameMapper, SimpleEntity.DOCUMENT_ID, new UUIDKey(entity.getInternalId()));
-			foundKeys.add(compositeKey);
-		}
-	}
-
-    private boolean checkCondition(SearchCondition condition, Set<Key> keys) {
-        for(Key key : keys) {
-            boolean match = condition.keyQualifies(key);
-
-            if(match) return true;
-        }
-        return false;
-    }
 }

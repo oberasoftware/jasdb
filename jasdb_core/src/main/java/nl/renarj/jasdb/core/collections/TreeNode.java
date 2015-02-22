@@ -7,89 +7,112 @@ import java.util.NoSuchElementException;
 * @author Renze de Vries
 */
 public class TreeNode<T extends Comparable<T>, V> {
-    private T key;
-    private V value;
+    private static final int POSITIVE_IMBALANCE = 2;
+    private static final int NEGATIVE_IMBALANCE = -POSITIVE_IMBALANCE;
+
+    private T localKey;
+    private V localValue;
 
     private TreeNode<T, V> left;
     private TreeNode<T, V> right;
 
     private int height = 0;
 
-    TreeNode(T key, V value) {
-        this.key = key;
-        this.value = value;
+    TreeNode(T localKey, V localValue) {
+        this.localKey = localKey;
+        this.localValue = localValue;
     }
 
     public T getKey() {
-        return key;
+        return localKey;
     }
 
     public V getValue() {
-        return value;
+        return localValue;
     }
 
-    public TreeNode getLeft() {
+    public TreeNode<T, V> getLeft() {
         return left;
     }
 
-    public TreeNode getRight() {
+    public TreeNode<T, V> getRight() {
         return right;
     }
 
     protected void reset() {
-        if(left != null) left.reset();
-        if(right != null) right.reset();
+        if(left != null) {
+            left.reset();
+        }
+        if(right != null) {
+            right.reset();
+        }
 
         left = null;
         right = null;
-        key = null;
-        value = null;
+        localKey = null;
+        localValue = null;
         height = 0;
     }
 
     public void range(List<V> values, T start, boolean inclusiveStart, T end, boolean inclusiveEnd) {
-        int compareStart = start != null ? start.compareTo(key) : -1;
-        int compareEnd = end != null ? end.compareTo(key) : -1;
+        int compareStart = start != null ? start.compareTo(localKey) : -1;
+        int compareEnd = end != null ? end.compareTo(localKey) : -1;
         boolean evalStartInclude = start == null || (compareStart < 0 || (inclusiveStart && compareStart ==0));
         boolean evalEndInclude = end == null || (compareEnd > 0 || (inclusiveEnd && compareEnd == 0));
 
-        if(left != null && evalStartInclude) left.range(values, start, inclusiveStart, end, inclusiveEnd);
-
-        if(evalStartInclude && evalEndInclude) {
-            values.add(value);
+        if(left != null && evalStartInclude) {
+            left.range(values, start, inclusiveStart, end, inclusiveEnd);
         }
 
-        if(right != null && evalEndInclude) right.range(values, start, inclusiveStart, end, inclusiveEnd);
+        if(evalStartInclude && evalEndInclude) {
+            values.add(localValue);
+        }
+
+        if(right != null && evalEndInclude) {
+            right.range(values, start, inclusiveStart, end, inclusiveEnd);
+        }
     }
 
     public void values(List<V> values) {
-        if(left != null) left.values(values);
-        values.add(value);
-        if(right != null) right.values(values);
+        if(left != null) {
+            left.values(values);
+        }
+        values.add(localValue);
+        if(right != null) {
+            right.values(values);
+        }
     }
 
     public void split(List<V> firstList, List<V> secondList, int maxSize) {
-        if(left != null) left.split(firstList, secondList, maxSize);
-
-        if(firstList.size() < maxSize) {
-            firstList.add(value);
-        } else {
-            secondList.add(value);
+        if(left != null) {
+            left.split(firstList, secondList, maxSize);
         }
 
-        if(right != null) right.split(firstList, secondList, maxSize);
+        if(firstList.size() < maxSize) {
+            firstList.add(localValue);
+        } else {
+            secondList.add(localValue);
+        }
+
+        if(right != null) {
+            right.split(firstList, secondList, maxSize);
+        }
     }
 
     protected void keys(List<T> keys) {
-        if(left != null) left.keys(keys);
-        keys.add(key);
-        if(right != null) right.keys(keys);
+        if(left != null) {
+            left.keys(keys);
+        }
+        keys.add(localKey);
+        if(right != null) {
+            right.keys(keys);
+        }
     }
 
     public V get(T key) {
-        int compare = key.compareTo(this.key);
+        int compare = key.compareTo(this.localKey);
         if(compare == 0) {
-            return value;
+            return localValue;
         } else if(compare > 0 && right != null) {
             return right.get(key);
         } else if(compare < 0 && left != null) {
@@ -100,17 +123,17 @@ public class TreeNode<T extends Comparable<T>, V> {
     }
 
     public V getPrevious(T key) {
-        int compare = key.compareTo(this.key);
+        int compare = key.compareTo(this.localKey);
         if(compare == 0) {
             if(left != null) {
-                return left.max().value;
+                return left.max().localValue;
             } else {
               return null;
             }
         } else if(compare > 0 && right != null) {
             V result = right.getPrevious(key);
             if(result == null) {
-                return value;
+                return localValue;
             } else {
                 return result;
             }
@@ -122,10 +145,10 @@ public class TreeNode<T extends Comparable<T>, V> {
     }
 
     public V getNext(T key) {
-        int compare = key.compareTo(this.key);
+        int compare = key.compareTo(this.localKey);
         if(compare == 0) {
             if(right != null) {
-                return right.min().value;
+                return right.min().localValue;
             } else {
                 return null;
             }
@@ -135,7 +158,7 @@ public class TreeNode<T extends Comparable<T>, V> {
             V result = left.getNext(key);
 
             if(result == null) {
-                return value;
+                return localValue;
             } else {
                 return result;
             }
@@ -145,18 +168,18 @@ public class TreeNode<T extends Comparable<T>, V> {
     }
 
     public void add(T key, V value) {
-        int compare = key.compareTo(this.key);
+        int compare = key.compareTo(this.localKey);
         if(compare > 0) {
             if(right != null) {
                 right.add(key, value);
             } else {
-                right = new TreeNode(key, value);
+                right = new TreeNode<>(key, value);
             }
         } else {
             if(left != null) {
                 left.add(key, value);
             } else {
-                left = new TreeNode(key, value);
+                left = new TreeNode<>(key, value);
             }
         }
 
@@ -165,19 +188,19 @@ public class TreeNode<T extends Comparable<T>, V> {
     }
 
     public void remove(T key) {
-        int compare = key.compareTo(this.key);
+        int compare = key.compareTo(this.localKey);
         if(compare == 0) {
             doRemove();
         } else if(compare > 0 && right != null) {
             right.remove(key);
 
-            if(right.key == null) {
+            if(right.localKey == null) {
                 right = null;
             }
         } else if(compare < 0 && left != null) {
             left.remove(key);
 
-            if(left.key == null) {
+            if(left.localKey == null) {
                 left = null;
             }
         }
@@ -189,30 +212,30 @@ public class TreeNode<T extends Comparable<T>, V> {
     private void doRemove() {
         if(left == null && right == null) {
             //there are no children
-            key = null;
+            localKey = null;
         } else if(left != null && right == null) {
             //there is a left subtree, but no right subtree
-            key = left.key;
-            value = left.value;
+            localKey = left.localKey;
+            localValue = left.localValue;
             left = null;
         } else if(left == null) {
             //there is a right subtree, but no left subtree
-            key = right.key;
-            value = right.value;
+            localKey = right.localKey;
+            localValue = right.localValue;
             right = null;
         } else {
             //there is both a left and right subtree
             TreeNode<T, V> leftMax = left.max();
-            T key = leftMax.key;
-            V val = leftMax.value;
+            T key = leftMax.localKey;
+            V val = leftMax.localValue;
 
-            left.remove(leftMax.key);
-            if(left.key == null) {
+            left.remove(leftMax.localKey);
+            if(left.localKey == null) {
                 left = null;
             }
 
-            this.key = key;
-            this.value = val;
+            this.localKey = key;
+            this.localValue = val;
 
         }
     }
@@ -245,8 +268,8 @@ public class TreeNode<T extends Comparable<T>, V> {
 
     private void balance() {
         int diff = getBalanceFactor();
-        if(diff == 2 || diff == -2) {
-            if(diff == -2) {
+        if(diff == POSITIVE_IMBALANCE || diff == NEGATIVE_IMBALANCE) {
+            if(diff == NEGATIVE_IMBALANCE) {
                 if(left.getBalanceFactor() > 0) {
                     rotateLeft(left);
                 }
@@ -261,43 +284,51 @@ public class TreeNode<T extends Comparable<T>, V> {
         }
     }
 
-    private void rotateLeft(TreeNode node) {
-        TreeNode oldRightNode = node.right;
-        TreeNode oldLeftNode = node.left;
+    private void rotateLeft(TreeNode<T, V> node) {
+        TreeNode<T, V> oldRightNode = node.right;
+        TreeNode<T, V> oldLeftNode = node.left;
 
-        TreeNode newLeft = new TreeNode(node.key, node.value);
+        TreeNode<T, V> newLeft = new TreeNode<>(node.localKey, node.localValue);
         newLeft.left = oldLeftNode;
         newLeft.right = oldRightNode.left;
 
-        node.key = oldRightNode.key;
-        node.value = oldRightNode.value;
+        node.localKey = oldRightNode.localKey;
+        node.localValue = oldRightNode.localValue;
         node.right = oldRightNode.right;
         node.left = newLeft;
 
-        if(node.right != null) node.right.recalculateHeight();
-        if(node.left != null) node.left.recalculateHeight();
+        if(node.right != null) {
+            node.right.recalculateHeight();
+        }
+        if(node.left != null) {
+            node.left.recalculateHeight();
+        }
     }
 
-    private void rotateRight(TreeNode node) {
-        TreeNode oldRightNode = node.right;
-        TreeNode oldLeftNode = node.left;
+    private void rotateRight(TreeNode<T, V> node) {
+        TreeNode<T, V> oldRightNode = node.right;
+        TreeNode<T, V> oldLeftNode = node.left;
 
-        TreeNode newRight = new TreeNode(node.key, node.value);
+        TreeNode<T, V> newRight = new TreeNode<>(node.localKey, node.localValue);
         newRight.right = oldRightNode;
         newRight.left = oldLeftNode.right;
 
-        node.key = oldLeftNode.key;
-        node.value = oldLeftNode.value;
+        node.localKey = oldLeftNode.localKey;
+        node.localValue = oldLeftNode.localValue;
         node.right = newRight;
         node.left = oldLeftNode.left;
 
-        if(node.left != null) node.left.recalculateHeight();
-        if(node.right != null) node.right.recalculateHeight();
+        if(node.left != null) {
+            node.left.recalculateHeight();
+        }
+        if(node.right != null) {
+            node.right.recalculateHeight();
+        }
     }
 
     public String toString(int depth) {
         StringBuilder builder = new StringBuilder();
-        builder.append(key.toString());
+        builder.append(localKey.toString());
 
         String indent = "";
         for(int i=0; i<depth; i++) {

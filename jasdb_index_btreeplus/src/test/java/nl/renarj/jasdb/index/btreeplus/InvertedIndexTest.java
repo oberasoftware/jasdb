@@ -73,7 +73,7 @@ public class InvertedIndexTest extends IndexBaseTest {
             }
             log.info("Average insert time: {}", (total / NUMBER_ENTITIES));
         } finally {
-            invertedIndex.closeIndex();
+            invertedIndex.close();
         }
 		
 		Index index = new BTreeIndex(indexLocation, keyInfo);
@@ -91,7 +91,7 @@ public class InvertedIndexTest extends IndexBaseTest {
             long average = total / runs;
             log.info("Average retrieval of {} runs was {} ns.", runs, average);
         } finally {
-			index.closeIndex();
+			index.close();
 		}
 	}
 
@@ -131,7 +131,7 @@ public class InvertedIndexTest extends IndexBaseTest {
             }
             log.info("Average insert time: {}", (total / NUMBER_ENTITIES));
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
         index = new BTreeIndex(indexLocation, keyInfo);
@@ -153,7 +153,7 @@ public class InvertedIndexTest extends IndexBaseTest {
                 }
             }
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -184,7 +184,7 @@ public class InvertedIndexTest extends IndexBaseTest {
             IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(searchKey), Index.NO_SEARCH_LIMIT);
             assertEquals(2, result.size());
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -227,7 +227,7 @@ public class InvertedIndexTest extends IndexBaseTest {
             result = invertedIndex.searchIndex(new EqualsCondition(searchKey), Index.NO_SEARCH_LIMIT);
             assertEquals(1, result.size());
         } finally {
-            invertedIndex.closeIndex();
+            invertedIndex.close();
         }
     }
 
@@ -259,7 +259,7 @@ public class InvertedIndexTest extends IndexBaseTest {
                 if(keyCounter > 10) keyCounter = 0;
             }
         } finally {
-            invertedIndex.closeIndex();
+            invertedIndex.close();
         }
 
         invertedIndex = new BTreeIndex(indexLocation, keyInfo);
@@ -284,7 +284,7 @@ public class InvertedIndexTest extends IndexBaseTest {
 
             assertIndex(amounts, invertedIndex);
         } finally {
-            invertedIndex.closeIndex();
+            invertedIndex.close();
         }
     }
     
@@ -314,7 +314,7 @@ public class InvertedIndexTest extends IndexBaseTest {
 	    	}
 	    	assertEquals("The size is unexpected", (testSize - removeSize), invertedIndex.searchIndex(new EqualsCondition(new StringKey("key1")), new SearchLimit()).size());
     	} finally {
-    		invertedIndex.closeIndex();
+    		invertedIndex.close();
     	}
     }
 
@@ -330,7 +330,7 @@ public class InvertedIndexTest extends IndexBaseTest {
         compositeKey.addKey(keyInfo.getKeyNameMapper(), "field1", new StringKey("")).addKey(keyInfo.getKeyNameMapper(), RECORD_POINTER, new LongKey(100));
 
         invertedIndex.insertIntoIndex(compositeKey);
-        invertedIndex.closeIndex();
+        invertedIndex.close();
 
         assertEquals("State should be closed", IndexState.CLOSED, invertedIndex.getState());
 
@@ -338,7 +338,7 @@ public class InvertedIndexTest extends IndexBaseTest {
         try {
             assertFalse(invertedIndex.searchIndex(new EqualsCondition(new StringKey("")), Index.NO_SEARCH_LIMIT).isEmpty());
         } finally {
-            invertedIndex.closeIndex();
+            invertedIndex.close();
         }
     }
 }

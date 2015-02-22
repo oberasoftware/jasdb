@@ -60,7 +60,7 @@ public class TransactionalRecordWriter implements RecordWriter {
 	@Override
 	public void closeWriter() throws JasDBStorageException {
         this.writer.closeWriter();
-        this.index.closeIndex();
+        this.index.close();
 	}
 
     @Override

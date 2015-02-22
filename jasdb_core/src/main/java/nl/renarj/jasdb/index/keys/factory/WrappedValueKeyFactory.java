@@ -48,7 +48,12 @@ public class WrappedValueKeyFactory implements KeyFactory {
 		return createdKey;
 	}
 
-    @Override
+	@Override
+	public Key createEmptyKey() {
+		return wrappedKeyFactory.createEmptyKey();
+	}
+
+	@Override
     public Set<Key> createMultivalueKeys(IndexableItem indexableItem) throws JasDBStorageException {
         Set<Key> keys = wrappedKeyFactory.createMultivalueKeys(indexableItem);
         for(Key key : keys) {

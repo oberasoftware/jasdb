@@ -11,7 +11,7 @@ import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
 
 public interface SearchCondition {
-	public boolean keyQualifies(Key key);
+	boolean keyQualifies(Key key);
 
-    public SearchCondition mergeCondition(KeyNameMapper nameMapper, String sourceField, String mergeField, SearchCondition condition);
+    SearchCondition mergeCondition(KeyNameMapper nameMapper, String sourceField, String mergeField, SearchCondition condition);
 }

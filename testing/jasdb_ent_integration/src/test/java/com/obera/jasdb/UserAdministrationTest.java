@@ -20,9 +20,9 @@ import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.junit.internal.matchers.IsCollectionContaining.hasItems;
 
 /**
  * @author Renze de Vries

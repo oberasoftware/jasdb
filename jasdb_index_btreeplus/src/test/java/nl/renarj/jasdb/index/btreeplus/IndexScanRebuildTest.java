@@ -60,7 +60,7 @@ public class IndexScanRebuildTest extends IndexBaseTest {
         index.rebuildIndex(indexableItemList.iterator());
         long end = System.currentTimeMillis();
         log.info("Completed index rebuild in {} ms.", (end - start));
-        index.closeIndex();
+        index.close();
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_field1.idx"), keyInfo);
         try {
@@ -73,7 +73,7 @@ public class IndexScanRebuildTest extends IndexBaseTest {
 
             assertIndexKeysPresent(insertedKeys, index);
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 
@@ -96,7 +96,7 @@ public class IndexScanRebuildTest extends IndexBaseTest {
                 }
             }
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_field1.idx"), keyInfo);
@@ -109,7 +109,7 @@ public class IndexScanRebuildTest extends IndexBaseTest {
             long end = System.currentTimeMillis();
             log.info("Completed index rebuild in {} ms.", (end - start));
         } finally {
-            index.closeIndex();
+            index.close();
         }
 
         index = new BTreeIndex(new File(tmpDir, "indexbag_field1.idx"), keyInfo);
@@ -123,7 +123,7 @@ public class IndexScanRebuildTest extends IndexBaseTest {
 
             assertIndexKeysPresent(insertedKeys, index);
         } finally {
-            index.closeIndex();
+            index.close();
         }
     }
 }

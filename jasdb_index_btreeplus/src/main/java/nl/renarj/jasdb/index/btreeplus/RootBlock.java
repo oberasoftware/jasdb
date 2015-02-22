@@ -23,7 +23,7 @@ import java.util.List;
  * @author Renze de Vries
  */
 public class RootBlock extends TreeBlock implements LeaveBlock {
-    private static final Logger log = LoggerFactory.getLogger(RootBlock.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RootBlock.class);
 
     private boolean isLeave = true;
 
@@ -122,7 +122,7 @@ public class RootBlock extends TreeBlock implements LeaveBlock {
         modified = true;
         if(size() > 1) {
             TreeNode removeNode = treeNodes.getBefore(minBlockValue);
-            log.debug("Removing from root: {}", removeNode);
+            LOG.debug("Removing from root: {}", removeNode);
             TreeNode next = treeNodes.next(removeNode.getKey());
 
             if(next != null && removeNode.getLeft() != removedBlock.getPosition()) {
@@ -131,7 +131,7 @@ public class RootBlock extends TreeBlock implements LeaveBlock {
             }
             treeNodes.remove(removeNode.getKey());
         } else {
-            log.debug("Merging into root");
+            LOG.debug("Merging into root");
             TreeNode lastTreeNode = treeNodes.first();
             IndexBlock leftBlock = persister.loadBlock(lastTreeNode.getLeft());
             IndexBlock rightBlock = persister.loadBlock(lastTreeNode.getRight());

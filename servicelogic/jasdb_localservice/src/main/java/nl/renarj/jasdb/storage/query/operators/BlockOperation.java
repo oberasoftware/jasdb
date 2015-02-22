@@ -15,15 +15,15 @@ import java.util.Map;
 import java.util.Set;
 
 public interface BlockOperation extends SearchCondition {
-	public BlockMerger getMerger();
+	BlockMerger getMerger();
 	
-	public void addCondition(String field, SearchCondition condition);
-	public void addChildBlock(BlockOperation operation);
-	public Map<String, Set<SearchCondition>> getConditions();
-	public Set<String> getFields();
-    public boolean hasConditions(String field);
-    public Set<SearchCondition> getConditions(KeyNameMapper mapper, List<String> fields);
-	public Set<SearchCondition> getConditions(String field);
+	void addCondition(String field, SearchCondition condition);
+	void addChildBlock(BlockOperation operation);
+	Map<String, Set<SearchCondition>> getConditions();
+	Set<String> getFields();
+    boolean hasConditions(String field);
+    Set<SearchCondition> getConditions(KeyNameMapper mapper, List<String> fields);
+	Set<SearchCondition> getConditions(String field);
 
-	public Set<BlockOperation> getChildBlocks();
+	Set<BlockOperation> getChildBlocks();
 }

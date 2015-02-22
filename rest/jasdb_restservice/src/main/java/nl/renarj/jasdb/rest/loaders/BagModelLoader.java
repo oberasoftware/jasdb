@@ -33,7 +33,7 @@ import java.util.List;
 
 @Component
 public class BagModelLoader extends AbstractModelLoader {
-    private static final Logger log = LoggerFactory.getLogger(BagModelLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BagModelLoader.class);
     private static final String FLUSH_OPERATION = "flush";
 
     @Inject
@@ -54,7 +54,7 @@ public class BagModelLoader extends AbstractModelLoader {
 
     @Override
 	public RestEntity loadModel(InputElement input, String begin, String top, List<OrderParam> orderParamList, RequestContext context) throws RestException {
-		log.debug("Loading bag data for input: {}", input.getElementName());
+		LOG.debug("Loading bag data for input: {}", input.getElementName());
 		if(input.getPrevious() != null) {
 			RestEntity previousEntity = input.getPrevious().getResult();
             if(previousEntity instanceof InstanceRest) {
@@ -118,7 +118,7 @@ public class BagModelLoader extends AbstractModelLoader {
 
     private void removeBag(String instance, InputElement input) throws RestException {
         InputCondition condition = input.getCondition();
-        if(condition.getTokenType() == TokenType.LITERAL && ((FieldCondition)condition).getField().equals(FieldCondition.ID_PARAM)) {
+        if(condition.getTokenType() == TokenType.LITERAL && ((FieldCondition) condition).getField().equals(FieldCondition.ID_PARAM)) {
             FieldCondition idCondition = (FieldCondition) condition;
             try {
                 DBInstance dbInstance;
@@ -159,7 +159,7 @@ public class BagModelLoader extends AbstractModelLoader {
 
     public RestEntity doSearch(DBInstance instance, InputElement element) throws RestException {
 		InputCondition inputCondition = element.getCondition();
-		log.debug("Loading bag information based on input condition: {}", inputCondition);
+		LOG.debug("Loading bag information based on input condition: {}", inputCondition);
 		if(inputCondition instanceof FieldCondition) {
 			FieldCondition fieldCondition = (FieldCondition) inputCondition;
             String bagName = fieldCondition.getValue();
@@ -167,7 +167,7 @@ public class BagModelLoader extends AbstractModelLoader {
 			try {
                 StorageService storageService = storageServiceFactory.getStorageService(instance.getInstanceId(), bagName);
 				if(storageService != null) {
-					log.debug("Found a bag with name: {}", bagName);
+					LOG.debug("Found a bag with name: {}", bagName);
 					return new RestBag(instance.getInstanceId(), bagName, storageService.getSize(), storageService.getDiskSize());
 				} else {
 					return new ErrorEntity(Response.Status.NOT_FOUND.getStatusCode(), "No bag was found with name: " + fieldCondition.getValue());
@@ -181,7 +181,7 @@ public class BagModelLoader extends AbstractModelLoader {
 	}
 	
 	public RestEntity handleList(DBInstance instance) throws RestException {
-		log.debug("Retrieving full list of bags on storage instance: {}", instance.getInstanceId());
+		LOG.debug("Retrieving full list of bags on storage instance: {}", instance.getInstanceId());
 		List<RestBag> bags = new ArrayList<>();
 		try {
 			for(Bag bag : instance.getBags()) {

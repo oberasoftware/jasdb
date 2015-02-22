@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Queue;
 
 public class AverageAggregator implements Aggregator {
-	private static final Logger log = LoggerFactory.getLogger(AverageAggregator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AverageAggregator.class);
 	
 	private static final int SLEEP_INTERVAL = 100;
 	
@@ -30,11 +30,11 @@ public class AverageAggregator implements Aggregator {
 		this.running = false;
 		aggregatorThread.interrupt();
 		try {
-			log.debug("Waiting for Statistics aggregator thread to shutdown");
+			LOG.debug("Waiting for Statistics aggregator thread to shutdown");
 			aggregatorThread.join();
-			log.info("Statistics aggregator thread has shutdown cleanly");
+			LOG.info("Statistics aggregator thread has shutdown cleanly");
 		} catch(InterruptedException e) {
-			log.error("Interrupted while waiting for thread join", e);
+			LOG.error("Interrupted while waiting for thread join", e);
 		}
 	}
 	
@@ -51,14 +51,14 @@ public class AverageAggregator implements Aggregator {
                     try {
                         Thread.sleep(SLEEP_INTERVAL);
                     } catch(InterruptedException e) {
-                        log.debug("Sleep was interrupted on stat monitor");
+                        LOG.debug("Sleep was interrupted on stat monitor");
                     }
                 } else if(!record.isFinalized()) {
                     this.recordQueue.remove();
                     this.recordQueue.add(record);
                 }
             } catch(Throwable e) {
-                log.error("Fatal error in statistics collection", e);
+                LOG.error("Fatal error in statistics collection", e);
             }
 		}
 	}

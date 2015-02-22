@@ -19,31 +19,34 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class StringKey extends AbstractKey {
-    private byte[] unicodeBytes;
+    private static final int BIT_MASK = 0xff;
+    private byte[] unicodeBytes = null;
 	
 	public StringKey(String stringIndex) {
         this.unicodeBytes = KeyUtil.getUnicodeBytes(stringIndex.trim().toLowerCase());
 	}
 
     public StringKey(byte[] unicodeBytes) {
-        int lastNull = unicodeBytes.length;
-        for(int i=(unicodeBytes.length - 1); i>=0; i--) {
-            if(unicodeBytes[i] == 0) {
-                lastNull = i;
-            } else {
-                break;
-            }
+        if(unicodeBytes != null) {
+            int lastNull = unicodeBytes.length;
+            for (int i = (unicodeBytes.length - 1); i >= 0; i--) {
+                if (unicodeBytes[i] == 0) {
+                    lastNull = i;
+                } else {
+                    break;
+                }
 
-        }
-        if(lastNull > 0) {
-            this.unicodeBytes = Arrays.copyOf(unicodeBytes, lastNull);
-        } else {
-            this.unicodeBytes = new byte[0];
+            }
+            if (lastNull > 0) {
+                this.unicodeBytes = Arrays.copyOf(unicodeBytes, lastNull);
+            } else {
+                this.unicodeBytes = new byte[0];
+            }
         }
     }
 	
 	public String getKey() {
-		return KeyUtil.getUnicodeString(unicodeBytes);
+		return unicodeBytes != null ? KeyUtil.getUnicodeString(unicodeBytes) : null;
 	}
 
     public byte[] getUnicodeBytes() {
@@ -52,7 +55,7 @@ public class StringKey extends AbstractKey {
 
     @Override
     public long size() {
-        return unicodeBytes.length + MEMORY_CONSTANTS.ARRAY_SIZE + super.size();
+        return unicodeBytes != null ? unicodeBytes.length + MEMORY_CONSTANTS.ARRAY_SIZE + super.size() : 0;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class StringKey extends AbstractKey {
         if(o != null) {
             int result = -1;
             if(o instanceof StringKey) {
-                result = compare(unicodeBytes, ((StringKey)o).getUnicodeBytes());
+                result = compare(unicodeBytes, ((StringKey) o).getUnicodeBytes());
             } else if(o instanceof LongKey) {
                 LongKey longKey = (LongKey) o;
 
@@ -89,14 +92,20 @@ public class StringKey extends AbstractKey {
     }
 
     private int compare(byte[] left, byte[] right) {
-        for (int i = 0, j = 0; i < left.length && j < right.length; i++, j++) {
-            int a = (left[i] & 0xff);
-            int b = (right[j] & 0xff);
-            if (a != b) {
-                return a - b;
+        if(left != null && right != null) {
+            for (int i = 0, j = 0; i < left.length && j < right.length; i++, j++) {
+                int a = (left[i] & BIT_MASK);
+                int b = (right[j] & BIT_MASK);
+                if (a != b) {
+                    return a - b;
+                }
             }
         }
-        return left.length - right.length;
+
+        int leftSize = left != null ? left.length : 0;
+        int rightSize = right != null ? right.length : 0;
+
+        return leftSize - rightSize;
     }
 
     @Override

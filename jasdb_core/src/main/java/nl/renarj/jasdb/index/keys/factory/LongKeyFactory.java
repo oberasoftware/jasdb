@@ -38,10 +38,7 @@ public class LongKeyFactory extends AbstractKeyFactory implements KeyFactory {
 	
 	@Override
 	public String asHeader() {
-		StringBuilder headerBuilder = new StringBuilder();
-		headerBuilder.append(field).append("(").append(getKeyId()).append(");");
-		
-		return headerBuilder.toString();
+		return field + "(" + getKeyId() + ");";
 	}
 
 	@Override
@@ -92,28 +89,37 @@ public class LongKeyFactory extends AbstractKeyFactory implements KeyFactory {
         return convertToKey(value);
 	}
 
-    @Override
+	@Override
+	public Key createEmptyKey() {
+		return new LongKey(new byte[0]);
+	}
+
+	@Override
     protected Key convertToKey(Object value) throws JasDBStorageException {
         if(value != null) {
             if(value instanceof Long) {
                 return new LongKey((Long) value);
             } else if(value instanceof Integer) {
-                return new LongKey((Integer)value);
+                return new LongKey((Integer) value);
             } else if(value instanceof String) {
                 try {
-                    return new LongKey(Long.parseLong((String)value));
+                    return new LongKey(Long.parseLong((String) value));
                 } catch(NumberFormatException e) {
                     log.debug("Invalid value for index was passed");
                 }
             }
-        }
+        } else {
+			return new LongKey(new byte[0]);
+		}
 
         throw new JasDBStorageException("Unable to create key for field: " + this.field);
     }
 
     @Override
 	public Key convertKey(Key key) throws JasDBStorageException {
-		if(key instanceof StringKey) {
+		if(key instanceof LongKey) {
+			return key;
+		} else if(key instanceof StringKey) {
 			StringKey stringKey = (StringKey) key;
 			try {
 				Long parsedLong = Long.parseLong(stringKey.getKey());
@@ -122,7 +128,8 @@ public class LongKeyFactory extends AbstractKeyFactory implements KeyFactory {
 				throw new JasDBStorageException("Unable to convert String to Long");
 			}
 		} else {
-			throw new JasDBStorageException("Unsupported conversion from: " + key.getClass().getName() + " to LongKey");
+			//unsupported conversion
+			return key;
 		}
 	}
 

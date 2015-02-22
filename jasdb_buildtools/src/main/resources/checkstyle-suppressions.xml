@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.0//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+
+<suppressions>
+    <suppress checks="MagicNumberCheck" files="src[/\\]test[/\\].*"/>
+    <suppress checks="VisibilityModifier" files="src[/\\]test[/\\].*"/>
+    <!-- RetryTests have a public @Rule for JUnit which fails VisibilityModifier checkstyle -->
+    <!--<suppress checks="VisibilityModifier" files=".*RetryTest.java"/>-->
+    <!--<suppress checks="VisibilityModifier" files=".*RetryFunctionalTest.java"/>-->
+</suppressions>

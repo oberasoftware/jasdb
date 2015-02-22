@@ -14,11 +14,16 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.service.StorageService;
 import nl.renarj.jasdb.service.StorageServiceFactory;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,6 +34,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/jasdb-security-test.xml"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class AbstractAuthorizationTest {
     private static final String DEFAULT_ADMIN_PASS = "";
     private static final String ADMIN_USER = "admin";
@@ -74,22 +80,9 @@ public abstract class AbstractAuthorizationTest {
     @Before
     public void before() throws JasDBStorageException {
         SimpleBaseTest.cleanData();
-//        SimpleKernel.initializeKernel();
-
-//        MetadataStore metadataStore = SimpleKernel.getKernelModule(MetadataStore.class);
-
-//        LocalCredentialsProvider localCredentialsProvider = new LocalCredentialsProvider();
-//        userManager = SimpleKernel.getKernelModule(UserManager.class);
-//        sessionManager = SimpleKernel.getKernelModule(SessionManager.class);
-
-//        StorageServiceFactory storageServiceFactory = SimpleKernel.getKernelModule(StorageServiceFactory.class);
         wrappedService = storageServiceFactory.getStorageService(null, null);
         when(wrappedService.getInstanceId()).thenReturn(TEST_INSTANCE);
         when(wrappedService.getBagName()).thenReturn(TEST_BAG);
-
-//        localCredentialsProvider.initialize(kernelContext);
-//        authService = new AuthorizationServiceWrapper();
-//        authService.wrap(kernelContext, wrappedService);
 
         adminSession = sessionManager.startSession(new BasicCredentials(ADMIN_USER, LOCALHOST, DEFAULT_ADMIN_PASS));
     }

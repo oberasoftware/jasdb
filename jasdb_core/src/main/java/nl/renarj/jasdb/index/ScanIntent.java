@@ -6,5 +6,5 @@ package nl.renarj.jasdb.index;
 public enum ScanIntent {
     REPORT,
     RESCAN,
-    DETECT_INCOMPLETE;
+    DETECT_INCOMPLETE
 }

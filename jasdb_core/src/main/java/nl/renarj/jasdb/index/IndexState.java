@@ -8,5 +8,5 @@ public enum IndexState {
     OK,
     REBUILDING,
     INVALID,
-    CLOSED;
+    CLOSED
 }

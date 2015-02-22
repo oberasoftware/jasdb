@@ -7,8 +7,8 @@
  */
 package nl.renarj.jasdb.service;
 
-import junit.framework.Assert;
-import nl.renarj.core.statistics.StatisticsMonitor;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
@@ -19,21 +19,23 @@ import nl.renarj.jasdb.api.properties.EntityValue;
 import nl.renarj.jasdb.api.properties.Property;
 import nl.renarj.jasdb.api.query.*;
 import nl.renarj.jasdb.core.SimpleKernel;
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
 import nl.renarj.jasdb.index.search.IndexField;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -52,6 +54,22 @@ public abstract class EntityQueryTest {
     private Map<String, String> valueToId = new HashMap<>();
     private Map<Long, Integer> ageAmounts = new HashMap<>();
     private Map<String, Integer> cityCounters = new HashMap<>();
+
+    private static final QueryBuilder CONTROLLER_QUERY = QueryBuilder.createBuilder()
+            .field("controllerId").value("Renzes-MacBook-Pro-2.local")
+            .field("type").value("controller");
+
+    private static final QueryBuilder PLUGIN_QUERY = QueryBuilder.createBuilder()
+            .field("controllerId").value("Renzes-MacBook-Pro-2.local")
+            .field("pluginId").value("zwave")
+            .field("type").value("plugin");
+
+    private static final QueryBuilder DEVICE_QUERY = QueryBuilder.createBuilder()
+            .field("controllerId").value("Renzes-MacBook-Pro-2.local")
+            .field("pluginId").value("zwave")
+            .field("type").value("device");
+
+
 
     private DBSessionFactory sessionFactory;
 
@@ -76,16 +94,16 @@ public abstract class EntityQueryTest {
         bag.ensureIndex(new IndexField("field5", new LongKeyType()), false, new IndexField("field6", new LongKeyType()));
         bag.ensureIndex(new IndexField("field6", new LongKeyType()), false);
         bag.ensureIndex(new IndexField("age", new LongKeyType()), false);
-        bag.ensureIndex(new IndexField("city", new StringKeyType(200)), false);
-        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType(100)), false);
-        bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType(200))), false);
+        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
+        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType()), false);
+        bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType())), false);
 
         Random rnd = new Random(System.currentTimeMillis());
         for(int i=0; i< NUMBER_ENTITIES; i++) {
             String value = "value" + i;
-            Long lValue = Long.valueOf(i);
+            Long lValue = (long) i;
             String fieldValue = "myValue" + i;
-            Long age = Long.valueOf(rnd.nextInt(MAX_AGE));
+            Long age = (long) rnd.nextInt(MAX_AGE);
 
             String city1 = SimpleBaseTest.possibleCities[rnd.nextInt(SimpleBaseTest.possibleCities.length)];
 
@@ -152,19 +170,20 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity = result.next();
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId, entity.getInternalId());
 
             Property property = entity.getProperty("field5");
-            Assert.assertNotNull("Property should be set", property);
-            Assert.assertTrue("Property should be long", property.getFirstValueObject() instanceof Long);
+            assertNotNull("Property should be set", property);
+            assertTrue("Property should be long", property.getFirstValueObject() instanceof Long);
 
-            String longExpectedId = longToId.get(property.getFirstValueObject());
-            Assert.assertEquals("The id's should match", longExpectedId, entity.getInternalId());
+            long key = property.getFirstValueObject();
+            String longExpectedId = longToId.get(key);
+            assertEquals("The id's should match", longExpectedId, entity.getInternalId());
 
             Assert.assertFalse("There should no longer be a result", result.hasNext());
         } finally {
@@ -181,20 +200,17 @@ public abstract class EntityQueryTest {
             for(int age = 0; age < MAX_AGE; age++) {
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("age").notEquals(age));
                 long start = System.nanoTime();
-                QueryResult result = executor.execute();
                 long end = System.nanoTime();
                 long passed = end - start;
                 log.info("Query execution took: {}", passed);
 
-                try {
-                    int expected = NUMBER_ENTITIES - ageAmounts.get(Long.valueOf(age));
+                try (QueryResult result = executor.execute()) {
+                    int expected = NUMBER_ENTITIES - ageAmounts.get((long) age);
 
-                    for(SimpleEntity entity : result) {
+                    for (SimpleEntity entity : result) {
                         assertThat(entity.getValue("age").toString(), not(equalTo(String.valueOf(age))));
                     }
-                    assertThat(result.size(), is((long)expected));
-                } finally {
-                    result.close();
+                    assertThat(result.size(), is((long) expected));
                 }
             }
 
@@ -273,8 +289,8 @@ public abstract class EntityQueryTest {
         EntityBag bag = pojoDb.createOrGetBag("inverted");
         try {
             int limit = 3;
-            Integer maxAmount = ageAmounts.get(Long.valueOf(20));
-            Assert.assertTrue(maxAmount > 5);
+            Integer maxAmount = ageAmounts.get((long) 20);
+            assertTrue(maxAmount > 5);
 
             QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("age").value(20));
             executor.limit(limit);
@@ -285,7 +301,7 @@ public abstract class EntityQueryTest {
             log.info("Age query took: {} with: {} results", passed, result.size());
 
             List<SimpleEntity> entities = aggregateResult(result);
-            Assert.assertEquals("There should only be three results", limit, entities.size());
+            assertEquals("There should only be three results", limit, entities.size());
         } finally {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
@@ -307,19 +323,20 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity = result.next();
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId, entity.getInternalId());
 
             Property property = entity.getProperty("field5");
-            Assert.assertNotNull("Property should be set", property);
-            Assert.assertTrue("Property should be long", property.getFirstValueObject() instanceof Long);
+            assertNotNull("Property should be set", property);
+            assertTrue("Property should be long", property.getFirstValueObject() instanceof Long);
 
-            String longExpectedId = longToId.get(property.getFirstValueObject());
-            Assert.assertEquals("The id's should match", longExpectedId, entity.getInternalId());
+            long key = property.getFirstValueObject();
+            String longExpectedId = longToId.get(key);
+            assertEquals("The id's should match", longExpectedId, entity.getInternalId());
 
             Assert.assertFalse("There should no longer be a result", result.hasNext());
         } finally {
@@ -343,12 +360,12 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity = result.next();
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId, entity.getInternalId());
 
             Property property = entity.getProperty("embed");
             assertNotNull("Property should be set", property);
@@ -360,7 +377,7 @@ public abstract class EntityQueryTest {
             assertNotNull("Property should be set", embedEntity);
 
             String embeddedProperty = embedEntity.getProperty("embeddedProperty").getFirstValue().toString();
-            Assert.assertEquals("The id's should match", queryKey, embeddedProperty);
+            assertEquals("The id's should match", queryKey, embeddedProperty);
         } finally {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
@@ -382,12 +399,12 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity = result.next();
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId, entity.getInternalId());
 
             Property property = entity.getProperty("embed");
             assertNotNull("Property should be set", property);
@@ -399,7 +416,7 @@ public abstract class EntityQueryTest {
             assertNotNull("Property should be set", embedEntity);
 
             String embeddedProperty = embedEntity.getProperty("embeddedProperty").getFirstValue().toString();
-            Assert.assertEquals("The id's should match", queryKey, embeddedProperty);
+            assertEquals("The id's should match", queryKey, embeddedProperty);
         } finally {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
@@ -423,11 +440,8 @@ public abstract class EntityQueryTest {
             builder.addQueryBlock(QueryBuilder.createBuilder().field("type").value("contribution"));
 
             QueryExecutor executor = bag.find(builder);
-            QueryResult result = executor.execute();
-            try {
+            try (QueryResult result = executor.execute()) {
                 assertThat(result.size(), is(1l));
-            } finally {
-                result.close();
             }
         } finally {
             pojoDb.closeSession();
@@ -450,11 +464,8 @@ public abstract class EntityQueryTest {
             builder.addQueryBlock(QueryBuilder.createBuilder().field("type").value("contribution"));
 
             QueryExecutor executor = bag.find(builder);
-            QueryResult result = executor.execute();
-            try {
+            try (QueryResult result = executor.execute()) {
                 assertThat(result.size(), is(0l));
-            } finally {
-                result.close();
             }
         } finally {
             pojoDb.closeSession();
@@ -483,18 +494,18 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity1 = result.next();
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity2 = result.next();
 
-            Assert.assertNotNull("There should be a returned entity", entity1);
-            Assert.assertEquals("The id's should match", expectedId1, entity1.getInternalId());
+            assertNotNull("There should be a returned entity", entity1);
+            assertEquals("The id's should match", expectedId1, entity1.getInternalId());
 
-            Assert.assertNotNull("There should be a returned entity", entity2);
-            Assert.assertEquals("The id's should match", expectedId2, entity2.getInternalId());
+            assertNotNull("There should be a returned entity", entity2);
+            assertEquals("The id's should match", expectedId2, entity2.getInternalId());
         } finally {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
@@ -509,22 +520,19 @@ public abstract class EntityQueryTest {
             for(String city : SimpleBaseTest.possibleCities) {
                 for(int i=0; i<MAX_AGE; i++) {
                     QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("age").value(i).field("mainCity").value(city));
-                    QueryResult result = executor.execute();
-                    try {
+                    try (QueryResult result = executor.execute()) {
                         String key = city + "_" + i;
-                        if(cityCounters.containsKey(key)) {
-                            Long counter = new Long(cityCounters.get(city + "_" + i));
+                        if (cityCounters.containsKey(key)) {
+                            Long counter = (long) cityCounters.get(city + "_" + i);
                             assertEquals(counter, new Long(result.size()));
 
-                            for(SimpleEntity entity : result) {
-                                assertEquals(Long.valueOf(i), entity.getProperty("age").getFirstValueObject());
+                            for (SimpleEntity entity : result) {
+                                assertEquals((long) i, entity.getProperty("age").getFirstValueObject());
                                 assertEquals(city, entity.getProperty("mainCity").getFirstValueObject());
                             }
                         } else {
                             assertEquals(new Long(0), new Long(result.size()));
                         }
-                    } finally {
-                        result.close();
                     }
                 }
             }
@@ -549,7 +557,7 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
             Assert.assertFalse("There should not be a result", result.hasNext());
         } finally {
@@ -575,12 +583,12 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity = result.next();
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId1, entity.getInternalId());
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId1, entity.getInternalId());
 
             Assert.assertFalse("There should no longer be a result", result.hasNext());
         } finally {
@@ -605,12 +613,12 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity = result.next();
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId1, entity.getInternalId());
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId1, entity.getInternalId());
 
             Assert.assertFalse("There should no longer be a result", result.hasNext());
         } finally {
@@ -635,12 +643,12 @@ public abstract class EntityQueryTest {
             long passed = end - start;
             log.info("Query execution took: {}", passed);
 
-            Assert.assertNotNull(result);
+            assertNotNull(result);
 
-            Assert.assertTrue("There should be a result", result.hasNext());
+            assertTrue("There should be a result", result.hasNext());
             SimpleEntity entity = result.next();
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId1, entity.getInternalId());
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId1, entity.getInternalId());
 
             Assert.assertFalse("There should no longer be a result", result.hasNext());
         } finally {
@@ -657,15 +665,12 @@ public abstract class EntityQueryTest {
 
         try {
             QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field5").greaterThan(10).field("field5").smallerThan(30));
-            QueryResult result = executor.execute();
-            try {
-                Assert.assertEquals(19, result.size());
-                Assert.assertNotNull(result);
+            try (QueryResult result = executor.execute()) {
+                assertEquals(19, result.size());
+                assertNotNull(result);
 
-                Assert.assertTrue("There should be a result", result.hasNext());
+                assertTrue("There should be a result", result.hasNext());
                 assertResult(11, 18, result);
-            } finally {
-                result.close();
             }
         } finally {
             pojoDb.closeSession();
@@ -681,12 +686,9 @@ public abstract class EntityQueryTest {
         try {
             for(String city : SimpleBaseTest.possibleCities) {
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("city").value(city));
-                QueryResult result = executor.execute();
-                try {
-                    Assert.assertNotNull(result);
-                    Assert.assertEquals("Results for city: '" + city + "' are unexpected", new Long(cityCounters.get(city)), new Long(result.size()));
-                } finally {
-                    result.close();
+                try (QueryResult result = executor.execute()) {
+                    assertNotNull(result);
+                    assertEquals("Results for city: '" + city + "' are unexpected", new Long(cityCounters.get(city)), new Long(result.size()));
                 }
             }
 
@@ -698,17 +700,14 @@ public abstract class EntityQueryTest {
                         QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("city").value(firstCity).
                                 and(QueryBuilder.createBuilder().field("city").value(secondCity)));
                         long start = System.nanoTime();
-                        QueryResult result = executor.execute();
                         long end = System.nanoTime();
                         totalTime += (end - start);
                         queries++;
 
-                        try {
-                            Assert.assertNotNull(result);
-                            Assert.assertEquals("Results for combined cities: '" + firstCity + ", " + secondCity + "' are unexpected",
+                        try (QueryResult result = executor.execute()) {
+                            assertNotNull(result);
+                            assertEquals("Results for combined cities: '" + firstCity + ", " + secondCity + "' are unexpected",
                                     new Long(cityCounters.get(firstCity + "_" + secondCity)), new Long(result.size()));
-                        } finally {
-                            result.close();
                         }
                     }
 
@@ -730,11 +729,8 @@ public abstract class EntityQueryTest {
             for(String city : SimpleBaseTest.possibleCities) {
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("city").value(city));
                 executor.paging(NUMBER_ENTITIES, 1000);
-                QueryResult result = executor.execute();
-                try {
+                try (QueryResult result = executor.execute()) {
                     Assert.assertFalse("There should be no result", result.hasNext());
-                } finally {
-                    result.close();
                 }
             }
         } finally {
@@ -758,18 +754,15 @@ public abstract class EntityQueryTest {
 
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field5").greaterThanOrEquals(0));
                 executor.paging(start, batchSize);
-                QueryResult result = executor.execute();
-                try {
-                    Assert.assertEquals("Unexpected query size", batchSize, result.size());
-                    for(SimpleEntity entity : result) {
+                try (QueryResult result = executor.execute()) {
+                    assertEquals("Unexpected query size", batchSize, result.size());
+                    for (SimpleEntity entity : result) {
                         Property property = entity.getProperty("field5");
                         Property fProperty = entity.getProperty("field1");
-                        Assert.assertEquals("Unexpected value", Long.valueOf(current), property.getFirstValueObject());
+                        assertEquals("Unexpected value", current, property.getFirstValueObject());
                         log.debug("Field1: {} Field5: {}", fProperty.getFirstValueObject().toString(), property.getFirstValueObject().toString());
                         current++;
                     }
-                } finally {
-                    result.close();
                 }
 
                 start = end;
@@ -796,11 +789,11 @@ public abstract class EntityQueryTest {
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field9").greaterThanOrEquals(0));
                 executor.paging(start, batchSize);
                 QueryResult result = executor.execute();
-                Assert.assertEquals("Unexpected query size", batchSize, result.size());
+                assertEquals("Unexpected query size", batchSize, result.size());
                 for(SimpleEntity entity : result) {
                     Property property = entity.getProperty("field9");
                     Property fProperty = entity.getProperty("field1");
-                    Assert.assertEquals("Unexpected value", Long.valueOf(current), property.getFirstValueObject());
+                    assertEquals("Unexpected value", current, property.getFirstValueObject());
                     log.debug("Field1: {} Field5: {}", fProperty.getFirstValueObject().toString(), property.getFirstValueObject().toString());
                     current++;
                 }
@@ -820,21 +813,21 @@ public abstract class EntityQueryTest {
 
         try {
             int start = 0;
-            long lage = Long.valueOf(MAX_AGE / 2);
+            long lage = (long) (MAX_AGE / 2);
             int ageSize = ageAmounts.get(lage);
             int batchSize = ageSize / 4;
 
             while(start + batchSize <= ageSize) {
                 int end = start + batchSize;
-                log.debug("Starting retrieval of start: {} and end: {} for age: {}", new Object[] {start, end, lage});
+                log.debug("Starting retrieval of start: {} and end: {} for age: {}", start, end, lage);
 
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("age").value(lage));
                 executor.paging(start, batchSize);
                 QueryResult result = executor.execute();
-                Assert.assertEquals("Unexpected query size", batchSize, result.size());
+                assertEquals("Unexpected query size", batchSize, result.size());
                 for(SimpleEntity entity : result) {
                     String age = entity.getProperty("age").getFirstValueObject().toString();
-                    Assert.assertEquals("Unexpected age", String.valueOf(MAX_AGE / 2), age);
+                    assertEquals("Unexpected age", String.valueOf(MAX_AGE / 2), age);
                 }
 
                 start = end;
@@ -861,14 +854,14 @@ public abstract class EntityQueryTest {
         for(int i=start; i<(start + amount) && result.hasNext(); i++) {
             SimpleEntity entity = result.next();
 
-            String expectedId = longToId.get(Long.valueOf(i));
-            Assert.assertNotNull("There should be a returned entity", entity);
-            Assert.assertEquals("The id's should match", expectedId, entity.getInternalId());
+            String expectedId = longToId.get((long) i);
+            assertNotNull("There should be a returned entity", entity);
+            assertEquals("The id's should match", expectedId, entity.getInternalId());
 
             Property property = entity.getProperty("field1");
-            Assert.assertNotNull("Property should be set", property);
-            Assert.assertTrue("Property should be String", property.getFirstValueObject() instanceof String);
-            Assert.assertEquals("Property value should match", "value" + i, property.getFirstValueObject());
+            assertNotNull("Property should be set", property);
+            assertTrue("Property should be String", property.getFirstValueObject() instanceof String);
+            assertEquals("Property value should match", "value" + i, property.getFirstValueObject());
             keysFoundInOrder.add(entity.getInternalId());
         }
 
@@ -882,24 +875,21 @@ public abstract class EntityQueryTest {
 
         try {
             QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field5").greaterThan(10).field("field5").smallerThan(30).sortBy("field1"));
-            QueryResult result = executor.execute();
-            try {
-                Assert.assertNotNull(result);
-                Assert.assertTrue("There should be a result", result.hasNext());
+            try (QueryResult result = executor.execute()) {
+                assertNotNull(result);
+                assertTrue("There should be a result", result.hasNext());
 
                 int start = 11;
                 int amount = 18;
                 List<String> keysInOrder = assertResult(start, amount, result);
 
                 List<String> expectedOrder = new ArrayList<>();
-                for(int i=start; i<amount + start; i++) {
+                for (int i = start; i < amount + start; i++) {
                     String id = valueToId.get("value" + i);
                     expectedOrder.add(id);
                     log.info("Expected key: {} with value: {}", id, "value" + i);
                 }
                 assertListOrder(keysInOrder, expectedOrder);
-            } finally {
-                result.close();
             }
         } finally {
             pojoDb.closeSession();
@@ -913,29 +903,15 @@ public abstract class EntityQueryTest {
         EntityBag bag = pojoDb.createOrGetBag("inverted");
 
         try {
-            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field5").greaterThan(10).field("field5").smallerThan(30).sortBy("field6", Order.ASCENDING));
-            long start = System.nanoTime();
-            QueryResult result = executor.execute();
-            long end = System.nanoTime();
-            log.info("Query took: {}", (end - start));
+            QueryBuilder query = QueryBuilder.createBuilder().field("field5").greaterThan(10).field("field5").smallerThan(30).sortBy("field6", Order.ASCENDING);
+            List<SimpleEntity> entities = getEntities(bag, query);
+            List<String> field6Values = getEntityValue(entities, "field6");
 
-            StatisticsMonitor.enableStatistics();
-            start = System.nanoTime();
-            result = executor.execute();
-            end = System.nanoTime();
-            log.info("Query took: {}", (end - start));
-            Thread.sleep(1000);
-            StatisticsMonitor.logStats(TimeUnit.NANOSECONDS);
-
-            try {
-                Assert.assertNotNull(result);
-                Assert.assertTrue("There should be a result", result.hasNext());
-
-                for(SimpleEntity entity : result) {
-                    log.info("Found entity: {} with value: {}", entity.getInternalId(), entity.getProperty("field6").getFirstValueObject());
-                }
-            } finally {
-                result.close();
+            long previous = 0;
+            for(String stringValue : field6Values) {
+                long value = Long.parseLong(stringValue);
+                assertThat(value >= previous, is(true));
+                previous = value;
             }
         } finally {
             pojoDb.closeSession();
@@ -953,13 +929,10 @@ public abstract class EntityQueryTest {
 
         try {
             QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field1").value(""));
-            QueryResult result = executor.execute();
 
-            try {
-                Assert.assertNotNull(result);
+            try (QueryResult result = executor.execute()) {
+                assertNotNull(result);
                 Assert.assertFalse("There should not be a result", result.hasNext());
-            } finally {
-                result.close();
             }
         } finally {
             pojoDb.closeSession();
@@ -999,52 +972,87 @@ public abstract class EntityQueryTest {
                         new IndexField("type", new StringKeyType())
                 ), false);
 
-        QueryBuilder query = QueryBuilder.createBuilder()
-                .field("controllerId").value("Renzes-MacBook-Pro-2.local")
-                .field("pluginId").value("zwave").field("type").value("plugin");
-
-        String controllerEntityId = bag.addEntity(new SimpleEntity().addProperty("controllerId", "Renzes-MacBook-Pro-2.local")
-                .addProperty("plugins", "7158f3ec-681f-4d9b-9ab1-6ab6c60288e3").addProperty("type", "controller")).getInternalId();
-
-        String pluginEntityId = bag.addEntity(new SimpleEntity()
-                .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
-                .addProperty("name", "ZWave provider").addProperty("type", "plugin")).getInternalId();
-
-        String deviceEntityId = bag.addEntity(new SimpleEntity()
-                .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
-                .addProperty("name", "ZWave provider").addProperty("deviceId", "13").addProperty("type", "device")
-        ).getInternalId();
-
-
-
-        QueryExecutor executor = bag.find(query);
-        QueryResult result = executor.execute();
-        assertTrue(result.hasNext());
-        SimpleEntity entity = result.next();
-        assertEquals("Renzes-MacBook-Pro-2.local", entity.getProperty("controllerId").getFirstValueObject());
-        assertFalse(result.hasNext());
-
-
-        bag.updateEntity(new SimpleEntity(controllerEntityId).addProperty("controllerId", "Renzes-MacBook-Pro-2.local")
-                .addProperty("plugins", "7158f3ec-681f-4d9b-9ab1-6ab6c60288e3").addProperty("type", "controller"));
-
-        bag.updateEntity(new SimpleEntity(pluginEntityId)
-                .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
-                .addProperty("name", "ZWave provider").addProperty("type", "plugin"));
-
         try {
-            executor = bag.find(query);
-            result = executor.execute();
+            String controllerEntityId = bag.addEntity(new SimpleEntity().addProperty("controllerId", "Renzes-MacBook-Pro-2.local")
+                    .addProperty("plugins", "7158f3ec-681f-4d9b-9ab1-6ab6c60288e3")
+                    .addProperty("type", "controller")).getInternalId();
 
-            assertTrue(result.hasNext());
-            entity = result.next();
+            String pluginEntityId = bag.addEntity(new SimpleEntity()
+                    .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
+                    .addProperty("name", "ZWave provider")
+                    .addProperty("type", "plugin")).getInternalId();
 
-            assertEquals("Renzes-MacBook-Pro-2.local", entity.getProperty("controllerId").getFirstValueObject());
-            assertFalse(result.hasNext());
+            String deviceEntityId = bag.addEntity(new SimpleEntity()
+                    .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
+                    .addProperty("name", "ZWave provider")
+                    .addProperty("deviceId", "13")
+                    .addProperty("type", "device")).getInternalId();
+
+
+            //verify we can query after insertion
+            assertPartialIndexItems(bag, pluginEntityId, deviceEntityId, controllerEntityId);
+
+
+            bag.updateEntity(new SimpleEntity(controllerEntityId).addProperty("controllerId", "Renzes-MacBook-Pro-2.local")
+                    .addProperty("plugins", "7158f3ec-681f-4d9b-9ab1-6ab6c60288e3").addProperty("type", "controller"));
+
+            bag.updateEntity(new SimpleEntity(pluginEntityId)
+                    .addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
+                    .addProperty("name", "ZWave provider").addProperty("type", "plugin"));
+
+            //verify it still works after an update operation
+            assertPartialIndexItems(bag, pluginEntityId, deviceEntityId, controllerEntityId);
         } finally {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
         }
+    }
+
+    private void assertPartialIndexItems(EntityBag bag, String pluginId, String deviceId, String controllerId) throws JasDBStorageException {
+
+        List<SimpleEntity> plugins = getEntities(bag, PLUGIN_QUERY);
+        assertThat(plugins.size(), is(1));
+        assertThat(getEntityValue(plugins, SimpleEntity.DOCUMENT_ID), hasItems(pluginId));
+
+        List<SimpleEntity> controllers = getEntities(bag, CONTROLLER_QUERY);
+        assertThat(controllers.size(), is(1));
+        assertThat(getEntityValue(controllers, SimpleEntity.DOCUMENT_ID), hasItems(controllerId));
+
+        List<SimpleEntity> devices = getEntities(bag, DEVICE_QUERY);
+        assertThat(devices.size(), is(1));
+        assertThat(getEntityValue(devices, SimpleEntity.DOCUMENT_ID), hasItems(deviceId));
+    }
+
+    private List<String> getEntityValue(List<SimpleEntity> entities, final String property) {
+        return Lists.transform(entities, new Function<SimpleEntity, String>() {
+            @Override
+            public String apply(SimpleEntity entity) {
+                return entity.getProperty(property).getFirstValue().toString();
+            }
+        });
+    }
+
+    private List<SimpleEntity> getEntities(EntityBag bag, QueryBuilder query) throws JasDBStorageException {
+        return getEntities(bag, query, -1, -1);
+    }
+
+    private List<SimpleEntity> getEntities(EntityBag bag, QueryBuilder query, int start, int limit) throws JasDBStorageException {
+        QueryExecutor executor = bag.find(query);
+
+        if(start > 0 && limit > 0) {
+            executor.paging(start, limit);
+        } else if(limit > 0) {
+            executor.limit(limit);
+        }
+
+        final List<SimpleEntity> entities = new ArrayList<>();
+        try (QueryResult result = executor.execute()) {
+            for (SimpleEntity entity : result) {
+                entities.add(entity);
+            }
+        }
+
+        return entities;
     }
 
     private void assertListOrder(List<String> expectedOrder, List<String> actualOrder) {
@@ -1052,7 +1060,7 @@ public abstract class EntityQueryTest {
         for(String expectedId : expectedOrder) {
             log.info("Key found in order: {}", actualOrder.get(counter));
             String actualId = actualOrder.get(counter);
-            Assert.assertEquals("The id's of index: " + counter + " are not expected in that order", expectedId, actualId);
+            assertEquals("The id's of index: " + counter + " are not expected in that order", expectedId, actualId);
 
             counter++;
         }

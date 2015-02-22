@@ -72,7 +72,13 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
     public KeyLoadResult loadKey(int offset, DataBlock dataBlock) throws JasDBStorageException {
         DataBlockResult<byte[]> keyBuffer = dataBlock.loadBytes(offset);
 
-        return new KeyLoadResult(new StringKey(keyBuffer.getValue()), keyBuffer.getEndBlock(), keyBuffer.getNextOffset());
+        byte[] value = keyBuffer.getValue();
+        if(value.length == 1 && value[0] == Byte.MAX_VALUE) {
+            //empty nil key
+            return new KeyLoadResult(createEmptyKey(), keyBuffer.getEndBlock(), keyBuffer.getNextOffset());
+        } else {
+            return new KeyLoadResult(new StringKey(value), keyBuffer.getEndBlock(), keyBuffer.getNextOffset());
+        }
     }
 
     @Override
@@ -81,10 +87,14 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
             StringKey stringKey = (StringKey) key;
 
             byte[] keyBytes = stringKey.getUnicodeBytes();
-            if(keyBytes.length > maxSize) {
-                throw new JasDBStorageException("Key is too big to be stored in index, byte size: " + keyBytes.length + " max allowed: " + maxSize);
+            if(keyBytes != null) {
+                if (keyBytes.length > maxSize) {
+                    throw new JasDBStorageException("Key is too big to be stored in index, byte size: " + keyBytes.length + " max allowed: " + maxSize);
+                } else {
+                    return dataBlock.writeBytes(keyBytes).getDataBlock();
+                }
             } else {
-                return dataBlock.writeBytes(keyBytes).getDataBlock();
+                return dataBlock.writeBytes(new byte[]{Byte.MAX_VALUE}).getDataBlock();
             }
         } else {
             throw new JasDBStorageException("The key is of an unexpected type: " + key.getClass().toString());
@@ -98,6 +108,11 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
 	}
 
     @Override
+    public Key createEmptyKey() {
+        return new StringKey((byte[]) null);
+    }
+
+    @Override
     protected Key convertToKey(Object value) throws JasDBStorageException {
         if(value != null) {
             String fieldValue = value.toString();
@@ -108,16 +123,19 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
                 return key;
             }
         } else {
-            return new StringKey(new byte[0]);
+            return createEmptyKey();
         }
     }
 
     @Override
 	public Key convertKey(Key key) throws JasDBStorageException {
-		if(key instanceof LongKey) {
+        if(key instanceof StringKey) {
+            return key;
+        } else if(key instanceof LongKey) {
 			return new StringKey(key.getValue().toString());
 		} else {
-			throw new JasDBStorageException("Unsupported conversion from: " + key.getClass().getName() + " to StringKey");
+            //unsupported conversion
+			return key;
 		}
 	}
 
@@ -128,11 +146,7 @@ public class StringKeyFactory extends AbstractKeyFactory implements KeyFactory {
 
 	@Override
 	public String asHeader() {
-		StringBuilder headerBuilder = new StringBuilder();
-		headerBuilder.append(getFieldName()).append("(");
-		headerBuilder.append(getKeyId()).append(":").append(maxSize).append(");");
-
-		return headerBuilder.toString();
+        return getFieldName() + "(" + getKeyId() + ":" + maxSize + ");";
 	}
 
     @Override

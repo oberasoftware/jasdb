@@ -61,7 +61,7 @@ public class BtreeIndexRecordWriter implements RecordWriter {
 
     @Override
     public void closeWriter() throws JasDBStorageException {
-        this.index.closeIndex();
+        this.index.close();
     }
 
     @Override

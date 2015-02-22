@@ -58,9 +58,10 @@ public class RangeSearchOperation implements SearchOperation {
 
         try {
             List<Key> results = new LinkedList<>();
-            boolean keepEvaluating = currentLeave.size() > 0 ? true : false;
+            boolean keepEvaluating = currentLeave.size() > 0;
             while(keepEvaluating && currentLeave != null) {
-                addFoundKeys(results, currentLeave.getKeyRange(rangeCondition.getStart(), rangeCondition.isStartIncluded(), rangeCondition.getEnd(), rangeCondition.isEndIncluded()), limit);
+                addFoundKeys(results, currentLeave.getKeyRange(rangeCondition.getStart(), rangeCondition.isStartIncluded(),
+                        rangeCondition.getEnd(), rangeCondition.isEndIncluded()), limit);
 
                 if(limit.isMaxReached(results.size())) {
                     keepEvaluating = false;
@@ -74,8 +75,10 @@ public class RangeSearchOperation implements SearchOperation {
                 }
 
                 long nextBlockPointer = currentLeave.getProperties().getNextBlock();
-                currentLeave = nextBlockPointer != -1 ? (LeaveBlock)persister.loadBlock(nextBlockPointer) : null;
-                if(currentLeave != null) lockManager.acquireLock(LockIntentType.READ, currentLeave);
+                currentLeave = nextBlockPointer != -1 ? (LeaveBlock) persister.loadBlock(nextBlockPointer) : null;
+                if(currentLeave != null) {
+                    lockManager.acquireLock(LockIntentType.READ, currentLeave);
+                }
             }
 
             return new IndexSearchResultIteratorImpl(results, keyInfo.getKeyNameMapper().clone());
@@ -118,4 +121,18 @@ public class RangeSearchOperation implements SearchOperation {
         }
     }
 
+//    private Key fillEmptyFields(Key key) throws JasDBStorageException {
+//        if(key instanceof CompositeKey) {
+//            KeyNameMapper mapper = keyInfo.getKeyNameMapper();
+//            //missing fields
+//            Key[] keys = key.getKeys();
+//            for(String field : keyInfo.getKeyFields()) {
+//                int index = mapper.getIndexForField(field);
+//                if(keys == null || keys.length <= index || keys[index] == null) {
+//                    key.addKey(mapper, field, new AnyKey());
+//                }
+//            }
+//        }
+//        return key;
+//    }
 }

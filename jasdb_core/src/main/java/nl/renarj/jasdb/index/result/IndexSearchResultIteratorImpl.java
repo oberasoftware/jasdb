@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class IndexSearchResultIteratorImpl implements IndexSearchResultIteratorCollection {
-	private static final Logger log = LoggerFactory.getLogger(IndexSearchResultIteratorImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(IndexSearchResultIteratorImpl.class);
 	
 	private List<Key> keys;
 
@@ -82,7 +82,7 @@ public class IndexSearchResultIteratorImpl implements IndexSearchResultIteratorC
 	@Override
 	public void remove() {
         //not implemented
-		log.warn("Remove operation on ResultIterator not implemented");
+		LOG.warn("Remove operation on ResultIterator not implemented");
 	}
 	
 	/* (non-Javadoc)

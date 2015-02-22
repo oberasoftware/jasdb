@@ -35,7 +35,8 @@ public class AndBlockMerger implements BlockMerger {
     }
 
     @Override
-	public IndexSearchResultIteratorCollection mergeIterators(IndexSearchResultIteratorCollection mergeInto, IndexSearchResultIteratorCollection... results) throws JasDBStorageException {
+	public IndexSearchResultIteratorCollection mergeIterators(IndexSearchResultIteratorCollection mergeInto, IndexSearchResultIteratorCollection... results)
+            throws JasDBStorageException {
         List<Key> mergeIntoKeys = new LinkedList<>();
         for(Key mergeKey : mergeInto.getKeys()) {
             mergeIntoKeys.add(mergeKey.cloneKey(true));
@@ -50,13 +51,14 @@ public class AndBlockMerger implements BlockMerger {
 		return new IndexSearchResultIteratorImpl(mergeIntoKeys, keyNameMapper);
 	}
 
-	private void mergeCollection(IndexSearchResultIteratorCollection collection, List<Key> mergeIntoKeys, KeyNameMapper keyNameMapper) throws JasDBStorageException {
+	private void mergeCollection(IndexSearchResultIteratorCollection collection, List<Key> mergeIntoKeys, KeyNameMapper keyNameMapper)
+            throws JasDBStorageException {
 		Map<Key, Key> collectionKeys = new HashMap<>(mergeIntoKeys.size());
 		for(Key collectionKey : collection) {
 			collectionKeys.put(KeyUtil.getDocumentKey(collection.getKeyNameMapper(), collectionKey), collectionKey);
 		}
 
-		for(Iterator<Key> mergeIterator = mergeIntoKeys.iterator(); mergeIterator.hasNext(); ) {
+		for(Iterator<Key> mergeIterator = mergeIntoKeys.iterator(); mergeIterator.hasNext();) {
 			Key key = mergeIterator.next();
             Key documentKey = KeyUtil.getDocumentKey(keyNameMapper, key);
             if(!collectionKeys.containsKey(documentKey)) {

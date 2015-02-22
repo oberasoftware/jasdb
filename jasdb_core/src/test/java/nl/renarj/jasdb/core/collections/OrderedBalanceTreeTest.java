@@ -20,9 +20,7 @@ import java.util.Random;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * User: renarj
@@ -64,7 +62,7 @@ public class OrderedBalanceTreeTest {
         int testSize = 512;
         OrderedBalancedTree<Long, Long> ol = createTree();
         for(int i=0; i<testSize; i++) {
-            Long val = new Long(i);
+            Long val = (long) i;
             ol.put(val, val);
         }
 
@@ -92,7 +90,7 @@ public class OrderedBalanceTreeTest {
 
         List<Long> alreadyGenerated = new ArrayList<>();
         for(int i=0; i<testSize; i++) {
-            Long val = new Long(i);
+            Long val = (long) i;
             ol.put(val, val);
             alreadyGenerated.add(val);
         }
@@ -101,7 +99,7 @@ public class OrderedBalanceTreeTest {
         long totalTime = 0;
         for(int i=0; i<testSize; i++) {
             long startRemove = System.nanoTime();
-            ol.remove(new Long(i));
+            ol.remove((long) i);
             long endRemove = System.nanoTime();
             totalTime += (endRemove - startRemove);
 
@@ -149,7 +147,7 @@ public class OrderedBalanceTreeTest {
         OrderedBalancedTree<Long, Long> bTree = createTree();
 
         for(int i=0; i<100; i++) {
-            bTree.put(new Long(i), new Long(i));
+            bTree.put((long) i, (long) i);
         }
         assertEquals("There should be 100 items in the tree", 100, bTree.keys().size());
         assertEquals("There should be 100 items in the tree", 100, bTree.values().size());
@@ -263,9 +261,8 @@ public class OrderedBalanceTreeTest {
             int batchSize = 10;
             long totalTime = 0;
             for(int i=0; i<nrElements - 1; i += batchSize) {
-                long start = i;
-                long end = start + batchSize;
-                totalTime += assertRange(balancedTree, start, end, batchSize + 1, true);
+                long end = (long) i + batchSize;
+                totalTime += assertRange(balancedTree, (long) i, end, batchSize + 1, true);
             }
             averageSearch += (totalTime / (nrElements / batchSize));
         }
@@ -310,9 +307,8 @@ public class OrderedBalanceTreeTest {
             int batchSize = 10;
             long totalTime = 0;
             for(int i=0; i<nrElements - 1; i += batchSize) {
-                long start = i;
-                long end = start + batchSize;
-                totalTime += assertRange(balancedTree, start, end, batchSize - 1, false);
+                long end = (long) i + batchSize;
+                totalTime += assertRange(balancedTree, (long) i, end, batchSize - 1, false);
             }
             averageSearch += (totalTime / (nrElements / batchSize));
         }
@@ -341,8 +337,8 @@ public class OrderedBalanceTreeTest {
         List<Long> expected = new ArrayList<>();
         OrderedBalancedTree<Long, Long> balancedTree = createTree();
         for(int i=0; i<testSize; i++) {
-            balancedTree.put(new Long(i), new Long(i + testSize));
-            expected.add(new Long(i));
+            balancedTree.put((long) i, (long) (i + testSize));
+            expected.add((long) i);
         }
 
         List<Long> actual = balancedTree.keys();
@@ -360,13 +356,13 @@ public class OrderedBalanceTreeTest {
         long totalTime = 0;
         for(int i=0; i<testSize; i++) {
             int rndId = -1;
-            while(rndId == -1 || alreadyGenerated.contains(rnd)) {
+            while(rndId == -1 || alreadyGenerated.contains((long)rndId)) {
                 rndId = rnd.nextInt(maxNumber);
             }
-            alreadyGenerated.add(new Long(rndId));
+            alreadyGenerated.add((long) rndId);
 
             long startAdd = System.nanoTime();
-            ol.put(new Long(rndId), new Long(rndId));
+            ol.put((long) rndId, (long) rndId);
             long endAdd = System.nanoTime();
             totalTime += (endAdd - startAdd);
         }
