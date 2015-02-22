@@ -52,13 +52,13 @@ public class TableScanOperation {
         KeyNameMapperImpl keyNameMapper = new KeyNameMapperImpl();
         keyNameMapper.addMappedField(0, SimpleEntity.DOCUMENT_ID);
         if(currentResults != null) {
-            LOG.debug("Doing table scan for fields: {} with limited set: {}", fields, currentResults.size());
+            LOG.info("Doing table scan for fields: {} with limited set: {}", fields, currentResults.size());
             for(Key key : currentResults) {
                 RecordResult result = recordWriter.readRecord(KeyUtil.getDocumentKey(currentResults.getKeyNameMapper(), key));
                 doTableScanConditions(operation, merger, foundKeys, result, fields, keyNameMapper);
             }
         } else {
-            LOG.debug("Doing a full table scan for fields: {}", fields);
+            LOG.info("Doing a full table scan for fields: {}", fields);
             RecordIterator recordIterator = recordWriter.readAllRecords();
 
             for(RecordResult result : recordIterator) {

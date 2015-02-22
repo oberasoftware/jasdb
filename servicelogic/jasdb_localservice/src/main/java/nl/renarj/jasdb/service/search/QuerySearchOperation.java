@@ -231,12 +231,6 @@ public class QuerySearchOperation {
 
 	private Set<SearchCondition> getSearchConditions(BlockOperation blockOperation, Index index) {
 		KeyInfo keyInfo = index.getKeyInfo();
-//
-//		if(keyInfo.getKeyFields().size() > blockOperation.getFields().size()) {
-//			LOG.debug("We have a partial index, filling with nill keys");
-//
-//		} else {
-			return blockOperation.getConditions(keyInfo.getKeyNameMapper(), keyInfo.getKeyFields());
-//		}
+		return blockOperation.getConditions(keyInfo.getKeyNameMapper(), keyInfo.getKeyFields());
 	}
 }

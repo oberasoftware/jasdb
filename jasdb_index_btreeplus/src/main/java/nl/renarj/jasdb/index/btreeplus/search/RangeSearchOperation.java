@@ -15,10 +15,7 @@ import nl.renarj.jasdb.index.btreeplus.locking.LockIntentType;
 import nl.renarj.jasdb.index.btreeplus.locking.LockManager;
 import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.factory.KeyFactory;
-import nl.renarj.jasdb.index.keys.impl.CompositeKey;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
-import nl.renarj.jasdb.index.keys.impl.AnyKey;
 import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
 import nl.renarj.jasdb.index.result.IndexSearchResultIteratorImpl;
 import nl.renarj.jasdb.index.result.SearchLimit;
@@ -63,7 +60,8 @@ public class RangeSearchOperation implements SearchOperation {
             List<Key> results = new LinkedList<>();
             boolean keepEvaluating = currentLeave.size() > 0;
             while(keepEvaluating && currentLeave != null) {
-                addFoundKeys(results, currentLeave.getKeyRange(rangeCondition.getStart(), rangeCondition.isStartIncluded(), rangeCondition.getEnd(), rangeCondition.isEndIncluded()), limit);
+                addFoundKeys(results, currentLeave.getKeyRange(rangeCondition.getStart(), rangeCondition.isStartIncluded(),
+                        rangeCondition.getEnd(), rangeCondition.isEndIncluded()), limit);
 
                 if(limit.isMaxReached(results.size())) {
                     keepEvaluating = false;
@@ -78,7 +76,9 @@ public class RangeSearchOperation implements SearchOperation {
 
                 long nextBlockPointer = currentLeave.getProperties().getNextBlock();
                 currentLeave = nextBlockPointer != -1 ? (LeaveBlock) persister.loadBlock(nextBlockPointer) : null;
-                if(currentLeave != null) lockManager.acquireLock(LockIntentType.READ, currentLeave);
+                if(currentLeave != null) {
+                    lockManager.acquireLock(LockIntentType.READ, currentLeave);
+                }
             }
 
             return new IndexSearchResultIteratorImpl(results, keyInfo.getKeyNameMapper().clone());
@@ -115,24 +115,24 @@ public class RangeSearchOperation implements SearchOperation {
 
     private Key validateKey(KeyFactory factory, Key key) throws JasDBStorageException {
         if(key != null && !factory.supportsKey(key)) {
-            return fillEmptyFields(factory.convertKey(key));
+            return factory.convertKey(key);
         } else {
-            return fillEmptyFields(key);
+            return key;
         }
     }
 
-    private Key fillEmptyFields(Key key) throws JasDBStorageException {
-        if(key instanceof CompositeKey) {
-            KeyNameMapper mapper = keyInfo.getKeyNameMapper();
-            //missing fields
-            Key[] keys = key.getKeys();
-            for(String field : keyInfo.getKeyFields()) {
-                int index = mapper.getIndexForField(field);
-                if(keys == null || keys.length <= index || keys[index] == null) {
-                    key.addKey(mapper, field, new AnyKey());
-                }
-            }
-        }
-        return key;
-    }
+//    private Key fillEmptyFields(Key key) throws JasDBStorageException {
+//        if(key instanceof CompositeKey) {
+//            KeyNameMapper mapper = keyInfo.getKeyNameMapper();
+//            //missing fields
+//            Key[] keys = key.getKeys();
+//            for(String field : keyInfo.getKeyFields()) {
+//                int index = mapper.getIndexForField(field);
+//                if(keys == null || keys.length <= index || keys[index] == null) {
+//                    key.addKey(mapper, field, new AnyKey());
+//                }
+//            }
+//        }
+//        return key;
+//    }
 }

@@ -17,7 +17,7 @@ public class CompositeKey extends AbstractKey {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof CompositeKey && compare(((CompositeKey)obj).getKeys(), CompareMethod.EQUALS).getCompare() == 0;
+        return obj instanceof CompositeKey && compare(((CompositeKey) obj).getKeys(), CompareMethod.EQUALS).getCompare() == 0;
     }
 
     @Override

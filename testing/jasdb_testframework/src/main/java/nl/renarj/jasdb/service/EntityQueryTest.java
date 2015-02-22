@@ -94,9 +94,9 @@ public abstract class EntityQueryTest {
         bag.ensureIndex(new IndexField("field5", new LongKeyType()), false, new IndexField("field6", new LongKeyType()));
         bag.ensureIndex(new IndexField("field6", new LongKeyType()), false);
         bag.ensureIndex(new IndexField("age", new LongKeyType()), false);
-        bag.ensureIndex(new IndexField("city", new StringKeyType(200)), false);
-        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType(100)), false);
-        bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType(200))), false);
+        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
+        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType()), false);
+        bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType())), false);
 
         Random rnd = new Random(System.currentTimeMillis());
         for(int i=0; i< NUMBER_ENTITIES; i++) {
@@ -1010,13 +1010,13 @@ public abstract class EntityQueryTest {
 
     private void assertPartialIndexItems(EntityBag bag, String pluginId, String deviceId, String controllerId) throws JasDBStorageException {
 
-//        List<SimpleEntity> plugins = getEntities(bag, PLUGIN_QUERY);
-//        assertThat(plugins.size(), is(1));
-//        assertThat(getEntityValue(plugins, SimpleEntity.DOCUMENT_ID), hasItems(pluginId));
-//
-//        List<SimpleEntity> controllers = getEntities(bag, CONTROLLER_QUERY);
-//        assertThat(controllers.size(), is(1));
-//        assertThat(getEntityValue(controllers, SimpleEntity.DOCUMENT_ID), hasItems(controllerId));
+        List<SimpleEntity> plugins = getEntities(bag, PLUGIN_QUERY);
+        assertThat(plugins.size(), is(1));
+        assertThat(getEntityValue(plugins, SimpleEntity.DOCUMENT_ID), hasItems(pluginId));
+
+        List<SimpleEntity> controllers = getEntities(bag, CONTROLLER_QUERY);
+        assertThat(controllers.size(), is(1));
+        assertThat(getEntityValue(controllers, SimpleEntity.DOCUMENT_ID), hasItems(controllerId));
 
         List<SimpleEntity> devices = getEntities(bag, DEVICE_QUERY);
         assertThat(devices.size(), is(1));

@@ -2,6 +2,7 @@ package nl.renarj.jasdb.index.keys.keyinfo;
 
 import nl.renarj.jasdb.index.keys.Key;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,9 +17,16 @@ public interface KeyNameMapper extends Cloneable {
     int getIndexForField(String field);
 
     /**
+     * Provides a Map containing the index to field mappings
+     * @return The index to field mappings
+     */
+    Map<Integer, String> getMappings();
+
+    /**
+     * Check if a field is mapped
      *
-     * @param field
-     * @return
+     * @param field The field to check if it is mapped
+     * @return True if the field is mapped, False if not
      */
     boolean isMapped(String field);
 

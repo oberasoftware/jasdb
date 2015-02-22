@@ -678,14 +678,13 @@ public class BTreeIndexTest extends IndexBaseTest {
     public void testWriteNillKeysIndex() throws Exception {
         int indexSize = 100000;
         KeyInfo keyInfo = new KeyInfoImpl(
-                Lists.newArrayList(new IndexField("string", new StringKeyType(100)), new IndexField("nillable", new StringKeyType())),
-                Lists.newArrayList(new IndexField(RECORD_POINTER, new LongKeyType())));
+                Lists.newArrayList(new IndexField("string", new StringKeyType(100)), new IndexField("nillable", new StringKeyType()), new IndexField(RECORD_POINTER, new LongKeyType())),
+                new ArrayList<IndexField>());
         KeyNameMapper keyNameMapper = keyInfo.getKeyNameMapper();
         BTreeIndex index = new BTreeIndex(new File(tmpDir, "index_nillable.idx"), keyInfo);
         for(int i=0; i<indexSize; i++) {
-            String key = "SomeKey" + i;
             CompositeKey compositeKey = new CompositeKey();
-            compositeKey.addKey(keyNameMapper, "string", new StringKey(key))
+            compositeKey.addKey(keyNameMapper, "string", new StringKey("SameKey"))
                     .addKey(keyNameMapper, "nillable", new StringKey((byte[])null))
             .addKey(keyNameMapper, RECORD_POINTER, new LongKey(i));
 
@@ -696,6 +695,7 @@ public class BTreeIndexTest extends IndexBaseTest {
         index = new BTreeIndex(new File(tmpDir, "index_nillable.idx"), keyInfo);
         try {
             CompositeKey compositeKey = new CompositeKey();
+            compositeKey.addKey(keyNameMapper, "string", new StringKey("SameKey"));
             compositeKey.addKey(keyNameMapper, "nillable", new StringKey((byte[])null));
 
             IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(compositeKey), new SearchLimit());
