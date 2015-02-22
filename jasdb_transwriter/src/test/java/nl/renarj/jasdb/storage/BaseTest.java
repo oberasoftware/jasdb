@@ -1,6 +1,7 @@
 package nl.renarj.jasdb.storage;
 
-import junit.framework.Assert;
+
+import org.junit.Assert;
 
 import java.io.File;
 

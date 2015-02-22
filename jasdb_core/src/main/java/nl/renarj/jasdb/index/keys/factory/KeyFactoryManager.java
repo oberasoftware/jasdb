@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class KeyFactoryManager {
-	private static final Logger log = LoggerFactory.getLogger(KeyFactoryManager.class);
+public final class KeyFactoryManager {
+	private static final Logger LOG = LoggerFactory.getLogger(KeyFactoryManager.class);
     private static final Pattern KEY_PATTERN = Pattern.compile("([\\p{L}\\p{N} _]+)\\(([\\w:]+)\\)|([\\p{L} ]+)\\((.*)\\)");
 	
 	private static KeyFactoryManager instance;
@@ -59,7 +59,7 @@ public class KeyFactoryManager {
 			}
 			instance = new KeyFactoryManager(definitions);
 		} catch(CoreConfigException e) {
-			log.error("unable to load key factories", e);
+			LOG.error("unable to load key factories", e);
 		}
 	}
 	
@@ -68,7 +68,7 @@ public class KeyFactoryManager {
 	}
 
     public static KeyFactory[] parseHeader(String headerDescriptor) throws JasDBStorageException {
-        log.debug("Parsing header: {}", headerDescriptor);
+        LOG.debug("Parsing header: {}", headerDescriptor);
         if(StringUtils.stringNotEmpty(headerDescriptor)) {
             Matcher matcher = KEY_PATTERN.matcher(headerDescriptor);
 
@@ -78,7 +78,7 @@ public class KeyFactoryManager {
                 String keyValue = matcher.group(2) != null ? matcher.group(2) : matcher.group(4);
 
                 if("complexType".equals(keyName)) {
-                    log.debug("Found complex type: {}", keyValue);
+                    LOG.debug("Found complex type: {}", keyValue);
                     KeyFactory[] compositeKeyFactories = parseHeader(keyValue);
 
                     keyFactoryList.add(new CompositeKeyFactory(new MultiKeyLoaderImpl(KeyNameMapperImpl.create(compositeKeyFactories), compositeKeyFactories)));
@@ -92,7 +92,7 @@ public class KeyFactoryManager {
                     keyFactoryList.add(KeyFactoryManager.createKeyFactory(fieldType, keyName, keyArguments));
                 }
 
-                log.debug("Found field: {} with type info: {}", keyName, keyValue);
+                LOG.debug("Found field: {} with type info: {}", keyName, keyValue);
             }
             return keyFactoryList.toArray(new KeyFactory[keyFactoryList.size()]);
         } else {
@@ -107,15 +107,15 @@ public class KeyFactoryManager {
     private static KeyFactory createKeyFactory(String keyId, String field, String[] keyArgs) throws JasDBStorageException {
 		KeyFactoryDefinition definition = getInstance().getKeyFactory(keyId);
 		if(definition != null) {
-			log.debug("Loaded keyFactory: {} for id: {}", definition.getKeyFactoryClass(), 
+			LOG.debug("Loaded keyFactory: {} for id: {}", definition.getKeyFactoryClass(),
 					definition.getKeyFactoryId());
-			log.debug("Using arguments: {}", keyArgs);
+			LOG.debug("Using arguments: {}", (Object[]) keyArgs);
 			
 			List<String> arguments = new ArrayList<>();
 			arguments.add(field);
 			arguments.addAll(Arrays.asList(keyArgs));
 			
-			KeyFactory keyFactory = loadKeyFactory(definition.getKeyFactoryClass(), arguments.toArray(new String[0]));
+			KeyFactory keyFactory = loadKeyFactory(definition.getKeyFactoryClass(), arguments.toArray(new String[arguments.size()]));
 			if(keyFactory != null) {
 				return keyFactory;
 			} 
@@ -128,12 +128,12 @@ public class KeyFactoryManager {
 		try {
 			return ReflectionLoader.loadClass(KeyFactory.class, keyFactoryClass, keyArgs);
 		} catch(ReflectionException e) {
-			log.error("Unable to load KeyFactory: {}", e.getMessage());
+			LOG.error("Unable to load KeyFactory: {}", e.getMessage());
 			return null;
 		}
 	}
 	
-	private static class KeyFactoryDefinition {
+	private static final class KeyFactoryDefinition {
 		private String keyFactoryClass;
 		private String keyFactoryId;
 		

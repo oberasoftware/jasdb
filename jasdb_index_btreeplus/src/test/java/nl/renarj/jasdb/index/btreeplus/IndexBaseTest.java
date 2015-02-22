@@ -1,8 +1,5 @@
 package nl.renarj.jasdb.index.btreeplus;
 
-import junit.framework.Assert;
-import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.core.utilities.configuration.ManualConfiguration;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.btreeplus.locking.LockManager;
@@ -16,47 +13,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public abstract class IndexBaseTest {
 	protected static final String RECORD_POINTER = "RECORD_POINTER";
 
 	protected static File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 	private static final Logger LOG = LoggerFactory.getLogger(IndexBaseTest.class);
-
-    public static ManualConfiguration createCachingConfiguration(String cacheEnabled, String maxCachedBlocks, String maxCachedSize) {
-        Map<String, String> params = new HashMap<>();
-        params.put("Enabled", cacheEnabled);
-
-        ManualConfiguration config = new ManualConfiguration("Caching", params);
-
-        if(StringUtils.stringNotEmpty(maxCachedBlocks)) {
-            createProperty(config, "MaxCachedBlocks", maxCachedBlocks);
-        }
-
-        if(StringUtils.stringNotEmpty(maxCachedSize)) {
-            createProperty(config, "MaxCacheMemSize", maxCachedSize);
-        }
-
-        return config;
-    }
-
-    private static ManualConfiguration createProperty(ManualConfiguration config, String name, String value) {
-        Map<String, String> maxCacheBlocksAttribs = new HashMap<>();
-        maxCacheBlocksAttribs.put("Value", value);
-        maxCacheBlocksAttribs.put("Name", name);
-
-        ManualConfiguration propertyConfig = new ManualConfiguration("Property", maxCacheBlocksAttribs);
-        config.addChildConfiguration("Property[@Name='" + name + "']", propertyConfig);
-
-        return propertyConfig;
-    }
 
     public static void cleanData(File dir) {
         if(dir.exists()) {
@@ -68,11 +34,9 @@ public abstract class IndexBaseTest {
                 }
             });
             LOG.info("Cleaning up {} files", cleanupFiles.length);
-            if(cleanupFiles != null) {
-                for(File cleanFile : cleanupFiles) {
-                    boolean success = cleanFile.delete();
-                    LOG.info("Deleting of file: {} successful: {}", cleanFile, success);
-                }
+            for(File cleanFile : cleanupFiles) {
+                boolean success = cleanFile.delete();
+                LOG.info("Deleting of file: {} successful: {}", cleanFile, success);
             }
         }
     }
@@ -83,7 +47,7 @@ public abstract class IndexBaseTest {
 
     protected static void assertDelete(File deleteFile) {
 		if(deleteFile.exists()) {
-			Assert.assertTrue(deleteFile.delete());
+			assertTrue(deleteFile.delete());
 		}
 	}
 	
@@ -91,7 +55,7 @@ public abstract class IndexBaseTest {
 		for(Integer availableIndex : availableLongKeys) {
 			LOG.trace("Checking if key: {} can be found after remove operation", availableIndex);
 			IndexSearchResultIterator result = index.searchIndex(new EqualsCondition(new LongKey(availableIndex)), new SearchLimit());
-			Assert.assertFalse("There should be a result for: " + availableIndex, result.isEmpty());
+			assertFalse("There should be a result for: " + availableIndex, result.isEmpty());
 		}
 	}
 
@@ -186,7 +150,7 @@ public abstract class IndexBaseTest {
             long start = System.nanoTime();
             IndexSearchResultIterator results = index.searchIndex(new EqualsCondition(new StringKey("key" + entry.getKey())), new SearchLimit());
             long end = System.nanoTime();
-            LOG.debug("Found {} records in {} for key: {}", new Object[]{results.size(), (end - start), "key" + entry.getKey()});
+            LOG.debug("Found {} records in {} for key: {}", results.size(), (end - start), "key" + entry.getKey());
             totalSearch += (end - start);
             assertEquals("Unexpected amount of entities found", entry.getValue(), Integer.valueOf(results.size()));
 

@@ -1,6 +1,5 @@
 package nl.renarj.core.caching;
 
-import junit.framework.Assert;
 import nl.renarj.core.exceptions.CoreConfigException;
 import nl.renarj.core.utilities.configuration.ConfigurationProperty;
 import nl.renarj.core.utilities.configuration.ManualConfiguration;
@@ -11,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class CacheBucketTest {
 	private static final Logger LOG = LoggerFactory.getLogger(CacheBucketTest.class);
@@ -25,19 +23,19 @@ public class CacheBucketTest {
 		Bucket bucket = new CacheBucket("testBucket");
 		bucket.configure(new CacheConfig(true, -1, -1));
 		for(int i=0; i<cachedItems; i++) {
-			bucket.put("cacheItem" + i, new CacheItemWrapper(new String("Cached item: " + i), itemMemSize));
+			bucket.put("cacheItem" + i, new CacheItemWrapper("Cached item: " + i, itemMemSize));
 		}
 		
 		long expectedMemSize = cachedItems * itemMemSize;
-		Assert.assertEquals("Unexpected memory size", expectedMemSize, bucket.getMemSize());
-		Assert.assertEquals("Unexpected amount of items cached", cachedItems, bucket.getCachedItems());
+		assertEquals("Unexpected memory size", expectedMemSize, bucket.getMemSize());
+		assertEquals("Unexpected amount of items cached", cachedItems, bucket.getCachedItems());
 		
 		for(int i=0; i<cachedItems; i++) {
 			String cacheKey = "cacheItem" + i;
 			CachableItem element = bucket.getItem(cacheKey);
 			CacheItemWrapper itemWrapper = (CacheItemWrapper) element;
-			Assert.assertTrue(itemWrapper.getValue() instanceof String);
-			Assert.assertEquals("Unexpected cached item value", "Cached item: " + i, itemWrapper.getValue());
+			assertTrue(itemWrapper.getValue() instanceof String);
+			assertEquals("Unexpected cached item value", "Cached item: " + i, itemWrapper.getValue());
 		}
 	}
 	
@@ -51,12 +49,12 @@ public class CacheBucketTest {
 		bucket.configure(new CacheConfig(true, -1, maxAllowedCached));
 		
 		for(int i=0; i<cachedItems; i++) {
-			bucket.put("cacheItem" + i, new CacheItemWrapper(new String("Cached item: " + i), itemMemSize));
+			bucket.put("cacheItem" + i, new CacheItemWrapper("Cached item: " + i, itemMemSize));
 		}
 
 		long expectedMemSize = maxAllowedCached * itemMemSize;
-		Assert.assertEquals("Unexpected amount of items cached", maxAllowedCached, bucket.getCachedItems());
-		Assert.assertEquals("Unexpected memory size", expectedMemSize, bucket.getMemSize());
+		assertEquals("Unexpected amount of items cached", maxAllowedCached, bucket.getCachedItems());
+		assertEquals("Unexpected memory size", expectedMemSize, bucket.getMemSize());
 	}
 
     @Test
@@ -66,7 +64,7 @@ public class CacheBucketTest {
         bucket.configure(new CacheConfig(true, -1, maxItems));
 
         for(int i=0; i<maxItems + 1; i++) {
-            bucket.put("cacheItem" + i, new CacheItemWrapper(new String("Cached item: " + i), 100));
+            bucket.put("cacheItem" + i, new CacheItemWrapper("Cached item: " + i, 100));
         }
 
         assertNull(bucket.getItem("cacheItem" + 0));
@@ -79,7 +77,7 @@ public class CacheBucketTest {
 		int nrThreads = 10;
 		int maxAllowedCached = 1000;
 		
-		Map<String, String> configurationOptions = new HashMap<String, String>();
+		Map<String, String> configurationOptions = new HashMap<>();
 		configurationOptions.put("Enabled", "true");
 		configurationOptions.put("CheckInterval", "2s");
 		ManualConfiguration manualConfig = new ManualConfiguration("Caching", configurationOptions);
@@ -89,7 +87,7 @@ public class CacheBucketTest {
 		cacheManager.configure(manualConfig);
 		cacheManager.startCacheManager();
 		
-		Map<Thread, ReadWriteThread> readWriteThreds = new HashMap<Thread, ReadWriteThread>();
+		Map<Thread, ReadWriteThread> readWriteThreds = new HashMap<>();
 		for(int i=0; i<nrThreads; i++) {
 			ReadWriteThread rwThread = new ReadWriteThread(cacheManager, cacheMaxSize);
 			Thread thread = new Thread(rwThread);
@@ -111,7 +109,7 @@ public class CacheBucketTest {
 
 		LOG.debug("Total misses: {}", totalMisses);
 		LOG.debug("Total hits: {}", totalHits);
-		Assert.assertTrue("Misses should be smaller than nrthreads * max", (nrThreads * cacheMaxSize) > totalMisses);		
+		assertTrue("Misses should be smaller than nrthreads * max", (nrThreads * cacheMaxSize) > totalMisses);
 	}
 	
 	private class ReadWriteThread implements Runnable {

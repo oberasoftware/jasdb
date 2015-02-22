@@ -140,7 +140,7 @@ public class DataBlockImpl implements DataBlock {
         int available = dataBlockFactory.getBlockSize() - offSetWithHeader;
 
         if(available < STREAM_HEADER_SPACE) {
-            byte[] valueBytes = new byte[Long.BYTES];
+            byte[] valueBytes = new byte[MEMORY_CONSTANTS.LONG_BYTE_SIZE];
             mappedByteBuffer.position(offSetWithHeader);
             mappedByteBuffer.get(valueBytes, 0, available);
             int remaining = MEMORY_CONSTANTS.LONG_BYTE_SIZE - available;

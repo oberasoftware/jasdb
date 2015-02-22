@@ -16,12 +16,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.matchers.JUnitMatchers.hasItems;
 
 /**
  * @author Renze de Vries
@@ -73,7 +73,7 @@ public class JasDBMetadataStoreTest {
 
         File jasdbHome = new File(storeLocation, ".jasdb");
         File pidFile = new File(jasdbHome, "metadata.pid");
-        pidFile.createNewFile();
+        assertTrue(pidFile.createNewFile());
 
         metadataStore = new JasDBMetadataStore();
         assertFalse(metadataStore.isLastShutdownClean());
