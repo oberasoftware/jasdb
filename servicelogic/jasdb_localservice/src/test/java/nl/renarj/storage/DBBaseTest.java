@@ -1,9 +1,9 @@
 package nl.renarj.storage;
 
-import junit.framework.Assert;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import org.junit.After;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,10 +25,6 @@ public abstract class DBBaseTest {
 		if(deleteFile.exists()) {
 			Assert.assertTrue(deleteFile.delete());
 		}
-	}
-	
-	protected static void assertFileExists(File file, boolean shouldExist) {
-		Assert.assertEquals("File " + file.toString() + " should exist: " + shouldExist, shouldExist, file.exists());
 	}
 	
     public static void cleanData() {

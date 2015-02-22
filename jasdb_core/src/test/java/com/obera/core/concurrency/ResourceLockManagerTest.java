@@ -1,7 +1,7 @@
 package com.obera.core.concurrency;
 
 import com.obera.core.exceptions.LockingException;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
@@ -11,6 +11,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author renarj
@@ -51,11 +54,11 @@ public class ResourceLockManagerTest {
         });
         sharedLock.get(1000, TimeUnit.MILLISECONDS);
 
-        Assert.assertTrue(lockManager.isResourceValid());
-        Assert.assertEquals(1, lockManager.getSharedLocks());
+        assertTrue(lockManager.isResourceValid());
+        assertEquals(1, lockManager.getSharedLocks());
         lockManager.sharedUnlock();
         lockManager.exclusiveUnlock();
-        Assert.assertEquals(0, lockManager.getSharedLocks());
+        assertEquals(0, lockManager.getSharedLocks());
     }
 
     @Test
@@ -76,7 +79,7 @@ public class ResourceLockManagerTest {
     public void testSharedLockCloseResource() throws TimeoutException, InterruptedException, ExecutionException {
         final ResourceLockManager lockManager = new ResourceLockManager();
         lockManager.sharedLock();
-        Assert.assertTrue(lockManager.isResourceValid());
+        assertTrue(lockManager.isResourceValid());
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         Future<Void> closeResource = executorService.submit(new Callable<Void>() {

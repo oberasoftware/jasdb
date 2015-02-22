@@ -7,7 +7,6 @@
  */
 package nl.renarj.jasdb.rest;
 
-import junit.framework.Assert;
 import nl.renarj.jasdb.LocalDBSession;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
@@ -37,6 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * User: renarj
@@ -84,12 +85,9 @@ public class EntityRetrievalTest extends RestBaseTest {
             AndBlock and = new AndBlock();
             and.addCondition("city", new EqualsCondition(new StringKey(city)));
 
-            QueryResult result = connector.find(new RemotingContext(true), INSTANCE_ID, BAG_NAME, and, new SearchLimit(), new ArrayList<SortParameter>());
-            try {
+            try (QueryResult result = connector.find(new RemotingContext(true), INSTANCE_ID, BAG_NAME, and, new SearchLimit(), new ArrayList<SortParameter>())) {
                 Integer expectedCount = cityMap.get(city);
-                Assert.assertEquals("Unexpected city count", (long)expectedCount, result.size());
-            } finally {
-                result.close();
+                assertEquals("Unexpected city count", (long) expectedCount, result.size());
             }
         }
     }
@@ -105,13 +103,10 @@ public class EntityRetrievalTest extends RestBaseTest {
             and.addCondition("field", new EqualsCondition(new StringKey("" + i)));
 
             long start = System.nanoTime();
-            QueryResult result = connector.find(new RemotingContext(true), INSTANCE_ID, BAG_NAME, and, new SearchLimit(), new ArrayList<SortParameter>());
-            try {
+            try (QueryResult result = connector.find(new RemotingContext(true), INSTANCE_ID, BAG_NAME, and, new SearchLimit(), new ArrayList<SortParameter>())) {
                 long end = System.nanoTime();
                 totalTime += (end - start);
-                Assert.assertEquals("There should only be one entity", 1, result.size());
-            } finally {
-                result.close();
+                assertEquals("There should only be one entity", 1, result.size());
             }
         }
         log.info("Average query operation took: {} ns.", (totalTime / TEST_SIZE));

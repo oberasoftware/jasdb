@@ -1,6 +1,5 @@
 package nl.renarj.storage;
 
-import junit.framework.Assert;
 import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
@@ -13,6 +12,7 @@ import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.IndexField;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -26,6 +26,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ConcurrencyTest extends DBBaseTest {
@@ -306,9 +307,8 @@ public class ConcurrencyTest extends DBBaseTest {
             writerEntry.getKey().join();
             WriterThread writerThread = writerEntry.getValue();
 
-            log.info("Write times for: {} average: {} ns. ({} ms.) first: {} last: {}", new Object[] {
-                    writerThread.getWriterId(), writerThread.getAverageWrite(), (double)writerThread.getAverageWrite() / (double)(1000 * 1000),
-                    writerThread.getFirstWrite(), writerThread.getLastWrite()});
+            log.info("Write times for: {} average: {} ns. ({} ms.) first: {} last: {}", writerThread.getWriterId(), writerThread.getAverageWrite(), (double)writerThread.getAverageWrite() / (double)(1000 * 1000),
+                    writerThread.getFirstWrite(), writerThread.getLastWrite());
 
             List<String> createdIds = writerThread.getCreatedIds();
             loadRecords(createdIds);
@@ -320,13 +320,12 @@ public class ConcurrencyTest extends DBBaseTest {
         for(Map.Entry<Thread, ReadThread> readerEntry : readers.entrySet()) {
             readerEntry.getKey().join();
             ReadThread readThread = readerEntry.getValue();
-            log.info("Reader: {} has {} success and {} failures", new Object[] {readThread.readerId,
-                    readThread.success, readThread.failures});
-            log.info("Read times for: {} average: {} ns. ({} ms.) first: {} last: {}", new Object[] {
-                    readThread.readerId, readThread.getAverageRead(), (double)readThread.getAverageRead() / (double)(1000 * 1000),
-                    readThread.getFirstRead(), readThread.getLastRead()});
-            Assert.assertEquals("There should be no failures", 0, readerEntry.getValue().failures);
-            Assert.assertEquals("All should be found", createdIds.size(), readerEntry.getValue().success);
+            log.info("Reader: {} has {} success and {} failures", readThread.readerId,
+                    readThread.success, readThread.failures);
+            log.info("Read times for: {} average: {} ns. ({} ms.) first: {} last: {}", readThread.readerId, readThread.getAverageRead(), (double)readThread.getAverageRead() / (double)(1000 * 1000),
+                    readThread.getFirstRead(), readThread.getLastRead());
+            assertEquals("There should be no failures", 0, readerEntry.getValue().failures);
+            assertEquals("All should be found", createdIds.size(), readerEntry.getValue().success);
         }
     }
 
@@ -335,20 +334,19 @@ public class ConcurrencyTest extends DBBaseTest {
             updateEntry.getKey().join();
             UpdateThread updateThread = updateEntry.getValue();
 
-            log.info("Updater: {} has {} success and {} failures", new Object[] {updateThread.updateId,
-                    updateThread.success, updateThread.failures});
-            log.info("Update times for: {} average: {} ns. ({} ms.)", new Object[] {
-                    updateThread.updateId, updateThread.getAverageUpdate(),  (double)updateThread.getAverageUpdate() / (double)(1000 * 1000) });
+            log.info("Updater: {} has {} success and {} failures", updateThread.updateId,
+                    updateThread.success, updateThread.failures);
+            log.info("Update times for: {} average: {} ns. ({} ms.)", updateThread.updateId, updateThread.getAverageUpdate(), (double)updateThread.getAverageUpdate() / (double)(1000 * 1000));
 
-            Assert.assertEquals("There should be no failures", 0, updateThread.failures);
-            Assert.assertEquals("There should be full success", NUMBER_ENTITIES, updateThread.success);
+            assertEquals("There should be no failures", 0, updateThread.failures);
+            assertEquals("There should be full success", NUMBER_ENTITIES, updateThread.success);
         }
 
         EntityBag bag = new LocalDBSession().createOrGetBag(TESTBAG);
         for(String updateId : createdIds) {
             SimpleEntity entity = bag.getEntity(updateId);
             Assert.assertTrue(entity.hasProperty(NEW_PROPERTY));
-            Assert.assertEquals("Unexpected value after update", MY_NEW_VALUE, entity.getProperty(NEW_PROPERTY).getFirstValueObject());
+            assertEquals("Unexpected value after update", MY_NEW_VALUE, entity.getProperty(NEW_PROPERTY).getFirstValueObject());
         }
     }
 
@@ -357,13 +355,12 @@ public class ConcurrencyTest extends DBBaseTest {
             removeEntry.getKey().join();
             RemoveThread removeThread = removeEntry.getValue();
 
-            log.info("Remover: {} has {} success and {} failures", new Object[] {removeThread.threadId,
-                    removeThread.success, removeThread.failures});
-            log.info("Remove times for: {} average: {} ns. ({} ms.)", new Object[] {
-                    removeThread.threadId, removeThread.getAverageRemove(),  (double)removeThread.getAverageRemove() / (double)(1000 * 1000) });
+            log.info("Remover: {} has {} success and {} failures", removeThread.threadId,
+                    removeThread.success, removeThread.failures);
+            log.info("Remove times for: {} average: {} ns. ({} ms.)", removeThread.threadId, removeThread.getAverageRemove(), (double)removeThread.getAverageRemove() / (double)(1000 * 1000));
 
 
-            Assert.assertEquals("There should be no failures", 0, removeThread.failures);
+            assertEquals("There should be no failures", 0, removeThread.failures);
 
             EntityBag bag = new LocalDBSession().createOrGetBag(TESTBAG);
             for(String id : removeThread.removeIds) {
@@ -549,7 +546,7 @@ public class ConcurrencyTest extends DBBaseTest {
 					if(entity != null && entity.getInternalId().equals(internalId)) {
 						success++;
 					} else {
-                        log.error("Invalid entity: {} internalId expected: {} but was: {}", new Object[] {entity, internalId, entity != null ? entity.getInternalId() : null});
+                        log.error("Invalid entity: {} internalId expected: {} but was: {}", entity, internalId, entity != null ? entity.getInternalId() : null);
 
 						failures++;
 					}

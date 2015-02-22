@@ -1,7 +1,6 @@
 package nl.renarj.jasdb.index;
 
 import com.google.common.collect.Lists;
-import junit.framework.Assert;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.impl.CompositeKey;
@@ -14,6 +13,7 @@ import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.keys.types.UUIDKeyType;
 import nl.renarj.jasdb.index.search.IndexField;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +38,11 @@ public class KeyInfoImplTest {
 		searchMatchFields.add("testField");
 		
 		int matchRatio = keyInfo.match(searchMatchFields);
-		Assert.assertEquals("MatchRatio should be 100", 100, matchRatio);
+		assertEquals("MatchRatio should be 100", 100, matchRatio);
 		
 		searchMatchFields.add("valueField");
 		matchRatio = keyInfo.match(searchMatchFields);
-		Assert.assertEquals("MatchRatio should be 100", 100, matchRatio);
+		assertEquals("MatchRatio should be 100", 100, matchRatio);
 	}
 
     @Test
@@ -69,10 +69,10 @@ public class KeyInfoImplTest {
 	public void testSimpleKeyInfoFromHeader() throws JasDBStorageException {
 		KeyInfoImpl keyInfo = new KeyInfoImpl("testField(stringType:200);", "");
 		Assert.assertNotNull(keyInfo.getKeyFactory());
-		Assert.assertEquals("stringType", keyInfo.getKeyFactory().getKeyId());
-		Assert.assertEquals("Unexpected keySize", 200, keyInfo.getKeyFactory().getKeySize());
-		Assert.assertEquals("Unexpected field name", "testField", keyInfo.getKeyFactory().getFieldName());
-		Assert.assertEquals("Unexpected amount of fields", 1, keyInfo.getKeyFields().size());
+		assertEquals("stringType", keyInfo.getKeyFactory().getKeyId());
+		assertEquals("Unexpected keySize", 200, keyInfo.getKeyFactory().getKeySize());
+		assertEquals("Unexpected field name", "testField", keyInfo.getKeyFactory().getFieldName());
+		assertEquals("Unexpected amount of fields", 1, keyInfo.getKeyFields().size());
 		
 	}
 	
@@ -80,11 +80,11 @@ public class KeyInfoImplTest {
 	public void testComplexKeyInfoFromHeader() throws JasDBStorageException {
 		KeyInfoImpl keyInfo = new KeyInfoImpl("key(stringType:1024);", "RECORD_POINTER(stringType:1024);DATE_FIELD(stringType:20);");
 		Assert.assertNotNull(keyInfo.getKeyFactory());
-		Assert.assertEquals("stringType", keyInfo.getKeyFactory().getKeyId());
-		Assert.assertEquals("Unexpected keySize", 1024, keyInfo.getKeyFactory().getKeySize());
-		Assert.assertEquals("Unexpected field name", "key", keyInfo.getKeyFactory().getFieldName());
+		assertEquals("stringType", keyInfo.getKeyFactory().getKeyId());
+		assertEquals("Unexpected keySize", 1024, keyInfo.getKeyFactory().getKeySize());
+		assertEquals("Unexpected field name", "key", keyInfo.getKeyFactory().getFieldName());
 
-		Assert.assertEquals("Unexpected amount of values", 2, keyInfo.getValueFields().size());
+		assertEquals("Unexpected amount of values", 2, keyInfo.getValueFields().size());
 	}
 	
 	@Test
@@ -94,9 +94,9 @@ public class KeyInfoImplTest {
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new StringKeyType(16)), indexValues);
 		
 		String keyHeader = keyInfo.keyAsHeader();
-		Assert.assertEquals("", "ID(stringType:16);", keyHeader);
+		assertEquals("", "ID(stringType:16);", keyHeader);
 		String valueHeader = keyInfo.valueAsHeader();
-		Assert.assertEquals("", "POINTER(stringType:20);", valueHeader);
+		assertEquals("", "POINTER(stringType:20);", valueHeader);
 	}
 	
 	@Test
@@ -110,9 +110,9 @@ public class KeyInfoImplTest {
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new StringKeyType(188)), indexValues);
 		
 		String keyHeader = keyInfo.keyAsHeader();
-		Assert.assertEquals("", "ID(stringType:188);", keyHeader);
+		assertEquals("", "ID(stringType:188);", keyHeader);
 		String valueHeader = keyInfo.valueAsHeader();
-		Assert.assertEquals("", "POINTER(stringType:20);field1(longType);testValue(longType);SOMEVALUE(stringType:203);", valueHeader);
+		assertEquals("", "POINTER(stringType:20);field1(longType);testValue(longType);SOMEVALUE(stringType:203);", valueHeader);
 	}
 	
 	@Test
@@ -129,12 +129,12 @@ public class KeyInfoImplTest {
 
 		Key loadedKey = keyInfo.loadKey(0, buffer);
 		log.debug("Loaded key: {}", loadedKey.toString());
-		Assert.assertEquals("The key value is unexpected", "myvalue", loadedKey.getValue());
-		Assert.assertEquals("There should be one value payload", 1, loadedKey.getKeys().length);
+		assertEquals("The key value is unexpected", "myvalue", loadedKey.getValue());
+		assertEquals("There should be one value payload", 1, loadedKey.getKeys().length);
 		
 		Key value = loadedKey.getKey(keyInfo.getKeyNameMapper(), "POINTER");
 		Assert.assertNotNull("There should be a value object", value);
-		Assert.assertEquals("Value is unexpected", "998", value.getValue());
+		assertEquals("Value is unexpected", "998", value.getValue());
 	}
 	
 	@Test
@@ -152,12 +152,12 @@ public class KeyInfoImplTest {
 
 		Key loadedKey = keyInfo.loadKey(0, buffer);
 		log.debug("Loaded key: {}", loadedKey.toString());
-		Assert.assertEquals("The key value is unexpected", uuid.toString(), loadedKey.getValue());
-		Assert.assertEquals("There should be one value payload", 1, loadedKey.getKeys().length);
+		assertEquals("The key value is unexpected", uuid.toString(), loadedKey.getValue());
+		assertEquals("There should be one value payload", 1, loadedKey.getKeys().length);
 		
 		Key value = loadedKey.getKey(keyInfo.getKeyNameMapper(), "POINTER");
 		Assert.assertNotNull("There should be a value object", value);
-		Assert.assertEquals("Value is unexpected", (long) 998, value.getValue());
+		assertEquals("Value is unexpected", (long) 998, value.getValue());
 	}
 
     @Test
@@ -185,12 +185,12 @@ public class KeyInfoImplTest {
 
 		Key loadedKey = keyInfo.loadKey(0, buffer);
 		log.debug("Loaded key: {}", loadedKey.toString());
-		Assert.assertEquals("The key value is unexpected", (long)5556, loadedKey.getValue());
-		Assert.assertEquals("There should be one value payload", 1, loadedKey.getKeys().length);
+		assertEquals("The key value is unexpected", (long) 5556, loadedKey.getValue());
+		assertEquals("There should be one value payload", 1, loadedKey.getKeys().length);
 		
 		Key value = loadedKey.getKey(keyInfo.getKeyNameMapper(), "POINTER");
 		Assert.assertNotNull("There should be a value object", value);
-		Assert.assertEquals("Value is unexpected", (long)993273, value.getValue());
+		assertEquals("Value is unexpected", (long) 993273, value.getValue());
 	}
 
     @Test
@@ -247,7 +247,7 @@ public class KeyInfoImplTest {
 		
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new LongKeyType()), indexValues);
 		log.debug("keySize: {}", keyInfo.getKeySize());
-		ByteBuffer buffer = ByteBuffer.allocate((int)(keyInfo.getKeySize() * numberOfKeys));
+		ByteBuffer buffer = ByteBuffer.allocate(keyInfo.getKeySize() * numberOfKeys);
 
 		int curPosition = 0;
 		for(int i=0; i<numberOfKeys; i++) {
@@ -267,16 +267,16 @@ public class KeyInfoImplTest {
 			log.debug("Key was loaded in: {} ns.", (endLoad - startLoad));
 
 			log.debug("Loaded key: {}", loadedKey.toString());
-			Assert.assertEquals("The key value is unexpected", (long)i, loadedKey.getValue());
-			Assert.assertEquals("There should be a two value payload", 2, loadedKey.getKeys().length);
+			assertEquals("The key value is unexpected", (long) i, loadedKey.getValue());
+			assertEquals("There should be a two value payload", 2, loadedKey.getKeys().length);
 			
 			Key value = loadedKey.getKey(keyInfo.getKeyNameMapper(), "SOME_VALUE");
 			Assert.assertNotNull("There should be a value object", value);
-			Assert.assertEquals("Value is unexpected", "just some random string: " + i, value.getValue());
+			assertEquals("Value is unexpected", "just some random string: " + i, value.getValue());
 
 			value = loadedKey.getKey(keyInfo.getKeyNameMapper(), "POINTER");
 			Assert.assertNotNull("There should be a value object", value);
-			Assert.assertEquals("Value is unexpected", (long)(1000 + i), value.getValue());
+			assertEquals("Value is unexpected", (long) (1000 + i), value.getValue());
 			
 			curPosition += keyInfo.getKeySize();
 		}
@@ -290,7 +290,7 @@ public class KeyInfoImplTest {
 		
 		KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("ID", new LongKeyType()), indexValues);
 		log.debug("keySize: {}", keyInfo.getKeySize());
-		ByteBuffer buffer = ByteBuffer.allocate((int)(keyInfo.getKeySize() * numberOfKeys));
+		ByteBuffer buffer = ByteBuffer.allocate(keyInfo.getKeySize() * numberOfKeys);
 
 		int curPosition = 0;
 		for(int i=0; i<numberOfKeys; i++) {
@@ -309,12 +309,12 @@ public class KeyInfoImplTest {
 			log.debug("Key was loaded in: {} ns.", (endLoad - startLoad));
 
 			log.debug("Loaded key: {}", loadedKey.toString());
-			Assert.assertEquals("The key value is unexpected", (long)i, loadedKey.getValue());
-			Assert.assertEquals("There should be a one value payload", 1, loadedKey.getKeys().length);
+			assertEquals("The key value is unexpected", (long) i, loadedKey.getValue());
+			assertEquals("There should be a one value payload", 1, loadedKey.getKeys().length);
 			
 			Key value = loadedKey.getKey(keyInfo.getKeyNameMapper(), "POINTER");
 			Assert.assertNotNull("There should be a value object", value);
-			Assert.assertEquals("Value is unexpected", (long)(1000 + i), value.getValue());
+			assertEquals("Value is unexpected", (long) (1000 + i), value.getValue());
 			
 			curPosition += keyInfo.getKeySize();
 		}
