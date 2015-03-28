@@ -3,20 +3,23 @@ unstructured data. The database can be used standalone and accessed
 through a java client library or the REST interface.
 
 Also the database can be used in process of your Java application,
-ideal for embedded projects where a small lightweight database is needed.
+ideal for embedded projects (including on Android) where a small lightweight database is needed.
 
+## Features
 JasDB has the folowing features:
 * Lightweight memory and cpu profile
 * High throughput on a single machine
 * Full query capabilities
 * BTree index structure
 * REST webservice
+* Android support
 * Java client API (both for remote and local embedded mode)
 
+## Documentation
 For more information have a look at http://www.oberasoftware.com or 
 the wiki https://bitbucket.org/oberasoftware/jasdb_open/wiki
 
-
+## License
 This software adheres to the MIT X11 license:
 Copyright (c) 2014 Obera Software
 
