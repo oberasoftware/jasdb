@@ -29,7 +29,7 @@ Javadoc: http://oberasoftware.github.io/jasdb/apidocs/
 For more details see here: https://github.com/oberasoftware/jasdb-open/wiki/Installing-and-configuring-JasDB
 
 ### Java Example
-```
+```java
 //Open DB Session
 DBSession session = new LocalDBSession();
 EntityBag bag = session.createOrGetBag("MyBag");
