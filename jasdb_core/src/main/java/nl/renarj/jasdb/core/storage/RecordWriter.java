@@ -67,7 +67,7 @@ public interface RecordWriter {
 	 * @return The record iterator which can iterate over all the persisted record.
 	 * @throws JasDBStorageException If unable to return an iterator, channel is closed or not accessible
 	 */
-	public RecordIterator readAllRecords() throws JasDBStorageException;
+	RecordIterator readAllRecords() throws JasDBStorageException;
 	
 	/**
 	 * This returns an iterator that can iterate over all persisted records to a defined limit.
@@ -75,7 +75,7 @@ public interface RecordWriter {
 	 * @return The record iterator which can iterate over all the persisted record to a defined limit.
 	 * @throws JasDBStorageException If unable to return an iterator, channel is closed or not accessible
 	 */
-	public RecordIterator readAllRecords(int limit) throws JasDBStorageException;
+	RecordIterator readAllRecords(int limit) throws JasDBStorageException;
 	
 	/**
 	 * This reads a specific record at the indicated record position
@@ -84,7 +84,7 @@ public interface RecordWriter {
 	 * @return The RecordResult if the record could be found
 	 * @throws JasDBStorageException In case the record could not be found or read
 	 */
-	public RecordResult readRecord(UUIDKey documentId) throws JasDBStorageException;
+	RecordResult readRecord(UUIDKey documentId) throws JasDBStorageException;
 
 	/**
 	 * This writes the given content to the filesystem and returns the record pointer at which the record

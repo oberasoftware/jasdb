@@ -2,6 +2,7 @@ package nl.renarj.jasdb.storage.transactional;
 
 import nl.renarj.jasdb.core.exceptions.DatastoreException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.storage.exceptions.RecordNotFoundException;
 import nl.renarj.jasdb.storage.exceptions.RecordStoreInUseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +14,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -181,10 +186,11 @@ public class FSWriter implements Writer {
     }
 
     @Override
-    public RecordResultImpl readRecord(long recordPosition) throws DatastoreException {
-        LOG.debug("Reading record at position: {}", recordPosition);
-
+    public RecordResultImpl readRecord(Supplier<Optional<Long>> recordPointerSupplier) throws DatastoreException {
         try {
+            long recordPosition = recordPointerSupplier.get().orElseThrow(() -> new RecordNotFoundException("Unable to read record, could not be found"));
+            LOG.debug("Reading record at position: {}", recordPosition);
+
             ByteBuffer recordPointer = ByteBuffer.allocate(RECORD_HEADER_SIZE);
             int read = channel.read(recordPointer, recordPosition);
             long currentPosition = recordPosition + RECORD_HEADER_SIZE;
@@ -242,7 +248,7 @@ public class FSWriter implements Writer {
     }
 
     @Override
-    public Long writeRecord(String recordContents) throws DatastoreException {
+    public Long writeRecord(String recordContents, Consumer<Long> postAction) throws DatastoreException {
         try {
             lock.lock();
             try {
@@ -275,6 +281,11 @@ public class FSWriter implements Writer {
 
                 incrementRecordCount();
 
+                if(postAction != null) {
+                    LOG.debug("Executing post write operation for point: {}", recordStart);
+                    postAction.accept(recordStart);
+                }
+
                 return recordStart;
             } finally {
                 lock.unlock();
@@ -285,9 +296,11 @@ public class FSWriter implements Writer {
     }
 
     @Override
-    public void removeRecord(Long recordPointer) throws DatastoreException {
+    public void removeRecord(Supplier<Optional<Long>> recordPointerSupplier, Consumer<Long> postRemoveAction) throws DatastoreException {
         lock.lock();
         try {
+            long recordPointer = recordPointerSupplier.get().orElseThrow(() -> new RecordNotFoundException("Unable to remove record, could not be found"));
+
             ByteBuffer recordHeader = ByteBuffer.allocate(RECORD_HEADER_SIZE);
             int read = channel.read(recordHeader, recordPointer);
             if(read != -1) {
@@ -298,6 +311,11 @@ public class FSWriter implements Writer {
                 LOG.debug("Flagged record: {}  for deletion", recordPointer);
                 decrementRecordCount();
             }
+
+            if(postRemoveAction != null) {
+                LOG.debug("Executing post remove action for record: {}", recordPointer);
+                postRemoveAction.accept(recordPointer);
+            }
         } catch(IOException e) {
             LOG.error("Unable to remove record from storage", e);
         } finally {
@@ -306,9 +324,12 @@ public class FSWriter implements Writer {
     }
 
     @Override
-    public Long updateRecord(String recordContents, Long recordPointer) throws DatastoreException {
+    public Long updateRecord(String recordContents, Supplier<Optional<Long>> recordPointerSupplier, BiConsumer<Long, Long> postUpdateAction) throws DatastoreException {
         lock.lock();
         try {
+            long recordPointer = recordPointerSupplier.get().orElseThrow(() -> new RecordNotFoundException("Record not Found, cannot update"));
+            long updatedRecordPointer;
+
             LOG.debug("Starting record update: {}", recordPointer);
             ByteBuffer recordHeader = ByteBuffer.allocate(RECORD_HEADER_SIZE);
             int read = channel.read(recordHeader, recordPointer);
@@ -323,10 +344,18 @@ public class FSWriter implements Writer {
 
                 recordCount.decrementAndGet();
 
-                return writeRecord(recordContents);
+                updatedRecordPointer = writeRecord(recordContents, null);
+            } else {
+                LOG.debug("Record update for: {} not possible, reinstering at new position", recordPointer);
+                updatedRecordPointer = writeRecord(recordContents, null);
             }
-            LOG.debug("Record update for: {} not possible, reinstering at new position", recordPointer);
-            return writeRecord(recordContents);
+
+            if(postUpdateAction != null) {
+                LOG.debug("Executing post record writer update action old pointer: {} new pointer: {}", recordPointer, updatedRecordPointer);
+                postUpdateAction.accept(recordPointer, updatedRecordPointer);
+            }
+
+            return updatedRecordPointer;
         } catch(IOException e) {
             throw new DatastoreException("Unable to read/write to storage", e);
         } finally {

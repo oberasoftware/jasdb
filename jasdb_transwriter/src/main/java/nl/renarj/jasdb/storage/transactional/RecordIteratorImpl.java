@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * @author Renze de Vries
@@ -56,7 +57,7 @@ public class RecordIteratorImpl implements RecordIterator {
         try {
             RecordResultImpl foundRecord;
             do {
-                foundRecord = recordWriter.readRecord(nextRecordPointer);
+                foundRecord = recordWriter.readRecord(() -> Optional.of(nextRecordPointer));
                 nextRecordPointer = nextRecordPointer + foundRecord.getRecordSize();
             } while(foundRecord.getRecordFlag() != RECORD_FLAG.ACTIVE && foundRecord.getRecordFlag() != RECORD_FLAG.EMPTY);
 
