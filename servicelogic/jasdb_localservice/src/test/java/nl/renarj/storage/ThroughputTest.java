@@ -205,7 +205,7 @@ public class ThroughputTest extends DBBaseTest {
         @Override
         public void execute(UUIDKey key, String data) {
             try {
-                recordWriter.writeRecord(data);
+                recordWriter.writeRecord(data, null);
             } catch(JasDBStorageException e) {
                 LOG.error("", e);
             }

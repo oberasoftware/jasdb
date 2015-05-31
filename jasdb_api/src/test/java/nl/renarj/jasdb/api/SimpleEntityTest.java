@@ -232,8 +232,8 @@ public class SimpleEntityTest {
         assertNotNull(simpleEntity.getProperty("field3"));
         assertNotNull(simpleEntity.getProperty("field4"));
 
-        assertEquals(100, simpleEntity.getProperty("field1").getFirstValueObject());
-        assertEquals(300l, simpleEntity.getProperty("field2").getFirstValueObject());
+        assertEquals(100, (int)simpleEntity.getProperty("field1").getFirstValueObject());
+        assertEquals(300l, (long)simpleEntity.getProperty("field2").getFirstValueObject());
         assertEquals("Simple String", simpleEntity.getProperty("field3").getFirstValueObject());
         assertEquals("Sun Mar 03 00:00:00 CET 2013", simpleEntity.getProperty("field4").getFirstValueObject());
     }

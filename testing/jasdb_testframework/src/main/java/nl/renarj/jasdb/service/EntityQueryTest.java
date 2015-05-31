@@ -7,7 +7,6 @@
  */
 package nl.renarj.jasdb.service;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
@@ -17,7 +16,11 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.api.properties.EntityValue;
 import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.query.*;
+import nl.renarj.jasdb.api.query.BlockType;
+import nl.renarj.jasdb.api.query.Order;
+import nl.renarj.jasdb.api.query.QueryBuilder;
+import nl.renarj.jasdb.api.query.QueryExecutor;
+import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
@@ -32,13 +35,21 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Renze de Vries
@@ -527,7 +538,7 @@ public abstract class EntityQueryTest {
                             assertEquals(counter, new Long(result.size()));
 
                             for (SimpleEntity entity : result) {
-                                assertEquals((long) i, entity.getProperty("age").getFirstValueObject());
+                                assertEquals((long) i, (long)entity.getProperty("age").getFirstValueObject());
                                 assertEquals(city, entity.getProperty("mainCity").getFirstValueObject());
                             }
                         } else {
@@ -759,7 +770,7 @@ public abstract class EntityQueryTest {
                     for (SimpleEntity entity : result) {
                         Property property = entity.getProperty("field5");
                         Property fProperty = entity.getProperty("field1");
-                        assertEquals("Unexpected value", current, property.getFirstValueObject());
+                        assertEquals("Unexpected value", current, (long) property.getFirstValueObject());
                         log.debug("Field1: {} Field5: {}", fProperty.getFirstValueObject().toString(), property.getFirstValueObject().toString());
                         current++;
                     }
@@ -793,7 +804,7 @@ public abstract class EntityQueryTest {
                 for(SimpleEntity entity : result) {
                     Property property = entity.getProperty("field9");
                     Property fProperty = entity.getProperty("field1");
-                    assertEquals("Unexpected value", current, property.getFirstValueObject());
+                    assertEquals("Unexpected value", current, (long) property.getFirstValueObject());
                     log.debug("Field1: {} Field5: {}", fProperty.getFirstValueObject().toString(), property.getFirstValueObject().toString());
                     current++;
                 }
@@ -1024,12 +1035,7 @@ public abstract class EntityQueryTest {
     }
 
     private List<String> getEntityValue(List<SimpleEntity> entities, final String property) {
-        return Lists.transform(entities, new Function<SimpleEntity, String>() {
-            @Override
-            public String apply(SimpleEntity entity) {
-                return entity.getProperty(property).getFirstValue().toString();
-            }
-        });
+        return Lists.transform(entities, entity -> entity.getProperty(property).getFirstValue().toString());
     }
 
     private List<SimpleEntity> getEntities(EntityBag bag, QueryBuilder query) throws JasDBStorageException {

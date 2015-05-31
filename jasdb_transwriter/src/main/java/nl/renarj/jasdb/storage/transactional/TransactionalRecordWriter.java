@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Optional;
 
 public class TransactionalRecordWriter implements RecordWriter {
     private static final Logger LOG = LoggerFactory.getLogger(TransactionalRecordWriter.class);
@@ -96,11 +97,7 @@ public class TransactionalRecordWriter implements RecordWriter {
     @Override
     public RecordResult readRecord(UUIDKey documentId) throws JasDBStorageException {
         try {
-            long recordPointer = getRecordPointer(documentId);
-
-            RecordResultImpl recordResult = writer.readRecord(recordPointer);
-
-            return recordResult;
+            return writer.readRecord(() -> getRecordPointer(documentId));
         } catch(RecordNotFoundException e) {
             return new RecordResultImpl(-1, null, 0, RECORD_FLAG.EMPTY);
         }
@@ -109,45 +106,58 @@ public class TransactionalRecordWriter implements RecordWriter {
     @Override
     public void writeRecord(UUIDKey documentId, ClonableDataStream dataStream) throws JasDBStorageException {
         String recordContents = RecordStreamUtil.toString(dataStream);
-        long recordPointer = writer.writeRecord(recordContents);
-
-        try {
-            index.insertIntoIndex(documentId.cloneKey(false).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(recordPointer)));
-        } catch(JasDBStorageException e) {
-            writer.removeRecord(recordPointer);
-
-            LOG.error("Unable to write into index, removing written record", e);
-        }
+        writer.writeRecord(recordContents, p -> {
+            try {
+                index.insertIntoIndex(documentId.cloneKey(false).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(p)));
+            } catch(JasDBStorageException e) {
+                LOG.error("Unable to write into index, removing written record", e);
+            }
+        });
     }
 
     @Override
     public void removeRecord(UUIDKey documentId) throws JasDBStorageException {
-        writer.removeRecord(getRecordPointer(documentId));
-        index.removeFromIndex(documentId);
+        writer.removeRecord(() -> getRecordPointer(documentId), p -> {
+            try {
+                index.removeFromIndex(documentId);
+            } catch (JasDBStorageException e) {
+                LOG.error("", e);
+            }
+        });
     }
 
-    private long getRecordPointer(UUIDKey documentId) throws JasDBStorageException {
-        IndexSearchResultIterator resultIterator = index.searchIndex(new EqualsCondition(documentId), Index.NO_SEARCH_LIMIT);
-        if(!resultIterator.isEmpty()) {
-            Key key = resultIterator.next();
+    private Optional<Long> getRecordPointer(UUIDKey documentId) {
+        try {
+            IndexSearchResultIterator resultIterator = index.searchIndex(new EqualsCondition(documentId), Index.NO_SEARCH_LIMIT);
+            if (!resultIterator.isEmpty()) {
+                Key key = resultIterator.next();
 
-            LongKey longKey = (LongKey) key.getKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER");
+                LongKey longKey = (LongKey) key.getKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER");
 
-            return longKey.getKey();
-        } else {
-            throw new RecordNotFoundException("Unable to read record: " + documentId + ", could not be found");
+                return Optional.of(longKey.getKey());
+            } else {
+                //            throw new RecordNotFoundException("Unable to read record: " + documentId + ", could not be found");
+
+            }
+        } catch(JasDBStorageException e) {
+            LOG.error("Unable lookup data record for document: {}", documentId);
         }
+
+        return Optional.empty();
     }
 
     @Override
     public void updateRecord(UUIDKey documentId, ClonableDataStream dataStream) throws JasDBStorageException {
-        long currentDocumentPointer = getRecordPointer(documentId);
-
-        long updatedDocumentPointer = writer.updateRecord(RecordStreamUtil.toString(dataStream), currentDocumentPointer);
-        if(currentDocumentPointer != updatedDocumentPointer) {
-            Key newKey = documentId.cloneKey(false).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(updatedDocumentPointer));
-            index.updateKey(documentId, newKey);
-        }
+        long updatedDocumentPointer = writer.updateRecord(RecordStreamUtil.toString(dataStream), () -> getRecordPointer(documentId), (oldp, newp) -> {
+            if(oldp != newp) {
+                Key newKey = documentId.cloneKey(false).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(newp));
+                try {
+                    index.updateKey(documentId, newKey);
+                } catch (JasDBStorageException e) {
+                    LOG.error("", e);
+                }
+            }
+        });
     }
 
 

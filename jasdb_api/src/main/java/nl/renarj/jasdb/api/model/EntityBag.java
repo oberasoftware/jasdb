@@ -122,7 +122,7 @@ public interface EntityBag {
      * @return The list of all the index names
      * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to retrieve the indexes
      */
-    public List<String> getIndexNames() throws JasDBStorageException;
+    List<String> getIndexNames() throws JasDBStorageException;
 	
 	/**
 	 * Builds a query for document in the storage for a specific queryfield with optional sorting parameters
@@ -132,7 +132,7 @@ public interface EntityBag {
 	 * @return The QueryExecutor which can execute the query
 	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to build a document query
 	 */
-	public QueryExecutor find(QueryField queryField, SortParameter... params) throws JasDBStorageException;
+	QueryExecutor find(QueryField queryField, SortParameter... params) throws JasDBStorageException;
 
 	/**
 	 * Builds a query for document in the storage for multiple queryfields with optional sorting parameters
@@ -142,7 +142,7 @@ public interface EntityBag {
 	 * @return The QueryExecutor which can execute the query
 	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to build a document query
 	 */
-	public QueryExecutor find(CompositeQueryField queryFields, SortParameter... params) throws JasDBStorageException;
+	QueryExecutor find(CompositeQueryField queryFields, SortParameter... params) throws JasDBStorageException;
 
 	/**
 	 * Builds a query for document in the storage using the QueryBuilder which has a fluent query building mechanism.
@@ -151,14 +151,14 @@ public interface EntityBag {
 	 * @return The QueryExecutor which can execute the query
 	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to build a document query
 	 */
-	public QueryExecutor find(QueryBuilder queryBuilder) throws JasDBStorageException;
+	QueryExecutor find(QueryBuilder queryBuilder) throws JasDBStorageException;
 	
 	/**
 	 * Execute a query returning all records in the bag
 	 * @return The QueryResult iterator for all records in the bag
 	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to return a all records iterator for this bag
 	 */
-	public QueryResult getEntities() throws JasDBStorageException;
+	QueryResult getEntities() throws JasDBStorageException;
 
 	/**
 	 * Execute a query returning all records in the bag with a given max
@@ -167,7 +167,7 @@ public interface EntityBag {
 	 * @return The QueryResult iterator for all records in the bag
 	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to return a all records iterator for this bag
 	 */
-	public QueryResult getEntities(int max) throws JasDBStorageException;
+	QueryResult getEntities(int max) throws JasDBStorageException;
 
 	/**
 	 * Retrieves a specific entity from the bag
@@ -175,5 +175,5 @@ public interface EntityBag {
 	 * @return The entity found in the bag
 	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to find the entity in the bag
 	 */
-	public SimpleEntity getEntity(String entityId) throws JasDBStorageException;
+	SimpleEntity getEntity(String entityId) throws JasDBStorageException;
 }

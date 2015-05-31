@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.Optional.of;
+
 /**
  * @author Renze de Vries
  */
@@ -135,17 +137,17 @@ public class JasDBMetadataStore implements MetadataStore {
 
     @Override
     public long addMetadataEntity(SimpleEntity entity) throws JasDBStorageException {
-        return writer.writeRecord(SimpleEntity.toJson(entity));
+        return writer.writeRecord(SimpleEntity.toJson(entity), null);
     }
 
     @Override
     public long updateMetadataEntity(SimpleEntity entity, long previousRecord) throws JasDBStorageException {
-        return writer.updateRecord(SimpleEntity.toJson(entity), previousRecord);
+        return writer.updateRecord(SimpleEntity.toJson(entity), () -> of(previousRecord), null);
     }
 
     @Override
     public void deleteMetadataEntity(long recordPointer) throws JasDBStorageException {
-        writer.removeRecord(recordPointer);
+        writer.removeRecord(() -> of(recordPointer), null);
     }
 
     @Override
@@ -185,7 +187,7 @@ public class JasDBMetadataStore implements MetadataStore {
             if(!bagMetaMap.containsKey(bagId)) {
                 SimpleEntity entity = BagMeta.toEntity(bag);
                 String bagData = SimpleEntity.toJson(entity);
-                long recordPointer = writer.writeRecord(bagData);
+                long recordPointer = writer.writeRecord(bagData, null);
                 bagMetaMap.put(bagId, new MetaWrapper<>(bag, recordPointer));
             } else {
                 throw new JasDBStorageException("Unable to add bag: " + bag.getName() + ", already exists");
@@ -200,7 +202,7 @@ public class JasDBMetadataStore implements MetadataStore {
         String bagId = getBagKey(instanceId, name);
         if(bagMetaMap.containsKey(bagId)) {
             MetaWrapper<Bag> bagMetaWrapper = bagMetaMap.get(bagId);
-            writer.removeRecord(bagMetaWrapper.getRecordPointer());
+            writer.removeRecord(() -> of(bagMetaWrapper.getRecordPointer()), null);
             bagMetaMap.remove(bagId);
         } else {
             throw new JasDBStorageException("Unable to delete bag: " + name + " does not exist");
@@ -248,7 +250,7 @@ public class JasDBMetadataStore implements MetadataStore {
         String bagId = getBagKey(instanceId, bagName);
         MetaWrapper<Bag> bagMetaWrapper = bagMetaMap.get(bagId);
 
-        long recordPointer = writer.updateRecord(SimpleEntity.toJson(BagMeta.toEntity(newBagData)), bagMetaWrapper.getRecordPointer());
+        long recordPointer = writer.updateRecord(SimpleEntity.toJson(BagMeta.toEntity(newBagData)), () -> of(bagMetaWrapper.getRecordPointer()), null);
         bagMetaWrapper.setRecordPointer(recordPointer);
         bagMetaWrapper.setMetadataObject(newBagData);
     }
@@ -288,7 +290,7 @@ public class JasDBMetadataStore implements MetadataStore {
         if(!instanceMetaMap.containsKey(instance.getInstanceId())) {
             SimpleEntity entity = InstanceMeta.toEntity(instance);
             String jsonData = SimpleEntity.toJson(entity);
-            long recordPointer = writer.writeRecord(jsonData);
+            long recordPointer = writer.writeRecord(jsonData, null);
 
             instanceMetaMap.put(instance.getInstanceId(), new MetaWrapper<>(instance, recordPointer));
         } else {
@@ -301,7 +303,7 @@ public class JasDBMetadataStore implements MetadataStore {
         if(!DEFAULT_INSTANCE.equalsIgnoreCase(instanceId)) {
             MetaWrapper<Instance> instanceMetaWrapper = instanceMetaMap.get(instanceId);
             if(instanceMetaWrapper != null) {
-                writer.removeRecord(instanceMetaWrapper.getRecordPointer());
+                writer.removeRecord(() -> of(instanceMetaWrapper.getRecordPointer()), null);
                 instanceMetaMap.remove(instanceId);
             } else {
                 throw new JasDBStorageException("Unable to delete non existing instance: " + instanceId);
