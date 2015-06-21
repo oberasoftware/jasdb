@@ -6,6 +6,7 @@ package nl.renarj.jasdb.api.properties;
  * Time: 12:31 PM
  */
 public interface Value {
-    public String toString();
-    public Object getValue();
+    String toString();
+
+    Object getValue();
 }

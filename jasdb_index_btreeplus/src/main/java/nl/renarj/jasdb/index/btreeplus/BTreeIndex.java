@@ -7,7 +7,7 @@
  */
 package nl.renarj.jasdb.index.btreeplus;
 
-import com.obera.core.concurrency.ResourceLockManager;
+import com.oberasoftware.core.concurrency.ResourceLockManager;
 import nl.renarj.core.statistics.StatRecord;
 import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.core.utilities.configuration.Configuration;

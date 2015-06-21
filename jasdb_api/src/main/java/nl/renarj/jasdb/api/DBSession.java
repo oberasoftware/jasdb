@@ -1,5 +1,6 @@
 package nl.renarj.jasdb.api;
 
+import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
@@ -144,6 +145,12 @@ public interface DBSession {
      * @throws JasDBStorageException If unable to retrieve the list of entity bags
      */
     List<EntityBag> getBags(String instanceId) throws JasDBStorageException;
+
+    /**
+     * Gets the entity manager that can be used for entity persistence
+     * @return The EntityManager
+     */
+    EntityManager getEntityManager();
 
     /**
      * Removes a bag from the current instance if it exists and is not in use

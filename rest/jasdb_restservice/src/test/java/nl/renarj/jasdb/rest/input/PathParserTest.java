@@ -8,6 +8,7 @@ import nl.renarj.jasdb.rest.input.conditions.FieldCondition;
 import nl.renarj.jasdb.rest.input.conditions.InputCondition;
 import nl.renarj.jasdb.rest.input.conditions.OrBlockOperation;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,18 @@ public class PathParserTest {
         InputElement expectedElement = new InputElement("Entities").setCondition(new FieldCondition("field", "Den Haag"));
         assertElement(expectedElement, elements.get(0));
     }
-	
+
+	@Test
+	@Ignore
+	public void testPathColonPresent() throws RestException {
+		PathParser parser = new PathParser("Entities(pluginId=zwave,controllerId=renarjlaptop,deviceId=3:0)");
+		List<InputElement> elements = getElements(parser);
+		Assert.assertEquals("There should be one input elements", 1, elements.size());
+
+		InputElement expectedElement = new InputElement("Entities").setCondition(new FieldCondition("field", "1:0"));
+		assertElement(expectedElement, elements.get(0));
+	}
+
 	@Test
 	public void testComplexPath() throws RestException {
 		String testPath = "test/element(test=test,check<20,age>10,field>=10,field2<=20)/instance(name=test)";

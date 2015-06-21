@@ -1,6 +1,6 @@
-package com.obera.core.concurrency;
+package com.oberasoftware.core.concurrency;
 
-import com.obera.core.exceptions.LockingException;
+import com.oberasoftware.core.exceptions.LockingException;
 import org.junit.Assert;
 import org.junit.Test;
 

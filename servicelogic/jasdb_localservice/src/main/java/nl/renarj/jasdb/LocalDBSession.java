@@ -7,6 +7,8 @@
  */
 package nl.renarj.jasdb;
 
+import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
+import com.oberasoftware.jasdb.entitymapper.EntityManagerImpl;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.UserAdministration;
 import nl.renarj.jasdb.api.acl.SessionManager;
@@ -90,8 +92,13 @@ public class LocalDBSession implements DBSession {
     }
 
     @Override
+    public EntityManager getEntityManager() {
+        return new EntityManagerImpl(this);
+    }
+
+    @Override
     public List<Instance> getInstances() throws JasDBStorageException {
-        return new ArrayList<Instance>(instanceFactory.listInstances());
+        return new ArrayList<>(instanceFactory.listInstances());
     }
 
     @Override

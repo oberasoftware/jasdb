@@ -1,6 +1,6 @@
 package nl.renarj.jasdb.service;
 
-import com.obera.core.concurrency.ResourceLockManager;
+import com.oberasoftware.core.concurrency.ResourceLockManager;
 import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.SimpleEntity;

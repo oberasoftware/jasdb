@@ -6,14 +6,9 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
 import nl.renarj.jasdb.rest.client.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.UUID;
 
 public class NodeTestStarter {
 	private static final Logger LOG = LoggerFactory.getLogger(NodeTestStarter.class);
@@ -69,27 +64,27 @@ public class NodeTestStarter {
 //                }
 //            }
 
-			DBSession session = new LocalDBSession();
-			EntityBag bag = session.createOrGetBag("items");
-					bag.ensureIndex(
-							new CompositeIndexField(
-									new IndexField("controllerId", new StringKeyType()),
-									new IndexField("pluginId", new StringKeyType()),
-									new IndexField("deviceId", new StringKeyType()),
-									new IndexField("type", new StringKeyType())
-							), false);
-
-			SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString())
-					.addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
-					.addProperty("name", "ZWave provider").addProperty("deviceId", "13").addProperty("type", "device");
-
-			createOrUpdate(entity, "items");
-
-			LOG.info("Items in bag: {}", bag.getSize());
-
-			createOrUpdate(entity, "items");
-
-			LOG.info("Items in bag after update: {}", bag.getSize());
+//			DBSession session = new LocalDBSession();
+//			EntityBag bag = session.createOrGetBag("items");
+//					bag.ensureIndex(
+//							new CompositeIndexField(
+//									new IndexField("controllerId", new StringKeyType()),
+//									new IndexField("pluginId", new StringKeyType()),
+//									new IndexField("deviceId", new StringKeyType()),
+//									new IndexField("type", new StringKeyType())
+//							), false);
+//
+//			SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString())
+//					.addProperty("controllerId", "Renzes-MacBook-Pro-2.local").addProperty("pluginId", "zwave")
+//					.addProperty("name", "ZWave provider").addProperty("deviceId", "13").addProperty("type", "device");
+//
+//			createOrUpdate(entity, "items");
+//
+//			LOG.info("Items in bag: {}", bag.getSize());
+//
+//			createOrUpdate(entity, "items");
+//
+//			LOG.info("Items in bag after update: {}", bag.getSize());
 
 //            SimpleKernel.shutdown();
             SimpleKernel.waitForShutdown();

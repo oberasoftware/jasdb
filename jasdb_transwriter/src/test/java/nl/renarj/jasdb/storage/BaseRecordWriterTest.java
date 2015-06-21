@@ -3,6 +3,7 @@ package nl.renarj.jasdb.storage;
 import nl.renarj.core.exceptions.FileException;
 import nl.renarj.core.utilities.ResourceUtil;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import nl.renarj.jasdb.core.storage.RecordIterator;
 import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.storage.RecordWriter;
@@ -64,6 +65,24 @@ public abstract class BaseRecordWriterTest extends BaseTest {
         } finally {
             recordWriter.closeWriter();
             secondWriter.closeWriter();
+        }
+    }
+
+    @Test(expected = RuntimeJasDBException.class)
+    public void testWriteExistingRecord() throws JasDBStorageException {
+        File recordFile = new File(BaseTest.tmpDir, "teststore.pjs");
+        RecordWriter recordWriter = createRecordWriter(recordFile);
+        recordWriter.openWriter();
+
+        try {
+            UUIDKey documentKey = new UUIDKey(UUID.randomUUID());
+            recordWriter.writeRecord(documentKey, RecordStreamUtil.toStream("Simple record data"));
+            assertNotNull(recordWriter.readRecord(documentKey));
+
+            recordWriter.writeRecord(documentKey, RecordStreamUtil.toStream("Simple record data"));
+        } finally {
+            assertThat(recordWriter.getSize(), is(1l));
+            recordWriter.closeWriter();
         }
     }
 
