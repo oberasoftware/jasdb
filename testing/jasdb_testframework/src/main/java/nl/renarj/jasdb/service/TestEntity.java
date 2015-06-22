@@ -1,5 +1,6 @@
 package nl.renarj.jasdb.service;
 
+import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
 
@@ -11,6 +12,7 @@ import java.util.Map;
  */
 @JasDBEntity(bagName = "TEST_BAG")
 public class TestEntity {
+    private String id;
     private String firstName;
     private String lastName;
 
@@ -18,7 +20,8 @@ public class TestEntity {
 
     private Map<String, String> addressProperties;
 
-    public TestEntity(String firstName, String lastName, List<String> hobbies, Map<String, String> addressProperties) {
+    public TestEntity(String id, String firstName, String lastName, List<String> hobbies, Map<String, String> addressProperties) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.hobbies = hobbies;
@@ -26,6 +29,16 @@ public class TestEntity {
     }
 
     public TestEntity() {
+    }
+
+    @Id
+    @JasDBProperty
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @JasDBProperty

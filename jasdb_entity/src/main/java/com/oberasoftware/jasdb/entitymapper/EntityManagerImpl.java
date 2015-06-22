@@ -3,10 +3,12 @@ package com.oberasoftware.jasdb.entitymapper;
 import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
 import com.oberasoftware.jasdb.api.entitymapper.EntityMapper;
 import com.oberasoftware.jasdb.api.entitymapper.MapResult;
+import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -32,9 +34,17 @@ public class EntityManagerImpl implements EntityManager {
 
         SimpleEntity persistedEntity;
         try {
-            persistedEntity = bag.addEntity(mappedResult.getJasDBEntity());
-            LOG.debug("Created entity: {}", persistedEntity);
-        } catch(JasDBStorageException e) {
+            SimpleEntity entity = mappedResult.getJasDBEntity();
+            if(StringUtils.stringNotEmpty(entity.getInternalId()) && bag.getEntity(entity.getInternalId()) != null) {
+                //update
+                persistedEntity = bag.updateEntity(mappedResult.getJasDBEntity());
+                LOG.debug("Updated entity: {}", persistedEntity);
+            } else {
+                persistedEntity = bag.addEntity(mappedResult.getJasDBEntity());
+                LOG.debug("Created entity: {}", persistedEntity);
+            }
+        } catch(RuntimeJasDBException e) {
+            //we do this in case we have exactly two threads at same time trying to persist
             persistedEntity = bag.updateEntity(mappedResult.getJasDBEntity());
             LOG.debug("Updated entity: {}", persistedEntity);
         }
