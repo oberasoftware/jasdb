@@ -8,10 +8,6 @@ import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.keys.impl.CompositeKey;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapperImpl;
 import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
 import nl.renarj.jasdb.index.result.IndexSearchResultIteratorImpl;
 import nl.renarj.jasdb.index.search.SearchCondition;
@@ -19,8 +15,15 @@ import nl.renarj.jasdb.storage.query.operators.BlockMerger;
 import nl.renarj.jasdb.storage.query.operators.BlockOperation;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
+import static nl.renarj.jasdb.service.BagOperationUtil.DEFAULT_DOC_ID_MAPPER;
+import static nl.renarj.jasdb.service.BagOperationUtil.entityToKey;
+import static nl.renarj.jasdb.service.BagOperationUtil.recordToKey;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -33,6 +36,14 @@ public class TableScanOperation {
 
     public TableScanOperation(RecordWriter recordWriter) {
         this.recordWriter = recordWriter;
+    }
+
+    public IndexSearchResultIteratorCollection doTableScanFindAll() throws JasDBStorageException {
+        List<Key> keys = new ArrayList<>();
+        RecordIterator recordIterator = recordWriter.readAllRecords();
+        recordIterator.forEach(r -> keys.add(recordToKey(r)));
+
+        return new IndexSearchResultIteratorImpl(keys, DEFAULT_DOC_ID_MAPPER);
     }
 
     public IndexSearchResultIteratorCollection doTableScan(BlockOperation operation, Set<String> fields, IndexSearchResultIteratorCollection currentResults) throws JasDBStorageException {
@@ -49,27 +60,25 @@ public class TableScanOperation {
             }
         }
 
-        KeyNameMapperImpl keyNameMapper = new KeyNameMapperImpl();
-        keyNameMapper.addMappedField(0, SimpleEntity.DOCUMENT_ID);
         if(currentResults != null) {
             LOG.debug("Doing table scan for fields: {} with limited set: {}", fields, currentResults.size());
             for(Key key : currentResults) {
                 RecordResult result = recordWriter.readRecord(KeyUtil.getDocumentKey(currentResults.getKeyNameMapper(), key));
-                doTableScanConditions(operation, merger, foundKeys, result, fields, keyNameMapper);
+                doTableScanConditions(operation, merger, foundKeys, result, fields);
             }
         } else {
             LOG.debug("Doing a full table scan for fields: {}", fields);
             RecordIterator recordIterator = recordWriter.readAllRecords();
 
             for(RecordResult result : recordIterator) {
-                doTableScanConditions(operation, merger, foundKeys, result, payloadFields, keyNameMapper);
+                doTableScanConditions(operation, merger, foundKeys, result, payloadFields);
             }
         }
 
-        return new IndexSearchResultIteratorImpl(foundKeys, keyNameMapper);
+        return new IndexSearchResultIteratorImpl(foundKeys, DEFAULT_DOC_ID_MAPPER);
     }
 
-    private void doTableScanConditions(BlockOperation operation, BlockMerger merger, List<Key> foundKeys, RecordResult result, Set<String> fields, KeyNameMapper keyNameMapper) throws JasDBStorageException {
+    private void doTableScanConditions(BlockOperation operation, BlockMerger merger, List<Key> foundKeys, RecordResult result, Set<String> fields) throws JasDBStorageException {
         SimpleEntity entity = SimpleEntity.fromStream(result.getStream());
 
         boolean first = true;
@@ -99,9 +108,7 @@ public class TableScanOperation {
         }
 
         if(match) {
-            CompositeKey compositeKey = new CompositeKey();
-            compositeKey.addKey(keyNameMapper, SimpleEntity.DOCUMENT_ID, new UUIDKey(entity.getInternalId()));
-            foundKeys.add(compositeKey);
+            foundKeys.add(entityToKey(entity));
         }
     }
 

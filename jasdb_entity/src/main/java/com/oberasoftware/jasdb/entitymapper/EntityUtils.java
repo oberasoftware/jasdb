@@ -27,7 +27,11 @@ public class EntityUtils {
         LOG.debug("Extracting JasDB property: {} from object: {} using typeMapper: {}", propertyMetadata, mappableObject, typeMapper);
 
         Object value = getValue(mappableObject, propertyMetadata);
-        return typeMapper.mapToProperty(propertyMetadata.getPropertyName(), value);
+        if(value != null) {
+            return typeMapper.mapToProperty(propertyMetadata.getPropertyName(), value);
+        } else {
+            return null;
+        }
     }
 
     public static Object getValue(Object mappableObject, PropertyMetadata propertyMetadata) throws JasDBStorageException {

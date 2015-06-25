@@ -7,7 +7,6 @@
  */
 package nl.renarj.jasdb.service;
 
-import com.google.common.collect.Lists;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
@@ -17,29 +16,20 @@ import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.api.properties.EntityValue;
 import nl.renarj.jasdb.api.properties.Property;
 import nl.renarj.jasdb.api.query.BlockType;
-import nl.renarj.jasdb.api.query.Order;
 import nl.renarj.jasdb.api.query.QueryBuilder;
 import nl.renarj.jasdb.api.query.QueryExecutor;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
-import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
 import nl.renarj.jasdb.index.search.IndexField;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -56,15 +46,8 @@ import static org.junit.Assert.assertTrue;
  * Date: 4/28/12
  * Time: 6:27 PM
  */
-public abstract class EntityQueryTest {
-    private Logger log = LoggerFactory.getLogger(EntityQueryTest.class);
-    private static final int NUMBER_ENTITIES = 1000;
-    private static final int MAX_AGE = 50;
-
-    private Map<Long, String> longToId = new HashMap<>();
-    private Map<String, String> valueToId = new HashMap<>();
-    private Map<Long, Integer> ageAmounts = new HashMap<>();
-    private Map<String, Integer> cityCounters = new HashMap<>();
+public abstract class EntityQueryTest extends QueryBaseTest {
+    private static final Logger LOG = LoggerFactory.getLogger(EntityQueryTest.class);
 
     private static final QueryBuilder CONTROLLER_QUERY = QueryBuilder.createBuilder()
             .field("controllerId").value("Renzes-MacBook-Pro-2.local")
@@ -80,90 +63,8 @@ public abstract class EntityQueryTest {
             .field("pluginId").value("zwave")
             .field("type").value("device");
 
-
-
-    private DBSessionFactory sessionFactory;
-
-    protected EntityQueryTest(DBSessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        SimpleKernel.shutdown();
-        SimpleBaseTest.cleanData();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
-        SimpleBaseTest.cleanData();
-
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-        bag.ensureIndex(new IndexField("field1", new StringKeyType()), false);
-        bag.ensureIndex(new IndexField("field5", new LongKeyType()), false, new IndexField("field6", new LongKeyType()));
-        bag.ensureIndex(new IndexField("field6", new LongKeyType()), false);
-        bag.ensureIndex(new IndexField("age", new LongKeyType()), false);
-        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
-        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType()), false);
-        bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType())), false);
-
-        Random rnd = new Random(System.currentTimeMillis());
-        for(int i=0; i< NUMBER_ENTITIES; i++) {
-            String value = "value" + i;
-            Long lValue = (long) i;
-            String fieldValue = "myValue" + i;
-            Long age = (long) rnd.nextInt(MAX_AGE);
-
-            String city1 = SimpleBaseTest.possibleCities[rnd.nextInt(SimpleBaseTest.possibleCities.length)];
-
-            String city2 = SimpleBaseTest.possibleCities[rnd.nextInt(SimpleBaseTest.possibleCities.length)];
-            while(city2.equals(city1)) {
-                city2 = SimpleBaseTest.possibleCities[rnd.nextInt(SimpleBaseTest.possibleCities.length)];
-            }
-
-            EmbeddedEntity embeddedEntity = new EmbeddedEntity();
-            embeddedEntity.addProperty("embeddedProperty", value);
-            embeddedEntity.addProperty("embeddedNoIndexProperty", value);
-
-            SimpleEntity entity = bag.addEntity(new SimpleEntity()
-                    .addProperty("field1", value)
-                    .addProperty("field5", lValue)
-                    .addProperty("field6", Long.valueOf(NUMBER_ENTITIES - i))
-                    .addProperty("field7", fieldValue)
-                    .addProperty("field8", fieldValue)
-                    .addProperty("field9", lValue)
-                    .addEntity("embed", embeddedEntity)
-                    .addProperty("age", age)
-                    .addProperty("mainCity", city1)
-                    .addProperty("city", city1, city2)
-            );
-            incrementCityCounter(city1);
-            incrementCityCounter(city2);
-            incrementCityCounter(city1 + "_" + city2);
-            incrementCityCounter(city2 + "_" + city1);
-            incrementCityCounter(city1 + "_" + age);
-
-            int amount = 1;
-            if(ageAmounts.containsKey(age)) {
-                amount = ageAmounts.get(age);
-                amount++;
-            }
-            ageAmounts.put(age, amount);
-
-            longToId.put(lValue, entity.getInternalId());
-            valueToId.put(value, entity.getInternalId());
-        }
-    }
-
-    private void incrementCityCounter(String counterId) {
-        int counter = 0;
-        if(cityCounters.containsKey(counterId)) {
-            counter = cityCounters.get(counterId);
-        }
-        counter++;
-        cityCounters.put(counterId, counter);
+    public EntityQueryTest(DBSessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
     @Test
@@ -179,7 +80,7 @@ public abstract class EntityQueryTest {
             QueryResult result = executor.execute();
             long end = System.nanoTime();
             long passed = end - start;
-            log.info("Query execution took: {}", passed);
+            LOG.info("Query execution took: {}", passed);
 
             assertNotNull(result);
 
@@ -213,7 +114,7 @@ public abstract class EntityQueryTest {
                 long start = System.nanoTime();
                 long end = System.nanoTime();
                 long passed = end - start;
-                log.info("Query execution took: {}", passed);
+                LOG.info("Query execution took: {}", passed);
 
                 try (QueryResult result = executor.execute()) {
                     int expected = NUMBER_ENTITIES - ageAmounts.get((long) age);
@@ -231,93 +132,6 @@ public abstract class EntityQueryTest {
         }
     }
 
-    @Test
-    public void testSortDescendingInvalidType() throws Exception {
-        DBSession session = sessionFactory.createSession();
-        try{
-            EntityBag bag = session.createOrGetBag("Bag");
-
-            SimpleEntity entity = new SimpleEntity();
-            entity.addProperty("name", "xxx");
-            entity.addProperty("v", "3");
-            bag.addEntity(entity);
-
-            entity = new SimpleEntity();
-            entity.addProperty("name", 1);
-            entity.addProperty("v", "1");
-            bag.addEntity(entity);
-
-            entity = new SimpleEntity();
-            entity.addProperty("name", "xxx");
-            entity.addProperty("v", "2");
-            bag.addEntity(entity);
-
-            QueryBuilder innerQuery = QueryBuilder.createBuilder();
-            innerQuery.field("name").value("xxx").sortBy("v",Order.DESCENDING);
-
-            QueryExecutor executor = bag.find(innerQuery);
-            QueryResult result = executor.execute();
-            assertThat(result.size(), is(2l));
-
-            assertThat((String)result.next().getValue("v"), is("3"));
-            assertThat((String)result.next().getValue("v"), is("2"));
-        } finally {
-            SimpleKernel.shutdown();
-        }
-    }
-
-    @Test
-    public void testSortByNonExistingField() throws Exception {
-        DBSession session = sessionFactory.createSession();
-        try{
-            EntityBag bag = session.createOrGetBag("Bag");
-
-            SimpleEntity entity = new SimpleEntity();
-            entity.addProperty("name", "xxx");
-            entity.addProperty("v", "1");
-            bag.addEntity(entity);
-
-            entity = new SimpleEntity();
-            entity.addProperty("name", "xxx");
-            entity.addProperty("v", "2");
-            bag.addEntity(entity);
-
-
-            QueryBuilder innerQuery = QueryBuilder.createBuilder();
-            innerQuery.field("name").value("xxx").sortBy("_id",Order.DESCENDING).sortBy("id",Order.DESCENDING);
-
-            QueryExecutor executor = bag.find(innerQuery);
-            QueryResult result = executor.execute();
-            assertThat(result.size(), is(2l));
-        } finally {
-            SimpleKernel.shutdown();
-        }
-    }
-
-    @Test
-    public void testEqualsAgeWithLimiting() throws Exception {
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-        try {
-            int limit = 3;
-            Integer maxAmount = ageAmounts.get((long) 20);
-            assertTrue(maxAmount > 5);
-
-            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("age").value(20));
-            executor.limit(limit);
-            long start = System.nanoTime();
-            QueryResult result = executor.execute();
-            long end = System.nanoTime();
-            long passed = (end - start);
-            log.info("Age query took: {} with: {} results", passed, result.size());
-
-            List<SimpleEntity> entities = aggregateResult(result);
-            assertEquals("There should only be three results", limit, entities.size());
-        } finally {
-            pojoDb.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
 
     @Test
     public void testEqualsAndQuery() throws Exception {
@@ -332,7 +146,7 @@ public abstract class EntityQueryTest {
             QueryResult result = executor.execute();
             long end = System.nanoTime();
             long passed = end - start;
-            log.info("Query execution took: {}", passed);
+            LOG.info("Query execution took: {}", passed);
 
             assertNotNull(result);
 
@@ -369,7 +183,7 @@ public abstract class EntityQueryTest {
             QueryResult result = executor.execute();
             long end = System.nanoTime();
             long passed = end - start;
-            log.info("Query execution took: {}", passed);
+            LOG.info("Query execution took: {}", passed);
 
             assertNotNull(result);
 
@@ -408,7 +222,7 @@ public abstract class EntityQueryTest {
             QueryResult result = executor.execute();
             long end = System.nanoTime();
             long passed = end - start;
-            log.info("Query execution took: {}", passed);
+            LOG.info("Query execution took: {}", passed);
 
             assertNotNull(result);
 
@@ -435,30 +249,6 @@ public abstract class EntityQueryTest {
 
     }
 
-
-    @Test
-    public void testAndOperationMultiQueryBuilderTablescan() throws Exception {
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("thosha");
-        bag.addEntity(new SimpleEntity("00005442-4961-c49d-0000-013d73bba1f7").addProperty("type", "thing"));
-        bag.addEntity(new SimpleEntity("00005442-4961-c49d-0000-013d73bba1f8").addProperty("type", "thing"));
-        bag.addEntity(new SimpleEntity("00005442-4961-c49d-0000-013dad2eefd2").addProperty("type", "contribution"));
-        bag.addEntity(new SimpleEntity("00005442-4961-c49d-0000-013dd66f0aed").addProperty("type", "contribution"));
-
-        try {
-            QueryBuilder builder = QueryBuilder.createBuilder(BlockType.AND);
-            builder.addQueryBlock(QueryBuilder.createBuilder().field("__ID").value("00005442-4961-c49d-0000-013dad2eefd2"));
-            builder.addQueryBlock(QueryBuilder.createBuilder().field("type").value("contribution"));
-
-            QueryExecutor executor = bag.find(builder);
-            try (QueryResult result = executor.execute()) {
-                assertThat(result.size(), is(1l));
-            }
-        } finally {
-            pojoDb.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
 
     @Test
     public void testQueryNonExistingProperty() throws Exception {
@@ -503,7 +293,7 @@ public abstract class EntityQueryTest {
             QueryResult result = executor.execute();
             long end = System.nanoTime();
             long passed = end - start;
-            log.info("Query execution took: {}", passed);
+            LOG.info("Query execution took: {}", passed);
 
             assertNotNull(result);
 
@@ -566,7 +356,7 @@ public abstract class EntityQueryTest {
             QueryResult result = executor.execute();
             long end = System.nanoTime();
             long passed = end - start;
-            log.info("Query execution took: {}", passed);
+            LOG.info("Query execution took: {}", passed);
 
             assertNotNull(result);
 
@@ -576,98 +366,6 @@ public abstract class EntityQueryTest {
             SimpleKernel.shutdown();
         }
     }
-
-
-    @Test
-    public void testEqualsTablescan() throws Exception {
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-        try {
-            /* we get the entity expected, by using the value on field5 which is the same ordering */
-            String queryKey1 = "value50";
-            String expectedId1 = valueToId.get(queryKey1);
-
-            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field7").value("myValue50"));
-            long start = System.nanoTime();
-            QueryResult result = executor.execute();
-            long end = System.nanoTime();
-            long passed = end - start;
-            log.info("Query execution took: {}", passed);
-
-            assertNotNull(result);
-
-            assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
-            assertNotNull("There should be a returned entity", entity);
-            assertEquals("The id's should match", expectedId1, entity.getInternalId());
-
-            Assert.assertFalse("There should no longer be a result", result.hasNext());
-        } finally {
-            pojoDb.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
-
-    @Test
-    public void testEqualsTablescanMultiFields() throws Exception {
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-        try {
-            /* we get the entity expected, by using the value on field5 which is the same ordering */
-            String queryKey1 = "value50";
-            String expectedId1 = valueToId.get(queryKey1);
-
-            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field7").value("myValue50").field("field8").value("myValue50"));
-            long start = System.nanoTime();
-            QueryResult result = executor.execute();
-            long end = System.nanoTime();
-            long passed = end - start;
-            log.info("Query execution took: {}", passed);
-
-            assertNotNull(result);
-
-            assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
-            assertNotNull("There should be a returned entity", entity);
-            assertEquals("The id's should match", expectedId1, entity.getInternalId());
-
-            Assert.assertFalse("There should no longer be a result", result.hasNext());
-        } finally {
-            pojoDb.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
-
-    @Test
-    public void testEqualsPartialTablescanMultiFields() throws Exception {
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-        try {
-            /* we get the entity expected, by using the value on field5 which is the same ordering */
-            String queryKey1 = "value50";
-            String expectedId1 = valueToId.get(queryKey1);
-
-            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field7").value("myValue50").field("field1").value("value50"));
-            long start = System.nanoTime();
-            QueryResult result = executor.execute();
-            long end = System.nanoTime();
-            long passed = end - start;
-            log.info("Query execution took: {}", passed);
-
-            assertNotNull(result);
-
-            assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
-            assertNotNull("There should be a returned entity", entity);
-            assertEquals("The id's should match", expectedId1, entity.getInternalId());
-
-            Assert.assertFalse("There should no longer be a result", result.hasNext());
-        } finally {
-            pojoDb.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
-
 
     @Test
     public void testRangeQuery() throws Exception {
@@ -724,7 +422,7 @@ public abstract class EntityQueryTest {
 
                 }
             }
-            log.info("Average query time: {} for {} queries", (totalTime / queries), queries);
+            LOG.info("Average query time: {} for {} queries", (totalTime / queries), queries);
         } finally {
             pojoDb.closeSession();
             SimpleKernel.shutdown();
@@ -750,185 +448,6 @@ public abstract class EntityQueryTest {
         }
     }
 
-    @Test
-    public void testEqualsMultivaluePagingRangeOperation() throws Exception {
-        int batchSize = 100;
-        DBSession session = sessionFactory.createSession();
-        EntityBag bag = session.createOrGetBag("inverted");
-
-        try {
-            int start = 0;
-            long current = 0;
-            while(start + batchSize <= NUMBER_ENTITIES) {
-                int end = start + batchSize;
-                log.debug("Starting retrieval of start: {} and end: {}", start, end);
-
-                QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field5").greaterThanOrEquals(0));
-                executor.paging(start, batchSize);
-                try (QueryResult result = executor.execute()) {
-                    assertEquals("Unexpected query size", batchSize, result.size());
-                    for (SimpleEntity entity : result) {
-                        Property property = entity.getProperty("field5");
-                        Property fProperty = entity.getProperty("field1");
-                        assertEquals("Unexpected value", current, (long) property.getFirstValueObject());
-                        log.debug("Field1: {} Field5: {}", fProperty.getFirstValueObject().toString(), property.getFirstValueObject().toString());
-                        current++;
-                    }
-                }
-
-                start = end;
-            }
-        } finally {
-            session.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
-
-    @Test
-    public void testEqualsMultivaluePagingRangeOperationTableScan() throws Exception {
-        int batchSize = 100;
-        DBSession session = sessionFactory.createSession();
-        EntityBag bag = session.createOrGetBag("inverted");
-
-        try {
-            int start = 0;
-            long current = 0;
-            while(start + batchSize <= NUMBER_ENTITIES) {
-                int end = start + batchSize;
-                log.debug("Starting retrieval of start: {} and end: {}", start, end);
-
-                QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field9").greaterThanOrEquals(0));
-                executor.paging(start, batchSize);
-                QueryResult result = executor.execute();
-                assertEquals("Unexpected query size", batchSize, result.size());
-                for(SimpleEntity entity : result) {
-                    Property property = entity.getProperty("field9");
-                    Property fProperty = entity.getProperty("field1");
-                    assertEquals("Unexpected value", current, (long) property.getFirstValueObject());
-                    log.debug("Field1: {} Field5: {}", fProperty.getFirstValueObject().toString(), property.getFirstValueObject().toString());
-                    current++;
-                }
-
-                start = end;
-            }
-        } finally {
-            session.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
-
-    @Test
-    public void testMultivaluePagingEqualsOperation() throws Exception {
-        DBSession session = sessionFactory.createSession();
-        EntityBag bag = session.createOrGetBag("inverted");
-
-        try {
-            int start = 0;
-            long lage = (long) (MAX_AGE / 2);
-            int ageSize = ageAmounts.get(lage);
-            int batchSize = ageSize / 4;
-
-            while(start + batchSize <= ageSize) {
-                int end = start + batchSize;
-                log.debug("Starting retrieval of start: {} and end: {} for age: {}", start, end, lage);
-
-                QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("age").value(lage));
-                executor.paging(start, batchSize);
-                QueryResult result = executor.execute();
-                assertEquals("Unexpected query size", batchSize, result.size());
-                for(SimpleEntity entity : result) {
-                    String age = entity.getProperty("age").getFirstValueObject().toString();
-                    assertEquals("Unexpected age", String.valueOf(MAX_AGE / 2), age);
-                }
-
-                start = end;
-            }
-        } finally {
-            session.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
-
-    private List<SimpleEntity> aggregateResult(QueryResult result) {
-        List<SimpleEntity> entities = new ArrayList<>();
-
-        for(SimpleEntity entity : result) {
-            entities.add(entity);
-        }
-
-        return entities;
-    }
-
-    private List<String> assertResult(int start, int amount, QueryResult result) {
-        List<String> keysFoundInOrder = new ArrayList<>();
-
-        for(int i=start; i<(start + amount) && result.hasNext(); i++) {
-            SimpleEntity entity = result.next();
-
-            String expectedId = longToId.get((long) i);
-            assertNotNull("There should be a returned entity", entity);
-            assertEquals("The id's should match", expectedId, entity.getInternalId());
-
-            Property property = entity.getProperty("field1");
-            assertNotNull("Property should be set", property);
-            assertTrue("Property should be String", property.getFirstValueObject() instanceof String);
-            assertEquals("Property value should match", "value" + i, property.getFirstValueObject());
-            keysFoundInOrder.add(entity.getInternalId());
-        }
-
-        return keysFoundInOrder;
-    }
-
-    @Test
-    public void testRangeQuerySortByOtherFieldNaturalOrdering() throws Exception {
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-
-        try {
-            QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field5").greaterThan(10).field("field5").smallerThan(30).sortBy("field1"));
-            try (QueryResult result = executor.execute()) {
-                assertNotNull(result);
-                assertTrue("There should be a result", result.hasNext());
-
-                int start = 11;
-                int amount = 18;
-                List<String> keysInOrder = assertResult(start, amount, result);
-
-                List<String> expectedOrder = new ArrayList<>();
-                for (int i = start; i < amount + start; i++) {
-                    String id = valueToId.get("value" + i);
-                    expectedOrder.add(id);
-                    log.info("Expected key: {} with value: {}", id, "value" + i);
-                }
-                assertListOrder(keysInOrder, expectedOrder);
-            }
-        } finally {
-            pojoDb.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
-
-    @Test
-    public void testRangeQuerySortByOtherField() throws Exception {
-        DBSession pojoDb = sessionFactory.createSession();
-        EntityBag bag = pojoDb.createOrGetBag("inverted");
-
-        try {
-            QueryBuilder query = QueryBuilder.createBuilder().field("field5").greaterThan(10).field("field5").smallerThan(30).sortBy("field6", Order.ASCENDING);
-            List<SimpleEntity> entities = getEntities(bag, query);
-            List<String> field6Values = getEntityValue(entities, "field6");
-
-            long previous = 0;
-            for(String stringValue : field6Values) {
-                long value = Long.parseLong(stringValue);
-                assertThat(value >= previous, is(true));
-                previous = value;
-            }
-        } finally {
-            pojoDb.closeSession();
-            SimpleKernel.shutdown();
-        }
-    }
 
     /**
      * Simply test if we can query with an empty string key
@@ -950,6 +469,7 @@ public abstract class EntityQueryTest {
             SimpleKernel.shutdown();
         }
     }
+
 
     @Test
     public void testKeySpecialCharacters() throws Exception {
@@ -1034,42 +554,6 @@ public abstract class EntityQueryTest {
         assertThat(getEntityValue(devices, SimpleEntity.DOCUMENT_ID), hasItems(deviceId));
     }
 
-    private List<String> getEntityValue(List<SimpleEntity> entities, final String property) {
-        return Lists.transform(entities, entity -> entity.getProperty(property).getFirstValue().toString());
-    }
 
-    private List<SimpleEntity> getEntities(EntityBag bag, QueryBuilder query) throws JasDBStorageException {
-        return getEntities(bag, query, -1, -1);
-    }
-
-    private List<SimpleEntity> getEntities(EntityBag bag, QueryBuilder query, int start, int limit) throws JasDBStorageException {
-        QueryExecutor executor = bag.find(query);
-
-        if(start > 0 && limit > 0) {
-            executor.paging(start, limit);
-        } else if(limit > 0) {
-            executor.limit(limit);
-        }
-
-        final List<SimpleEntity> entities = new ArrayList<>();
-        try (QueryResult result = executor.execute()) {
-            for (SimpleEntity entity : result) {
-                entities.add(entity);
-            }
-        }
-
-        return entities;
-    }
-
-    private void assertListOrder(List<String> expectedOrder, List<String> actualOrder) {
-        int counter = 0;
-        for(String expectedId : expectedOrder) {
-            log.info("Key found in order: {}", actualOrder.get(counter));
-            String actualId = actualOrder.get(counter);
-            assertEquals("The id's of index: " + counter + " are not expected in that order", expectedId, actualId);
-
-            counter++;
-        }
-    }
 
 }

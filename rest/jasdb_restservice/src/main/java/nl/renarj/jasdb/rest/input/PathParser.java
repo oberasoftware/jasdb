@@ -2,6 +2,7 @@ package nl.renarj.jasdb.rest.input;
 
 import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.rest.exceptions.SyntaxException;
+import nl.renarj.jasdb.rest.input.conditions.AndBlockOperation;
 import nl.renarj.jasdb.rest.input.conditions.InputCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,9 @@ public class PathParser implements Iterable<InputElement>, Iterator<InputElement
 						if(condition != null) {
 							inputElement.setCondition(condition);
 						} else {
-							throw new SyntaxException("Invalid condition specified: " + elementConditions);
+                            inputElement.setCondition(new AndBlockOperation());
+//							LOG.debug("Invalid condition: '{}'", elementConditions);
+//							throw new SyntaxException("Invalid condition specified: " + elementConditions);
 						}
 					} else {
 						throw new SyntaxException("Invalid path syntax: " + pathElement);

@@ -32,6 +32,11 @@ public abstract class AbstractBlock implements BlockOperation {
 	}
 
     @Override
+    public boolean isEmpty() {
+        return conditions.isEmpty() && blockOperations.isEmpty();
+    }
+
+    @Override
     public SearchCondition mergeCondition(KeyNameMapper nameMapper, String sourceField, String mergeField, SearchCondition condition) {
         return this;
     }

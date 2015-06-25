@@ -53,20 +53,28 @@ public class AnnotationEntityMapper implements EntityMapper {
 
         if(keyProperty.isPresent()) {
             Object keyValue = EntityUtils.getValue(mappableObject, keyProperty.get());
-            String id = getTypeMapper(String.class).mapToRawType(keyValue);
+            if(keyValue != null) {
+                String id = getTypeMapper(String.class).mapToRawType(keyValue);
 
-            if(EntityUtils.toValidUUID(id) != null) {
-                LOG.debug("Setting entity id to: {}", id);
-                entity.setInternalId(id);
+                if (EntityUtils.toValidUUID(id) != null) {
+                    LOG.debug("Setting entity id to: {}", id);
+                    entity.setInternalId(id);
+                } else {
+                    LOG.warn("Entity marked with an @Id {} field, but invalid UUID, ignoring", id);
+                }
             } else {
-                LOG.warn("Entity marked with an @Id {} field, but invalid UUID, ignoring", id);
+                LOG.debug("No UUID specified in field marked with @Id, generating during insert");
             }
         }
 
         metadata.getProperties().forEach((k, v) -> {
             try {
                 Property property = EntityUtils.map(mappableObject, v);
-                entity.addProperty(property);
+                if(property != null) {
+                    entity.addProperty(property);
+                } else if(!v.isNullable()) {
+                    throw new RuntimeJasDBException("Unable to map property: " + v + " value is null");
+                }
             } catch (JasDBStorageException e) {
                 throw new RuntimeJasDBException("Unable to map property: " + v, e);
             }
@@ -78,26 +86,44 @@ public class AnnotationEntityMapper implements EntityMapper {
     @Override
     public <T> T mapFrom(Class<T> targetType, SimpleEntity entity) throws JasDBStorageException {
         try {
-            Object instance = targetType.newInstance();
-            EntityMetadata metadata = getEntityMetadata(targetType);
+            if(entity != null) {
+                Object instance = targetType.newInstance();
+                EntityMetadata metadata = getEntityMetadata(targetType);
 
-            metadata.getProperties().forEach((k, v) ->{
-                Object value = v.getTypeMapper().mapFromProperty(entity.getProperty(k));
+                metadata.getProperties().forEach((k, v) -> {
+                    if(v.isKey()) {
+                        LOG.debug("");
+                        setValue(instance, entity.getInternalId(), v);
+                    }
 
-                try {
-                    v.getWriteMethod().invoke(instance, value);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeJasDBException("Unable to set field value on entity: " + targetType, e);
-                }
-            });
+                    Property property = entity.getProperty(k);
+                    if (property != null) {
+                        Object value = v.getTypeMapper().mapFromProperty(property);
+                        setValue(instance, value, v);
+                    } else if (!v.isNullable()) {
+                        throw new RuntimeJasDBException("Unable to map property: " + v + " value was null");
+                    }
+                });
 
-            return targetType.cast(instance);
+                return targetType.cast(instance);
+            } else {
+                return null;
+            }
         } catch(IllegalAccessException | InstantiationException e) {
             throw new JasDBStorageException("Unable to create instance of entity, missing constructor or inaccessible: " + targetType, e);
         }
     }
 
-    private EntityMetadata getEntityMetadata(Class<?> entityClass) throws JasDBStorageException {
+    private void setValue(Object instance, Object value, PropertyMetadata v) {
+        try {
+            v.getWriteMethod().invoke(instance, value);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeJasDBException("Unable to set field value on entity: " + instance.getClass(), e);
+        }
+    }
+
+    @Override
+    public EntityMetadata getEntityMetadata(Class<?> entityClass) throws JasDBStorageException {
         String entityClassName = entityClass.getName();
 
         if(!cachedEntityMetadata.containsKey(entityClassName)) {
@@ -154,9 +180,10 @@ public class AnnotationEntityMapper implements EntityMapper {
                 String propertyName = readAnnotation.isPresent() ? readAnnotation.get().name() : "";
                 propertyName = StringUtils.stringEmpty(propertyName) ? writeAnnotation.isPresent() ? writeAnnotation.get().name() : "" : propertyName;
                 propertyName = StringUtils.stringEmpty(propertyName) ? propertyDescriptor.getName() : propertyName;
+                boolean nullable = readAnnotation.isPresent() ? readAnnotation.get().nullable() : writeAnnotation.get().nullable();
 
-                LOG.debug("Found Entity property: {}", propertyDescriptor.getName());
-                return new PropertyMetadataImpl(typeMapper, readMethod, writeMethod, propertyName, idAnnotation.isPresent());
+                LOG.debug("Found Entity property: {} nullable: {}", propertyDescriptor.getName(), nullable);
+                return new PropertyMetadataImpl(typeMapper, readMethod, writeMethod, propertyName, idAnnotation.isPresent(), nullable);
             }
         } else {
             LOG.debug("Read or Write method not defined for property: {}", propertyDescriptor.getName());

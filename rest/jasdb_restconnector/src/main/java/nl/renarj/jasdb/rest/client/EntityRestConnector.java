@@ -15,6 +15,7 @@ import nl.renarj.jasdb.rest.model.streaming.StreamableEntityCollection;
 import nl.renarj.jasdb.rest.model.streaming.StreamedEntity;
 import nl.renarj.jasdb.rest.serializers.json.JsonRestResponseHandler;
 import nl.renarj.jasdb.storage.query.operators.BlockOperation;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,10 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * @author Renze de Vries
  */
 public class EntityRestConnector extends RemoteRestConnector implements EntityConnector {
+    private static final Logger LOG = getLogger(EntityRestConnector.class);
+
     public EntityRestConnector(NodeInformation nodeInformation) throws ConfigurationException {
         super(nodeInformation);
     }
@@ -39,7 +44,7 @@ public class EntityRestConnector extends RemoteRestConnector implements EntityCo
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             new JsonRestResponseHandler().serialize(new StreamedEntity(entity), bos);
 
-            ClientResponse clientResponse = doInternalRequest(context, connectionString, new HashMap<String, String>(), bos.toByteArray(), REQUEST_MODE.POST);
+            ClientResponse clientResponse = doInternalRequest(context, connectionString, new HashMap<>(), bos.toByteArray(), REQUEST_MODE.POST);
 
             try {
                 StreamedEntity returnedEntity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, clientResponse.getEntityInputStream());
@@ -60,7 +65,7 @@ public class EntityRestConnector extends RemoteRestConnector implements EntityCo
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             new JsonRestResponseHandler().serialize(new StreamedEntity(entity), bos);
 
-            ClientResponse clientResponse = doRequest(context, connectionString, new HashMap<String, String>(), bos.toString(CHARACTER_ENCODING), REQUEST_MODE.PUT);
+            ClientResponse clientResponse = doRequest(context, connectionString, new HashMap<>(), bos.toString(CHARACTER_ENCODING), REQUEST_MODE.PUT);
             try {
             	StreamedEntity returnedEntity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, clientResponse.getEntityInputStream());
             	return returnedEntity.getEntity();
@@ -78,7 +83,7 @@ public class EntityRestConnector extends RemoteRestConnector implements EntityCo
     public boolean removeEntity(RemotingContext context, String instance, String bag, String entityId) throws RemoteException {
         String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities(entityId).getConnectionString();
 
-        doRequest(context, connectionString, new HashMap<String, String>(), null, REQUEST_MODE.DELETE).close();
+        doRequest(context, connectionString, new HashMap<>(), null, REQUEST_MODE.DELETE).close();
         return true;
     }
 
@@ -125,14 +130,19 @@ public class EntityRestConnector extends RemoteRestConnector implements EntityCo
     @Override
     public SimpleEntity findById(RemotingContext context, String instance, String bag, String id) throws RemoteException {
         String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entityById(id).getConnectionString();
-        ClientResponse response = doRequest(context, connectionString);
         try {
-            StreamedEntity entity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, response.getEntityInputStream());
-            return entity.getEntity();
-        } catch(RestException e) {
-            throw new RemoteException("Unable to parse remote entity data", e);
-        } finally {
-        	response.close();
+            ClientResponse response = doRequest(context, connectionString);
+            try {
+                StreamedEntity entity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, response.getEntityInputStream());
+                return entity.getEntity();
+            } catch (RestException e) {
+                throw new RemoteException("Unable to parse remote entity data", e);
+            } finally {
+                response.close();
+            }
+        } catch(ResourceNotFoundException e) {
+            LOG.debug("Entity: {} not found in bag: {} on instance: {}", id, bag, instance);
+            return null;
         }
     }
 

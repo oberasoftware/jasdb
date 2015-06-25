@@ -16,6 +16,8 @@ import java.util.Set;
 
 public interface BlockOperation extends SearchCondition {
 	BlockMerger getMerger();
+
+	boolean isEmpty();
 	
 	void addCondition(String field, SearchCondition condition);
 	void addChildBlock(BlockOperation operation);

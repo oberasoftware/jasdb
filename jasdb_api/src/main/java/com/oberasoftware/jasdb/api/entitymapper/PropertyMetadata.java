@@ -14,5 +14,7 @@ public interface PropertyMetadata {
 
     Method getWriteMethod();
 
+    boolean isNullable();
+
     boolean isKey();
 }

@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface JasDBProperty {
     String name() default "";
+
+    boolean nullable() default true;
 }

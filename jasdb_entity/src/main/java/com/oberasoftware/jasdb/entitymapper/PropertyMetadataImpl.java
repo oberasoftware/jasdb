@@ -14,13 +14,15 @@ public class PropertyMetadataImpl implements PropertyMetadata {
     private final Method writeMethod;
     private final String propertyName;
     private final boolean key;
+    private final boolean nullable;
 
-    public PropertyMetadataImpl(TypeMapper typeMapper, Method readMethod, Method writeMethod, String propertyName, boolean key) {
+    public PropertyMetadataImpl(TypeMapper typeMapper, Method readMethod, Method writeMethod, String propertyName, boolean key, boolean nullable) {
         this.typeMapper = typeMapper;
         this.readMethod = readMethod;
         this.writeMethod = writeMethod;
         this.propertyName = propertyName;
         this.key = key;
+        this.nullable = nullable;
     }
 
     @Override
@@ -31,6 +33,11 @@ public class PropertyMetadataImpl implements PropertyMetadata {
     @Override
     public boolean isKey() {
         return key;
+    }
+
+    @Override
+    public boolean isNullable() {
+        return nullable;
     }
 
     @Override

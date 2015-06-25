@@ -224,9 +224,11 @@ public class QuerySearchOperation {
 			} else {
 				return new TableScanOperation(recordWriter).doTableScan(blockOperation, fields, currentResults);
 			}
+		} else if(blockOperation.isEmpty()) {
+            return new TableScanOperation(recordWriter).doTableScanFindAll();
 		} else {
-			return null;
-		}
+            return null;
+        }
 	}
 
 	private Set<SearchCondition> getSearchConditions(BlockOperation blockOperation, Index index) {
