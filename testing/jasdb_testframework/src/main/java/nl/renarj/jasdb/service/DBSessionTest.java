@@ -165,7 +165,9 @@ public abstract class DBSessionTest {
 
         session.deleteInstance("myInstance");
         assertFalse(new File(instanceFolder, "bag1.pjs").exists());
+        assertFalse(new File(instanceFolder, "bag1.idx").exists());
         assertFalse(new File(instanceFolder, "bag2.pjs").exists());
+        assertFalse(new File(instanceFolder, "bag2.idx").exists());
     }
 
     @Test
