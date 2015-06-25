@@ -22,6 +22,10 @@
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb_entity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_acl</artifactId>
         </dependency>
         <dependency>

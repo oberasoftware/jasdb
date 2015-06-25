@@ -7,6 +7,8 @@
  */
 package nl.renarj.jasdb.rest.client;
 
+import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
+import com.oberasoftware.jasdb.entitymapper.EntityManagerImpl;
 import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.api.DBConnectorSession;
 import nl.renarj.jasdb.api.acl.UserSession;
@@ -44,6 +46,11 @@ public class RestDBSession extends DBConnectorSession {
 
     public RestDBSession(String instance, String hostname, Credentials credentials, int sslPort, boolean verifyCertificate) throws JasDBStorageException {
         super(instance, credentials, createNodeInformation(hostname, true, verifyCertificate, sslPort));
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return new EntityManagerImpl(this);
     }
 
     @Override

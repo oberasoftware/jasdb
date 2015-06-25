@@ -9,6 +9,7 @@ package nl.renarj.jasdb.storage.transactional;
 
 import nl.renarj.jasdb.core.exceptions.DatastoreException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import nl.renarj.jasdb.core.storage.RecordIterator;
 import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.storage.RecordWriter;
@@ -110,7 +111,13 @@ public class TransactionalRecordWriter implements RecordWriter {
             try {
                 index.insertIntoIndex(documentId.cloneKey(false).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(p)));
             } catch(JasDBStorageException e) {
-                LOG.error("Unable to write into index, removing written record", e);
+                try {
+                    removeRecord(documentId);
+                } catch (JasDBStorageException e1) {
+                    LOG.error("", e);
+                }
+
+                throw new RuntimeJasDBException("Unable to write record already exists", e);
             }
         });
     }
@@ -121,7 +128,7 @@ public class TransactionalRecordWriter implements RecordWriter {
             try {
                 index.removeFromIndex(documentId);
             } catch (JasDBStorageException e) {
-                LOG.error("", e);
+                LOG.error("Unable to remove record from index", e);
             }
         });
     }
@@ -136,8 +143,7 @@ public class TransactionalRecordWriter implements RecordWriter {
 
                 return Optional.of(longKey.getKey());
             } else {
-                //            throw new RecordNotFoundException("Unable to read record: " + documentId + ", could not be found");
-
+                throw new RecordNotFoundException("Unable to read record: " + documentId + ", could not be found");
             }
         } catch(JasDBStorageException e) {
             LOG.error("Unable lookup data record for document: {}", documentId);

@@ -18,6 +18,18 @@ public class FileUtils {
     }
 
     /**
+     * Attempts to delete a file, if fails tries again on exit
+     * @param file The file to delete
+     */
+    public static void deleteSafely(File file) {
+        if(file.exists()) {
+            if (!file.delete()) {
+                file.deleteOnExit();
+            }
+        }
+    }
+
+    /**
      * Returns the string minus the extension
      * @param fileName The filename
      * @return The filename without the extension

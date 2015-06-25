@@ -69,6 +69,18 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
 	}
 
     /**
+     * This allows directly adding a constructed Property object to the entity. If any existing properties
+     * exist with the same name these are overriden.
+     *
+     * @param property The property object
+     * @return The entity the property has been added to
+     */
+    public SimpleEntity addProperty(Property property) {
+        properties.put(property.getPropertyName(), property);
+        return this;
+    }
+
+    /**
      * Adds a property with a String value
      * @param propertyName The name of the property
      * @param stringValue The string value
@@ -344,11 +356,7 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
 
     @Override
     public boolean isMultiValue(String propertyName) {
-        if(properties.containsKey(propertyName)) {
-            return properties.get(propertyName).isMultiValue();
-        }
-        
-        return false;
+        return properties.containsKey(propertyName) && properties.get(propertyName).isMultiValue();
     }
 
     @Override

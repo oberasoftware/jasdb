@@ -3,6 +3,8 @@ package com.obera.jasdb.android;
 import android.content.Context;
 import com.obera.jasdb.android.api.AndroidEntityBag;
 import com.obera.jasdb.android.platform.AndroidContext;
+import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
+import com.oberasoftware.jasdb.entitymapper.EntityManagerImpl;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.UserAdministration;
 import nl.renarj.jasdb.api.metadata.Bag;
@@ -81,6 +83,11 @@ public class AndroidDBSession implements DBSession {
         instanceFactory.deleteInstance(instanceId);
 
         return this.instance;
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return new EntityManagerImpl(this);
     }
 
     @Override

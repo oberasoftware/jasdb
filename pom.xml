@@ -162,6 +162,11 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
+                <artifactId>jasdb_entity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
                 <artifactId>jasdb_acl</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -405,6 +410,7 @@
 		<module>jasdb_transwriter</module>
         <module>jasdb_acl</module>
         <module>jasdb_memorywriter</module>
+        <module>jasdb_entity</module>
         <module>testing/jasdb_ent_integration</module>
         <module>rest/jasdb_restservice</module>
         <module>rest/jasdb_restconnector</module>

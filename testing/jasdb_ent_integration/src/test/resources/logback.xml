@@ -9,8 +9,8 @@
     </appender>
 
 
-    <logger name="nl.renarj" level="info"/>
-    <logger name="com.obera" level="info"/>
+    <logger name="nl.renarj" level="error"/>
+    <logger name="com.obera" level="error"/>
 
     <root level="OFF">
         <appender-ref ref="STDOUT"/>

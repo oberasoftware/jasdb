@@ -1,4 +1,4 @@
-package com.obera.core.exceptions;
+package com.oberasoftware.core.exceptions;
 
 /**
  * @author renarj

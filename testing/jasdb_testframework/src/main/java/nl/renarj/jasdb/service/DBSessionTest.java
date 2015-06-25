@@ -1,5 +1,8 @@
 package nl.renarj.jasdb.service;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
@@ -21,7 +24,9 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -160,7 +165,9 @@ public abstract class DBSessionTest {
 
         session.deleteInstance("myInstance");
         assertFalse(new File(instanceFolder, "bag1.pjs").exists());
+        assertFalse(new File(instanceFolder, "bag1.idx").exists());
         assertFalse(new File(instanceFolder, "bag2.pjs").exists());
+        assertFalse(new File(instanceFolder, "bag2.idx").exists());
     }
 
     @Test
@@ -229,4 +236,33 @@ public abstract class DBSessionTest {
         assertFalse(new File(newInstanceFolder, "testbag1.pjs").exists());
         assertFalse(new File(newInstanceFolder, "testbag1_field1ID.idx").exists());
     }
+
+    @Test
+    public void testEntityManagerPerist() throws JasDBStorageException {
+        DBSession session = sessionFactory.createSession();
+        EntityManager entityManager = session.getEntityManager();
+
+        String id = UUID.randomUUID().toString();
+        TestEntity entity = new TestEntity(id, "Renze", "de Vries", Lists.newArrayList("programming", "model building", "biking"),
+                new ImmutableMap.Builder<String, String>()
+                        .put("city", "Amsterdam")
+                        .put("street", "Secret passageway 10")
+                        .put("zipcode", "0000TT").build());
+        assertThat(entityManager.persist(entity).getInternalId(), is(id));
+
+        EntityBag testBag = session.createOrGetBag("TEST_BAG");
+        assertThat(testBag.getSize(), is(1l));
+        SimpleEntity mappedEntity = testBag.getEntity(id);
+
+        assertThat(mappedEntity.getValue("firstName"), is("Renze"));
+        assertThat(mappedEntity.getValue("lastName"), is("de Vries"));
+        assertThat(mappedEntity.getValues("HobbyList"), hasItems("programming", "model building", "biking"));
+
+        SimpleEntity addressEntity = mappedEntity.getEntity("Address");
+        assertThat(addressEntity.getValue("city"), is("Amsterdam"));
+        assertThat(addressEntity.getValue("street"), is("Secret passageway 10"));
+        assertThat(addressEntity.getValue("zipcode"), is("0000TT"));
+    }
+
+
 }

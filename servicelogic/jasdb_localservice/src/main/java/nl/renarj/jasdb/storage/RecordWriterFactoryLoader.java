@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static nl.renarj.jasdb.core.utils.FileUtils.deleteSafely;
+import static nl.renarj.jasdb.core.utils.FileUtils.removeExtension;
+
 /**
  * @author Renze de Vries
  */
@@ -81,9 +84,11 @@ public class RecordWriterFactoryLoader {
         File writerPath = getWriterPath(instanceId, bagName);
         RecordWriter recordWriter = recordWriters.get(writerPath.toString());
         recordWriter.closeWriter();
-        if(!writerPath.delete()) {
-            writerPath.deleteOnExit();
-        }
+
+        File indexLocation = new File(removeExtension(writerPath.toString()) + ".idx");
+        deleteSafely(indexLocation);
+        deleteSafely(writerPath);
+
         recordWriters.remove(writerPath.toString());
     }
 

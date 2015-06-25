@@ -12,11 +12,16 @@ import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
+import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.streams.ClonableByteArrayInputStream;
 import nl.renarj.jasdb.core.streams.ClonableDataStream;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.factory.KeyFactory;
+import nl.renarj.jasdb.index.keys.impl.CompositeKey;
+import nl.renarj.jasdb.index.keys.impl.UUIDKey;
+import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapperImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +39,11 @@ public class BagOperationUtil {
     private static final Logger LOG = LoggerFactory.getLogger(BagOperationUtil.class);
 
     private static final String ENTITY_ENCODING = "UTF8";
+
+    public static KeyNameMapperImpl DEFAULT_DOC_ID_MAPPER = new KeyNameMapperImpl();
+    static {
+        DEFAULT_DOC_ID_MAPPER.addMappedField(0, SimpleEntity.DOCUMENT_ID);
+    }
 
     public static ClonableDataStream toStream(SimpleEntity entity) throws JasDBStorageException {
         try {
@@ -72,6 +82,21 @@ public class BagOperationUtil {
             index.insertIntoIndex(key);
         }
         indexInsert.stop();
+    }
 
+    public static Key recordToKey(RecordResult recordResult) {
+        try {
+            SimpleEntity entity = toEntity(recordResult.getStream());
+            return entityToKey(entity);
+        } catch (JasDBStorageException e) {
+            throw new RuntimeJasDBException("Unable to read record Document Id", e);
+        }
+    }
+
+    public static Key entityToKey(SimpleEntity entity) throws JasDBStorageException {
+        CompositeKey compositeKey = new CompositeKey();
+        compositeKey.addKey(DEFAULT_DOC_ID_MAPPER, SimpleEntity.DOCUMENT_ID, new UUIDKey(entity.getInternalId()));
+
+        return compositeKey;
     }
 }
