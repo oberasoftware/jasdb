@@ -92,7 +92,6 @@ public class AnnotationEntityMapper implements EntityMapper {
 
                 metadata.getProperties().forEach((k, v) -> {
                     if(v.isKey()) {
-                        LOG.debug("");
                         setValue(instance, entity.getInternalId(), v);
                     }
 

@@ -53,8 +53,6 @@ public class PathParser implements Iterable<InputElement>, Iterator<InputElement
 							inputElement.setCondition(condition);
 						} else {
                             inputElement.setCondition(new AndBlockOperation());
-//							LOG.debug("Invalid condition: '{}'", elementConditions);
-//							throw new SyntaxException("Invalid condition specified: " + elementConditions);
 						}
 					} else {
 						throw new SyntaxException("Invalid path syntax: " + pathElement);
