@@ -39,6 +39,11 @@ public class MapEntityMapper implements TypeMapper<Map<String, ?>> {
     }
 
     @Override
+    public Object mapToEmptyValue() {
+        return new HashMap<>();
+    }
+
+    @Override
     public Value mapToValue(Object value) {
         return null;
     }

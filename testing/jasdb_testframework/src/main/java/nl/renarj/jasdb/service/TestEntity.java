@@ -18,14 +18,14 @@ public class TestEntity {
 
     private List<String> hobbies;
 
-    private Map<String, String> addressProperties;
+    private Map<String, String> properties;
 
-    public TestEntity(String id, String firstName, String lastName, List<String> hobbies, Map<String, String> addressProperties) {
+    public TestEntity(String id, String firstName, String lastName, List<String> hobbies, Map<String, String> properties) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.hobbies = hobbies;
-        this.addressProperties = addressProperties;
+        this.properties = properties;
     }
 
     public TestEntity() {
@@ -68,12 +68,12 @@ public class TestEntity {
         this.hobbies = hobbies;
     }
 
-    @JasDBProperty(name = "Address")
-    public Map<String, String> getAddressProperties() {
-        return addressProperties;
+    @JasDBProperty
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
-    public void setAddressProperties(Map<String, String> addressProperties) {
-        this.addressProperties = addressProperties;
+    public void setProperties(Map<String, String> addressProperties) {
+        this.properties = addressProperties;
     }
 }

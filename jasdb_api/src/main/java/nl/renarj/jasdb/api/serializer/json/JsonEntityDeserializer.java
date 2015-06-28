@@ -73,9 +73,6 @@ public class JsonEntityDeserializer implements EntityDeserializer {
                         entity.setInternalId(id);
                     }
                     parser.nextToken();
-                } else if(JsonEntitySerializer.PROPERTIES_ARRAY.equals(fieldName)){
-                    handleProperties(parser, entity);
-                    parser.nextToken();
                 } else {
                     token = parser.nextToken(); // start values
                     if(token == JsonToken.START_ARRAY) { //multivalues

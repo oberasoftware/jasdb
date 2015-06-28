@@ -26,6 +26,11 @@ public class StringTypeMapper implements TypeMapper<String> {
     }
 
     @Override
+    public Object mapToEmptyValue() {
+        return null;
+    }
+
+    @Override
     public Property mapToProperty(String propertyName, Object value) {
         Property property = new MultivalueProperty(propertyName);
 
