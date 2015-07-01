@@ -80,7 +80,10 @@ List<TestEntity> peopleNamedPiet = entityManager.findEntities(TestEntity.class, 
 
 For more details on the entity mapping, please check this page on the wiki: https://github.com/oberasoftware/jasdb-open/wiki/Object-Entity-Mapping-API
 
-### Java Example
+### Regular Java Client Example
+Besides using the object mapper you can also use JasDB object model which allows more finer grained control over the data itself. Also the API offers more operations to create indexes and other database operations.
+
+Example on how to insert and retrieve data:
 ```java
 //Open DB Session
 DBSession session = new LocalDBSession();
