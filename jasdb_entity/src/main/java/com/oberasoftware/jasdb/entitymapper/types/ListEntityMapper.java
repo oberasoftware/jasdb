@@ -6,19 +6,16 @@ import nl.renarj.jasdb.api.properties.Property;
 import nl.renarj.jasdb.api.properties.Value;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
-import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.oberasoftware.jasdb.entitymapper.types.TypeMapperFactory.getTypeMapper;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author Renze de Vries
  */
 public class ListEntityMapper implements TypeMapper<List<?>> {
-    private static final Logger LOG = getLogger(ListEntityMapper.class);
-
     @Override
     public boolean isSupportedType(Class<?> type) {
         return List.class.isAssignableFrom(type);
@@ -31,6 +28,11 @@ public class ListEntityMapper implements TypeMapper<List<?>> {
         } else {
             throw new RuntimeJasDBException("Invalid type, cannot cast object: " + value + " to a list");
         }
+    }
+
+    @Override
+    public Object mapToEmptyValue() {
+        return new ArrayList<>();
     }
 
     @Override

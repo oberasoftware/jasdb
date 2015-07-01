@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class JsonDataSerializerTest {
     @Test
     public void deserializeEntityTest() throws RestException {
-        String entityString = "{\"__ID\":null,\"properties\":{\"__ID\":null,\"city\":\"Amsterdam\"}}";
+        String entityString = "{\"__ID\":null,\"city\":\"Amsterdam\"}";
         StreamedEntity entity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, new ByteArrayInputStream(entityString.getBytes()));
         Assert.assertNotNull(entity);
 
@@ -42,7 +42,7 @@ public class JsonDataSerializerTest {
 
     @Test
     public void deserializeEntityMultiValueTest() throws RestException {
-        String entityString = "{\"__ID\":null,\"properties\":{\"__ID\":null,\"city\":[\"Amsterdam\", \"Rotterdam\"]}}";
+        String entityString = "{\"__ID\":null,\"city\":[\"Amsterdam\", \"Rotterdam\"]}";
         StreamedEntity entity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, new ByteArrayInputStream(entityString.getBytes()));
         Assert.assertNotNull(entity);
 
@@ -54,12 +54,6 @@ public class JsonDataSerializerTest {
         Assert.assertEquals("Expected a first property with value 'Amsterdam'", "Amsterdam", property.getFirstValueObject().toString());
         Assert.assertEquals("Expected a second property value with 'Rotterdam'", "Rotterdam", property.getValues().get(1).toString());
 
-    }
-
-    @Test(expected = RestException.class)
-    public void deserializeJsonEmptyString() throws RestException {
-        String entityString = "{\"__ID\":\"b7c35b28-3052-4255-bdcc-151f5f15434b\",\"properties\":[\"__ID\":\"b7c35b28-3052-4255-bdcc-151f5f15434b\",\"randomString-4-39\":\"\"]}";
-        new JsonRestResponseHandler().deserialize(StreamedEntity.class, new ByteArrayInputStream(entityString.getBytes()));
     }
 
     @Test

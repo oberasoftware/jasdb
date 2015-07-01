@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 public class EntityStreamCollectionHandlerTest {
     @Test
     public void testDeserialize() throws UnsupportedEncodingException, RestException {
-        String inputJson = "{\"size\":1,\"timeMilliseconds\":0,\"entities\":[{\"__ID\":\"0000f46d-049c-17e1-0000-013a4c46e5e8\",\"properties\":{\"__ID\":\"0000f46d-049c-17e1-0000-013a4c46e5e8\",\"city\":\"Rotterdam\",\"itemId\":399}}]}";
+        String inputJson = "{\"size\":1,\"timeMilliseconds\":0,\"entities\":[{\"__ID\":\"0000f46d-049c-17e1-0000-013a4c46e5e8\",\"city\":\"Rotterdam\",\"itemId\":399}]}";
         ByteArrayInputStream bis = new ByteArrayInputStream(inputJson.getBytes("UTF8"));
 
         EntityStreamCollectionHandler handler = new EntityStreamCollectionHandler();

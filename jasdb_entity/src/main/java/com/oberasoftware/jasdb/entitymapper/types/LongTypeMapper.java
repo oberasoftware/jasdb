@@ -31,6 +31,11 @@ public class LongTypeMapper implements TypeMapper<Long> {
     }
 
     @Override
+    public Object mapToEmptyValue() {
+        return null;
+    }
+
+    @Override
     public Value mapToValue(Object value) {
         return new LongValue(mapToRawType(value));
     }

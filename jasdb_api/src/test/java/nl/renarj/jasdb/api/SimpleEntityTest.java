@@ -79,12 +79,12 @@ public class SimpleEntityTest {
         assertTrue(deserializedEntity.hasProperty("simpleProperty1"));
         assertTrue(deserializedEntity.hasProperty("multiValueProperty"));
         assertTrue(deserializedEntity.hasProperty("integerProperty"));
-        assertEquals(new Long(100), deserializedEntity.getProperty("simpleProperty1").getFirstValueObject());
+        assertEquals(100, (long)deserializedEntity.getProperty("simpleProperty1").getFirstValueObject());
         assertEquals(3, deserializedEntity.getProperty("multiValueProperty").getValues().size());
         assertEquals("value1", deserializedEntity.getProperty("multiValueProperty").getValues().get(0).getValue());
         assertEquals("value2", deserializedEntity.getProperty("multiValueProperty").getValues().get(1).getValue());
         assertEquals("value3", deserializedEntity.getProperty("multiValueProperty").getValues().get(2).getValue());
-        assertEquals(new Long(200), deserializedEntity.getProperty("integerProperty").getFirstValueObject());
+        assertEquals(200l, (long)deserializedEntity.getProperty("integerProperty").getFirstValueObject());
 
         /* Test embedded property retrieval */
         assertNotNull(deserializedEntity.getProperty("embedded.embeddedProperty1"));

@@ -9,6 +9,8 @@ import nl.renarj.jasdb.api.properties.Value;
 public interface TypeMapper<T> {
     boolean isSupportedType(Class<?> type);
 
+    Object mapToEmptyValue();
+
     T mapToRawType(Object value);
 
     Value mapToValue(Object value);

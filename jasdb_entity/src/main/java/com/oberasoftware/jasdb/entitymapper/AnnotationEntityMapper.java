@@ -92,16 +92,18 @@ public class AnnotationEntityMapper implements EntityMapper {
 
                 metadata.getProperties().forEach((k, v) -> {
                     if(v.isKey()) {
-                        LOG.debug("");
                         setValue(instance, entity.getInternalId(), v);
-                    }
-
-                    Property property = entity.getProperty(k);
-                    if (property != null) {
-                        Object value = v.getTypeMapper().mapFromProperty(property);
-                        setValue(instance, value, v);
-                    } else if (!v.isNullable()) {
-                        throw new RuntimeJasDBException("Unable to map property: " + v + " value was null");
+                    } else {
+                        Property property = entity.getProperty(k);
+                        if (property != null) {
+                            Object value = v.getTypeMapper().mapFromProperty(property);
+                            setValue(instance, value, v);
+                        } else if (!v.isNullable()) {
+                            throw new RuntimeJasDBException("Unable to map property: " + v + " value was null");
+                        } else {
+                            Object emptyValue = v.getTypeMapper().mapToEmptyValue();
+                            setValue(instance, emptyValue, v);
+                        }
                     }
                 });
 

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -68,6 +69,57 @@ public abstract class EntityManagerTest extends QueryBaseTest {
         assertThat(mappedEntity.getValue("lastName"), is("de Vries"));
     }
 
+    @Test
+    public void testCollectionValues() throws Exception {
+        DBSession session = sessionFactory.createSession();
+        EntityManager entityManager = session.getEntityManager();
+        try {
+            TestEntity entity = new TestEntity(null, "Renze", "de Vries", newArrayList("programming", "model building", "biking"),
+                    new ImmutableMap.Builder<String, String>()
+                            .put("city", "Amsterdam")
+                            .put("street", "Secret passageway 10")
+                            .put("zipcode", "0000TT").build());
+            String id = entityManager.persist(entity).getInternalId();
+
+            TestEntity foundEntity = entityManager.findEntity(TestEntity.class, id);
+            assertThat(foundEntity, notNullValue());
+            assertThat(foundEntity.getId(), is(id));
+
+            assertThat(foundEntity.getFirstName(), is("Renze"));
+            assertThat(foundEntity.getLastName(), is("de Vries"));
+            assertThat(foundEntity.getHobbies().size(), is(3));
+            assertThat(foundEntity.getHobbies(), hasItems("programming", "model building", "biking"));
+            assertThat(foundEntity.getProperties().size(), is(3));
+
+            assertThat(foundEntity.getProperties().get("city"), is("Amsterdam"));
+            assertThat(foundEntity.getProperties().get("street"), is("Secret passageway 10"));
+            assertThat(foundEntity.getProperties().get("zipcode"), is("0000TT"));
+        } finally {
+            session.closeSession();
+            SimpleKernel.shutdown();
+        }
+
+    }
+
+    @Test
+    public void testEmptyCollections() throws Exception {
+        DBSession session = sessionFactory.createSession();
+        EntityManager entityManager = session.getEntityManager();
+        try {
+            String id = entityManager.persist(new TestEntity(null, "Piet", "de Klos", newArrayList(), new HashMap<>())).getInternalId();
+
+            TestEntity entity = entityManager.findEntity(TestEntity.class, id);
+            assertThat(entity, notNullValue());
+
+            assertThat(entity.getFirstName(), is("Piet"));
+            assertThat(entity.getLastName(), is("de Klos"));
+            assertThat(entity.getHobbies().size(), is(0));
+            assertThat(entity.getProperties().size(), is(0));
+        } finally {
+            session.closeSession();
+            SimpleKernel.shutdown();
+        }
+    }
 
     @Test
     public void testFindAll() throws Exception {
@@ -175,6 +227,5 @@ public abstract class EntityManagerTest extends QueryBaseTest {
 
         List<String> foundIds = entities.stream().map(TestEntity::getId).collect(Collectors.toList());
         assertThat(foundIds, hasItems(ids.toArray(new String[ids.size()])));
-
     }
 }
