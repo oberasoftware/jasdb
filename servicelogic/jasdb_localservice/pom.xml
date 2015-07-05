@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>jasdb</artifactId>
 		<groupId>com.oberasoftware</groupId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>jasdb_localservice</artifactId>

@@ -55,6 +55,8 @@ public class EntityManagerImpl implements EntityManager {
             persistedEntity = bag.updateEntity(mappedResult.getJasDBEntity());
             LOG.debug("Updated entity: {} in bag: {}", persistedEntity, bagName);
         }
+        //update the ID of the passed object
+        ENTITY_MAPPER.updateId(persistedEntity.getInternalId(), persistableObject);
 
         return persistedEntity;
     }

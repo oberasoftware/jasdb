@@ -52,7 +52,7 @@ public class QuerySearchOperation {
 		IndexSearchResultIteratorCollection results = doBlockHierarchy(blockOperation, limit);
 		record.stop();
 
-        results = results != null ? results : new IndexSearchResultIteratorImpl(new ArrayList<Key>(0), new KeyNameMapperImpl());
+        results = results != null ? results : new IndexSearchResultIteratorImpl(new ArrayList<>(0), new KeyNameMapperImpl());
 
 		if(params != null && !params.isEmpty()) {
 			record = StatisticsMonitor.createRecord("bag:search:sort");

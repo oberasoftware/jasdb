@@ -43,7 +43,7 @@ public class TableScanOperation {
         RecordIterator recordIterator = recordWriter.readAllRecords();
         recordIterator.forEach(r -> keys.add(recordToKey(r)));
 
-        return new IndexSearchResultIteratorImpl(keys, DEFAULT_DOC_ID_MAPPER);
+        return new IndexSearchResultIteratorImpl(keys, DEFAULT_DOC_ID_MAPPER.clone());
     }
 
     public IndexSearchResultIteratorCollection doTableScan(BlockOperation operation, Set<String> fields, IndexSearchResultIteratorCollection currentResults) throws JasDBStorageException {
@@ -75,7 +75,7 @@ public class TableScanOperation {
             }
         }
 
-        return new IndexSearchResultIteratorImpl(foundKeys, DEFAULT_DOC_ID_MAPPER);
+        return new IndexSearchResultIteratorImpl(foundKeys, DEFAULT_DOC_ID_MAPPER.clone());
     }
 
     private void doTableScanConditions(BlockOperation operation, BlockMerger merger, List<Key> foundKeys, RecordResult result, Set<String> fields) throws JasDBStorageException {

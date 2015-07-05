@@ -84,6 +84,21 @@ public class AnnotationEntityMapper implements EntityMapper {
     }
 
     @Override
+    public Object updateId(String id, Object mappableObject) throws JasDBStorageException {
+        LOG.debug("Setting ID: {} on mappable object: {}", id, mappableObject);
+        Class<?> entityClass = mappableObject.getClass();
+        EntityMetadata metadata = getEntityMetadata(entityClass);
+
+        Optional<PropertyMetadata> optionalKeyProperty = metadata.getKeyProperty();
+        if(optionalKeyProperty.isPresent()) {
+            PropertyMetadata keyProperty = optionalKeyProperty.get();
+            setValue(mappableObject, id, keyProperty);
+        }
+
+        return mappableObject;
+    }
+
+    @Override
     public <T> T mapFrom(Class<T> targetType, SimpleEntity entity) throws JasDBStorageException {
         try {
             if(entity != null) {
