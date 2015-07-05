@@ -28,7 +28,62 @@ Javadoc: http://oberasoftware.github.io/jasdb/apidocs/
 
 For more details see here: https://github.com/oberasoftware/jasdb-open/wiki/Installing-and-configuring-JasDB
 
-### Java Example
+### Java with Object mapping Example
+In JasDB we have an object mapper available which allows you to do quick operations using your regular Java objects. All you have to do is add some annotations on top of your Java beans.
+
+Example bean:
+```java
+@JasDBEntity(bagName = "TEST_BAG")
+public class TestEntity {
+    private String id;
+    private String firstName;
+    private String lastName;
+
+    @Id
+    @JasDBProperty
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    @JasDBProperty
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    @JasDBProperty
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+}
+```
+
+The following code can be used for persisting these beans:
+```java
+DBSession session = new LocalDBSession(); //new RestDBSession();
+EntityManager entityManager = session.getEntityManager();
+
+TestEntity entity = new TestEntity(null, "Renze", "de Vries");
+
+String id = entityManager.persist(entity).getInternalId();
+```
+
+The following can be used to query and retrieve the entities back from the database
+```java
+DBSession session = new LocalDBSession(); //new RestDBSession();
+EntityManager entityManager = session.getEntityManager();
+TestEntity foundEntity = entityManager.findEntity(TestEntity.class, id);
+
+//This will find all entities
+List<TestEntity> allEntities = entityManager.findEntities(TestEntity.class, QueryBuilder.createBuilder());
+
+//Get all people named Piet
+QueryBuilder query = QueryBuilder.createBuilder().field("firstName").value("Piet");
+List<TestEntity> peopleNamedPiet = entityManager.findEntities(TestEntity.class, query);
+```
+
+For more details on the entity mapping, please check this page on the wiki: https://github.com/oberasoftware/jasdb-open/wiki/Object-Entity-Mapping-API
+
+### Regular Java Client Example
+Besides using the object mapper you can also use JasDB object model which allows more finer grained control over the data itself. Also the API offers more operations to create indexes and other database operations.
+
+Example on how to insert and retrieve data:
 ```java
 //Open DB Session
 DBSession session = new LocalDBSession();
