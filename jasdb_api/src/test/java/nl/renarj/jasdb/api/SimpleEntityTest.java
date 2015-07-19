@@ -50,6 +50,7 @@ public class SimpleEntityTest {
         entity.addProperty("booleanMultiValue", true);
         entity.addProperty("booleanMultiValue", true);
         entity.addProperty("booleanMultiValue", false);
+        entity.addProperty("embeddedJson", "{\"embeddedJsonField\":\"embeddedText\"}");
         assertEntity(entity);
 
         String serializedEntity = SimpleEntity.toJson(entity);
@@ -246,6 +247,9 @@ public class SimpleEntityTest {
         assertThat(entity.hasProperty("booleanValueFalse"), is(true));
         assertThat(entity.hasProperty("booleanValueTrue"), is(true));
         assertThat(entity.hasProperty("booleanMultiValue"), is(true));
+        assertThat(entity.hasProperty("embeddedJson"), is(true));
+        //ensure the embedded raw json data is not part of the entity
+        assertThat(entity.hasProperty("embeddedJsonField"), is(false));
 
         Property property1 = entity.getProperty("test1");
         Property property2 = entity.getProperty("test2");
@@ -257,7 +261,7 @@ public class SimpleEntityTest {
         assertThat(property3.getValues().size(), is(2));
         assertThat(property4.getValues().size(), is(1));
 
-        assertThat(entity.getProperty("booleanValueFalse").getValues(), hasItems((Value)new BooleanValue(false)));
+        assertThat(entity.getProperty("booleanValueFalse").getValues(), hasItems((Value) new BooleanValue(false)));
         assertThat(entity.getProperty("booleanValueTrue").getValues(), hasItems((Value)new BooleanValue(true)));
         assertThat(entity.getProperty("booleanMultiValue").getValues(), hasItems((Value)new BooleanValue(true), new BooleanValue(true), new BooleanValue(false)));
 
@@ -266,5 +270,7 @@ public class SimpleEntityTest {
         assertThat(entity.getProperty("test2").getValues(), hasItems((Value) new StringValue("someValue")));
         assertThat(entity.getProperty("test3").getValues(), hasItems((Value) new LongValue(1l), new LongValue(2l)));
         assertThat(entity.getProperty("test4").getValues(), hasItems((Value)new LongValue(1l)));
+
+        assertThat(entity.getProperty("embeddedJson").getFirstValueObject(), is("{\"embeddedJsonField\":\"embeddedText\"}"));
     }
 }
