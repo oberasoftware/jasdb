@@ -42,9 +42,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@bitbucket.org:oberasoftware/jasdb_open.git</connection>
-        <developerConnection>scm:git:git@bitbucket.org:oberasoftware/jasdb_open.git</developerConnection>
-        <url>git@bitbucket.org:oberasoftware/jasdb_open.git</url>
+        <connection>scm::git:git@github.com:oberasoftware/jasdb.git</connection>
+        <developerConnection>scm::git:git@github.com:oberasoftware/jasdb.git</developerConnection>
+        <url>https://github.com/oberasoftware/jasdb</url>
     </scm>
     <distributionManagement>
         <snapshotRepository>
