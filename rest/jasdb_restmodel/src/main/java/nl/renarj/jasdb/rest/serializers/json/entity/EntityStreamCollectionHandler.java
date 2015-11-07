@@ -96,7 +96,9 @@ public class EntityStreamCollectionHandler implements RestResponseHandler {
             JsonEntitySerializer entitySerializer = new JsonEntitySerializer();
 
             for(SimpleEntity entity : result) {
-                entitySerializer.serializeEntity(entity, generator);
+                if(entity != null) {
+                    entitySerializer.serializeEntity(entity, generator);
+                }
             }
 
             generator.writeEndArray();

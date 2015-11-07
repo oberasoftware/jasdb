@@ -314,6 +314,21 @@ public class JasDBMetadataStore implements MetadataStore {
     }
 
     @Override
+    public void updateInstance(Instance instance) throws JasDBStorageException {
+        if(instanceMetaMap.containsKey(instance.getInstanceId())) {
+            SimpleEntity entity = InstanceMeta.toEntity(instance);
+            String jsonData = SimpleEntity.toJson(entity);
+
+            removeInstance(instance.getInstanceId());
+            long recordPointer = writer.writeRecord(jsonData, null);
+
+            instanceMetaMap.put(instance.getInstanceId(), new MetaWrapper<>(instance, recordPointer));
+        } else {
+            throw new JasDBStorageException("Unable to update instance, does not exists");
+        }
+    }
+
+    @Override
     public <T extends MetadataProvider> T getMetadataProvider(String type) {
         return (T)metadataProviders.get(type);
     }

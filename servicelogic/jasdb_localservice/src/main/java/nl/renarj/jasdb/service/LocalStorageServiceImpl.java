@@ -13,8 +13,10 @@ import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.Index;
+import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
 import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.index.search.CompositeIndexField;
@@ -26,6 +28,7 @@ import nl.renarj.jasdb.service.search.QuerySearchOperation;
 import nl.renarj.jasdb.storage.RecordWriterFactoryLoader;
 import nl.renarj.jasdb.storage.indexing.IndexScanAndRecovery;
 import nl.renarj.jasdb.storage.query.operators.BlockOperation;
+import nl.renarj.jasdb.storage.transactional.TransactionalRecordWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,6 +164,20 @@ public class LocalStorageServiceImpl implements StorageService {
         Collection<Index> indexes = getIndexManager().getIndexes(bagName).values();
         List<Future<?>> indexRebuilds = new ArrayList<>(indexes.size());
         LOGGER.info("Doing index scan for: {} items", getSize());
+        RecordWriter recordWriter = recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName);
+        if(recordWriter instanceof TransactionalRecordWriter) {
+            TransactionalRecordWriter transactionalRecordWriter = (TransactionalRecordWriter) recordWriter;
+            LOGGER.info("Forcing primary key rebuild first, we need to ensure integrity");
+            transactionalRecordWriter.verify(recordResult -> {
+                try {
+                    return new UUIDKey(BagOperationUtil.toEntity(recordResult.getStream()).getInternalId());
+                } catch (JasDBStorageException e) {
+                    throw new RuntimeJasDBException("Unable to read jasdb entitiy", e);
+                }
+            });
+        }
+
+        LOGGER.info("Doing index scans");
         for(final Index index : indexes) {
             indexRebuilds.add(indexRebuilder.submit(new IndexScanAndRecovery(index, getRecordWriter().readAllRecords())));
         }

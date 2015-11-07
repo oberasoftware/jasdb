@@ -153,6 +153,13 @@ public interface MetadataStore {
     void removeInstance(String instanceId) throws JasDBStorageException;
 
     /**
+     * Updates the instance metadata
+     * @param instance The instance
+     * @throws JasDBStorageException If unable to update the instance
+     */
+    void updateInstance(Instance instance) throws JasDBStorageException;
+
+    /**
      * Gets a metadata provider that can handle non standard metadata stored in the metadata store
      * @param type The type of metadata provider requested
      * @param <T> The subtype of the metadata provider

@@ -11,6 +11,7 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import nl.renarj.jasdb.core.storage.RecordResult;
 import nl.renarj.jasdb.core.storage.RecordWriter;
 import nl.renarj.jasdb.index.keys.Key;
 import nl.renarj.jasdb.index.keys.KeyUtil;
@@ -50,8 +51,13 @@ public class QueryResultIteratorImpl implements QueryResult {
 				try {
 //					long recordPointer = KeyUtil.getRecordPointer(indexIterator.getKeyNameMapper(), key);
                     UUIDKey documentKey = KeyUtil.getDocumentKey(indexIterator.getKeyNameMapper(), key);
-					
-					return SimpleEntity.fromStream(recordWriter.readRecord(documentKey).getStream());
+
+					RecordResult result = recordWriter.readRecord(documentKey);
+					if(result.isRecordFound()) {
+						return SimpleEntity.fromStream(result.getStream());
+					} else {
+						log.warn("Could not find record: {}", documentKey);
+					}
 				} catch(JasDBStorageException e) {
 					throw new RuntimeJasDBException("Unable to iterate over query result, no record pointer found in index");
 				}

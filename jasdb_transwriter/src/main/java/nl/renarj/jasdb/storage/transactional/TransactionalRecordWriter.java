@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class TransactionalRecordWriter implements RecordWriter {
     private static final Logger LOG = LoggerFactory.getLogger(TransactionalRecordWriter.class);
@@ -113,6 +114,7 @@ public class TransactionalRecordWriter implements RecordWriter {
             } catch(JasDBStorageException e) {
                 try {
                     removeRecord(documentId);
+                    index.flushIndex();
                 } catch (JasDBStorageException e1) {
                     LOG.error("", e);
                 }
@@ -127,6 +129,7 @@ public class TransactionalRecordWriter implements RecordWriter {
         writer.removeRecord(() -> getRecordPointer(documentId), p -> {
             try {
                 index.removeFromIndex(documentId);
+                index.flushIndex();
             } catch (JasDBStorageException e) {
                 LOG.error("Unable to remove record from index", e);
             }
@@ -159,6 +162,7 @@ public class TransactionalRecordWriter implements RecordWriter {
                 Key newKey = documentId.cloneKey(false).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(newp));
                 try {
                     index.updateKey(documentId, newKey);
+                    index.flushIndex();
                 } catch (JasDBStorageException e) {
                     LOG.error("", e);
                 }
@@ -166,5 +170,40 @@ public class TransactionalRecordWriter implements RecordWriter {
         });
     }
 
+    public Index getIndex() {
+        return index;
+    }
 
+    public void verify(Function<RecordResult, UUIDKey> f) {
+        try {
+            RecordIterator recordResults = writer.readAllRecords();
+            for(RecordResult result : recordResults) {
+                UUIDKey key = f.apply(result);
+                boolean shouldUpdatePosition = false;
+                try {
+                    if (!readRecord(key).isRecordFound()) {
+                        shouldUpdatePosition = true;
+                    }
+                } catch(DatastoreException e) {
+                    shouldUpdatePosition = true;
+                }
+
+                if(shouldUpdatePosition) {
+                    long p = ((RecordResultImpl) result).getRecordPointer();
+                    LOG.debug("Missing index pointer: {}", p);
+                    Key insertKey = key.cloneKey(false)
+                            .addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(p));
+
+                    try {
+                        index.insertIntoIndex(insertKey);
+                    } catch(JasDBStorageException e) {
+                        index.updateKey(key, insertKey);
+                    }
+                }
+            }
+
+        } catch (JasDBStorageException e) {
+            e.printStackTrace();
+        }
+    }
 }
