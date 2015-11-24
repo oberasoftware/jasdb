@@ -6,9 +6,9 @@ repository_name:  JasDB Github
 repository:       https://github.com/oberasoftware/jasdb
 product_name:     JasDB
 download_url:     https://github.com/oberasoftware/jasdb/releases/download/1.1.1-7/jasdb_1.1.1.zip
-#url:              http://www.oberasoftware.com
+url:              http://www.oberasoftware.com
 #url:              http://oberasoftware.github.io/
-url:              http://localhost:4000
+#url:              http://localhost:4000
 site_copyright:   Copyright 2015 All rights reserved by Renze de Vries @ Oberasoftware
 disqus_shortname:
 
