@@ -1,0 +1,25 @@
+<title>{% if page.title %}{{ page.title }} &#8211; {% endif %}{{ site.title }}</title>
+<meta name="keywords" content="{{ page.tags | join: ', ' }}">
+<!-- Meta -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="{{ page.description }}">
+<meta name="author" content="Renze de Vries">
+<link rel="shortcut icon" href="favicon.ico">
+
+<link href='http://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" href="{{site.url}}/assets/plugins/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{site.url}}/assets/plugins/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="{{site.url}}/assets/plugins/prism/prism.css">
+<link id="theme-style" rel="stylesheet" href="{{site.url}}/assets/css/styles.css">
+
+
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->

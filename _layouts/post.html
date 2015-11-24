@@ -1,0 +1,59 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+{% include _head.html %}
+</head>
+
+<body class="page">
+
+{% include _navigation.html %}
+
+<section class="about">
+<div class="container">
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title">{{ page.title }}</h2>
+      </div>
+      <div class="panel-body">
+        <small>Published on <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time>{% if page.modified %} and last modified on <time datetime="{{ page.modified | date: "%Y-%m-%d" }}">{{ page.modified | date: "%B %d, %Y" }}</time>{% endif %} by <a href="{{ site.url }}/about" title="About {{ site.owner.name }}">{{ site.owner.name }}</a>.</small>
+        <hr/>
+        {{ content }}
+      </div>
+      <div class="panel-footer">
+          <div class="row">
+            <strong>Posted in:</strong>
+            <em>
+              {% for tag in page.tags %}
+                {{tag}};
+              {% endfor %}
+            </em>
+          </div>
+          <div class="row">
+            <ul class="pager">
+              {% if page.previous %}
+                <li class="previous">
+                  <a href="{{ site.url }}{{ page.previous.url }}">&larr; {{ page.previous.title }}</a>
+                </li>
+              {% endif %}
+              {% if page.next %}
+                <li class="next">
+                  <a href="{{ site.url }}{{ page.next.url }}">{{ page.next.title }} &rarr;</a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% include _footer.html %}
+
+{% include _scripts.html %}
+
+</body>
+</html>
