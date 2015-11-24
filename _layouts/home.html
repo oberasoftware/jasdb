@@ -37,7 +37,7 @@
             <div class="social-media-inner container text-center">
                 <ul class="list-inline">
                     <li class="twitter-follow">
-                      <a href="https://twitter.com/renzedevries" class="twitter-follow-button" data-show-count="false">Follow @renzedevries</a>                      
+                      <a href="https://twitter.com/renzedevries" class="twitter-follow-button" data-show-count="false">Follow @renzedevries</a>
                     </li><!--//twitter-follow-->
                     <li class="twitter-tweet">
                         <a href="https://twitter.com/share" class="twitter-share-button" data-via="oberasoftware" data-hashtags="oberasoftware,jasdb,nosql">Tweet</a>
@@ -169,36 +169,36 @@
 
     <!-- ******FEATURES****** -->
     <section id="developers" class="developers section">
-        <div class="container text-center">
+        <div class="container">
           <div class="row">
             <div class="col-md-12">
-              <h2 class="title">Developing</h2>
+              <h2 class="title text-center">Developing</h2>
               <p>Using JasDB is incredibly simple to use and provides both a Java and REST based API, see here a small snippet to get started in Java</p>
               <pre><code class="language-markup">
-                //Open DB Session
-                DBSession session = new LocalDBSession();
-                EntityBag bag = session.createOrGetBag("MyBag");
+//Open DB Session
+DBSession session = new LocalDBSession();
+EntityBag bag = session.createOrGetBag("MyBag");
 
-                //Insert some data
-                SimpleEntity entity = new SimpleEntity();
-                entity.addProperty("title", "Title of my content");
-                entity.addProperty("text", "Some big piece of text content");
-                bag.addEntity(entity);
+//Insert some data
+SimpleEntity entity = new SimpleEntity();
+entity.addProperty("title", "Title of my content");
+entity.addProperty("text", "Some big piece of text content");
+bag.addEntity(entity);
 
-                //Retrieve entity by Id
-                SimpleEntity e = bag.getEntity("056f8058-e1f7-4f8e-a2f8-332e62c15961");
+//Retrieve entity by Id
+SimpleEntity e = bag.getEntity("056f8058-e1f7-4f8e-a2f8-332e62c15961");
 
-                //Query the DB
-                QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field").value(queryKey));
-                QueryResult result = executor.execute();
-                for(SimpleEntity entity : result) {
-                   //access the properties if desired
-                   entity.getProperty("field1");
-                }
-              </code></pre>
+//Query the DB
+QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field").value(queryKey));
+QueryResult result = executor.execute();
+for(SimpleEntity entity : result) {
+    //access the properties if desired
+    entity.getProperty("field1");
+}
+</code></pre>
 <br/>
-              <h3 class="title">API Documentation</h3>
-                <p>For full documentation on the Client API look on <a href="https://github.com/oberasoftware/jasdb/wiki/Java-Client-API">the wiki</a><br/>
+              <h3 class="title text-center">API Documentation</h3>
+                <p class="text-center">For full documentation on the Client API look on <a href="https://github.com/oberasoftware/jasdb/wiki/Java-Client-API">the wiki</a><br/>
                 There is also a full <a href="https://github.com/oberasoftware/jasdb/wiki/Object-Entity-Mapping-API">Object mapping solution available</a></p>
             </div>
           </div>
