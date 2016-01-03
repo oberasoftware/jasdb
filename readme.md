@@ -28,6 +28,19 @@ Javadoc: http://oberasoftware.github.io/jasdb/apidocs/
 
 For more details see here: https://github.com/oberasoftware/jasdb-open/wiki/Installing-and-configuring-JasDB
 
+## Running using Docker
+We have a docker container available that allows you to very quickly get a running JasDB installation.
+
+In order to run a standard docker container:
+```
+docker run -d -p 7050:7050 renarj/jasdb:1.1.1
+```
+
+We however recommend running the jasdb data directory in a seperate volume, for example take the following to attach to a host volume
+```
+docker run -v /Users/devuser/dev/docker/volumes/jasdb-data:/jasdb-data -p 7050:7050 renarj/jasdb:1.1.1
+```
+
 ### Java with Object mapping Example
 In JasDB we have an object mapper available which allows you to do quick operations using your regular Java objects. All you have to do is add some annotations on top of your Java beans.
 
