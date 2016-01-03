@@ -162,7 +162,6 @@ public class TransactionalRecordWriter implements RecordWriter {
                 Key newKey = documentId.cloneKey(false).addKey(keyInfo.getKeyNameMapper(), "RECORD_POINTER", new LongKey(newp));
                 try {
                     index.updateKey(documentId, newKey);
-                    index.flushIndex();
                 } catch (JasDBStorageException e) {
                     LOG.error("", e);
                 }
