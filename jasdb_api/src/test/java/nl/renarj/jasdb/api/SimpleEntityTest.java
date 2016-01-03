@@ -14,19 +14,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * User: renarj
@@ -224,6 +216,7 @@ public class SimpleEntityTest {
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(2013, 1, 31, 0, 0, 0);
+        String expectedTime = calendar.getTime().toString();
         properties.put("field4", calendar.getTime());
 
         simpleEntity.setProperties(properties);
@@ -234,9 +227,9 @@ public class SimpleEntityTest {
         assertNotNull(simpleEntity.getProperty("field4"));
 
         assertEquals(100, (int)simpleEntity.getProperty("field1").getFirstValueObject());
-        assertEquals(300l, (long)simpleEntity.getProperty("field2").getFirstValueObject());
+        assertEquals(300L, (long)simpleEntity.getProperty("field2").getFirstValueObject());
         assertEquals("Simple String", simpleEntity.getProperty("field3").getFirstValueObject());
-        assertEquals("Sun Mar 03 00:00:00 CET 2013", simpleEntity.getProperty("field4").getFirstValueObject());
+        assertEquals(expectedTime, simpleEntity.getProperty("field4").getFirstValueObject());
     }
 
     private void assertEntity(SimpleEntity entity) {
