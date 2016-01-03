@@ -33,12 +33,12 @@ We have a docker container available that allows you to very quickly get a runni
 
 In order to run a standard docker container:
 ```
-docker run -d -p 7050:7050 renarj/jasdb:1.1.1
+docker run -d -p 7050:7050 renarj/jasdb:1.1.2
 ```
 
 We however recommend running the jasdb data directory in a seperate volume, for example take the following to attach to a host volume
 ```
-docker run -v /Users/devuser/dev/docker/volumes/jasdb-data:/jasdb-data -p 7050:7050 renarj/jasdb:1.1.1
+docker run -v /Users/devuser/dev/docker/volumes/jasdb-data:/jasdb-data -p 7050:7050 renarj/jasdb:1.1.2
 ```
 
 ### Java with Object mapping Example
