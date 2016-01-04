@@ -114,7 +114,6 @@ public class TransactionalRecordWriter implements RecordWriter {
             } catch(JasDBStorageException e) {
                 try {
                     removeRecord(documentId);
-                    index.flushIndex();
                 } catch (JasDBStorageException e1) {
                     LOG.error("", e);
                 }
@@ -129,7 +128,6 @@ public class TransactionalRecordWriter implements RecordWriter {
         writer.removeRecord(() -> getRecordPointer(documentId), p -> {
             try {
                 index.removeFromIndex(documentId);
-                index.flushIndex();
             } catch (JasDBStorageException e) {
                 LOG.error("Unable to remove record from index", e);
             }
