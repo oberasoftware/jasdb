@@ -414,6 +414,10 @@ public class LocalStorageServiceImpl implements StorageService {
         this.bagUpdateOperation = bagUpdateOperation;
     }
 
+    public void setBagPersistOperation(DataOperation bagPersistOperation) {
+        this.bagPersistOperation = bagPersistOperation;
+    }
+
     public void setIndexManagerFactory(IndexManagerFactory indexManagerFactory) {
         this.indexManagerFactory = indexManagerFactory;
     }

@@ -46,6 +46,7 @@ public class AndroidStorageServiceFactory extends LocalStorageServiceFactoryImpl
         storageService.setBagInsertOperation(dataOperationFactory.getInsertOperation());
         storageService.setBagRemoveOperation(dataOperationFactory.getRemoveOperation());
         storageService.setBagUpdateOperation(dataOperationFactory.getUpdateOperation());
+        storageService.setBagPersistOperation(dataOperationFactory.getPersistOperation());
         storageService.setIndexManagerFactory(indexManagerFactory);
         storageService.setRecordWriterFactoryLoader(recordWriterFactoryLoader);
         storageService.setGenerator(new MachineGuidGenerator());

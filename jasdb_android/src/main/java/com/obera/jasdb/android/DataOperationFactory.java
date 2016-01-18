@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import nl.renarj.jasdb.api.model.IndexManagerFactory;
 import nl.renarj.jasdb.service.operations.BagInsertOperation;
+import nl.renarj.jasdb.service.operations.BagPersistOperation;
 import nl.renarj.jasdb.service.operations.BagRemoveOperation;
 import nl.renarj.jasdb.service.operations.BagUpdateOperation;
 import nl.renarj.jasdb.storage.RecordWriterFactoryLoader;
@@ -42,5 +43,13 @@ public class DataOperationFactory {
         updateOperation.setRecordWriterFactoryLoader(recordWriterFactoryLoaderProvider.get());
         updateOperation.setIndexManagerFactory(indexManagerFactoryProvider.get());
         return updateOperation;
+    }
+
+    public BagPersistOperation getPersistOperation() {
+        BagPersistOperation persistOperation = new BagPersistOperation();
+        persistOperation.setInsertOperation(getInsertOperation());
+        persistOperation.setRecordWriterFactory(recordWriterFactoryLoaderProvider.get());
+        persistOperation.setUpdateOperation(getUpdateOperation());
+        return persistOperation;
     }
 }

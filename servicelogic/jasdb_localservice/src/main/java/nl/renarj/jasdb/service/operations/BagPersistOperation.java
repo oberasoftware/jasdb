@@ -43,4 +43,16 @@ public class BagPersistOperation implements DataOperation {
             insertOperation.doDataOperation(instanceId, bag, entity);
         }
     }
+
+    public void setUpdateOperation(BagUpdateOperation updateOperation) {
+        this.updateOperation = updateOperation;
+    }
+
+    public void setInsertOperation(BagInsertOperation insertOperation) {
+        this.insertOperation = insertOperation;
+    }
+
+    public void setRecordWriterFactory(RecordWriterFactoryLoader recordWriterFactory) {
+        this.recordWriterFactory = recordWriterFactory;
+    }
 }
