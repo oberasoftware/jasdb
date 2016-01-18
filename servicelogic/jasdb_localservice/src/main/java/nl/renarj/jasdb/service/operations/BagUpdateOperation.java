@@ -63,7 +63,6 @@ public class BagUpdateOperation implements DataOperation {
 
     private void doIndexModifications(String instanceId, String bagName, SimpleEntity oldEntity, SimpleEntity entity) throws JasDBStorageException {
         log.debug("Starting index update for entity: {}", entity.getInternalId());
-//        boolean recordPointerUpdated = oldRecord != updatedRecord;
         //let's start updating the indexes
         Map<String, Index> indexes = indexManagerFactory.getIndexManager(instanceId).getIndexes(bagName);
         for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {

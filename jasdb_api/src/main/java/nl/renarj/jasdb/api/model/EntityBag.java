@@ -72,6 +72,13 @@ public interface EntityBag {
 	 */
 	SimpleEntity updateEntity(SimpleEntity entity) throws JasDBStorageException;
 
+	/**
+	 * Persists the provided entity, if not exists will be created, if already exists it will be updated
+	 * @param entity The entity to be persisted
+	 * @return The persisted entity
+	 * @throws JasDBStorageException If unable to persist the entity
+     */
+	SimpleEntity persist(SimpleEntity entity) throws JasDBStorageException;
 
     /**
      * Remove the entity from the bag

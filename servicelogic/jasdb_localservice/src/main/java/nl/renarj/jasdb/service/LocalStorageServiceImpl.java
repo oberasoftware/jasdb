@@ -82,6 +82,10 @@ public class LocalStorageServiceImpl implements StorageService {
     private DataOperation bagUpdateOperation;
 
     @Autowired
+    @Qualifier("persistOperation")
+    private DataOperation bagPersistOperation;
+
+    @Autowired
     private IndexManagerFactory indexManagerFactory;
 
     @Autowired
@@ -204,9 +208,7 @@ public class LocalStorageServiceImpl implements StorageService {
 	public void insertEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
-            if(entity.getInternalId() == null || entity.getInternalId().isEmpty()) {
-                entity.setInternalId(generator.generateNewId());
-            }
+            runIdGeneration(entity);
 
             bagInsertOperation.doDataOperation(instanceId, bagName, entity);
         } finally {
@@ -247,7 +249,25 @@ public class LocalStorageServiceImpl implements StorageService {
         }
 	}
 
-	@Override
+    @Override
+    public void persistEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
+        resourceLockManager.sharedLock();
+        try {
+            runIdGeneration(entity);
+
+            bagPersistOperation.doDataOperation(instanceId, bagName, entity);
+        } finally {
+            resourceLockManager.sharedUnlock();
+        }
+    }
+
+    private void runIdGeneration(SimpleEntity entity) throws JasDBStorageException {
+        if(entity.getInternalId() == null || entity.getInternalId().isEmpty()) {
+            entity.setInternalId(generator.generateNewId());
+        }
+    }
+
+    @Override
 	public long getSize() throws JasDBStorageException {
 		return recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).getSize();
 	}

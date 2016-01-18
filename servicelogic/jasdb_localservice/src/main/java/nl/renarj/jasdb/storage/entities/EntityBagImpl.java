@@ -105,7 +105,13 @@ public class EntityBagImpl implements EntityBag {
         return entity;
 	}
 
-    @Override
+	@Override
+	public SimpleEntity persist(SimpleEntity entity) throws JasDBStorageException {
+		this.storageService.persistEntity(getContext(), entity);
+		return entity;
+	}
+
+	@Override
     public void removeEntity(SimpleEntity entity) throws JasDBStorageException {
         this.storageService.removeEntity(getContext(), entity);
     }

@@ -38,6 +38,9 @@ public abstract class EntityBagTest {
 	private static final int INITIAL_SIZE = 100;
 	private static final int NUMBER_ENTITIES = 10000;
 	private static final String searchTestId = "f5533a4a-14e2-42fc-94db-bac3fc0b1712";
+
+    private static final String[] cities = new String[] {"Amsterdam", "Rotterdam", "Utrecht", "Groningen", "Haarlem",
+            "Den Haag", "Maastricht", "Eindhoven"};
     
     private DBSessionFactory sessionFactory;
 
@@ -184,15 +187,11 @@ public abstract class EntityBagTest {
         QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("text").value("Some big piece of text content"));
         QueryResult result = executor.execute();
 
-        assertThat(result.size(), is(1l));
+        assertThat(result.size(), is(1L));
         for(SimpleEntity resultEntity : result) {
             String json = SimpleEntity.toJson(resultEntity);
             log.info("Output: {}", json);
         }
-//        assertNotNull(simpleEntity);
-//
-//        String json = SimpleEntity.toJson(simpleEntity);
-//        log.info("Output: {}", json);
     }
 
     @Test
@@ -207,18 +206,18 @@ public abstract class EntityBagTest {
                             new IndexField("workflow", new LongKeyType())
                     ),false);
 
-            bag.addEntity(new SimpleEntity().addProperty("url", "").addProperty("stepid", 1l).addProperty("workflow",1l));
-            bag.addEntity(new SimpleEntity().addProperty("url", "").addProperty("stepid", 1l).addProperty("workflow",1l));
-            bag.addEntity(new SimpleEntity().addProperty("url", "").addProperty("stepid", 1l).addProperty("workflow",1l));
+            bag.addEntity(new SimpleEntity().addProperty("url", "").addProperty("stepid", 1L).addProperty("workflow", 1L));
+            bag.addEntity(new SimpleEntity().addProperty("url", "").addProperty("stepid", 1L).addProperty("workflow", 1L));
+            bag.addEntity(new SimpleEntity().addProperty("url", "").addProperty("stepid", 1L).addProperty("workflow", 1L));
 
-            bag.addEntity(new SimpleEntity().addProperty("url", "http://someurl.nl/1").addProperty("stepid", 1l).addProperty("workflow",1l));
-            bag.addEntity(new SimpleEntity().addProperty("url", "http://someurl.nl/2").addProperty("stepid", 1l).addProperty("workflow",1l));
+            bag.addEntity(new SimpleEntity().addProperty("url", "http://someurl.nl/1").addProperty("stepid", 1L).addProperty("workflow", 1L));
+            bag.addEntity(new SimpleEntity().addProperty("url", "http://someurl.nl/2").addProperty("stepid", 1L).addProperty("workflow", 1L));
 
             QueryResult r = bag.find(QueryBuilder.createBuilder()
-                    .field("stepid").value(1l)
-                    .field("workflow").value(1l)
+                    .field("stepid").value(1L)
+                    .field("workflow").value(1L)
                     .field("url").notEquals("")).execute();
-            assertThat(r.size(), is(2l));
+            assertThat(r.size(), is(2L));
         } finally {
             SimpleKernel.shutdown();
         }
@@ -349,8 +348,8 @@ public abstract class EntityBagTest {
             property = entity.getProperty("number");
             assertEquals("The object should be multivalue", true, property.isMultiValue());
             assertEquals("There should be three properties", 2, property.getValues().size());
-            assertEquals("Unexpected value", 100l, property.getValues().get(0).getValue());
-            assertEquals("Unexpected value", 500l, property.getValues().get(1).getValue());
+            assertEquals("Unexpected value", 100L, property.getValues().get(0).getValue());
+            assertEquals("Unexpected value", 500L, property.getValues().get(1).getValue());
         } finally {
             SimpleKernel.shutdown();
         }
@@ -365,18 +364,7 @@ public abstract class EntityBagTest {
         bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
         bag.ensureIndex(new IndexField("itemId", new LongKeyType()), true);
         try {
-            Random rnd = new Random();
-            Map<String, Integer> cityCounts = new HashMap<>();
-            for(int i=0; i<testSize; i++) {
-                int cityIdx = rnd.nextInt(cities.length);
-                String city = cities[cityIdx];
-                SimpleEntity entity = new SimpleEntity();
-                entity.addProperty("city", city);
-                entity.addProperty("itemId", (long)i);
-
-                changeCityCount(city, cityCounts, true);
-                bag.addEntity(entity);
-            }
+            Map<String, Integer> cityCounts = generateCities(testSize, bag);
             assertCityIndexes(bag, cities, cityCounts);
 
             for(int i=200; i<400; i++) {
@@ -400,25 +388,15 @@ public abstract class EntityBagTest {
     @Test
     public void testRandomPersistUpdateBigRecordUpdate() throws Exception {
         String htmlData = ResourceUtil.getContent("datasets/htmlpage.data", "UTF-8");
-        String[] cities = new String[] {"Amsterdam", "Rotterdam", "Utrecht", "Groningen", "Haarlem", "Den Haag", "Maastricht", "Eindhoven"};
+
         int testSize = 1000;
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
         bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
         bag.ensureIndex(new IndexField("itemId", new LongKeyType()), true);
         try {
-            Random rnd = new Random();
-            Map<String, Integer> cityCounts = new HashMap<String, Integer>();
-            for(int i=0; i<testSize; i++) {
-                int cityIdx = rnd.nextInt(cities.length);
-                String city = cities[cityIdx];
-                SimpleEntity entity = new SimpleEntity();
-                entity.addProperty("city", city);
-                entity.addProperty("itemId", (long)i);
 
-                changeCityCount(city, cityCounts, true);
-                bag.addEntity(entity);
-            }
+            Map<String, Integer> cityCounts = generateCities(testSize, bag);
             assertCityIndexes(bag, cities, cityCounts);
 
             for(int i=200; i<400; i++) {
@@ -440,6 +418,21 @@ public abstract class EntityBagTest {
         }
     }
 
+    private Map<String, Integer> generateCities(int testSize, EntityBag bag) throws JasDBStorageException {
+        Map<String, Integer> cityCounts = new HashMap<>();
+        Random rnd = new Random();
+        for(int i=0; i<testSize; i++) {
+            int cityIdx = rnd.nextInt(cities.length);
+            String city = cities[cityIdx];
+            SimpleEntity entity = new SimpleEntity();
+            entity.addProperty("city", city);
+            entity.addProperty("itemId", (long)i);
+
+            changeCityCount(city, cityCounts, true);
+            bag.addEntity(entity);
+        }
+        return cityCounts;
+    }
 
     @Test
     public void testPersisterRemove() throws Exception {
@@ -463,7 +456,7 @@ public abstract class EntityBagTest {
         for(String city : SimpleBaseTest.possibleCities) {
             QueryResult result = bag.find(QueryBuilder.createBuilder().field("city").value(city)).execute();
             for(SimpleEntity foundEntity : result) {
-                Long testFieldValue = (Long) foundEntity.getProperty("testField").getFirstValueObject();
+                Long testFieldValue = foundEntity.getProperty("testField").getFirstValueObject();
                 bag.removeEntity(foundEntity);
 
                 assertFalse("There should no longer be a result", bag.find(QueryBuilder.createBuilder().field("testField").value(testFieldValue)).execute().hasNext());
@@ -500,7 +493,7 @@ public abstract class EntityBagTest {
 		DBSession session = sessionFactory.createSession();
 		EntityBag bag = session.createOrGetBag("testbag");
 
-		List<String> entities = new ArrayList<String>();
+		List<String> entities = new ArrayList<>();
 		try {
 			for(int i=0; i<INITIAL_SIZE; i++) {
 				SimpleEntity entity = bag.addEntity(new SimpleEntity().addProperty("testfield", "test" + i));
@@ -539,6 +532,26 @@ public abstract class EntityBagTest {
 	}
 
     @Test
+    public void testInsertOrUpdatePersist() throws JasDBStorageException {
+        DBSession session = sessionFactory.createSession();
+        EntityBag bag = session.createOrGetBag("insertOrUpdateBag");
+
+        SimpleEntity entity = new SimpleEntity();
+        entity.addProperty("Test", "value1");
+        String id = bag.persist(entity).getInternalId();
+
+        assertThat(bag.getEntities().size(), is(1L));
+        assertThat(bag.getEntity(id).getProperty("Test").getFirstValueObject(), is("value1"));
+
+        SimpleEntity updatedEntity = new SimpleEntity(id);
+        updatedEntity.addProperty("AnotherProperty", "AnotherValue");
+        bag.persist(updatedEntity);
+
+        assertThat(bag.getEntities().size(), is(1L));
+        assertThat(bag.getEntity(id).getProperty("AnotherProperty").getFirstValueObject(), is("AnotherValue"));
+    }
+
+    @Test
     public void testEnsureAndRemoveIndex() throws JasDBStorageException {
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
@@ -568,12 +581,12 @@ public abstract class EntityBagTest {
         String documentId;
         try {
             SimpleEntity entity = new SimpleEntity();
-            entity.setProperty("simpleProperty1", 100l);
+            entity.setProperty("simpleProperty1", 100L);
             entity.setProperty("multiValueProperty", "value1", "value2", "value3");
             entity.setProperty("integerProperty", 200);
 
             EmbeddedEntity embeddedEntity = new EmbeddedEntity();
-            embeddedEntity.setProperty("embeddedProperty1", 50l, 60l, 70l);
+            embeddedEntity.setProperty("embeddedProperty1", 50L, 60L, 70L);
             embeddedEntity.setProperty("embeddedString", "simpleStringValue");
             embeddedEntity.setProperty("embeddedMultivalue", "emValue1", "emValue2", "emValue3");
             entity.addEntity("embedded", embeddedEntity);
@@ -613,9 +626,9 @@ public abstract class EntityBagTest {
         assertTrue(embeddedEntity.hasProperty("embeddedProperty1"));
         assertTrue(embeddedEntity.hasProperty("embeddedString"));
         assertTrue(embeddedEntity.hasProperty("embeddedMultivalue"));
-        assertEquals(new Long(50), embeddedEntity.getProperty("embeddedProperty1").getValues().get(0).getValue());
-        assertEquals(new Long(60), embeddedEntity.getProperty("embeddedProperty1").getValues().get(1).getValue());
-        assertEquals(new Long(70), embeddedEntity.getProperty("embeddedProperty1").getValues().get(2).getValue());
+        assertEquals(50L, embeddedEntity.getProperty("embeddedProperty1").getValues().get(0).getValue());
+        assertEquals(60L, embeddedEntity.getProperty("embeddedProperty1").getValues().get(1).getValue());
+        assertEquals(70L, embeddedEntity.getProperty("embeddedProperty1").getValues().get(2).getValue());
         assertEquals("simpleStringValue", embeddedEntity.getProperty("embeddedString").getFirstValueObject());
         assertEquals("emValue1", embeddedEntity.getProperty("embeddedMultivalue").getValues().get(0).getValue());
         assertEquals("emValue2", embeddedEntity.getProperty("embeddedMultivalue").getValues().get(1).getValue());
@@ -649,7 +662,7 @@ public abstract class EntityBagTest {
         bag.addEntity(new SimpleEntity().addProperty("city", "Utrecht"));
 
         QueryResult result = bag.find(QueryBuilder.createBuilder().field("city").value("Amsterdam")).execute();
-        assertThat(result.size(), is(2l));
+        assertThat(result.size(), is(2L));
         result.close();
 
         bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
@@ -658,7 +671,7 @@ public abstract class EntityBagTest {
         Thread.sleep(5000);
 
         result = bag.find(QueryBuilder.createBuilder().field("city").value("Amsterdam")).execute();
-        assertThat(result.size(), is(2l));
+        assertThat(result.size(), is(2L));
         result.close();
     }
 }

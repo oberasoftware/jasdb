@@ -100,6 +100,14 @@ public interface StorageService {
 	 */
 	void updateEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException;
 
+	/**
+	 * This either creates or updates the entity
+	 * @param context the request context
+	 * @param entity the entity to persist
+	 * @throws JasDBStorageException If unable to persist the entity
+     */
+	void persistEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException;
+
     /**
      * Gets the amount of items stored
      * @return The amount of stored items
