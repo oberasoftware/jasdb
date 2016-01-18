@@ -9,7 +9,6 @@ import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.index.search.EqualsCondition;
 import nl.renarj.jasdb.index.search.SearchCondition;
 import nl.renarj.jasdb.rest.input.InputElement;
-import nl.renarj.jasdb.rest.input.OrderParam;
 import nl.renarj.jasdb.rest.input.conditions.FieldCondition;
 import nl.renarj.jasdb.rest.loaders.EntityModelLoader;
 import nl.renarj.jasdb.rest.model.RestBag;
@@ -65,13 +64,13 @@ public class EntityModelTest {
 
         entityModelLoader.writeEntry(entityElement, new JsonRestResponseHandler(), "{\"__ID\":\"\", \"age\": \"80\", \"somefield\" : \"somevalue\"}", null);
         ArgumentCaptor<SimpleEntity> entityArgumentCaptor = ArgumentCaptor.forClass(SimpleEntity.class);
-        verify(storageService, times(1)).insertEntity(any(RequestContext.class), entityArgumentCaptor.capture());
+        verify(storageService, times(1)).persistEntity(any(RequestContext.class), entityArgumentCaptor.capture());
 
         SimpleEntity insertedEntity = entityArgumentCaptor.getValue();
         assertThat(insertedEntity.hasProperty("age"), is(true));
         assertThat(insertedEntity.hasProperty("somefield"), is(true));
-        assertThat((String) insertedEntity.getValue("age"), is("80"));
-        assertThat((String)insertedEntity.getValue("somefield"), is("somevalue"));
+        assertThat(insertedEntity.getValue("age"), is("80"));
+        assertThat(insertedEntity.getValue("somefield"), is("somevalue"));
 	}
 
     @Test
@@ -86,7 +85,7 @@ public class EntityModelTest {
         entityElement.setPrevious(bagElement);
 
         entityElement.setCondition(new FieldCondition("age", "80"));
-        RestEntity foundEntities = entityModelLoader.loadModel(entityElement, null, "10", new ArrayList<OrderParam>(), null);
+        RestEntity foundEntities = entityModelLoader.loadModel(entityElement, null, "10", new ArrayList<>(), null);
         assertThat(foundEntities, notNullValue());
         assertThat(((StreamableEntityCollection)foundEntities).getResult(), is(queryResult));
 
@@ -99,7 +98,7 @@ public class EntityModelTest {
 
         SearchCondition searchCondition = blockOperation.getConditions("age").iterator().next();
         assertThat(searchCondition.getClass().toString(), is(EqualsCondition.class.toString()));
-        assertThat((StringKey)((EqualsCondition)searchCondition).getKey(), is(new StringKey("80")));
+        assertThat(((EqualsCondition)searchCondition).getKey(), is(new StringKey("80")));
 
         assertThat(searchLimitArgumentCaptor.getValue().getBegin(), is(0));
         assertThat(searchLimitArgumentCaptor.getValue().getMax(), is(10));
