@@ -84,9 +84,7 @@ public final class RemoteEntityBag implements EntityBag {
     @Override
     public SimpleEntity persist(SimpleEntity entity) throws JasDBStorageException {
         EntityConnector connector = RemoteConnectorFactory.createConnector(nodeInformation, EntityConnector.class);
-        connector.updateEntity(context, instance, meta.getName(), entity);
-
-        return entity;
+        return connector.updateEntity(context, instance, meta.getName(), entity);
     }
 
     @Override

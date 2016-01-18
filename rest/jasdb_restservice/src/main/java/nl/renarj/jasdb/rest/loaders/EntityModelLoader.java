@@ -136,11 +136,11 @@ public class EntityModelLoader extends AbstractModelLoader {
 
                 if(type == OPERATION_TYPE.UPDATE) {
                     log.debug("Updating entity with id: {}", storeEntity.getInternalId());
-                    storageService.updateEntity(context, storeEntity);
+                    storageService.persistEntity(context, storeEntity);
                 } else if(type == OPERATION_TYPE.INSERT) {
                     log.debug("Inserting new entity into bag: {}", bag.getName());
 
-                    storageService.persistEntity(context, storeEntity);
+                    storageService.insertEntity(context, storeEntity);
                 }
                 return new StreamedEntity(storeEntity);
             } catch(JasDBStorageException e) {

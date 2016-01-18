@@ -64,7 +64,7 @@ public class EntityModelTest {
 
         entityModelLoader.writeEntry(entityElement, new JsonRestResponseHandler(), "{\"__ID\":\"\", \"age\": \"80\", \"somefield\" : \"somevalue\"}", null);
         ArgumentCaptor<SimpleEntity> entityArgumentCaptor = ArgumentCaptor.forClass(SimpleEntity.class);
-        verify(storageService, times(1)).persistEntity(any(RequestContext.class), entityArgumentCaptor.capture());
+        verify(storageService, times(1)).insertEntity(any(RequestContext.class), entityArgumentCaptor.capture());
 
         SimpleEntity insertedEntity = entityArgumentCaptor.getValue();
         assertThat(insertedEntity.hasProperty("age"), is(true));
