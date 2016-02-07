@@ -17,5 +17,5 @@ public interface TypeMapper<T> {
 
     Property mapToProperty(String propertyName, Object value);
 
-    Object mapFromProperty(Property property);
+    Object mapFromProperty(PropertyMetadata propertyMetadata, Property property);
 }

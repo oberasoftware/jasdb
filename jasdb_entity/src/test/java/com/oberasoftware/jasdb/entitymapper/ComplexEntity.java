@@ -16,10 +16,19 @@ public class ComplexEntity extends BaseEntity {
     private String name;
     private String customKey;
 
+    private CUSTOM_ENUM customEnum;
+
+    public enum CUSTOM_ENUM {
+        VALUE1,
+        VALUE2
+    }
+
     private Map<String, String> properties;
 
-    public ComplexEntity(List<String> relatedItems, String emailAddress, String name, String customKey, Map<String, String> properties) {
+    public ComplexEntity(List<String> relatedItems, String emailAddress, CUSTOM_ENUM customEnum,
+                         String name, String customKey, Map<String, String> properties) {
         super(emailAddress);
+        this.customEnum = customEnum;
         this.relatedItems = relatedItems;
         this.name = name;
         this.customKey = customKey;
@@ -55,6 +64,15 @@ public class ComplexEntity extends BaseEntity {
 
     public void setCustomKey(String customKey) {
         this.customKey = customKey;
+    }
+
+    @JasDBProperty
+    public CUSTOM_ENUM getCustomEnum() {
+        return customEnum;
+    }
+
+    public void setCustomEnum(CUSTOM_ENUM customEnum) {
+        this.customEnum = customEnum;
     }
 
     @JasDBProperty

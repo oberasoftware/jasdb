@@ -10,20 +10,10 @@ import nl.renarj.jasdb.api.properties.Value;
 /**
  * @author Renze de Vries
  */
-public class StringTypeMapper implements TypeMapper<String> {
+public class EnumTypeMapper implements TypeMapper<Enum> {
     @Override
     public boolean isSupportedType(Class<?> type) {
-        return type.equals(String.class);
-    }
-
-    @Override
-    public String mapToRawType(Object value) {
-        return value.toString();
-    }
-
-    @Override
-    public Value mapToValue(Object value) {
-        return new StringValue(mapToRawType(value));
+        return type.isEnum();
     }
 
     @Override
@@ -32,9 +22,18 @@ public class StringTypeMapper implements TypeMapper<String> {
     }
 
     @Override
+    public Enum mapToRawType(Object value) {
+        return (Enum) value;
+    }
+
+    @Override
+    public Value mapToValue(Object value) {
+        return new StringValue(((Enum)value).name());
+    }
+
+    @Override
     public Property mapToProperty(String propertyName, Object value) {
         Property property = new MultivalueProperty(propertyName);
-
         property.addValue(mapToValue(value));
 
         return property;
@@ -42,6 +41,7 @@ public class StringTypeMapper implements TypeMapper<String> {
 
     @Override
     public Object mapFromProperty(PropertyMetadata propertyMetadata, Property property) {
-        return property.getFirstValueObject();
+        Class<? extends Enum> propertyType = (Class<? extends Enum>) propertyMetadata.getReadMethod().getReturnType();
+        return Enum.valueOf(propertyType, property.getFirstValueObject().toString());
     }
 }

@@ -1,5 +1,6 @@
 package com.oberasoftware.jasdb.entitymapper.types;
 
+import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
 import nl.renarj.jasdb.api.properties.LongValue;
 import nl.renarj.jasdb.api.properties.MultivalueProperty;
@@ -48,7 +49,7 @@ public class LongTypeMapper implements TypeMapper<Long> {
     }
 
     @Override
-    public Object mapFromProperty(Property property) {
+    public Object mapFromProperty(PropertyMetadata propertyMetadata, Property property) {
         return property.getFirstValueObject();
     }
 }

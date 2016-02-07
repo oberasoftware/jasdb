@@ -44,6 +44,7 @@ public class EntityMapperTest {
     private static final String TEST_3 = "test3";
     private static final String TEST_0 = "test0";
     private static final String EMAIL_ADDRESS = "emailAddress";
+    private static final String CUSTOM_ENUM = "customEnum";
 
     @Test
     public void testMapToSimpleEntity() throws JasDBStorageException {
@@ -86,7 +87,8 @@ public class EntityMapperTest {
 
         String keyField = UUID.randomUUID().toString();
 
-        ComplexEntity complexEntity = new ComplexEntity(Lists.newArrayList(TEST_1, TEST_3, TEST_0), SOME_EMAIL, MY_NAME, keyField,
+        ComplexEntity complexEntity = new ComplexEntity(Lists.newArrayList(TEST_1, TEST_3, TEST_0), SOME_EMAIL,
+                ComplexEntity.CUSTOM_ENUM.VALUE2, MY_NAME, keyField,
                 new ImmutableMap.Builder<String, String>()
                 .put(FIELD_4, SOME_VALUE_1)
                 .put(FIELD_0, SOME_VALUE_8).build());
@@ -98,6 +100,7 @@ public class EntityMapperTest {
         assertThat(entity.getValue(NAME), is(MY_NAME));
         assertThat(entity.getValue(CUSTOM_KEY), is(keyField));
         assertThat(entity.getValue(EMAIL_ADDRESS), is(SOME_EMAIL));
+        assertThat(entity.getValue(CUSTOM_ENUM), is(ComplexEntity.CUSTOM_ENUM.VALUE2.name()));
         assertThat(entity.getInternalId(), is(keyField));
 
         SimpleEntity propertiesEntity = entity.getEntity(PROPERTIES);
@@ -119,6 +122,7 @@ public class EntityMapperTest {
         entity.addProperty(CUSTOM_KEY, keyField);
         entity.addProperty(ITEMS, TEST_1, TEST_3, TEST_0);
         entity.addProperty(EMAIL_ADDRESS, SOME_EMAIL);
+        entity.addProperty(CUSTOM_ENUM, ComplexEntity.CUSTOM_ENUM.VALUE1.name());
 
         EmbeddedEntity propertiesEntity = new EmbeddedEntity();
         entity.addEntity(PROPERTIES, propertiesEntity);
@@ -129,6 +133,7 @@ public class EntityMapperTest {
         assertThat(complexEntity.getCustomKey(), is(keyField));
         assertThat(complexEntity.getName(), is(MY_NAME));
         assertThat(complexEntity.getEmailAddress(), is(SOME_EMAIL));
+        assertThat(complexEntity.getCustomEnum(), is(ComplexEntity.CUSTOM_ENUM.VALUE1));
         assertThat(complexEntity.getRelatedItems(), hasItems(TEST_1, TEST_3, TEST_0));
 
         assertThat(complexEntity.getProperties().size(), is(2));

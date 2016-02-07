@@ -111,7 +111,7 @@ public class AnnotationEntityMapper implements EntityMapper {
                     } else {
                         Property property = entity.getProperty(k);
                         if (property != null) {
-                            Object value = v.getTypeMapper().mapFromProperty(property);
+                            Object value = v.getTypeMapper().mapFromProperty(v, property);
                             setValue(instance, value, v);
                         } else if (!v.isNullable()) {
                             throw new RuntimeJasDBException("Unable to map property: " + v + " value was null");

@@ -18,6 +18,7 @@ public class TypeMapperFactory {
         typeMappers.add(new LongTypeMapper());
         typeMappers.add(new MapEntityMapper());
         typeMappers.add(new ListEntityMapper());
+        typeMappers.add(new EnumTypeMapper());
     }
 
     private TypeMapperFactory() {

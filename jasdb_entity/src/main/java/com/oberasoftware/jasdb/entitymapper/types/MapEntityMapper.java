@@ -1,5 +1,6 @@
 package com.oberasoftware.jasdb.entitymapper.types;
 
+import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
 import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
@@ -68,7 +69,7 @@ public class MapEntityMapper implements TypeMapper<Map<String, ?>> {
     }
 
     @Override
-    public Object mapFromProperty(Property property) {
+    public Object mapFromProperty(PropertyMetadata propertyMetadata, Property property) {
         EntityValue entityValue = (EntityValue) property.getFirstValue();
         SimpleEntity embeddedEntity = entityValue.getValue();
         List<Property> embeddedProperties = embeddedEntity.getProperties();
