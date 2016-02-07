@@ -27,6 +27,7 @@ public class EntityMapperTest {
     private static final String FIELD_VALUE1 = "I have a value here";
     private static final String FIELD_VALUE2 = "And another value there";
     private static final long LONG_VALUE = 10001l;
+    private static final String SOME_EMAIL = "test@test.com";
     private static final String SOME_FIELD = "someField";
     private static final String ANOTHER_NUMBER_FIELD = "anotherNumberField";
     private static final String DIFFERENT_NAME_THAN_FIELD = "differentNameThanField";
@@ -42,6 +43,7 @@ public class EntityMapperTest {
     private static final String TEST_1 = "test1";
     private static final String TEST_3 = "test3";
     private static final String TEST_0 = "test0";
+    private static final String EMAIL_ADDRESS = "emailAddress";
 
     @Test
     public void testMapToSimpleEntity() throws JasDBStorageException {
@@ -84,7 +86,7 @@ public class EntityMapperTest {
 
         String keyField = UUID.randomUUID().toString();
 
-        ComplexEntity complexEntity = new ComplexEntity(Lists.newArrayList(TEST_1, TEST_3, TEST_0), MY_NAME, keyField,
+        ComplexEntity complexEntity = new ComplexEntity(Lists.newArrayList(TEST_1, TEST_3, TEST_0), SOME_EMAIL, MY_NAME, keyField,
                 new ImmutableMap.Builder<String, String>()
                 .put(FIELD_4, SOME_VALUE_1)
                 .put(FIELD_0, SOME_VALUE_8).build());
@@ -95,6 +97,7 @@ public class EntityMapperTest {
         SimpleEntity entity = result.getJasDBEntity();
         assertThat(entity.getValue(NAME), is(MY_NAME));
         assertThat(entity.getValue(CUSTOM_KEY), is(keyField));
+        assertThat(entity.getValue(EMAIL_ADDRESS), is(SOME_EMAIL));
         assertThat(entity.getInternalId(), is(keyField));
 
         SimpleEntity propertiesEntity = entity.getEntity(PROPERTIES);
@@ -115,6 +118,7 @@ public class EntityMapperTest {
         entity.addProperty(NAME, MY_NAME);
         entity.addProperty(CUSTOM_KEY, keyField);
         entity.addProperty(ITEMS, TEST_1, TEST_3, TEST_0);
+        entity.addProperty(EMAIL_ADDRESS, SOME_EMAIL);
 
         EmbeddedEntity propertiesEntity = new EmbeddedEntity();
         entity.addEntity(PROPERTIES, propertiesEntity);
@@ -124,6 +128,7 @@ public class EntityMapperTest {
         ComplexEntity complexEntity = mapper.mapFrom(ComplexEntity.class, entity);
         assertThat(complexEntity.getCustomKey(), is(keyField));
         assertThat(complexEntity.getName(), is(MY_NAME));
+        assertThat(complexEntity.getEmailAddress(), is(SOME_EMAIL));
         assertThat(complexEntity.getRelatedItems(), hasItems(TEST_1, TEST_3, TEST_0));
 
         assertThat(complexEntity.getProperties().size(), is(2));

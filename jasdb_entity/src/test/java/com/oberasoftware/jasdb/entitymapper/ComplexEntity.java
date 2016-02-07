@@ -11,14 +11,15 @@ import java.util.Map;
  * @author Renze de Vries
  */
 @JasDBEntity(bagName = "COMPLEX_TEST")
-public class ComplexEntity {
+public class ComplexEntity extends BaseEntity {
     private List<String> relatedItems;
     private String name;
     private String customKey;
 
     private Map<String, String> properties;
 
-    public ComplexEntity(List<String> relatedItems, String name, String customKey, Map<String, String> properties) {
+    public ComplexEntity(List<String> relatedItems, String emailAddress, String name, String customKey, Map<String, String> properties) {
+        super(emailAddress);
         this.relatedItems = relatedItems;
         this.name = name;
         this.customKey = customKey;
