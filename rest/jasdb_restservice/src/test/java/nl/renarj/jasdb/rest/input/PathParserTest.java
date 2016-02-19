@@ -2,13 +2,8 @@ package nl.renarj.jasdb.rest.input;
 
 import nl.renarj.jasdb.rest.exceptions.RestException;
 import nl.renarj.jasdb.rest.exceptions.SyntaxException;
-import nl.renarj.jasdb.rest.input.conditions.AndBlockOperation;
-import nl.renarj.jasdb.rest.input.conditions.BlockOperation;
-import nl.renarj.jasdb.rest.input.conditions.FieldCondition;
-import nl.renarj.jasdb.rest.input.conditions.InputCondition;
-import nl.renarj.jasdb.rest.input.conditions.OrBlockOperation;
+import nl.renarj.jasdb.rest.input.conditions.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 public class PathParserTest {
@@ -64,7 +61,7 @@ public class PathParserTest {
 
     @Test
     public void testPathSpacePresent() throws RestException {
-        PathParser parser = new PathParser("Entities(field=Den Haag)");
+        PathParser parser = new PathParser("Entities(field='Den Haag')");
         List<InputElement> elements = getElements(parser);
         Assert.assertEquals("There should be one input elements", 1, elements.size());
 
@@ -73,14 +70,23 @@ public class PathParserTest {
     }
 
 	@Test
-	@Ignore
 	public void testPathColonPresent() throws RestException {
-		PathParser parser = new PathParser("Entities(pluginId=zwave,controllerId=renarjlaptop,deviceId=3:0)");
+		PathParser parser = new PathParser("Entities(deviceId='3:0')");
 		List<InputElement> elements = getElements(parser);
 		Assert.assertEquals("There should be one input elements", 1, elements.size());
 
-		InputElement expectedElement = new InputElement("Entities").setCondition(new FieldCondition("field", "1:0"));
+		InputElement expectedElement = new InputElement("Entities").setCondition(new FieldCondition("deviceId", "3:0"));
 		assertElement(expectedElement, elements.get(0));
+	}
+
+	@Test
+	public void testPathEqualsPresent() throws RestException {
+        PathParser parser = new PathParser("Entities(token='smg1adfefi0cylwt7kzfc8wcyhz0bxt-noxacuozrn4=')");
+        List<InputElement> elements = getElements(parser);
+        assertThat(elements.size(), is(1));
+
+        InputElement expectedElement = new InputElement("Entities").setCondition(new FieldCondition("token", "smg1adfefi0cylwt7kzfc8wcyhz0bxt-noxacuozrn4="));
+        assertElement(expectedElement, elements.get(0));
 	}
 
 	@Test
@@ -204,14 +210,9 @@ public class PathParserTest {
         assertElement(expectedElement, elements.get(2));
     }
 
-    @Test
+    @Test(expected = SyntaxException.class)
     public void testPathStringQuotesInvalid() throws RestException {
-        PathParser parser = new PathParser("Instance(default)/Bags(inverted)/Entities(field1='va'lue)");
-        List<InputElement> elements = getElements(parser);
-        assertEquals("There should be three elements", 3, elements.size());
-
-        InputElement expectedElement = new InputElement("Entities").setCondition(new FieldCondition("field1", "'va'lue"));
-        assertElement(expectedElement, elements.get(2));
+        new PathParser("Instance(default)/Bags(inverted)/Entities(field1='va'lue)");
     }
 
     @Test
