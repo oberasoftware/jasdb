@@ -1,6 +1,7 @@
 package com.obera.jasdb.android.platform;
 
 import android.content.Context;
+import nl.renarj.jasdb.core.platform.PlatformManagerFactory;
 
 /**
  * @author Renze de Vries
@@ -9,6 +10,9 @@ public class AndroidContext {
     private static AndroidContext INSTANCE;
 
     private Context context;
+    static {
+        PlatformManagerFactory.setPlatformManager(new AndroidPlatformManager());
+    }
 
     public AndroidContext(Context context) {
         this.context = context;
