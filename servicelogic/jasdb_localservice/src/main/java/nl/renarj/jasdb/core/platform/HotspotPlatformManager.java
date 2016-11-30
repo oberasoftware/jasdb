@@ -44,6 +44,8 @@ public class HotspotPlatformManager implements PlatformManager {
 
     private ApplicationContext applicationContext;
 
+    private static final String PID = ManagementFactory.getRuntimeMXBean().getName();
+
     @Override
     public boolean platformMatch() {
         return System.getProperty("java.vm.name").toLowerCase().contains(HOTSPOT_JVM);
@@ -56,7 +58,7 @@ public class HotspotPlatformManager implements PlatformManager {
 
     @Override
     public String getProcessId() {
-        return ManagementFactory.getRuntimeMXBean().getName();
+        return PID;
     }
 
     @Override

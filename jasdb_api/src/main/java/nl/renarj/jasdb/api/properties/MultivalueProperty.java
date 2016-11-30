@@ -19,11 +19,20 @@ import java.util.List;
 public class MultivalueProperty implements Property {
     private List<Value> values;
     private String propertyName;
+    private boolean isCollection;
 
     public MultivalueProperty(String propertyName) {
         this.values = new ArrayList<>();
         this.propertyName = propertyName;
+        this.isCollection = false;
     }
+
+    public MultivalueProperty(String propertyName, boolean isCollection) {
+        this.values = new ArrayList<>();
+        this.propertyName = propertyName;
+        this.isCollection = isCollection;
+    }
+
 
     @Override
     public String getPropertyName() {
@@ -65,12 +74,13 @@ public class MultivalueProperty implements Property {
 
     @Override
     public boolean isMultiValue() {
-        return values.size() > 1;
+        return isCollection;
     }
 
     @Override
     public Property addValue(Value value) {
         values.add(value);
+        validateAndSetCollection();
         return this;
     }
 
@@ -81,7 +91,12 @@ public class MultivalueProperty implements Property {
                 i.remove();
             }
         }
+        validateAndSetCollection();
         return this;
+    }
+
+    private void validateAndSetCollection() {
+        isCollection = values.size() > 1;
     }
 
     public String toString() {

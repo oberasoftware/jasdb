@@ -19,6 +19,12 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_android</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.tony19</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>

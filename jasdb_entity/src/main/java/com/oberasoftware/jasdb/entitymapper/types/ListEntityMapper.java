@@ -43,7 +43,7 @@ public class ListEntityMapper implements TypeMapper<List<?>> {
 
     @Override
     public Property mapToProperty(String propertyName, Object value) {
-        Property property = new MultivalueProperty(propertyName);
+        Property property = new MultivalueProperty(propertyName, true);
         List<?> values = mapToRawType(value);
         values.forEach(v -> {
             try {
