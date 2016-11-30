@@ -1,10 +1,8 @@
 package nl.renarj.jasdb.core.platform;
 
-import nl.renarj.core.utilities.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ServiceLoader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,26 +23,8 @@ public class PlatformManagerFactory {
     }
 
     private void init() {
-        ServiceLoader<PlatformManager> platformManagerServiceLoader = ServiceLoader.load(PlatformManager.class);
-        String platformManagerOverride = System.getProperty("jasdb.platform.manager");
-        String systemJvm = System.getProperty("java.vm.name").toLowerCase();
-        LOG.info("Using platform JVM: {}", systemJvm);
-        for(PlatformManager loadedPlatformManager : platformManagerServiceLoader) {
-            LOG.info("Platform manager: {}", loadedPlatformManager);
-            if(loadedPlatformManager.platformMatch() && StringUtils.stringEmpty(platformManagerOverride)) {
-                this.platformManager = loadedPlatformManager;
-                break;
-            } else if(StringUtils.stringNotEmpty(platformManagerOverride) && loadedPlatformManager.getClass().toString().equals(platformManagerOverride)) {
-                this.platformManager = loadedPlatformManager;
-                break;
-            }
-        }
-        if(platformManager == null) {
-            LOG.info("No platform specific platform manager found, using default");
-            platformManager = new HotspotPlatformManager();
-        }
-
-        LOG.info("Using platform manager: {}", platformManager);
+        LOG.info("Setting default platform manager to hotspot");
+        platformManager = new HotspotPlatformManager();
     }
 
     public static void setPlatformManager(PlatformManager platformManager) {

@@ -51,7 +51,7 @@ public class MapEntityMapper implements TypeMapper<Map<String, ?>> {
 
     @Override
     public Property mapToProperty(String propertyName, Object value) {
-        Property property = new MultivalueProperty(propertyName);
+        Property property = new MultivalueProperty(propertyName, true);
         EmbeddedEntity entity = new EmbeddedEntity();
 
         Map<String, ?> rawValueMap = mapToRawType(value);

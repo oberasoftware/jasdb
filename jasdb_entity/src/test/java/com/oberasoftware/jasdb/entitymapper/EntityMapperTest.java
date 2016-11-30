@@ -140,4 +140,27 @@ public class EntityMapperTest {
         assertThat(complexEntity.getProperties().get(FIELD_4), is(SOME_VALUE_1));
         assertThat(complexEntity.getProperties().get(FIELD_0), is(SOME_VALUE_8));
     }
+
+    @Test
+    public void testCollectionSingleEntry() throws JasDBStorageException {
+        AnnotationEntityMapper mapper = new AnnotationEntityMapper();
+        String keyField = UUID.randomUUID().toString();
+
+        ComplexEntity complexEntity = new ComplexEntity(Lists.newArrayList(TEST_1), SOME_EMAIL,
+                ComplexEntity.CUSTOM_ENUM.VALUE2, MY_NAME, keyField,
+                new ImmutableMap.Builder<String, String>()
+                        .put(FIELD_0, SOME_VALUE_8).build());
+        MapResult result = mapper.mapTo(complexEntity);
+        assertThat(result.getBagName(), is("COMPLEX_TEST"));
+
+        SimpleEntity entity = result.getJasDBEntity();
+        List<String> values = entity.getValues(ITEMS);
+        assertThat(values, hasItems(TEST_1));
+
+        String json = SimpleEntity.toJson(entity);
+        LOG.debug("Json: {}", json);
+
+        complexEntity = mapper.mapFrom(ComplexEntity.class, SimpleEntity.fromJson(json));
+        assertThat(complexEntity.getRelatedItems().size(), is(1));
+    }
 }
