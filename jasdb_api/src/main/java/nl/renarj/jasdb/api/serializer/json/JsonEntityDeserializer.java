@@ -5,11 +5,9 @@ import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.serializer.EntityDeserializer;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,14 +16,13 @@ import java.io.InputStream;
  * @author Renze de Vries
  */
 public class JsonEntityDeserializer implements EntityDeserializer {
-    private static final Logger log = LoggerFactory.getLogger(JsonEntityDeserializer.class);
     private static final JsonFactory factory = new JsonFactory();
 
     @Override
     public SimpleEntity deserializeEntity(String serializedEntity) throws MetadataParseException {
         if(StringUtils.stringNotEmpty(serializedEntity)) {
             try {
-                JsonParser parser = factory.createJsonParser(serializedEntity);
+                JsonParser parser = factory.createParser(serializedEntity);
 
                 return deserializeEntity(parser);
             } catch(IOException e) {
@@ -39,7 +36,7 @@ public class JsonEntityDeserializer implements EntityDeserializer {
     @Override
     public SimpleEntity deserializeEntity(InputStream stream) throws MetadataParseException {
         try {
-            JsonParser parser = factory.createJsonParser(stream);
+            JsonParser parser = factory.createParser(stream);
 
             return deserializeEntity(parser);
         } catch(IOException e) {
