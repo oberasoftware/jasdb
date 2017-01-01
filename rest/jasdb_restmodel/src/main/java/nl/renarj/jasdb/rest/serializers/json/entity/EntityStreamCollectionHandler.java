@@ -1,5 +1,9 @@
 package nl.renarj.jasdb.rest.serializers.json.entity;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.serializer.json.JsonEntitySerializer;
@@ -8,10 +12,6 @@ import nl.renarj.jasdb.rest.exceptions.RestException;
 import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.model.streaming.StreamableEntityCollection;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +25,14 @@ import java.io.OutputStream;
 public class EntityStreamCollectionHandler implements RestResponseHandler {
     private static final Logger log = LoggerFactory.getLogger(EntityStreamCollectionHandler.class);
     private static final JsonFactory factory = new JsonFactory();
-    public static final String COLLECTION_SIZE = "size";
-    public static final String COLLECTION_TIME = "timeMilliseconds";
-    public static final String COLLECTION_ENTITIES = "entities";
+    private static final String COLLECTION_SIZE = "size";
+    private static final String COLLECTION_TIME = "timeMilliseconds";
+    private static final String COLLECTION_ENTITIES = "entities";
 
     @Override
     public <T extends RestEntity> T deserialize(Class<T> dataType, InputStream inputStream) throws RestException {
         try {
-            JsonParser parser = factory.createJsonParser(inputStream);
+            JsonParser parser = factory.createParser(inputStream);
 
             JsonToken token = parser.nextToken();
             if(token == JsonToken.START_OBJECT) {
@@ -86,7 +86,7 @@ public class EntityStreamCollectionHandler implements RestResponseHandler {
 
     private void generateEntityOutput(long size, long timeMilliseconds, QueryResult result, OutputStream outputStream) throws RestException {
         try {
-            JsonGenerator generator = factory.createJsonGenerator(outputStream);
+            JsonGenerator generator = factory.createGenerator(outputStream);
 
             generator.writeStartObject();
             generator.writeNumberField(COLLECTION_SIZE, size);

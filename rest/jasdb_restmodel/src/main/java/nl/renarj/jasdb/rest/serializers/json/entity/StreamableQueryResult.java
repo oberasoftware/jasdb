@@ -1,11 +1,11 @@
 package nl.renarj.jasdb.rest.serializers.json.entity;
 
+import com.fasterxml.jackson.core.JsonParser;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.serializer.json.JsonEntityDeserializer;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
 import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
-import org.codehaus.jackson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class StreamableQueryResult implements QueryResult {
 
     private long lastUsage = System.currentTimeMillis();
 
-    public StreamableQueryResult(JsonParser parser, long size, InputStream inputStream) {
+    StreamableQueryResult(JsonParser parser, long size, InputStream inputStream) {
         this.parser = parser;
         this.size = size;
         this.inputStream = inputStream;
