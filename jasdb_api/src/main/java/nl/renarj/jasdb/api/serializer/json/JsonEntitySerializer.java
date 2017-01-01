@@ -7,12 +7,12 @@
  */
 package nl.renarj.jasdb.api.serializer.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.properties.*;
 import nl.renarj.jasdb.api.serializer.EntitySerializer;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,7 +27,7 @@ public class JsonEntitySerializer implements EntitySerializer {
     public String serializeEntity(SimpleEntity entity) throws MetadataParseException {
         StringWriter writer = new StringWriter();
         try {
-            try (JsonGenerator generator = factory.createJsonGenerator(writer)) {
+            try (JsonGenerator generator = factory.createGenerator(writer)) {
                 serializeEntity(entity, generator);
             }
         } catch(IOException e) {

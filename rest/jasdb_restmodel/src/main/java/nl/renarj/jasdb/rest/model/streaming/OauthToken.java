@@ -1,7 +1,7 @@
 package nl.renarj.jasdb.rest.model.streaming;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.renarj.jasdb.rest.model.RestEntity;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * @author Renze de Vries

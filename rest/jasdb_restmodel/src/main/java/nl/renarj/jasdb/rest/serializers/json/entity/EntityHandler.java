@@ -1,5 +1,8 @@
 package nl.renarj.jasdb.rest.serializers.json.entity;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import nl.renarj.jasdb.api.serializer.json.JsonEntityDeserializer;
 import nl.renarj.jasdb.api.serializer.json.JsonEntitySerializer;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
@@ -7,11 +10,6 @@ import nl.renarj.jasdb.rest.exceptions.RestException;
 import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.model.streaming.StreamedEntity;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,22 +19,15 @@ import java.io.OutputStream;
  * @author Renze de Vries
  */
 public class EntityHandler implements RestResponseHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(EntityHandler.class);
-
     private static final JsonFactory factory = new JsonFactory();
 
     @Override
     public <T extends RestEntity> T deserialize(Class<T> dataType, InputStream inputStream) throws RestException {
         try {
-            JsonParser parser = factory.createJsonParser(inputStream);
-            try {
+            try (JsonParser parser = factory.createParser(inputStream)) {
                 return dataType.cast(new StreamedEntity(new JsonEntityDeserializer().deserializeEntity(parser)));
-            } finally {
-                parser.close();
             }
-        } catch(IOException e) {
-            throw new RestException("Unable to parse entity", e);
-        } catch(MetadataParseException e) {
+        } catch(IOException | MetadataParseException e) {
             throw new RestException("Unable to parse entity", e);
         }
     }
@@ -57,7 +48,7 @@ public class EntityHandler implements RestResponseHandler {
             try {
                 StreamedEntity streamedEntity = (StreamedEntity) entity;
 
-                JsonGenerator generator = factory.createJsonGenerator(outputStream);
+                JsonGenerator generator = factory.createGenerator(outputStream);
                 generator.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
                 generator.configure(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM, false);
 
@@ -67,9 +58,7 @@ public class EntityHandler implements RestResponseHandler {
                 } finally {
                     generator.close();
                 }
-            } catch(IOException e) {
-                throw new RestException("Unable to serialize entity", e);
-            } catch(MetadataParseException e) {
+            } catch(IOException | MetadataParseException e) {
                 throw new RestException("Unable to serialize entity", e);
             }
         } else {
