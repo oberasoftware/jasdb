@@ -7,6 +7,8 @@
  */
 package nl.renarj.jasdb.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.renarj.jasdb.api.properties.*;
 import nl.renarj.jasdb.core.exceptions.MetadataParseException;
 import org.junit.Assert;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -26,7 +29,7 @@ import static org.junit.Assert.*;
  * Time: 2:22 PM
  */
 public class SimpleEntityTest {
-    private Logger log = LoggerFactory.getLogger(SimpleEntityTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleEntityTest.class);
 
     @Test
     public void testSerializeDeserialize() throws MetadataParseException {
@@ -46,7 +49,7 @@ public class SimpleEntityTest {
         assertEntity(entity);
 
         String serializedEntity = SimpleEntity.toJson(entity);
-        log.debug(serializedEntity);
+        LOG.debug(serializedEntity);
 
         SimpleEntity deserializedEntity = SimpleEntity.fromJson(serializedEntity);
         assertEntity(deserializedEntity);
@@ -55,7 +58,7 @@ public class SimpleEntityTest {
     @Test
     public void testEmbeddedEntity() throws MetadataParseException {
         SimpleEntity entity = new SimpleEntity("SomeId");
-        entity.setProperty("simpleProperty1", 100l);
+        entity.setProperty("simpleProperty1", 100L);
         entity.setProperty("multiValueProperty", "value1", "value2", "value3");
         entity.setProperty("integerProperty", 200);
 
@@ -66,7 +69,7 @@ public class SimpleEntityTest {
         entity.addEntity("embedded", embeddedEntity);
 
         String serializedEntity = SimpleEntity.toJson(entity);
-        log.debug(serializedEntity);
+        LOG.debug(serializedEntity);
         SimpleEntity deserializedEntity = SimpleEntity.fromJson(serializedEntity);
 
         assertTrue(deserializedEntity.hasProperty("simpleProperty1"));
@@ -77,7 +80,7 @@ public class SimpleEntityTest {
         assertEquals("value1", deserializedEntity.getProperty("multiValueProperty").getValues().get(0).getValue());
         assertEquals("value2", deserializedEntity.getProperty("multiValueProperty").getValues().get(1).getValue());
         assertEquals("value3", deserializedEntity.getProperty("multiValueProperty").getValues().get(2).getValue());
-        assertEquals(200l, (long)deserializedEntity.getProperty("integerProperty").getFirstValueObject());
+        assertEquals(200L, (long)deserializedEntity.getProperty("integerProperty").getFirstValueObject());
 
         /* Test embedded property retrieval */
         assertNotNull(deserializedEntity.getProperty("embedded.embeddedProperty1"));
@@ -95,9 +98,9 @@ public class SimpleEntityTest {
         assertTrue(embeddedEntity.hasProperty("embeddedProperty1"));
         assertTrue(embeddedEntity.hasProperty("embeddedString"));
         assertTrue(embeddedEntity.hasProperty("embeddedMultivalue"));
-        assertEquals(new Long(50), embeddedEntity.getProperty("embeddedProperty1").getValues().get(0).getValue());
-        assertEquals(new Long(60), embeddedEntity.getProperty("embeddedProperty1").getValues().get(1).getValue());
-        assertEquals(new Long(70), embeddedEntity.getProperty("embeddedProperty1").getValues().get(2).getValue());
+        assertEquals(50L, embeddedEntity.getProperty("embeddedProperty1").getValues().get(0).getValue());
+        assertEquals(60L, embeddedEntity.getProperty("embeddedProperty1").getValues().get(1).getValue());
+        assertEquals(70L, embeddedEntity.getProperty("embeddedProperty1").getValues().get(2).getValue());
         assertEquals("simpleStringValue", embeddedEntity.getProperty("embeddedString").getFirstValueObject());
         assertEquals("emValue1", embeddedEntity.getProperty("embeddedMultivalue").getValues().get(0).getValue());
         assertEquals("emValue2", embeddedEntity.getProperty("embeddedMultivalue").getValues().get(1).getValue());
@@ -170,7 +173,7 @@ public class SimpleEntityTest {
         assertEquals("emptyProperty", property.getPropertyName());
 
         String serializedEntity = SimpleEntity.toJson(entity);
-        log.info(serializedEntity);
+        LOG.info(serializedEntity);
         entity = SimpleEntity.fromJson(serializedEntity);
         assertFalse(entity.hasProperty("emptyProperty"));
     }
@@ -232,6 +235,19 @@ public class SimpleEntityTest {
         assertEquals(expectedTime, simpleEntity.getProperty("field4").getFirstValueObject());
     }
 
+    @Test
+    public void testRetainArray() throws JsonProcessingException, MetadataParseException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Person person = new Person();
+        person.setName("Person Test");
+        person.setPhones(Collections.singletonList("12345678"));
+
+        String json = objectMapper.writeValueAsString(person);
+        SimpleEntity simpleEntity = SimpleEntity.fromJson(json);
+        assertThat(SimpleEntity.toJson(simpleEntity), containsString("\"phones\":[\"12345678\"]"));
+    }
+
     private void assertEntity(SimpleEntity entity) {
         assertThat(entity.hasProperty("test1"), is(true));
         assertThat(entity.hasProperty("test2"), is(true));
@@ -265,5 +281,26 @@ public class SimpleEntityTest {
         assertThat(entity.getProperty("test4").getValues(), hasItems((Value)new LongValue(1l)));
 
         assertThat(entity.getProperty("embeddedJson").getFirstValueObject(), is("{\"embeddedJsonField\":\"embeddedText\"}"));
+    }
+
+    private class Person {
+        private String name;
+        private List<String> phones;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<String> getPhones() {
+            return phones;
+        }
+
+        public void setPhones(List<String> phones) {
+            this.phones = phones;
+        }
     }
 }

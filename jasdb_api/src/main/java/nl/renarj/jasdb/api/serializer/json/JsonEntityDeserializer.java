@@ -74,10 +74,10 @@ public class JsonEntityDeserializer implements EntityDeserializer {
                     token = parser.nextToken(); // start values
                     if(token == JsonToken.START_ARRAY) { //multivalues
                         parser.nextToken(); //we need to advance by one for first value
-                        handleValues(parser, fieldName, entity);
+                        handleValues(parser, fieldName, true, entity);
                         parser.nextToken();
                     } else {
-                        handleValues(parser, fieldName, entity);
+                        handleValues(parser, fieldName, false, entity);
                     }
                 }
                 token = parser.getCurrentToken();
@@ -88,12 +88,12 @@ public class JsonEntityDeserializer implements EntityDeserializer {
         }
     }
 
-    private void handleValues(JsonParser parser, String field, SimpleEntity entity) throws IOException, MetadataParseException {
+    private void handleValues(JsonParser parser, String field, boolean isCollection, SimpleEntity entity) throws IOException, MetadataParseException {
         JsonToken token = parser.getCurrentToken();
         while(token != JsonToken.END_ARRAY && token != JsonToken.FIELD_NAME && token != JsonToken.END_OBJECT) {
             if(token.isNumeric()) {
                 long value = parser.getLongValue();
-                entity.addProperty(field, value);
+                entity.addProperty(field, isCollection, value);
             } else if(token == JsonToken.VALUE_TRUE || token == JsonToken.VALUE_FALSE) {
                 entity.addProperty(field, parser.getBooleanValue());
             } else if(token == JsonToken.START_OBJECT) {
@@ -106,7 +106,7 @@ public class JsonEntityDeserializer implements EntityDeserializer {
                 if(SimpleEntity.DOCUMENT_ID.equals(field)) {
                     entity.setInternalId(value);
                 } else {
-                    entity.addProperty(field, value);
+                    entity.addProperty(field, isCollection, value);
                 }
             } else if(token != JsonToken.VALUE_NULL) {
                 throw new MetadataParseException("Unexpected token in entity: " + token);
