@@ -74,13 +74,12 @@ public class MultivalueProperty implements Property {
 
     @Override
     public boolean isMultiValue() {
-        return isCollection;
+        return isCollection || values.size() > 1;
     }
 
     @Override
     public Property addValue(Value value) {
         values.add(value);
-        validateAndSetCollection();
         return this;
     }
 
@@ -91,12 +90,7 @@ public class MultivalueProperty implements Property {
                 i.remove();
             }
         }
-        validateAndSetCollection();
         return this;
-    }
-
-    private void validateAndSetCollection() {
-        isCollection = values.size() > 1;
     }
 
     public String toString() {

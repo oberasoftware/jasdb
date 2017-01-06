@@ -92,6 +92,18 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
 	}
 
     /**
+     * Adds a property with a String value
+     * @param propertyName The name of the property
+     * @param isCollection True if this is a collection, False if not
+     * @param stringValue The string value
+     * @return The entity the property has been added to
+     */
+    public SimpleEntity addProperty(String propertyName, boolean isCollection, String stringValue) {
+        addValueToProperty(propertyName, isCollection, new StringValue(stringValue));
+        return this;
+    }
+
+    /**
      * Adds a property with a colleciton of String values
      * @param propertyName The name of the property
      * @param stringValues The string values to add to the property
@@ -112,7 +124,7 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
      */
     public SimpleEntity addProperty(String propertyName, List<String> stringValues) {
         for(String value : stringValues) {
-            addValueToProperty(propertyName, new StringValue(value));
+            addValueToProperty(propertyName, true, new StringValue(value));
         }
         return this;
     }
@@ -129,6 +141,18 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
 	}
 
     /**
+     * Adds a property with an Integer value
+     * @param propertyName The name of the property
+     * @param isCollection True if this is a collection, False if not
+     * @param intValue The integer value to add to the property
+     * @return The entity the property has been added to
+     */
+    public SimpleEntity addProperty(String propertyName, boolean isCollection, int intValue) {
+        addValueToProperty(propertyName, isCollection, new IntegerValue(intValue));
+        return this;
+    }
+
+    /**
      * Adds a property with a Long value
      * @param propertyName The name of the property
      * @param longValue The long value to add to the property
@@ -139,6 +163,24 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
         return this;
 	}
 
+    /**
+     * Adds a property with a Long value
+     * @param propertyName The name of the property
+     * @param isCollection True if this is a collection, False if not
+     * @param longValue The long value to add to the property
+     * @return The entity the property has been added to
+     */
+    public SimpleEntity addProperty(String propertyName, boolean isCollection, long longValue) {
+        addValueToProperty(propertyName, isCollection, new LongValue(longValue));
+        return this;
+    }
+
+    /**
+     * Adds a property with boolean value
+     * @param propertyName the name of the property
+     * @param booleanValue True or False boolean value
+     * @return The entity the property has been added to
+     */
     public SimpleEntity addProperty(String propertyName, boolean booleanValue) {
         addValueToProperty(propertyName, new BooleanValue(booleanValue));
         return this;
@@ -268,13 +310,17 @@ public class SimpleEntity implements Serializable, CachableItem, IndexableItem {
         addValueToProperty(propertyName, new EntityValue(entity));
         return this;
 	}
-    
+
     private void addValueToProperty(String propertyName, Value value) {
+	    addValueToProperty(propertyName, false, value);
+    }
+    
+    private void addValueToProperty(String propertyName, boolean isCollection, Value value) {
         Property mvProperty;
         if(properties.containsKey(propertyName)) {
             mvProperty = properties.get(propertyName);
         } else {
-            mvProperty = new MultivalueProperty(propertyName);
+            mvProperty = new MultivalueProperty(propertyName, isCollection);
             properties.put(propertyName, mvProperty);
         }
         mvProperty.addValue(value);
