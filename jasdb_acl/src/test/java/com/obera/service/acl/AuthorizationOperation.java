@@ -1,6 +1,5 @@
 package com.obera.service.acl;
 
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.service.StorageService;
 
 /**

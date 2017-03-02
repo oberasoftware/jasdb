@@ -3,7 +3,6 @@ package com.obera.service.acl;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.service.StorageService;
 import org.springframework.aop.framework.Advised;
 

@@ -4,17 +4,20 @@
         <artifactId>jasdb</artifactId>
         <groupId>com.oberasoftware</groupId>
         <version>2.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jasdb_apiconnector</artifactId>
+    <artifactId>jasdb_connector</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb_connector</artifactId>
-            <version>${project.version}</version>
+            <artifactId>jasdb_api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb-service</artifactId>
         </dependency>
     </dependencies>
 </project>

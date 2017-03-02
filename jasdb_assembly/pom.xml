@@ -13,10 +13,6 @@
     <dependencies>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb_android</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_restservice</artifactId>
         </dependency>
         <dependency>

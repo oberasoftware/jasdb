@@ -82,7 +82,7 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
-                <artifactId>jasdb_localservice</artifactId>
+                <artifactId>jasdb-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -138,11 +138,6 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
-                <artifactId>jasdb_android</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oberasoftware</groupId>
                 <artifactId>jasdb_restconnector</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -180,35 +175,6 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
                 <version>${jetty.version}</version>
-            </dependency>
-
-            <!-- android related libraries -->
-            <dependency>
-                <groupId>com.github.tony19</groupId>
-                <artifactId>logback-android-core</artifactId>
-                <version>1.0.10-2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.android</groupId>
-                <artifactId>android</artifactId>
-                <version>4.1.1.4</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.github.tony19</groupId>
-                <artifactId>logback-android-classic</artifactId>
-                <version>1.0.10-2</version>
-            </dependency>
-            <dependency>
-				<groupId>com.google.inject</groupId>
-				<artifactId>guice</artifactId>
-                <classifier>no_aop</classifier>
-				<version>${guice.version}</version>
-			</dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-assistedinject</artifactId>
-                <version>${guice.version}</version>
             </dependency>
 
             <!-- core libraries -->
@@ -284,10 +250,10 @@
         <module>rest/jasdb_restservice</module>
         <module>rest/jasdb_restconnector</module>
         <module>rest/jasdb_restmodel</module>
-		<module>servicelogic/jasdb_localservice</module>
+		<module>jasdb-service</module>
 		<module>testing/jasdb_testframework</module>
-        <module>connectors/jasdb_connector</module>
-        <module>connectors/jasdb_apiconnector</module>
+        <module>jasdb_connector</module>
+        <module>jasdb_apiconnector</module>
         <module>testing/jasdb_integration_test</module>
         <module>jasdb_assembly</module>
         <module>jasdb_console</module>

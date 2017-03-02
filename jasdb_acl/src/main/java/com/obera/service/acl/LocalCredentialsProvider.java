@@ -2,7 +2,6 @@ package com.obera.service.acl;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.inject.Singleton;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.CredentialsProvider;
@@ -16,6 +15,7 @@ import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.service.metadata.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +26,7 @@ import java.util.List;
  * @author Renze de Vries
  */
 @Component
-@Singleton
+@Scope("prototype")
 public class LocalCredentialsProvider implements CredentialsProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LocalCredentialsProvider.class);
 

@@ -4,12 +4,12 @@
 		<artifactId>jasdb</artifactId>
 		<groupId>com.oberasoftware</groupId>
         <version>2.0-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>jasdb_localservice</artifactId>
+	<artifactId>jasdb-service</artifactId>
 	<packaging>jar</packaging>
 
-	<name>jasdb_localservice</name>
+	<name>jasdb-service</name>
 
 	<dependencies>
         <dependency>
@@ -37,11 +37,6 @@
             <groupId>javax.inject</groupId>
             <version>1</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-        </dependency>
-
     </dependencies>
 	<build>
 		<plugins>

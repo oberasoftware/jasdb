@@ -1,6 +1,5 @@
 package com.obera.service.acl;
 
-import com.google.inject.Singleton;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserManager;
@@ -11,6 +10,7 @@ import nl.renarj.jasdb.core.crypto.CryptoEngine;
 import nl.renarj.jasdb.core.crypto.CryptoFactory;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Renze de Vries
  */
 @Component
-@Singleton
+@Scope("prototype")
 public class SessionManagerImpl implements SessionManager {
     private Map<String, SecureUserSession> secureUserSessionMap = new ConcurrentHashMap<>();
 

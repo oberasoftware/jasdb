@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb_localservice</artifactId>
+            <artifactId>jasdb-service</artifactId>
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
