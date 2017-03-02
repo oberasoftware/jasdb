@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.oberasoftware</groupId>
         <artifactId>oss-maven</artifactId>
-        <version>1.0.1</version>
+        <version>1.1</version>
     </parent>
 
 	<version>2.0-SNAPSHOT</version>
@@ -50,58 +50,9 @@
     <dependencyManagement>
 		<dependencies>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aspects</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjrt</artifactId>
                 <version>1.7.4</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>3.2.0.RELEASE</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>spring-core</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-aop</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-beans</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-expression</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>aopalliance</artifactId>
-                        <groupId>aopalliance</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <!-- Test related libraries -->
@@ -338,7 +289,6 @@
         <module>connectors/jasdb_connector</module>
         <module>connectors/jasdb_apiconnector</module>
         <module>testing/jasdb_integration_test</module>
-        <module>jasdb_android</module>
         <module>jasdb_assembly</module>
         <module>jasdb_console</module>
         <module>jasdb_buildtools</module>
