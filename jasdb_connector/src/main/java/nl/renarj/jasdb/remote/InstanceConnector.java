@@ -13,7 +13,7 @@ public interface InstanceConnector extends RemoteConnector {
 
     List<Instance> getInstances(RemotingContext context) throws RemoteException;
 
-    Instance addInstance(RemotingContext context, String instanceId, String instancePath) throws RemoteException;
+    Instance addInstance(RemotingContext context, String instanceId) throws RemoteException;
 
     void removeInstance(RemotingContext context, String instanceId) throws RemoteException;
 }

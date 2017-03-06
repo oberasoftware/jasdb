@@ -9,8 +9,8 @@ package com.obera.jasdb.rest;
 
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
-import nl.renarj.jasdb.service.EntityBagTest;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.EntityBagTest;
 
 /**
  * User: renarj

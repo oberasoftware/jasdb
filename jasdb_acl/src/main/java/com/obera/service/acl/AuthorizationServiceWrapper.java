@@ -1,5 +1,7 @@
 package com.obera.service.acl;
 
+import com.oberasoftware.jasdb.engine.StorageService;
+import com.oberasoftware.jasdb.engine.metadata.Constants;
 import nl.renarj.core.utilities.configuration.Configuration;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
@@ -7,8 +9,6 @@ import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.context.RequestContext;
 import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.service.StorageService;
-import nl.renarj.jasdb.service.metadata.Constants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

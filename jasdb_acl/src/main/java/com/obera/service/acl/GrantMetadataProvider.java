@@ -1,10 +1,10 @@
 package com.obera.service.acl;
 
+import com.oberasoftware.jasdb.engine.metadata.MetaWrapper;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.metadata.MetadataProvider;
 import nl.renarj.jasdb.api.metadata.MetadataStore;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.service.metadata.MetaWrapper;
 
 import java.util.ArrayList;
 import java.util.List;

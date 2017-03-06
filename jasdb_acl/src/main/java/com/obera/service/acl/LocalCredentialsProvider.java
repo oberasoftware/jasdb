@@ -2,6 +2,7 @@ package com.obera.service.acl;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.oberasoftware.jasdb.engine.metadata.Constants;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.CredentialsProvider;
@@ -12,14 +13,13 @@ import nl.renarj.jasdb.core.crypto.CryptoEngine;
 import nl.renarj.jasdb.core.crypto.CryptoFactory;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.service.metadata.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ public class LocalCredentialsProvider implements CredentialsProvider {
     private UserMetadataProvider userMetadataProvider;
     private GrantMetadataProvider grantMetadataProvider;
 
-    @Inject
+    @Autowired
     private MetadataStore metadataStore;
 
     @PostConstruct

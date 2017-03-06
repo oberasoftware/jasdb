@@ -15,9 +15,9 @@ import nl.renarj.jasdb.rest.model.RestUserList;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -27,8 +27,12 @@ import java.util.List;
 public class UserModelLoader extends AbstractModelLoader {
     private static final Logger LOG = LoggerFactory.getLogger(UserModelLoader.class);
 
-    @Inject
-    private UserManager userManager;
+    private final UserManager userManager;
+
+    @Autowired(required = false)
+    public UserModelLoader(UserManager userManager) {
+        this.userManager = userManager;
+    }
 
     @Override
     public String[] getModelNames() {

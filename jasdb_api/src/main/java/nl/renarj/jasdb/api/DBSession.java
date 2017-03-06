@@ -46,20 +46,18 @@ public interface DBSession {
      * for switching to another instance.
      *
      * @param instanceId The id of the instance, should not exist already
-     * @param path The path where to store the instance and bag data
      * @throws JasDBStorageException If unable to to add an instance
      */
-    void addInstance(String instanceId, String path) throws JasDBStorageException;
+    void addInstance(String instanceId) throws JasDBStorageException;
 
     /**
      * Adds a new instance with the given path to the DB. The session will
      * switch to the newly created instance.
      *
      * @param instanceId The id of the instance, should not exist already
-     * @param path The path where to store the instance and bag data
      * @throws JasDBStorageException If unable to to add an instance
      */
-    void addAndSwitchInstance(String instanceId, String path) throws JasDBStorageException;
+    void addAndSwitchInstance(String instanceId) throws JasDBStorageException;
 
     /**
      * This deletes an instance all its related bags and entities permanently. This operation

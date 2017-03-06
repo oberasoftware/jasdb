@@ -9,12 +9,16 @@ import java.util.List;
  * @author Renze de Vries
  */
 public class RemoteBag implements Bag {
-    private long size;
-    private long diskSize;
-    private Bag bag;
+    private final String instanceId;
+    private final String bagName;
+    private final List<IndexDefinition> indexDefinitions;
+    private final long size;
+    private final long diskSize;
 
-    public RemoteBag(Bag bag, long size, long diskSize) {
-        this.bag = bag;
+    public RemoteBag(String instanceId, String bagName, List<IndexDefinition> indexDefinitions, long size, long diskSize) {
+        this.instanceId = instanceId;
+        this.bagName = bagName;
+        this.indexDefinitions = indexDefinitions;
         this.size = size;
         this.diskSize = diskSize;
     }
@@ -37,16 +41,16 @@ public class RemoteBag implements Bag {
 
     @Override
     public String getName() {
-        return bag.getName();
+        return bagName;
     }
 
     @Override
     public String getInstanceId() {
-        return bag.getInstanceId();
+        return instanceId;
     }
 
     @Override
     public List<IndexDefinition> getIndexDefinitions() {
-        return bag.getIndexDefinitions();
+        return indexDefinitions;
     }
 }

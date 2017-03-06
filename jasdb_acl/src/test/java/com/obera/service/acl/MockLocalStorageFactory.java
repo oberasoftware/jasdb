@@ -1,8 +1,8 @@
 package com.obera.service.acl;
 
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.service.StorageService;
-import nl.renarj.jasdb.service.StorageServiceFactory;
+import com.oberasoftware.jasdb.engine.StorageService;
+import com.oberasoftware.jasdb.engine.StorageServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

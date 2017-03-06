@@ -1,7 +1,7 @@
 package nl.renarj.jasdb.localservice.api;
 
-import nl.renarj.jasdb.LocalDBSessionFactory;
-import nl.renarj.jasdb.service.EntityManagerTest;
+import com.oberasoftware.jasdb.service.local.LocalDBSessionFactory;
+import com.oberasoftware.jasdb.engine.EntityManagerTest;
 
 /**
  * @author Renze de Vries

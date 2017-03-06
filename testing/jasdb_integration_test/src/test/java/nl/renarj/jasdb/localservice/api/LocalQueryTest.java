@@ -7,8 +7,8 @@
  */
 package nl.renarj.jasdb.localservice.api;
 
-import nl.renarj.jasdb.LocalDBSessionFactory;
-import nl.renarj.jasdb.service.EntityQueryTest;
+import com.oberasoftware.jasdb.service.local.LocalDBSessionFactory;
+import com.oberasoftware.jasdb.engine.EntityQueryTest;
 
 /**
  * User: renarj

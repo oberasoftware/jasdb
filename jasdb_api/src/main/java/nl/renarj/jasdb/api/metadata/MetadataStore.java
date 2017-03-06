@@ -140,10 +140,10 @@ public interface MetadataStore {
 
     /**
      * Adds an instance using the specified instance metadata
-     * @param instance The instance
+     * @param instanceId The instance
      * @throws JasDBStorageException If unable to add the instance
      */
-    void addInstance(Instance instance) throws JasDBStorageException;
+    Instance addInstance(String instanceId) throws JasDBStorageException;
 
     /**
      * Removes an instance from the metadata list

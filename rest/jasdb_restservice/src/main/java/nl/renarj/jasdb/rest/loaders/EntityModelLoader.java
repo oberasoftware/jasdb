@@ -25,15 +25,14 @@ import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.model.streaming.StreamableEntityCollection;
 import nl.renarj.jasdb.rest.model.streaming.StreamedEntity;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
-import nl.renarj.jasdb.service.StorageService;
-import nl.renarj.jasdb.service.StorageServiceFactory;
-import nl.renarj.jasdb.storage.query.BuilderTransformer;
+import com.oberasoftware.jasdb.engine.StorageService;
+import com.oberasoftware.jasdb.engine.StorageServiceFactory;
+import com.oberasoftware.jasdb.engine.query.BuilderTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class EntityModelLoader extends AbstractModelLoader {
     }
 	private static final Logger log = LoggerFactory.getLogger(EntityModelLoader.class);
 
-    @Inject
+    @Autowired
     private StorageServiceFactory storageServiceFactory;
 	
 	@Override
@@ -192,7 +191,7 @@ public class EntityModelLoader extends AbstractModelLoader {
         if(entity != null) {
             return new StreamedEntity(entity);
         } else {
-            return new ErrorEntity(Response.Status.NOT_FOUND.getStatusCode(), "No entity was found with id: " + requestedId);
+            return new ErrorEntity(404, "No entity was found with id: " + requestedId);
         }
     }
 

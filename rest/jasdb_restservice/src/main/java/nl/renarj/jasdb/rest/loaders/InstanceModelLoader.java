@@ -1,9 +1,9 @@
 package nl.renarj.jasdb.rest.loaders;
 
+import nl.renarj.jasdb.api.DBInstance;
+import nl.renarj.jasdb.api.DBInstanceFactory;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.model.DBInstance;
-import nl.renarj.jasdb.api.model.DBInstanceFactory;
-import nl.renarj.jasdb.core.SimpleKernel;
+import nl.renarj.jasdb.api.engine.EngineManager;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.exceptions.RestException;
@@ -19,9 +19,9 @@ import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +32,11 @@ public class InstanceModelLoader  extends AbstractModelLoader {
 	private static final String MODEL_NAME = "Instance";
     private static final String INSTANCES = "Instances";
 
-    @Inject
+    @Autowired
     private DBInstanceFactory instanceFactory;
+
+    @Autowired
+    private EngineManager engineManager;
 
 	@Override
 	public String[] getModelNames() {
@@ -62,21 +65,17 @@ public class InstanceModelLoader  extends AbstractModelLoader {
 	}
 
     private List<InstanceRest> loadInstances() throws RestException {
-        try {
-            List<InstanceRest> instances = new ArrayList<>();
-            for(DBInstance instance : instanceFactory.listInstances()) {
-                instances.add(new InstanceRest(instance.getPath(), "OK", SimpleKernel.getVersion(), instance.getInstanceId()));
-            }
-            return instances;
-        } catch(ConfigurationException e) {
-            throw new RestException("Unable to load instance list", e);
+        List<InstanceRest> instances = new ArrayList<>();
+        for(DBInstance instance : instanceFactory.listInstances()) {
+            instances.add(new InstanceRest(instance.getPath(), "OK", engineManager.getEngineVersion(), instance.getInstanceId()));
         }
+        return instances;
     }
     
     private InstanceRest getInstance(String instanceId) throws RestException {
         try {
             DBInstance dbInstance = instanceFactory.getInstance(instanceId);
-            InstanceRest instance = new InstanceRest(dbInstance.getPath(), "OK", SimpleKernel.getVersion(), dbInstance.getInstanceId());
+            InstanceRest instance = new InstanceRest(dbInstance.getPath(), "OK", engineManager.getEngineVersion(), dbInstance.getInstanceId());
 
             return instance;
         } catch(ConfigurationException e) {
@@ -88,7 +87,7 @@ public class InstanceModelLoader  extends AbstractModelLoader {
 	public RestEntity writeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context) throws RestException {
         InstanceRest dbInstance = serializer.deserialize(InstanceRest.class, rawData);
         try {
-            instanceFactory.addInstance(dbInstance.getInstanceId(), dbInstance.getPath());
+            instanceFactory.addInstance(dbInstance.getInstanceId());
 
             return getInstance(dbInstance.getInstanceId());
         } catch(JasDBStorageException e) {

@@ -61,7 +61,7 @@ public class DataController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public String createInstance(@Valid WebInstance instance) throws JasDBException {
         DBSession session = sessionFactory.createSession();
-        session.addInstance(instance.getName(), instance.getPath());
+        session.addInstance(instance.getName());
 
         return "redirect:/data/";
     }

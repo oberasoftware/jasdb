@@ -1,11 +1,11 @@
 package nl.renarj.jasdb.remote;
 
+import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
 import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
-import nl.renarj.jasdb.storage.query.operators.BlockOperation;
 
 import java.util.List;
 

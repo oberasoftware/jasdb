@@ -1,6 +1,6 @@
 package com.obera.service.acl;
 
-import nl.renarj.jasdb.service.StorageService;
+import com.oberasoftware.jasdb.engine.StorageService;
 
 /**
  * @author Renze de Vries

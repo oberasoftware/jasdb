@@ -17,8 +17,8 @@ import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.remote.EntityConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;
-import nl.renarj.jasdb.storage.query.BuilderTransformer;
-import nl.renarj.jasdb.storage.query.operators.BlockOperation;
+import com.oberasoftware.jasdb.engine.query.BuilderTransformer;
+import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
 
 import java.util.List;
 

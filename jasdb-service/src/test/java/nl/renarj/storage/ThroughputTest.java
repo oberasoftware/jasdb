@@ -1,7 +1,7 @@
 package nl.renarj.storage;
 
+import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.jasdb.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;

@@ -12,15 +12,19 @@
     <artifactId>jasdb_acl</artifactId>
 
     <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>com.oberasoftware</groupId>-->
+            <!--<artifactId>jasdb-service</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb-service</artifactId>
+            <artifactId>jasdb-engine</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb_testframework</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.oberasoftware</groupId>-->
+            <!--<artifactId>jasdb_testframework</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>

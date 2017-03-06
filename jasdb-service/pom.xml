@@ -29,6 +29,10 @@
             <artifactId>jasdb_entity</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb-engine</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
@@ -36,6 +40,10 @@
             <artifactId>javax.inject</artifactId>
             <groupId>javax.inject</groupId>
             <version>1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb_restservice</artifactId>
         </dependency>
     </dependencies>
 	<build>

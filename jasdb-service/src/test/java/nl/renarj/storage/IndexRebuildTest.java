@@ -1,15 +1,14 @@
 package nl.renarj.storage;
 
-import nl.renarj.jasdb.LocalDBSession;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import com.oberasoftware.jasdb.service.JasDBMain;
+import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.search.IndexField;
-import nl.renarj.jasdb.service.StorageServiceFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +46,7 @@ public class IndexRebuildTest extends DBBaseTest {
 
         Thread.sleep(10000);
 
-        StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
+//        StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
 //        IndexManager indexManager = serviceFactory.getIndexManager(SimpleKernel.getInstanceFactory().getInstance());
 //        Index index = indexManager.getIndex("bag0", "field1");
 //        assertNotNull(index);
@@ -68,16 +67,16 @@ public class IndexRebuildTest extends DBBaseTest {
                 bag.addEntity(new SimpleEntity().addProperty("field1", (long) i));
             }
         } finally {
-            SimpleKernel.shutdown();
+            JasDBMain.shutdown();
         }
 
         assertTrue(new File(jasdbDir, "metadata.pid").createNewFile());
         //lets do a brute force trick to remove the index
         assertDelete(new File(jasdbDir, "bag0_field1.idx"));
 
-        SimpleKernel.initializeKernel();
+        JasDBMain.start();
 
-        StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
+//        StorageServiceFactory serviceFactory = SimpleKernel.getStorageServiceFactory();
 //        IndexManager indexManager = serviceFactory.getIndexManager(SimpleKernel.getInstanceFactory().getInstance());
 //        Index index = indexManager.getIndex("bag0", "field1");
 //        assertNotNull(index);

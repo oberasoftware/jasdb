@@ -11,7 +11,7 @@
         <!--<module type="usermanager" class="com.obera.service.acl.UserManagerImpl"/>-->
         <!--<module type="sessionmanager" class="com.obera.service.acl.SessionManagerImpl"/>-->
 
-        <module type="storageservice" class="nl.renarj.jasdb.service.LocalStorageServiceFactoryImpl">
+        <module type="storageservice" class="com.oberasoftware.jasdb.engine.LocalStorageServiceFactoryImpl">
             <!--<wrappers>-->
             <!--<wrapper class="com.obera.service.acl.AuthorizationServiceWrapper"/>-->
             <!--</wrappers>-->

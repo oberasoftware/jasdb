@@ -20,7 +20,7 @@ import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 import nl.renarj.jasdb.remote.model.RemoteBag;
-import nl.renarj.jasdb.service.metadata.BagMeta;
+import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -81,15 +81,15 @@ public abstract class DBConnectorSession implements DBSession {
     }
 
     @Override
-    public void addInstance(String instanceId, String path) throws JasDBStorageException {
+    public void addInstance(String instanceId) throws JasDBStorageException {
         InstanceConnector instanceConnector = RemoteConnectorFactory.createConnector(nodeInformation, InstanceConnector.class);
-        instanceConnector.addInstance(getContext(), instanceId, path);
+        instanceConnector.addInstance(getContext(), instanceId);
     }
 
     @Override
-    public void addAndSwitchInstance(String instanceId, String path) throws JasDBStorageException {
+    public void addAndSwitchInstance(String instanceId) throws JasDBStorageException {
         InstanceConnector instanceConnector = RemoteConnectorFactory.createConnector(nodeInformation, InstanceConnector.class);
-        instanceConnector.addInstance(getContext(), instanceId, path);
+        instanceConnector.addInstance(getContext(), instanceId);
 
         instance = instanceId;
     }

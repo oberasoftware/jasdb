@@ -1,6 +1,6 @@
 package nl.renarj.storage;
 
-import nl.renarj.jasdb.core.SimpleKernel;
+import com.oberasoftware.jasdb.service.JasDBMain;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import org.junit.After;
 import org.junit.Assert;
@@ -18,7 +18,7 @@ public abstract class DBBaseTest {
 
 	@After
 	public void tearDown() throws JasDBException {
-		SimpleKernel.shutdown();
+		JasDBMain.shutdown();
 	}
 	
 	protected static void assertDelete(File deleteFile) {

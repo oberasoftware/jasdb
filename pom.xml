@@ -5,10 +5,15 @@
     <description>A simple NoSQL Document database that can be used in your application either Android, embedded or in remote mode</description>
 	<modelVersion>4.0.0</modelVersion>
 
+    <!--<parent>-->
+        <!--<groupId>com.oberasoftware</groupId>-->
+        <!--<artifactId>oss-maven</artifactId>-->
+        <!--<version>1.1</version>-->
+    <!--</parent>-->
     <parent>
-        <groupId>com.oberasoftware</groupId>
-        <artifactId>oss-maven</artifactId>
-        <version>1.1</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.2.RELEASE</version>
     </parent>
 
 	<version>2.0-SNAPSHOT</version>
@@ -112,6 +117,11 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
+                <artifactId>jasdb-engine</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
                 <artifactId>jasdb_acl</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -143,39 +153,39 @@
             </dependency>
 
 
-            <!-- jersey related libraries -->
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-servlet</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
+            <!--&lt;!&ndash; jersey related libraries &ndash;&gt;-->
+			<!--<dependency>-->
+				<!--<groupId>com.sun.jersey</groupId>-->
+				<!--<artifactId>jersey-server</artifactId>-->
+				<!--<version>${jersey.version}</version>-->
+			<!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.sun.jersey</groupId>-->
+                <!--<artifactId>jersey-client</artifactId>-->
+                <!--<version>${jersey.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.sun.jersey</groupId>-->
+                <!--<artifactId>jersey-servlet</artifactId>-->
+                <!--<version>${jersey.version}</version>-->
+            <!--</dependency>-->
 
-            <!-- jetty related libraries -->
-            <dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-servlet</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-deploy</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
+            <!--&lt;!&ndash; jetty related libraries &ndash;&gt;-->
+            <!--<dependency>-->
+				<!--<groupId>org.eclipse.jetty</groupId>-->
+				<!--<artifactId>jetty-servlet</artifactId>-->
+				<!--<version>${jetty.version}</version>-->
+			<!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.eclipse.jetty</groupId>-->
+                <!--<artifactId>jetty-deploy</artifactId>-->
+                <!--<version>${jetty.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.eclipse.jetty</groupId>-->
+                <!--<artifactId>jetty-server</artifactId>-->
+                <!--<version>${jetty.version}</version>-->
+            <!--</dependency>-->
 
             <!-- core libraries -->
             <dependency>
@@ -246,18 +256,19 @@
         <module>jasdb_acl</module>
         <module>jasdb_memorywriter</module>
         <module>jasdb_entity</module>
-        <module>testing/jasdb_ent_integration</module>
         <module>rest/jasdb_restservice</module>
-        <module>rest/jasdb_restconnector</module>
+        <module>rest/jasdb-restclient</module>
         <module>rest/jasdb_restmodel</module>
-		<module>jasdb-service</module>
-		<module>testing/jasdb_testframework</module>
+        <module>jasdb-service</module>
         <module>jasdb_connector</module>
         <module>jasdb_apiconnector</module>
-        <module>testing/jasdb_integration_test</module>
         <module>jasdb_assembly</module>
         <module>jasdb_console</module>
         <module>jasdb_buildtools</module>
+        <module>jasdb-engine</module>
+        <!--<module>testing/jasdb_testframework</module>-->
+        <!--<module>testing/jasdb_ent_integration</module>-->
+        <!--<module>testing/jasdb_integration_test</module>-->
     </modules>
 
     <profiles>

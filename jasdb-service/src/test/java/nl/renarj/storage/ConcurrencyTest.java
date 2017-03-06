@@ -1,14 +1,14 @@
 package nl.renarj.storage;
 
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import com.oberasoftware.jasdb.service.JasDBMain;
+import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.jasdb.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.IndexField;
 import org.junit.After;
@@ -18,12 +18,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -43,8 +38,9 @@ public class ConcurrencyTest extends DBBaseTest {
     private List<String> createdIds = new ArrayList<>();
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws JasDBException {
         System.setProperty(HomeLocatorUtil.JASDB_HOME, DBBaseTest.tmpDir.toString());
+        JasDBMain.start();
 
         cleanData();
 	}
@@ -83,7 +79,7 @@ public class ConcurrencyTest extends DBBaseTest {
             return generatedIds;
 		} finally {
 			if(shutdownKernel) {
-                SimpleKernel.shutdown();
+                JasDBMain.shutdown();
             }
 		}
 	}
@@ -159,7 +155,7 @@ public class ConcurrencyTest extends DBBaseTest {
 		/* Let's wait till all threads are finished */
         assertReadFailures(readers);
 
-		SimpleKernel.shutdown();
+        JasDBMain.shutdown();
 	}
 
 	@Test
@@ -186,7 +182,7 @@ public class ConcurrencyTest extends DBBaseTest {
         assertReadFailures(readers);
         assertWriteFailures(writers);
 
-		SimpleKernel.shutdown();
+        JasDBMain.shutdown();
 	}
 
     @Test
@@ -237,13 +233,13 @@ public class ConcurrencyTest extends DBBaseTest {
 
         }
 
-        SimpleKernel.shutdown();
+        JasDBMain.shutdown();
 
-        SimpleKernel.initializeKernel();
+        JasDBMain.start();
         try {
             loadRecords(createdIds);
         } finally {
-            SimpleKernel.shutdown();
+            JasDBMain.shutdown();
         }
     }
 
@@ -299,7 +295,7 @@ public class ConcurrencyTest extends DBBaseTest {
         }
 
 
-        SimpleKernel.shutdown();
+        JasDBMain.shutdown();
     }
 
     private void assertWriteFailures(Map<Thread, WriterThread> writers) throws InterruptedException, JasDBStorageException {

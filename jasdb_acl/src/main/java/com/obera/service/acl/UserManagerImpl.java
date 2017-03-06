@@ -1,5 +1,6 @@
 package com.obera.service.acl;
 
+import com.oberasoftware.jasdb.engine.metadata.Constants;
 import nl.renarj.core.statistics.StatRecord;
 import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.api.SimpleEntity;
@@ -16,13 +17,11 @@ import nl.renarj.jasdb.core.crypto.CryptoEngine;
 import nl.renarj.jasdb.core.crypto.CryptoFactory;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.service.metadata.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Renze de Vries
  */
 @Component
-@Singleton
 public class UserManagerImpl implements UserManager {
     private static final Logger LOG = LoggerFactory.getLogger(UserManagerImpl.class);
     private CredentialsProvider credentialsProvider;

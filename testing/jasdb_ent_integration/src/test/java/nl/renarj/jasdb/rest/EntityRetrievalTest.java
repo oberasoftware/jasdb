@@ -7,7 +7,7 @@
  */
 package nl.renarj.jasdb.rest;
 
-import nl.renarj.jasdb.LocalDBSession;
+import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
@@ -16,7 +16,7 @@ import nl.renarj.jasdb.api.query.QueryResult;
 import nl.renarj.jasdb.api.query.SortParameter;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.impl.StringKey;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;
 import nl.renarj.jasdb.index.result.SearchLimit;
@@ -26,7 +26,7 @@ import nl.renarj.jasdb.remote.EntityConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
-import nl.renarj.jasdb.storage.query.operators.AndBlock;
+import com.oberasoftware.jasdb.engine.query.operators.AndBlock;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

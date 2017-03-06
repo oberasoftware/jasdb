@@ -1,7 +1,7 @@
 package nl.renarj.jasdb.localservice.api;
 
-import nl.renarj.jasdb.LocalDBSessionFactory;
-import nl.renarj.jasdb.service.TableScanQueryTest;
+import com.oberasoftware.jasdb.service.local.LocalDBSessionFactory;
+import com.oberasoftware.jasdb.engine.TableScanQueryTest;
 
 /**
  * @author Renze de Vries

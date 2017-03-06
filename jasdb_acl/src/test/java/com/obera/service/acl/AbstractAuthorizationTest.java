@@ -1,24 +1,18 @@
 package com.obera.service.acl;
 
-import nl.renarj.jasdb.SimpleBaseTest;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.StorageService;
+import com.oberasoftware.jasdb.engine.StorageServiceFactory;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.api.context.Credentials;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
-import nl.renarj.jasdb.service.StorageService;
-import nl.renarj.jasdb.service.StorageServiceFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -26,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.IOException;
 
 import static org.mockito.Mockito.when;
 
@@ -47,7 +43,7 @@ public abstract class AbstractAuthorizationTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public static TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private StorageService wrappedService;
 
@@ -73,13 +69,12 @@ public abstract class AbstractAuthorizationTest {
     protected abstract AuthorizationOperation getOperation();
 
     @BeforeClass
-    public static void beforeSetup() {
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, SimpleBaseTest.tmpDir.toString());
+    public static void beforeSetup() throws IOException {
+        System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
     }
 
     @Before
     public void before() throws JasDBStorageException {
-        SimpleBaseTest.cleanData();
         wrappedService = storageServiceFactory.getStorageService(null, null);
         when(wrappedService.getInstanceId()).thenReturn(TEST_INSTANCE);
         when(wrappedService.getBagName()).thenReturn(TEST_BAG);
@@ -89,8 +84,8 @@ public abstract class AbstractAuthorizationTest {
 
     @After
     public void after() throws JasDBException {
-        SimpleKernel.shutdown();
-        SimpleBaseTest.cleanData();
+//        SimpleKernel.shutdown();
+//        SimpleBaseTest.cleanData();
     }
 
     @Test

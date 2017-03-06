@@ -1,0 +1,12 @@
+package nl.renarj.jasdb.api.engine;
+
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+
+/**
+ * @author Renze de Vries
+ */
+public interface IndexManagerFactory {
+    IndexManager getIndexManager(String instanceId) throws JasDBStorageException;
+
+    void shutdownIndexes() throws JasDBStorageException;
+}

@@ -17,7 +17,11 @@
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb-service</artifactId>
+            <artifactId>jasdb-engine</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.oberasoftware</groupId>-->
+            <!--<artifactId>jasdb-service</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

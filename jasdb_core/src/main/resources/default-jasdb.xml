@@ -4,7 +4,7 @@
         <!-- Set the used kernel modules -->
         <module type="record" class="nl.renarj.jasdb.storage.transactional.TransactionalRecordWriterFactory"/>
 
-        <module type="storageservice" class="nl.renarj.jasdb.service.LocalStorageServiceFactoryImpl"/>
+        <module type="storageservice" class="LocalStorageServiceFactoryImpl"/>
     </modules>
 
     <!-- This allows selecting the mode of flushing data to disk -->

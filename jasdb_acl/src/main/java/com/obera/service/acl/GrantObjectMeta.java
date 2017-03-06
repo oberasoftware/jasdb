@@ -1,5 +1,6 @@
 package com.obera.service.acl;
 
+import com.oberasoftware.jasdb.engine.metadata.Constants;
 import nl.renarj.jasdb.api.EmbeddedEntity;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
@@ -8,7 +9,6 @@ import nl.renarj.jasdb.api.metadata.GrantObject;
 import nl.renarj.jasdb.api.properties.EntityValue;
 import nl.renarj.jasdb.api.properties.Property;
 import nl.renarj.jasdb.api.properties.Value;
-import nl.renarj.jasdb.service.metadata.Constants;
 
 import java.util.ArrayList;
 import java.util.List;

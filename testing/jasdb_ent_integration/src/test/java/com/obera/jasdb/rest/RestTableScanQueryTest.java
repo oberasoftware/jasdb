@@ -1,8 +1,8 @@
 package com.obera.jasdb.rest;
 
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
-import nl.renarj.jasdb.service.TableScanQueryTest;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.TableScanQueryTest;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 

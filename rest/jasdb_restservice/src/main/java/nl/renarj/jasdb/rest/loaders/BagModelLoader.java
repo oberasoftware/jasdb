@@ -1,10 +1,12 @@
 package nl.renarj.jasdb.rest.loaders;
 
+import com.oberasoftware.jasdb.engine.StorageService;
+import com.oberasoftware.jasdb.engine.StorageServiceFactory;
 import nl.renarj.core.utilities.StringUtils;
+import nl.renarj.jasdb.api.DBInstance;
+import nl.renarj.jasdb.api.DBInstanceFactory;
 import nl.renarj.jasdb.api.context.RequestContext;
 import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.model.DBInstance;
-import nl.renarj.jasdb.api.model.DBInstanceFactory;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.exceptions.RestException;
@@ -14,20 +16,13 @@ import nl.renarj.jasdb.rest.input.OrderParam;
 import nl.renarj.jasdb.rest.input.TokenType;
 import nl.renarj.jasdb.rest.input.conditions.FieldCondition;
 import nl.renarj.jasdb.rest.input.conditions.InputCondition;
-import nl.renarj.jasdb.rest.model.BagCollection;
-import nl.renarj.jasdb.rest.model.ErrorEntity;
-import nl.renarj.jasdb.rest.model.InstanceRest;
-import nl.renarj.jasdb.rest.model.RestBag;
-import nl.renarj.jasdb.rest.model.RestEntity;
+import nl.renarj.jasdb.rest.model.*;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
-import nl.renarj.jasdb.service.StorageService;
-import nl.renarj.jasdb.service.StorageServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +31,14 @@ public class BagModelLoader extends AbstractModelLoader {
     private static final Logger LOG = LoggerFactory.getLogger(BagModelLoader.class);
     private static final String FLUSH_OPERATION = "flush";
 
-    @Inject
-    private DBInstanceFactory instanceFactory;
+    private final DBInstanceFactory instanceFactory;
+    private final StorageServiceFactory storageServiceFactory;
 
-    @Inject
-    private StorageServiceFactory storageServiceFactory;
+    @Autowired
+    public BagModelLoader(DBInstanceFactory instanceFactory, StorageServiceFactory storageServiceFactory) {
+        this.instanceFactory = instanceFactory;
+        this.storageServiceFactory = storageServiceFactory;
+    }
 
     @Override
 	public String[] getModelNames() {
@@ -157,7 +155,7 @@ public class BagModelLoader extends AbstractModelLoader {
         }
     }
 
-    public RestEntity doSearch(DBInstance instance, InputElement element) throws RestException {
+    private RestEntity doSearch(DBInstance instance, InputElement element) throws RestException {
 		InputCondition inputCondition = element.getCondition();
 		LOG.debug("Loading bag information based on input condition: {}", inputCondition);
 		if(inputCondition instanceof FieldCondition) {
@@ -170,7 +168,7 @@ public class BagModelLoader extends AbstractModelLoader {
 					LOG.debug("Found a bag with name: {}", bagName);
 					return new RestBag(instance.getInstanceId(), bagName, storageService.getSize(), storageService.getDiskSize());
 				} else {
-					return new ErrorEntity(Response.Status.NOT_FOUND.getStatusCode(), "No bag was found with name: " + fieldCondition.getValue());
+					return new ErrorEntity(404, "No bag was found with name: " + fieldCondition.getValue());
 				}
 			} catch(JasDBStorageException e) {
 				throw new RestException("Unable to load bag metadata", e);
@@ -180,7 +178,7 @@ public class BagModelLoader extends AbstractModelLoader {
 		}
 	}
 	
-	public RestEntity handleList(DBInstance instance) throws RestException {
+	private RestEntity handleList(DBInstance instance) throws RestException {
 		LOG.debug("Retrieving full list of bags on storage instance: {}", instance.getInstanceId());
 		List<RestBag> bags = new ArrayList<>();
 		try {

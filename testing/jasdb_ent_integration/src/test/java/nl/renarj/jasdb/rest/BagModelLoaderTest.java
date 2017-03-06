@@ -1,19 +1,19 @@
 package nl.renarj.jasdb.rest;
 
-import nl.renarj.jasdb.LocalDBSession;
+import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.remote.BagConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 import nl.renarj.jasdb.remote.model.RemoteBag;
-import nl.renarj.jasdb.service.metadata.BagMeta;
+import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 import org.junit.Test;
 
 import java.util.ArrayList;

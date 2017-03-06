@@ -3,60 +3,61 @@ package nl.renarj.jasdb.rest.security;
 import com.obera.service.acl.BasicCredentials;
 import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserSession;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author Renze de Vries
  */
-public class OAuthTokenEndpoint extends HttpServlet {
+@RestController
+public class OAuthTokenEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(OAuthTokenEndpoint.class);
 
     private static final String GRANT_INVALID = "{\"grant\":\"invalid\",\"message\":\"%s\"}";
     private static final String GRANT_VALID = "{\"grant\":\"valid\",\"access_token\":\"%s\",\"sessionid\":\"%s\",\"token_type\":\"%s\",\"expires_in\":%d}";
-    private static final int UNAUTHORIZED_CODE = 401;
 
+    private final SessionManager sessionManager;
 
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        handleErrorResponse(resp, "GET not supported");
+    @Autowired(required = false)
+    public OAuthTokenEndpoint(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        if(req.isSecure()) {
+    @RequestMapping(method = RequestMethod.POST, value = "/token", produces = "application/json", consumes = "application/json")
+    public @ResponseBody
+    ResponseEntity<String> getToken(HttpServletRequest request) {
+        if(request.isSecure()) {
             try {
-                SessionManager sessionManager = SimpleKernel.getKernelModule(SessionManager.class);
-                String clientId = req.getParameter("client_id");
-                String clientSecret = req.getParameter("client_secret");
-                LOG.debug("Client: {} host: {}", clientId, req.getRemoteHost());
+                String clientId = request.getParameter("client_id");
+                String clientSecret = request.getParameter("client_secret");
+                LOG.debug("Client: {} host: {}", clientId, request.getRemoteHost());
 
-                UserSession session = sessionManager.startSession(new BasicCredentials(clientId, req.getRemoteHost(), clientSecret));
+                UserSession session = sessionManager.startSession(new BasicCredentials(clientId, request.getRemoteHost(), clientSecret));
                 LOG.debug("Loaded session: {}", session);
-                resp.getWriter().print(String.format(GRANT_VALID, session.getAccessToken(), session.getSessionId(), "jasdb", 3600));
+                String responseMessage = String.format(GRANT_VALID, session.getAccessToken(), session.getSessionId(), "jasdb", 3600);
+                return new ResponseEntity<>(responseMessage, HttpStatus.OK);
             } catch(JasDBSecurityException e) {
-                handleErrorResponse(resp, "Invalid credentials");
+                return getErrorResponse("Invalid credentials");
             } catch(JasDBStorageException e) {
-                handleErrorResponse(resp, "Unknown error");
+                return getErrorResponse("Unknown error");
             }
         } else {
-            handleErrorResponse(resp, "Insecure connection");
+            return getErrorResponse("Insecure connection");
         }
     }
 
-    public void handleErrorResponse(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(UNAUTHORIZED_CODE);
-        response.getWriter().print(String.format(GRANT_INVALID, message));
+    private ResponseEntity<String> getErrorResponse(String message) {
+        return new ResponseEntity<>(String.format(GRANT_INVALID, message), HttpStatus.UNAUTHORIZED);
     }
 }

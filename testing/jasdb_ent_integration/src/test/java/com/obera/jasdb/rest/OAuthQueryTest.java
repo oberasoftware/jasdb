@@ -7,8 +7,8 @@ import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
-import nl.renarj.jasdb.service.EntityQueryTest;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.EntityQueryTest;
 
 /**
  * @author Renze de Vries

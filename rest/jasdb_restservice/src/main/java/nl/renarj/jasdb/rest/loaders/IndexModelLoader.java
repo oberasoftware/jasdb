@@ -1,10 +1,12 @@
 package nl.renarj.jasdb.rest.loaders;
 
+import com.oberasoftware.jasdb.engine.StorageService;
+import com.oberasoftware.jasdb.engine.StorageServiceFactory;
 import nl.renarj.core.statistics.StatRecord;
 import nl.renarj.core.statistics.StatisticsMonitor;
 import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.model.IndexManager;
-import nl.renarj.jasdb.api.model.IndexManagerFactory;
+import nl.renarj.jasdb.api.engine.IndexManager;
+import nl.renarj.jasdb.api.engine.IndexManagerFactory;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.index.Index;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
@@ -22,13 +24,11 @@ import nl.renarj.jasdb.rest.model.IndexEntry;
 import nl.renarj.jasdb.rest.model.RestBag;
 import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
-import nl.renarj.jasdb.service.StorageService;
-import nl.renarj.jasdb.service.StorageServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +43,10 @@ public class IndexModelLoader extends AbstractModelLoader{
     private static final int SINGLE_KEY_FIELD = 1;
     private Logger log = LoggerFactory.getLogger(IndexModelLoader.class);
 
-    @Inject
+    @Autowired
     private IndexManagerFactory indexManagerFactory;
 
-    @Inject
+    @Autowired
     private StorageServiceFactory storageServiceFactory;
 
     @Override

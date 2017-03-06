@@ -6,7 +6,7 @@ import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.core.SimpleKernel;
-import nl.renarj.jasdb.service.EntityBagTest;
+import com.oberasoftware.jasdb.engine.EntityBagTest;
 
 /**
  * @author Renze de Vries

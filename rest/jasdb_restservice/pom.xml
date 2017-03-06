@@ -25,26 +25,26 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_acl</artifactId>
         </dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.oberasoftware</groupId>-->
+			<!--<artifactId>jasdb_testframework</artifactId>-->
+            <!--<scope>test</scope>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>com.sun.jersey</groupId>-->
+			<!--<artifactId>jersey-server</artifactId>-->
+		<!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.sun.jersey</groupId>-->
+            <!--<artifactId>jersey-servlet</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+			<!--<groupId>org.eclipse.jetty</groupId>-->
+			<!--<artifactId>jetty-servlet</artifactId>-->
+		<!--</dependency>-->
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb-service</artifactId>
+            <artifactId>jasdb-engine</artifactId>
         </dependency>
-		<dependency>
-			<groupId>com.oberasoftware</groupId>
-			<artifactId>jasdb_testframework</artifactId>
-            <scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-server</artifactId>
-		</dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-servlet</artifactId>
-        </dependency>
-        <dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-		</dependency>
 	</dependencies>
 </project>

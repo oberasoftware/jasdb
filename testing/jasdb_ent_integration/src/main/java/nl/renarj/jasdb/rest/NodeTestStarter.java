@@ -1,6 +1,6 @@
 package nl.renarj.jasdb.rest;
 
-import nl.renarj.jasdb.LocalDBSession;
+import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;

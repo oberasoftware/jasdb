@@ -30,7 +30,7 @@
         <property name="instanceId" value="default"/>
     </bean>
 
-    <!--<bean id="sessionFactory" class="nl.renarj.jasdb.LocalDBSessionFactory">-->
+    <!--<bean id="sessionFactory" class="com.oberasoftware.jasdb.service.local.LocalDBSessionFactory">-->
 
     <!--</bean>-->
 

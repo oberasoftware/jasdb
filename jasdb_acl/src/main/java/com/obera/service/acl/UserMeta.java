@@ -1,8 +1,8 @@
 package com.obera.service.acl;
 
+import com.oberasoftware.jasdb.engine.metadata.Constants;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.metadata.User;
-import nl.renarj.jasdb.service.metadata.Constants;
 
 /**
  * @author Renze de Vries

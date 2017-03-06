@@ -7,10 +7,9 @@ import nl.renarj.jasdb.rest.serializers.RestResponseHandler;
 import nl.renarj.jasdb.rest.serializers.json.JsonRestResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -18,47 +17,46 @@ import java.io.OutputStream;
  * @author Renze de Vries
  */
 public class ServiceOutputHandler {
-    private static final Logger log = LoggerFactory.getLogger(ServiceOutputHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceOutputHandler.class);
 
     private static final JsonRestResponseHandler restResponseHandler = new JsonRestResponseHandler();
 
-    public static Response createResponse(final RestEntity entity) {
+    public static void createResponse(final RestEntity entity, HttpServletResponse response) {
         if(entity != null) {
             if(entity instanceof ErrorEntity) {
-                return handleError((ErrorEntity)entity);
+                handleError((ErrorEntity)entity, response);
             } else {
-                return Response.ok(createStreamOutput(entity), restResponseHandler.getMediaType()).build();
+                sendResponse(entity, HttpStatus.OK.value(), response);
             }
         } else {
-            return handleError(new ErrorEntity(Response.Status.NOT_FOUND.getStatusCode(), "Resource could not be found"));
+            handleError(new ErrorEntity(HttpStatus.NOT_FOUND.value(), "Resource could not be found"), response);
         }
     }
 
-    public static Response handleError(String message) {
-        return handleError(new ErrorEntity(Response.Status.BAD_REQUEST.getStatusCode(), message));
+    public static void handleError(String message, HttpServletResponse response) {
+        handleError(new ErrorEntity(HttpStatus.BAD_REQUEST.value(), message), response);
     }
 
-    private static Response handleError(ErrorEntity errorEntity)  {
-        return Response.status(errorEntity.getStatusCode()).entity(createStreamOutput(errorEntity)).build();
+    private static void handleError(ErrorEntity errorEntity, HttpServletResponse response)  {
+        sendResponse(errorEntity, errorEntity.getStatusCode(), response);
     }
 
     public static RestResponseHandler getResponseHandler() {
         return restResponseHandler;
     }
 
-    private static StreamingOutput createStreamOutput(final RestEntity entity) {
-        return new StreamingOutput() {
-            @Override
-            public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-                try {
-                    restResponseHandler.serialize(entity, outputStream);
-                } catch(RestException e) {
-                    log.debug("Stream error, full stack", e);
-                    log.info("Could not stream the entity: " + e.getMessage());
-                } catch(Throwable e) {
-                    log.error("Unable to stream out entity", e);
-                }
-            }
-        };
+    private static void sendResponse(final RestEntity entity, int statusCode, HttpServletResponse response) {
+        response.setStatus(statusCode);
+        response.setContentType(restResponseHandler.getMediaType());
+        try {
+            OutputStream outputStream = response.getOutputStream();
+            restResponseHandler.serialize(entity, outputStream);
+
+        } catch (IOException | RestException e) {
+            LOG.debug("Stream error, full stack: {}", e);
+            LOG.info("Could not stream entity: {}", e.getMessage());
+        } catch(Throwable e) {
+            LOG.error("Unable to stream entity", e);
+        }
     }
 }

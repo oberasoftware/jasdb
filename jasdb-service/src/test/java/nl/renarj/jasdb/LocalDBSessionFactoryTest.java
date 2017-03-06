@@ -1,9 +1,10 @@
 package nl.renarj.jasdb;
 
+import com.oberasoftware.jasdb.service.JasDBMain;
+import com.oberasoftware.jasdb.service.local.LocalDBSessionFactory;
 import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.platform.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.storage.DBBaseTest;
 import org.junit.After;
 import org.junit.Before;
@@ -26,14 +27,14 @@ public class LocalDBSessionFactoryTest {
 
     @Before
     public void before() throws Exception {
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, DBBaseTest.tmpDir.toString());
+        System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
 
         DBBaseTest.cleanData();
     }
 
     @After
     public void tearDown() throws Exception {
-        SimpleKernel.shutdown();
+        JasDBMain.shutdown();
         DBBaseTest.cleanData();
     }
 
@@ -47,7 +48,7 @@ public class LocalDBSessionFactoryTest {
     @Test
     public void testCreateWithInstancId() throws JasDBStorageException, IOException {
         LocalDBSessionFactory localDBSessionFactory = new LocalDBSessionFactory();
-        localDBSessionFactory.createSession().addInstance("testInstance", temporaryFolder.newFolder().toString());
+        localDBSessionFactory.createSession().addInstance("testInstance");
 
         DBSession session = localDBSessionFactory.createSession("testInstance");
         assertThat(session.getInstanceId(), is("testInstance"));
@@ -56,7 +57,7 @@ public class LocalDBSessionFactoryTest {
     @Test
     public void testCreateInstanceIdProperty() throws JasDBStorageException, IOException {
         LocalDBSessionFactory localDBSessionFactory = new LocalDBSessionFactory();
-        localDBSessionFactory.createSession().addInstance("testInstance", temporaryFolder.newFolder().toString());
+        localDBSessionFactory.createSession().addInstance("testInstance");
 
         localDBSessionFactory.setInstance("testInstance");
         DBSession session = localDBSessionFactory.createSession();
