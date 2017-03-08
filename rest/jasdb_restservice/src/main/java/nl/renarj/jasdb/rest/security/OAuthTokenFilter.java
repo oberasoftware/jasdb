@@ -27,7 +27,7 @@ public class OAuthTokenFilter implements Filter {
     private static final String GRANT_INVALID = "{\"grant\":\"invalid\",\"message\":\"%s\"}";
     private static final int UNAUTHORIZED_CODE = 401;
 
-    @Autowired
+    @Autowired(required = false)
     private SessionManager sessionManager;
 
     private boolean enabled = false;

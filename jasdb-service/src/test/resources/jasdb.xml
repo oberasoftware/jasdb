@@ -19,7 +19,7 @@
     <Statistics enabled="false"/>
 
     <!-- Configuration settings for the rest service, like the port number -->
-    <Remote service="rest" port="7050"/>
+    <Remote service="rest" enabled="false" port="7050"/>
 
     <!-- Configuration settings for the btree index -->
     <Index Type="btree" pageSize="512">

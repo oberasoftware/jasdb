@@ -1,5 +1,6 @@
 package nl.renarj.jasdb.rest;
 
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
@@ -9,7 +10,6 @@ import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.locator.NodeInformation;
-import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
 import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
 import nl.renarj.jasdb.index.keys.types.LongKeyType;

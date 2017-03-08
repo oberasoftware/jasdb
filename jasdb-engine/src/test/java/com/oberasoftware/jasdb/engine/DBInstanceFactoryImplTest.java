@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
@@ -28,6 +28,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class DBInstanceFactoryImplTest {
 
+    public static final String INSTANCE_1 = "instance1";
     @Mock
     private MetadataStore metadataStore;
 
@@ -58,46 +59,54 @@ public class DBInstanceFactoryImplTest {
         Instance instance1 = mock(Instance.class);
         Instance instance2 = mock(Instance.class);
 
-        when(instance1.getInstanceId()).thenReturn("instance1");
+        when(instance1.getInstanceId()).thenReturn(INSTANCE_1);
         when(instance2.getInstanceId()).thenReturn("instance2");
         when(metadataStore.getInstances()).thenReturn(Lists.newArrayList(instance1, instance2));
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore, storageServiceFactory);
 
         assertThat(instanceFactory.listInstances().size(), is(2));
-        assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1", "instance2"));
+        assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems(INSTANCE_1, "instance2"));
     }
 
     @Test
     public void testAddInstance() throws JasDBStorageException, IOException {
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore, storageServiceFactory);
-        instanceFactory.addInstance("instance1");
+        Instance instanceMeta = mock(Instance.class);
+        when(instanceMeta.getInstanceId()).thenReturn(INSTANCE_1);
+        when(metadataStore.addInstance(INSTANCE_1)).thenReturn(instanceMeta);
 
-        verify(metadataStore, times(1)).addInstance("instance1");
-        assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1"));
+        instanceFactory.addInstance(INSTANCE_1);
+
+        verify(metadataStore, times(1)).addInstance(INSTANCE_1);
+        assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems(INSTANCE_1));
     }
 
     @Test(expected = JasDBStorageException.class)
     public void testAddInstanceAlreadyExisting() throws JasDBStorageException {
-        when(metadataStore.containsInstance("instance1")).thenReturn(false).thenReturn(true);
+        when(metadataStore.containsInstance(INSTANCE_1)).thenReturn(false).thenReturn(true);
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore, storageServiceFactory);
-        instanceFactory.addInstance("instance1");
+        instanceFactory.addInstance(INSTANCE_1);
 
-        instanceFactory.addInstance("instance1");
+        instanceFactory.addInstance(INSTANCE_1);
     }
 
     @Test
     public void testDeleteInstance() throws JasDBStorageException, IOException {
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore, storageServiceFactory);
-        instanceFactory.addInstance("instance1");
-        assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems("instance1"));
+        Instance instanceMeta = mock(Instance.class);
+        when(metadataStore.addInstance(INSTANCE_1)).thenReturn(instanceMeta);
+        when(instanceMeta.getInstanceId()).thenReturn(INSTANCE_1);
 
-        when(metadataStore.containsInstance("instance1")).thenReturn(true);
+        instanceFactory.addInstance(INSTANCE_1);
 
-        instanceFactory.deleteInstance("instance1");
+        assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems(INSTANCE_1));
 
-        verify(metadataStore, times(1)).removeInstance("instance1");
+        when(metadataStore.containsInstance(INSTANCE_1)).thenReturn(true);
+        instanceFactory.deleteInstance(INSTANCE_1);
+
+        verify(metadataStore, times(1)).removeInstance(INSTANCE_1);
     }
 
     @Test(expected = JasDBStorageException.class)
@@ -150,10 +159,6 @@ public class DBInstanceFactoryImplTest {
     }
 
     private List<String> getInstanceIds(List<DBInstance> dbInstances) {
-        List<String> instanceIds = new ArrayList<>();
-        for(DBInstance dbInstance : dbInstances) {
-            instanceIds.add(dbInstance.getInstanceId());
-        }
-        return instanceIds;
+        return dbInstances.stream().map(Instance::getInstanceId).collect(Collectors.toList());
     }
 }

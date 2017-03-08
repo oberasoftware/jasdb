@@ -7,9 +7,9 @@
  */
 package com.obera.jasdb.rest;
 
-import nl.renarj.jasdb.core.SimpleKernel;
-import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.engine.EntityQueryTest;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import nl.renarj.jasdb.core.SimpleKernel;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 

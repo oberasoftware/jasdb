@@ -1,7 +1,7 @@
 package com.obera.jasdb.rest;
 
-import nl.renarj.jasdb.core.SimpleKernel;
 import com.oberasoftware.jasdb.engine.DBSessionTest;
+import nl.renarj.jasdb.core.SimpleKernel;
 
 /**
  * @author Renze de Vries

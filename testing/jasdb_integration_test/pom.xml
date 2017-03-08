@@ -15,5 +15,9 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_testframework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb-service</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -1,14 +1,14 @@
 package com.obera.jasdb.rest;
 
 import com.obera.service.acl.BasicCredentials;
+import com.oberasoftware.jasdb.engine.EntityQueryTest;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.core.SimpleKernel;
-import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
-import com.oberasoftware.jasdb.engine.EntityQueryTest;
 
 /**
  * @author Renze de Vries

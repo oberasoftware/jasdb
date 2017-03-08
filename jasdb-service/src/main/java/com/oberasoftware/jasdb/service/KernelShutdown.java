@@ -18,5 +18,6 @@ public class KernelShutdown implements Runnable, KernelShutdownMBean {
     @Override
     public void run() {
         LOG.info("Running kernel shutdown");
+        JasDBMain.shutdown();
     }
 }

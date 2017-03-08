@@ -1,5 +1,7 @@
 package nl.renarj.jasdb.rest.client;
 
+import com.oberasoftware.jasdb.engine.query.operators.AndBlock;
+import com.oberasoftware.jasdb.engine.query.operators.OrBlock;
 import nl.renarj.jasdb.api.query.Order;
 import nl.renarj.jasdb.api.query.SortParameter;
 import nl.renarj.jasdb.index.keys.impl.LongKey;
@@ -7,8 +9,6 @@ import nl.renarj.jasdb.index.keys.impl.StringKey;
 import nl.renarj.jasdb.index.search.EqualsCondition;
 import nl.renarj.jasdb.index.search.RangeCondition;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
-import nl.renarj.jasdb.service.query.operators.AndBlock;
-import nl.renarj.jasdb.service.query.operators.OrBlock;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -25,7 +25,11 @@ public class PathParser implements Iterable<InputElement>, Iterator<InputElement
 	private int currentIndex = 0;
 	
 	public PathParser(String path) throws SyntaxException {
-		this.path = path;
+	    if(path.startsWith("/")) {
+	        this.path = path.substring(1);
+        } else {
+            this.path = path;
+        }
 		pathElements = new LinkedList<>();
 		parse();
 	}

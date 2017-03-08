@@ -27,12 +27,8 @@ import java.util.List;
 public class UserModelLoader extends AbstractModelLoader {
     private static final Logger LOG = LoggerFactory.getLogger(UserModelLoader.class);
 
-    private final UserManager userManager;
-
     @Autowired(required = false)
-    public UserModelLoader(UserManager userManager) {
-        this.userManager = userManager;
-    }
+    private UserManager userManager;
 
     @Override
     public String[] getModelNames() {

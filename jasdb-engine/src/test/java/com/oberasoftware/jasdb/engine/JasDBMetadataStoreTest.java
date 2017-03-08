@@ -29,19 +29,22 @@ import static org.junit.Assert.assertTrue;
  * @author Renze de Vries
  */
 public class JasDBMetadataStoreTest {
+    public static final String TEST_INSTANCE_1 = "testInstance1";
+    public static final String TEST_INSTANCE_2 = "testInstance2";
+    public static final String DEFAULT = "default";
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    private File storeLocation;
+    private String storeLocation;
     private JasDBMetadataStore metadataStore;
 
     @Before
     public void before() throws IOException, JasDBStorageException {
-        storeLocation = temporaryFolder.newFolder();
-        System.setProperty("JASDB_HOME", storeLocation.toString());
+        storeLocation = temporaryFolder.newFolder().toString();
+        System.setProperty("JASDB_HOME", storeLocation);
         metadataStore = new JasDBMetadataStore();
     }
 
@@ -52,21 +55,21 @@ public class JasDBMetadataStoreTest {
 
     @Test
     public void testCloseOpenMetadataStore() throws JasDBStorageException {
-        metadataStore.addInstance("testInstance1");
-        metadataStore.addBag(new BagMeta("testInstance1", "bag1", new ArrayList<>()));
-        metadataStore.addBag(new BagMeta("testInstance1", "bag2", new ArrayList<>()));
-        metadataStore.addBag(new BagMeta("default", "bag3", new ArrayList<>()));
+        metadataStore.addInstance(TEST_INSTANCE_1);
+        metadataStore.addBag(new BagMeta(TEST_INSTANCE_1, "bag1", new ArrayList<>()));
+        metadataStore.addBag(new BagMeta(TEST_INSTANCE_1, "bag2", new ArrayList<>()));
+        metadataStore.addBag(new BagMeta(DEFAULT, "bag3", new ArrayList<>()));
 
         metadataStore.closeStore();
         metadataStore = new JasDBMetadataStore();
 
         assertThat(metadataStore.getInstances().size(), is(2));
-        assertThat(getInstanceIds(metadataStore.getInstances()), hasItems("default", "testInstance1"));
+        assertThat(getInstanceIds(metadataStore.getInstances()), hasItems(DEFAULT, TEST_INSTANCE_1));
 
-        assertThat(metadataStore.getBags("default").size(), is(1));
-        assertThat(getBagNames(metadataStore.getBags("default")), hasItems("bag3"));
-        assertThat(metadataStore.getBags("testInstance1").size(), is(2));
-        assertThat(getBagNames(metadataStore.getBags("testInstance1")), hasItems("bag1", "bag2"));
+        assertThat(metadataStore.getBags(DEFAULT).size(), is(1));
+        assertThat(getBagNames(metadataStore.getBags(DEFAULT)), hasItems("bag3"));
+        assertThat(metadataStore.getBags(TEST_INSTANCE_1).size(), is(2));
+        assertThat(getBagNames(metadataStore.getBags(TEST_INSTANCE_1)), hasItems("bag1", "bag2"));
     }
 
     @Test
@@ -100,53 +103,54 @@ public class JasDBMetadataStoreTest {
 
     @Test
     public void testGetInstances() throws JasDBStorageException, IOException {
-        metadataStore.addInstance("testInstance1");
-        metadataStore.addInstance("testInstance2");
+        metadataStore.addInstance(TEST_INSTANCE_1);
+        metadataStore.addInstance(TEST_INSTANCE_2);
 
         List<Instance> instances = metadataStore.getInstances();
         assertThat(instances.size(), is(3));
 
         List<String> instanceIds = getInstanceIds(instances);
-        assertThat(instanceIds, hasItems("testInstance1", "testInstance2", "default"));
+        assertThat(instanceIds, hasItems(TEST_INSTANCE_1, TEST_INSTANCE_2, DEFAULT));
     }
 
     @Test
     public void testGetInstance() throws JasDBStorageException {
-        metadataStore.addInstance("testInstance1");
-        metadataStore.addInstance("testInstance2");
+        metadataStore.addInstance(TEST_INSTANCE_1);
+        metadataStore.addInstance(TEST_INSTANCE_2);
 
-        assertThat(metadataStore.getInstance("testInstance1").getInstanceId(), is("testInstance1"));
-        assertThat(metadataStore.getInstance("testInstance2").getInstanceId(), is("testInstance2"));
-        assertThat(metadataStore.getInstance("default").getInstanceId(), is("default"));
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_1).getInstanceId(), is(TEST_INSTANCE_1));
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_2).getInstanceId(), is(TEST_INSTANCE_2));
+        assertThat(metadataStore.getInstance(DEFAULT).getInstanceId(), is(DEFAULT));
 
-        assertThat(metadataStore.getInstance("testInstance1").getPath(), is("/some/path1"));
-        assertThat(metadataStore.getInstance("testInstance2").getPath(), is("/some/path2"));
-        assertThat(metadataStore.getInstance("default").getPath(), is(new File(storeLocation, ".jasdb").toString()));
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_1).getPath(), is(getExpectedPath(TEST_INSTANCE_1)));
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_2).getPath(), is(getExpectedPath(TEST_INSTANCE_2)));
+        assertThat(metadataStore.getInstance(DEFAULT).getPath(), is(new File(storeLocation, ".jasdb").toString()));
     }
 
     @Test
     public void testAddInstance() throws JasDBStorageException {
-        metadataStore.addInstance("testInstance1");
-        assertThat(metadataStore.getInstance("testInstance1").getInstanceId(), is("testInstance1"));
-        assertThat(metadataStore.getInstance("testInstance1").getPath(), is("/some/path1"));
+        metadataStore.addInstance(TEST_INSTANCE_1);
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_1).getInstanceId(), is(TEST_INSTANCE_1));
+
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_1).getPath(), is(getExpectedPath(TEST_INSTANCE_1)));
     }
 
     @Test(expected = JasDBStorageException.class)
     public void testAddExistingInstance() throws JasDBStorageException {
-        metadataStore.addInstance("testInstance1");
-        metadataStore.addInstance("testInstance1");
+        metadataStore.addInstance(TEST_INSTANCE_1);
+        metadataStore.addInstance(TEST_INSTANCE_1);
     }
 
     @Test
     public void testRemoveInstance() throws JasDBStorageException {
-        metadataStore.addInstance("testInstance1");
-        assertThat(metadataStore.getInstance("testInstance1").getInstanceId(), is("testInstance1"));
-        assertThat(metadataStore.getInstance("testInstance1").getPath(), is("/some/path1"));
+        metadataStore.addInstance(TEST_INSTANCE_1);
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_1).getInstanceId(), is(TEST_INSTANCE_1));
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_1).getPath(), is(getExpectedPath(TEST_INSTANCE_1)));
         assertThat(metadataStore.getInstances().size(), is(2));
 
-        metadataStore.removeInstance("testInstance1");
+        metadataStore.removeInstance(TEST_INSTANCE_1);
         assertThat(metadataStore.getInstances().size(), is(1));
-        assertThat(metadataStore.getInstance("testInstance1"), nullValue());
+        assertThat(metadataStore.getInstance(TEST_INSTANCE_1), nullValue());
     }
 
     @Test
@@ -159,7 +163,7 @@ public class JasDBMetadataStoreTest {
     @Test
     public void testCannotRemoveDefault() throws JasDBStorageException {
         expectedException.expect(JasDBStorageException.class);
-        metadataStore.removeInstance("default");
+        metadataStore.removeInstance(DEFAULT);
     }
 
     @Test
@@ -300,5 +304,9 @@ public class JasDBMetadataStoreTest {
             instanceIds.add(instance.getInstanceId());
         }
         return instanceIds;
+    }
+
+    private String getExpectedPath(String instanceId) {
+        return storeLocation + "/.jasdb/" + instanceId;
     }
 }

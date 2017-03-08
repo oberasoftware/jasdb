@@ -27,12 +27,8 @@ public class OAuthTokenEndpoint {
     private static final String GRANT_INVALID = "{\"grant\":\"invalid\",\"message\":\"%s\"}";
     private static final String GRANT_VALID = "{\"grant\":\"valid\",\"access_token\":\"%s\",\"sessionid\":\"%s\",\"token_type\":\"%s\",\"expires_in\":%d}";
 
-    private final SessionManager sessionManager;
-
     @Autowired(required = false)
-    public OAuthTokenEndpoint(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
-    }
+    private SessionManager sessionManager;
 
     @RequestMapping(method = RequestMethod.POST, value = "/token", produces = "application/json", consumes = "application/json")
     public @ResponseBody

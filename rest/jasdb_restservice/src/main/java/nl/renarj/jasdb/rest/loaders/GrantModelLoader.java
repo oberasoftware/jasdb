@@ -27,7 +27,7 @@ import java.util.List;
 @Component
 public class GrantModelLoader extends AbstractModelLoader {
 
-    @Autowired
+    @Autowired(required = false)
     private UserManager userManager;
 
     @Override

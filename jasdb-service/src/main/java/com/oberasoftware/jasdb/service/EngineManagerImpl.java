@@ -67,7 +67,7 @@ public class EngineManagerImpl implements EngineManager {
             throw new ConfigurationException(UNABLE_TO_REGISTER_JMX_SHUTDOWN_HOOK, e);
         }
 
-        applicationContext.registerShutdownHook();
+//        applicationContext.registerShutdownHook();
 
         remoteServiceManager.startRemoteServices();
 

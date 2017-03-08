@@ -3,12 +3,17 @@ package com.oberasoftware.jasdb.service;
 import com.oberasoftware.jasdb.engine.EngineConfiguation;
 import nl.renarj.jasdb.api.engine.EngineManager;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
+import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.core.locator.NodeInformation;
 import nl.renarj.jasdb.rest.RestConfiguration;
+import nl.renarj.jasdb.rest.RestConfigurationLoader;
 import org.slf4j.Logger;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
@@ -20,19 +25,21 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author renarj
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 @ComponentScan
 @Import({RestConfiguration.class, EngineConfiguation.class})
 public class JasDBMain {
     private static final Logger LOG = getLogger(JasDBMain.class);
 
-
+    private static CountDownLatch LATCH;
+    private static ConfigurableApplicationContext CONTEXT;
 
     public static void main(String[] args) throws JasDBException {
         if(args.length > 0) {
@@ -53,29 +60,55 @@ public class JasDBMain {
     public static void start(String[] args) throws JasDBException {
         LOG.info("Starting JaSDB");
 
-        ApplicationContext context = SpringApplication.run(JasDBMain.class, args);
-        EngineManager engineManager = context.getBean(EngineManager.class);
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(JasDBMain.class)
+                .bannerMode(Banner.Mode.OFF).web(RestConfigurationLoader.isEnabled());
+        CONTEXT = builder.run(args);
+        LATCH = new CountDownLatch(1);
+        registerShutdownHooks();
+
+        EngineManager engineManager = CONTEXT.getBean(EngineManager.class);
         NodeInformation nodeInformation = engineManager.startEngine();
         LOG.info("JasDB started: {}", nodeInformation);
     }
 
-    public static void shutdown() {
+    public static void waitForShutdown() {
         try {
-            LOG.info("Sending shutdown signal");
-            JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi");
-            JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
-            MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+            LATCH.await();
+        } catch(InterruptedException e) {
+            LOG.info("Interrupted whilst waiting for kernel shutdown");
+        }
+    }
 
-            ObjectName mbeanName = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
-            KernelShutdownMBean kernelShutdownBean = JMX.newMBeanProxy(mbsc, mbeanName, KernelShutdownMBean.class, true);
-            if(kernelShutdownBean != null) {
-                LOG.info("JasDB KernelShutdown hook is aquired, sending shutdown signal");
-                kernelShutdownBean.doKernelShutdown();
-            } else {
-                LOG.info("JasDB kernel is not running");
+    private static void registerShutdownHooks() throws JasDBStorageException {
+        Thread shutdownThread = new Thread(new KernelShutdown());
+        Runtime.getRuntime().addShutdownHook(shutdownThread);
+    }
+
+    public static void shutdown() {
+        if(CONTEXT != null) {
+            LOG.info("Shutting down in process JasDB instance");
+            CONTEXT.close();
+            CONTEXT = null;
+
+            LATCH.countDown();
+        } else {
+            try {
+                LOG.info("Sending shutdown signal");
+                JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi");
+                JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+                MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+
+                ObjectName mbeanName = new ObjectName("nl.renarj.jasdb.core:type=KernelShutdown");
+                KernelShutdownMBean kernelShutdownBean = JMX.newMBeanProxy(mbsc, mbeanName, KernelShutdownMBean.class, true);
+                if (kernelShutdownBean != null) {
+                    LOG.info("JasDB KernelShutdown hook is aquired, sending shutdown signal");
+                    kernelShutdownBean.doKernelShutdown();
+                } else {
+                    LOG.info("JasDB kernel is not running");
+                }
+            } catch (IOException | MalformedObjectNameException e) {
+                LOG.error("Unable to send shutdown signal, could not connect to JasDB instance: " + e.getMessage());
             }
-        } catch (IOException | MalformedObjectNameException e) {
-            LOG.error("Unable to send shutdown signal: " + e.getMessage());
         }
     }
 

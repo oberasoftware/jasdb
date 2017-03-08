@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class JasDBMetadataStore implements MetadataStore {
 
     private boolean lastShutdownClean = true;
 
-    public static String PID = ManagementFactory.getRuntimeMXBean().getName();
+    public static String PID = "1";//ManagementFactory.getRuntimeMXBean().getName();
 
     private Map<String, MetaWrapper<Instance>> instanceMetaMap = new ConcurrentHashMap<>();
     private Map<String, MetaWrapper<Bag>> bagMetaMap = new ConcurrentHashMap<>();

@@ -7,10 +7,10 @@
  */
 package com.obera.jasdb.rest;
 
+import com.oberasoftware.jasdb.engine.EntityBagTest;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.core.SimpleKernel;
-import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
-import com.oberasoftware.jasdb.engine.EntityBagTest;
 
 /**
  * User: renarj

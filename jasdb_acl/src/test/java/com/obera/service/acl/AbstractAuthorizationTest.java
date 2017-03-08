@@ -43,7 +43,7 @@ public abstract class AbstractAuthorizationTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Rule
-    public static TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private StorageService wrappedService;
 
@@ -68,13 +68,11 @@ public abstract class AbstractAuthorizationTest {
 
     protected abstract AuthorizationOperation getOperation();
 
-    @BeforeClass
-    public static void beforeSetup() throws IOException {
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
-    }
-
     @Before
-    public void before() throws JasDBStorageException {
+    public void before() throws JasDBStorageException, IOException {
+        System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
+
+
         wrappedService = storageServiceFactory.getStorageService(null, null);
         when(wrappedService.getInstanceId()).thenReturn(TEST_INSTANCE);
         when(wrappedService.getBagName()).thenReturn(TEST_BAG);

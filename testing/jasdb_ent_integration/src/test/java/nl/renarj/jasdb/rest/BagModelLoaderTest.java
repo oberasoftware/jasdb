@@ -1,5 +1,7 @@
 package nl.renarj.jasdb.rest;
 
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
+import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
@@ -7,21 +9,17 @@ import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.IndexDefinition;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.locator.NodeInformation;
-import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.remote.BagConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 import nl.renarj.jasdb.remote.model.RemoteBag;
-import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Renze de Vries

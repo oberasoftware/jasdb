@@ -11,7 +11,8 @@ import nl.renarj.jasdb.core.locator.ServiceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -22,64 +23,65 @@ import java.util.Map;
 public class RestService implements RemoteService {
     private static final Logger LOG = LoggerFactory.getLogger(RestService.class);
 
-    private static final String REST_SSL_PORT_PATH = "/jasdb/Services/Remote[@service='rest']/Property[@Name='sslPort']";
-    private static final String REST_SSL_KEYSTORE_PATH = "/jasdb/Services/Remote[@service='rest']/Property[@Name='sslKeystore']";
-    private static final String REST_SSL_KEYSTORE_PASS_PATH = "/jasdb/Services/Remote[@service='rest']/Property[@Name='sslKeystorePassword']";
-    private static final String PROPERTY_VALUE = "Value";
     private static final String REST_CONFIG_PATH = "/jasdb/Services/Remote[@service='rest']";
-    private static final String REST_PORT_CONFIG = "port";
     private static final String REST_OAUTH_ENABLED = "oauth";
     private static final boolean DEFAULT_OAUTH = false;
-
     private static final int DEFAULT_PORT = 7050;
 
     private ServiceInformation serviceInformation;
 
-//	private int portNr;
-//    private SSLDetails sslDetails;
-    private boolean oauthEnabled;
+    private boolean oauthEnabled = false;
 
-    @Value("${server.port}")
     private int portNr;
 
-//	private Server server;
-
-//    private boolean restEnabled = false;
-
-    @Autowired
-    private ConfigurationLoader configurationLoader;
+    private final ConfigurationLoader configurationLoader;
     
-    public RestService() throws ConfigurationException {
-	}
+    @Autowired
+    public RestService(ConfigurationLoader configurationLoader) throws ConfigurationException {
+        this.configurationLoader = configurationLoader;
+    }
 
     @PostConstruct
     public void init() throws ConfigurationException {
         Configuration configuration = configurationLoader.getConfiguration();
 
         Configuration restConfiguration = configuration.getChildConfiguration(REST_CONFIG_PATH);
-//        restEnabled = restConfiguration != null && restConfiguration.getAttribute("Enabled", false);
-//        if(restEnabled) {
-            LOG.info("Rest service is enabled, configuring");
-//            portNr = restConfiguration.getAttribute(REST_PORT_CONFIG, DEFAULT_PORT);
+        LOG.info("Rest service is enabled, configuring");
+        if(restConfiguration != null) {
             oauthEnabled = restConfiguration.getAttribute(REST_OAUTH_ENABLED, DEFAULT_OAUTH);
+        }
+        portNr = getRestPort(configurationLoader);
 
-            loadNodeData();
-//            sslDetails = loadSSLDetails(configuration);
+        loadNodeData();
     }
 
-//    private SSLDetails loadSSLDetails(Configuration configuration) throws ConfigurationException {
-//        Configuration sslPortConfiguration = configuration.getChildConfiguration(REST_SSL_PORT_PATH);
-//        Configuration sslKeystoreConfig = configuration.getChildConfiguration(REST_SSL_KEYSTORE_PATH);
-//        Configuration sslKeystorePasswordConfig = configuration.getChildConfiguration(REST_SSL_KEYSTORE_PASS_PATH);
-//
-//        if(sslPortConfiguration != null && sslKeystoreConfig != null && sslKeystorePasswordConfig != null) {
-//            return new SSLDetails(sslPortConfiguration.getAttribute(PROPERTY_VALUE, 7051),
-//                    sslKeystoreConfig.getAttribute(PROPERTY_VALUE),
-//                    sslKeystorePasswordConfig.getAttribute(PROPERTY_VALUE));
-//        }
-//        return null;
-//    }
-//
+    @Bean
+    @Autowired
+    public EmbeddedServletContainerCustomizer container(ConfigurationLoader configurationLoader) {
+        return (container -> {
+            int port = getRestPort(configurationLoader);
+            LOG.info("Setting rest port to: {}", port);
+            container.setPort(port);
+        });
+    }
+
+    private int getRestPort(ConfigurationLoader configurationLoader) {
+        try {
+            LOG.info("Determining port");
+            Configuration dbConfig = configurationLoader.getConfiguration();
+            Configuration restConfig = dbConfig.getChildConfiguration("/jasdb/Services/Remote[@service='rest']");
+
+            if(restConfig != null) {
+                return restConfig.getAttribute("port", DEFAULT_PORT);
+            } else {
+                return DEFAULT_PORT;
+            }
+        } catch(ConfigurationException e) {
+            LOG.info("Could not load configuration assuming default port: {}", DEFAULT_PORT);
+            return DEFAULT_PORT;
+        }
+    }
+
     private void loadNodeData() throws ConfigurationException {
         try {
             String address = GridLocatorUtil.getPublicAddress().getHostAddress();
@@ -108,68 +110,9 @@ public class RestService implements RemoteService {
 
     @Override
     public void startService() throws JasDBException {
-//        if(restEnabled) {
-//            server = new Server(portNr);
-//
-//            if(sslDetails != null) {
-//                String keystorePath = FileUtils.resolveResourcePath(sslDetails.getKeystore());
-//                LOG.info("Using keystore path: {}", keystorePath);
-//                SslContextFactory sslContextFactory = new SslContextFactory(keystorePath);
-//                sslContextFactory.setKeyStorePassword(sslDetails.getKeystorePass());
-//
-//                HttpConfiguration http_config = new HttpConfiguration();
-//                http_config.setSecureScheme("https");
-//                http_config.setSecurePort(sslDetails.getSslPort());
-//                http_config.setOutputBufferSize(32768);
-//
-//                HttpConfiguration https_config = new HttpConfiguration(http_config);
-//                https_config.addCustomizer(new SecureRequestCustomizer());
-//
-//                ServerConnector https = new ServerConnector(server,
-//                        new SslConnectionFactory(sslContextFactory,"http/1.1"),
-//                        new HttpConnectionFactory(https_config));
-//                https.setPort(sslDetails.getSslPort());
-//                https.setIdleTimeout(500000);
-//
-//                server.addConnector(https);
-//                LOG.info("Starting SSL connector: {}", sslDetails);
-//            }
-//
-//            ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-//
-//            contextHandler.setContextPath("/");
-//            server.setHandler(contextHandler);
-//
-//            if(oauthEnabled) {
-//                ServletHolder oauthTokenEndpoint = new ServletHolder(OAuthTokenEndpoint.class);
-//                contextHandler.addServlet(oauthTokenEndpoint, "/token");
-//                contextHandler.addFilter(OAuthTokenFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-//            }
-//
-//            ServletHolder holder = new ServletHolder(ServletContainer.class);
-//            holder.setInitParameter("javax.ws.rs.Application", "nl.renarj.jasdb.rest.JasdbRestApplication");
-//            contextHandler.addServlet(holder, "/*");
-//
-//            try {
-//                LOG.info("Starting Jetty Rest service on port: {}", portNr);
-//                server.start();
-//            } catch(Exception e) {
-//                LOG.error("Unable to start REST Service", e);
-//            }
-//        } else {
-//            LOG.info("Rest service is not enabled or not configured, skipping start");
-//        }
 	}
     
     @Override
     public void stopService() throws ServiceException {
-//		if(restEnabled && server != null) {
-//			LOG.info("Stopping Rest service");
-//			try {
-//				server.stop();
-//			} catch(Exception e) {
-//				LOG.error("Unable to stop service cleanly: " + e.getMessage());
-//			}
-//		}
 	}
 }

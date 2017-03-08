@@ -7,6 +7,7 @@ import nl.renarj.jasdb.api.context.RequestContext;
 import nl.renarj.jasdb.api.engine.EngineManager;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.exceptions.RestException;
+import nl.renarj.jasdb.rest.exceptions.SyntaxException;
 import nl.renarj.jasdb.rest.input.InputElement;
 import nl.renarj.jasdb.rest.input.OrderParam;
 import nl.renarj.jasdb.rest.input.OrderParameterParsing;
@@ -15,11 +16,14 @@ import nl.renarj.jasdb.rest.loaders.ModelLoaderFactory;
 import nl.renarj.jasdb.rest.loaders.PathModelLoader;
 import nl.renarj.jasdb.rest.loaders.RequestContextUtil;
 import nl.renarj.jasdb.rest.mappers.NodeInfoMapper;
+import nl.renarj.jasdb.rest.model.ErrorEntity;
 import nl.renarj.jasdb.rest.model.Node;
 import nl.renarj.jasdb.rest.model.RestEntity;
 import nl.renarj.jasdb.rest.providers.ServiceOutputHandler;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,12 +56,11 @@ public class DataWebservice {
 
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, value = "/{path:.*}")
-    public void getData(@PathVariable("path") String path,
-                                  @RequestParam(value = "begin", defaultValue = "") String begin,
+    @RequestMapping(method = RequestMethod.GET, value = "/**")
+    public void getData(@RequestParam(value = "begin", defaultValue = "") String begin,
                                   @RequestParam(value = "top", defaultValue = "") String top,
                                   @RequestParam(value = "orderBy", defaultValue = "") String orderBy, HttpServletRequest request, HttpServletResponse servletResponse) {
-
+        String path = request.getRequestURI();
         StatRecord serviceRecord = StatisticsMonitor.createRecord("service:request");
         try {
             String pathInfo = URLDecoder.decode(path, "UTF8");
@@ -103,37 +106,38 @@ public class DataWebservice {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/", produces = "application/json")
-    public Node getNodeInformation() {
+    public @ResponseBody Node getNodeInformation() {
         return NodeInfoMapper.mapTo(engineManager.getNodeInformation());
     }
 
-//    @ResponseBody
-//    @RequestMapping(method = RequestMethod.POST, value = "/{path:.*}", consumes = "application/json", produces = "application/json")
-//    public void handlePostData(@PathVariable("path") String pathInfo, HttpServletRequest request, HttpServletResponse servletResponse, String data) {
-//        LOG.debug("Path: {}", pathInfo);
-//        StatRecord writeHandleRecord = StatisticsMonitor.createRecord("ws:handlepost");
-//        try {
-//            LOG.debug("Received data: {}", data);
-//            try {
-//                InputElement lastElement = processPath(pathInfo, getRequestContext(request));
-//
-//                if(lastElement != null) {
-//                    PathModelLoader loader = modelLoaderFactory.getModelLoader(lastElement.getElementName());
-//                    RestEntity entity = loader.writeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
-//
-//                    return ServiceOutputHandler.createResponse(entity);
-//                } else {
-//                    throw new SyntaxException("No path specified for write operation: " + pathInfo);
-//                }
-//            } catch(JasDBStorageException | RestException e) {
-//                LOG.trace("Invalid write operation", e);
-//
-//                return ServiceOutputHandler.handleError("Unable to write to model: " + e.getMessage());
-//            }
-//        } finally {
-//            writeHandleRecord.stop();
-//        }
-//    }
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/**", consumes = "application/json", produces = "application/json")
+    public void handlePostData(HttpServletRequest request, HttpServletResponse servletResponse, @RequestBody String data) {
+        String pathInfo = request.getRequestURI();
+        LOG.debug("Path: {}", pathInfo);
+        StatRecord writeHandleRecord = StatisticsMonitor.createRecord("ws:handlepost");
+        try {
+            LOG.debug("Received data: {}", data);
+            try {
+                InputElement lastElement = processPath(pathInfo, getRequestContext(request));
+
+                if(lastElement != null) {
+                    PathModelLoader loader = modelLoaderFactory.getModelLoader(lastElement.getElementName());
+                    RestEntity entity = loader.writeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
+
+                    ServiceOutputHandler.createResponse(entity, servletResponse);
+                } else {
+                    throw new SyntaxException("No path specified for write operation: " + pathInfo);
+                }
+            } catch(JasDBStorageException | RestException e) {
+                LOG.trace("Invalid write operation", e);
+
+                ServiceOutputHandler.handleError("Unable to write to model: " + e.getMessage(), servletResponse);
+            }
+        } finally {
+            writeHandleRecord.stop();
+        }
+    }
 
     private InputElement processPath(String pathInfo, RequestContext requestContext) throws JasDBStorageException, RestException {
         PathParser parser = new PathParser(pathInfo);
@@ -150,52 +154,52 @@ public class DataWebservice {
         return lastElement;
     }
 
-//    @RequestMapping(method = RequestMethod.DELETE, value = "/{path:.*}", consumes = "application/json", produces = "application/json")
-//    public ResponseEntity<?> handleRemoveData(@PathVariable("path") String path, HttpServletRequest request, String data) {
-//        LOG.debug("Removing for path: {}", path);
-//        StatRecord removeHandleRecord = StatisticsMonitor.createRecord("ws:handleRemove");
-//        try {
-//            try {
-//                InputElement lastElement = processPath(path, getRequestContext(request));
-//                if(lastElement != null) {
-//                    PathModelLoader loader = modelLoaderFactory.getModelLoader(lastElement.getElementName());
-//                    loader.removeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
-//
-//                    return new ResponseEntity<Object>()
-//
-//                    return Response.status(Response.Status.NO_CONTENT).type(ServiceOutputHandler.getResponseHandler().getMediaType()).build();
-//                } else {
-//                    throw new SyntaxException("No path specified for remove operation: " + path);
-//                }
-//            } catch(RestException | JasDBStorageException e) {
-//                return ServiceOutputHandler.handleError("Unable to remove in model: " + e.getMessage());
-//            }
-//        } finally {
-//            removeHandleRecord.stop();
-//        }
-//    }
-//
-//    @RequestMapping(method = RequestMethod.PUT, value = "/{path:.*}", consumes = "application/json", produces = "application/json")
-//    public ResponseEntity<?> handleUpdateData(@PathVariable("path") String pathInfo, HttpServletRequest request, String data) {
-//        StatRecord removeHandleRecord = StatisticsMonitor.createRecord("ws:handleUpdate");
-//        try {
-//            try {
-//                InputElement lastElement = processPath(pathInfo, getRequestContext(request));
-//                if(lastElement != null) {
-//                    PathModelLoader loader = modelLoaderFactory.getModelLoader(lastElement.getElementName());
-//                    RestEntity entity = loader.updateEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
-//
-//                    return ServiceOutputHandler.createResponse(entity);
-//                } else {
-//                    throw new SyntaxException("No path specified for remove operation: " + pathInfo);
-//                }
-//            } catch(JasDBStorageException | RestException e) {
-//                return ServiceOutputHandler.handleError("Unable to remove in model: " + e.getMessage());
-//            }
-//        } finally {
-//            removeHandleRecord.stop();
-//        }
-//    }
+    @RequestMapping(method = RequestMethod.DELETE, value = "/**", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> handleRemoveData(HttpServletRequest request, @RequestBody String data) {
+        String path = request.getRequestURI();
+        LOG.debug("Removing for path: {}", path);
+        StatRecord removeHandleRecord = StatisticsMonitor.createRecord("ws:handleRemove");
+        try {
+            try {
+                InputElement lastElement = processPath(path, getRequestContext(request));
+                if(lastElement != null) {
+                    PathModelLoader loader = modelLoaderFactory.getModelLoader(lastElement.getElementName());
+                    loader.removeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
+
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                } else {
+                    throw new SyntaxException("No path specified for remove operation: " + path);
+                }
+            } catch(RestException | JasDBStorageException e) {
+                return new ResponseEntity<Object>(new ErrorEntity(400, "Unable to remove entity"), HttpStatus.BAD_REQUEST);
+            }
+        } finally {
+            removeHandleRecord.stop();
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/**", consumes = "application/json", produces = "application/json")
+    public void handleUpdateData(HttpServletRequest request, HttpServletResponse response, @RequestBody String data) {
+        String pathInfo = request.getRequestURI();
+        StatRecord removeHandleRecord = StatisticsMonitor.createRecord("ws:handleUpdate");
+        try {
+            try {
+                InputElement lastElement = processPath(pathInfo, getRequestContext(request));
+                if(lastElement != null) {
+                    PathModelLoader loader = modelLoaderFactory.getModelLoader(lastElement.getElementName());
+                    RestEntity entity = loader.updateEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
+
+                    ServiceOutputHandler.createResponse(entity, response);
+                } else {
+                    throw new SyntaxException("No path specified for remove operation: " + pathInfo);
+                }
+            } catch(JasDBStorageException | RestException e) {
+                ServiceOutputHandler.handleError("Unable to update entity: " + e.getMessage(), response);
+            }
+        } finally {
+            removeHandleRecord.stop();
+        }
+    }
 
     private RequestContext getRequestContext(HttpServletRequest request) {
         boolean isClientRequest = RequestContextUtil.isClientRequest(request.getHeader("requestcontext"));

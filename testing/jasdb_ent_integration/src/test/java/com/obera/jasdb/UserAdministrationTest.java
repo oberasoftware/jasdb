@@ -1,6 +1,7 @@
 package com.obera.jasdb;
 
 import com.obera.service.acl.BasicCredentials;
+import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
@@ -11,7 +12,6 @@ import nl.renarj.jasdb.api.acl.UserManager;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
-import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
