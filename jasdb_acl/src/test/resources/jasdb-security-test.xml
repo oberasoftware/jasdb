@@ -7,17 +7,16 @@
 
     <aop:aspectj-autoproxy/>
 
-    <context:component-scan base-package="com.obera.service.acl,nl.renarj.jasdb">
+    <context:component-scan base-package="com.oberasoftware.jasdb.acl,com.oberasoftware.jasdb.engine">
         <context:exclude-filter type="assignable" expression="com.oberasoftware.jasdb.engine.LocalStorageServiceFactoryImpl"/>
         <context:exclude-filter type="assignable" expression="com.oberasoftware.jasdb.engine.LocalStorageServiceImpl"/>
     </context:component-scan>
 
-    <bean id="storageServiceFactory" class="com.obera.service.acl.MockLocalStorageFactory"/>
+    <bean id="storageServiceFactory" class="com.oberasoftware.jasdb.acl.MockLocalStorageFactory"/>
 
-
-    <bean id="dao" class="org.mockito.Mockito" factory-method="mock">
+    <bean id="mockStorageService" class="org.mockito.Mockito" factory-method="mock">
         <constructor-arg value="com.oberasoftware.jasdb.engine.StorageService" />
     </bean>
 
-    <bean id="securityAspect" class="com.obera.service.acl.AuthorizationServiceWrapper"/>
+    <bean id="securityAspect" class="com.oberasoftware.jasdb.acl.AuthorizationServiceWrapper"/>
 </beans>

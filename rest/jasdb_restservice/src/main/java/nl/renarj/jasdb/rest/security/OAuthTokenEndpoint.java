@@ -1,6 +1,6 @@
 package nl.renarj.jasdb.rest.security;
 
-import com.obera.service.acl.BasicCredentials;
+import com.oberasoftware.jasdb.acl.BasicCredentials;
 import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;

@@ -15,7 +15,7 @@ public interface DBSessionFactory {
      * @return The DB Session
      * @throws JasDBStorageException If unable to create the session
      */
-    DBSession createSession() throws JasDBStorageException;
+    DBSession createSession() throws JasDBException;
 
     /**
      * Creates a DB Session with given credentials
@@ -23,7 +23,7 @@ public interface DBSessionFactory {
      * @return The DB Session
      * @throws JasDBStorageException If unable to create the session
      */
-    DBSession createSession(Credentials credentials) throws JasDBStorageException;
+    DBSession createSession(Credentials credentials) throws JasDBException;
 
     /**
      * Creates a session for the given instance
@@ -31,7 +31,7 @@ public interface DBSessionFactory {
      * @return The session for that instance
      * @throws JasDBStorageException If unable to create the session
      */
-    DBSession createSession(String instance) throws JasDBStorageException;
+    DBSession createSession(String instance) throws JasDBException;
 
     /**
      * Creates a session for the given instance and credentials
@@ -40,7 +40,7 @@ public interface DBSessionFactory {
      * @return The DB Session
      * @throws JasDBStorageException If unable to create the session
      */
-    DBSession createSession(String instance, Credentials credentials) throws JasDBStorageException;
+    DBSession createSession(String instance, Credentials credentials) throws JasDBException;
 
     void shutdown() throws JasDBException;
 }

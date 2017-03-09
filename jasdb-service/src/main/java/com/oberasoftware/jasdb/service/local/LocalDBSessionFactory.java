@@ -6,7 +6,6 @@ import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
 import nl.renarj.jasdb.api.context.Credentials;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 
 /**
  * @author Renze de Vries
@@ -15,7 +14,7 @@ public class LocalDBSessionFactory implements DBSessionFactory {
     private String instance;
 
     @Override
-    public DBSession createSession() throws JasDBStorageException {
+    public DBSession createSession() throws JasDBException {
         if(StringUtils.stringNotEmpty(instance)) {
             return new LocalDBSession(instance);
         } else {
@@ -24,17 +23,17 @@ public class LocalDBSessionFactory implements DBSessionFactory {
     }
 
     @Override
-    public DBSession createSession(Credentials credentials) throws JasDBStorageException {
+    public DBSession createSession(Credentials credentials) throws JasDBException {
         return new LocalDBSession(credentials);
     }
 
     @Override
-    public DBSession createSession(String instance) throws JasDBStorageException {
+    public DBSession createSession(String instance) throws JasDBException {
         return new LocalDBSession(instance);
     }
 
     @Override
-    public DBSession createSession(String instance, Credentials credentials) throws JasDBStorageException {
+    public DBSession createSession(String instance, Credentials credentials) throws JasDBException {
         if(credentials != null) {
             return new LocalDBSession(instance, credentials);
         } else {

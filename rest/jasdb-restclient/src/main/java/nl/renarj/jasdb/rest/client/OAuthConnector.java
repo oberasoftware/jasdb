@@ -1,7 +1,7 @@
 package nl.renarj.jasdb.rest.client;
 
 import com.google.common.collect.Maps;
-import com.obera.service.acl.UserSessionImpl;
+import com.oberasoftware.jasdb.acl.UserSessionImpl;
 import nl.renarj.jasdb.api.acl.UserSession;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
 import nl.renarj.jasdb.core.locator.NodeInformation;

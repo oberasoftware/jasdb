@@ -38,6 +38,7 @@ public class IndexScanAndRecovery implements Runnable {
                 IndexScanReport report = index.scan(ScanIntent.DETECT_INCOMPLETE, new IndexItemIterator(recordIterator));
                 if(report.getState() == IndexState.INVALID) {
                     LOG.info("Index: {} state is invalid, completeness: {}, starting rebuild", index, report.getCompleteness());
+                    recordIterator.reset();
                     index.rebuildIndex(new IndexItemIterator(recordIterator));
                     LOG.info("Index: {} rebuild completed", index);
                 } else {

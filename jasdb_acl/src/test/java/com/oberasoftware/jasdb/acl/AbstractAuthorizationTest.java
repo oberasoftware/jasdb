@@ -1,4 +1,4 @@
-package com.obera.service.acl;
+package com.oberasoftware.jasdb.acl;
 
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.engine.StorageService;
@@ -37,13 +37,14 @@ public abstract class AbstractAuthorizationTest {
     private static final String TEST_INSTANCE = "INSTANCE1";
     private static final String TEST_BAG = "BAG1";
     private static final String LOCALHOST = "localhost";
-    public static final String TEST_USER = "testuser";
+    private static final String TEST_USER = "testuser";
+    private static final String TEST_PASSWORD = "1234";
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @ClassRule
+    public static TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private StorageService wrappedService;
 
@@ -61,18 +62,20 @@ public abstract class AbstractAuthorizationTest {
     private AccessMode grantedMode;
     private AccessMode notGrantedMode;
 
-    protected AbstractAuthorizationTest(AccessMode notGrantedMode, AccessMode grantedMode) {
+    AbstractAuthorizationTest(AccessMode notGrantedMode, AccessMode grantedMode) {
         this.grantedMode = grantedMode;
         this.notGrantedMode = notGrantedMode;
     }
 
     protected abstract AuthorizationOperation getOperation();
 
+    @BeforeClass
+    public static void beforeClass() throws IOException {
+        System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
+    }
+
     @Before
     public void before() throws JasDBStorageException, IOException {
-        System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
-
-
         wrappedService = storageServiceFactory.getStorageService(null, null);
         when(wrappedService.getInstanceId()).thenReturn(TEST_INSTANCE);
         when(wrappedService.getBagName()).thenReturn(TEST_BAG);
@@ -82,8 +85,7 @@ public abstract class AbstractAuthorizationTest {
 
     @After
     public void after() throws JasDBException {
-//        SimpleKernel.shutdown();
-//        SimpleBaseTest.cleanData();
+        temporaryFolder.delete();
     }
 
     @Test
@@ -96,9 +98,9 @@ public abstract class AbstractAuthorizationTest {
         expectedException.expect(JasDBSecurityException.class);
         expectedException.expectMessage("notGranted has insufficient privileges");
 
-        createUser("notGranted", "1234");
+        createUser("notGranted");
 
-        getOperation().doOperation(wrappedService, "notGranted", "1234");
+        getOperation().doOperation(wrappedService, "notGranted", TEST_PASSWORD);
     }
 
     @Test
@@ -106,34 +108,34 @@ public abstract class AbstractAuthorizationTest {
         expectedException.expect(JasDBSecurityException.class);
         expectedException.expectMessage("insufficient privileges");
 
-        createUser(TEST_USER, "1234");
+        createUser(TEST_USER);
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE + "/bags/" + TEST_BAG, TEST_USER, notGrantedMode);
 
-        getOperation().doOperation(wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, TEST_USER, TEST_PASSWORD);
     }
 
     @Test
     public void testOperationSufficientPermission() throws Exception {
-        createUser(TEST_USER, "1234");
+        createUser(TEST_USER);
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE + "/bags/" + TEST_BAG, TEST_USER, grantedMode);
 
-        getOperation().doOperation(wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, TEST_USER, TEST_PASSWORD);
     }
 
     @Test
     public void testOperationParentPermission() throws Exception {
-        createUser(TEST_USER, "1234");
+        createUser(TEST_USER);
         createGrant("/", TEST_USER, AccessMode.READ); //grant at least connect permissions
         createGrant("/" + TEST_INSTANCE, TEST_USER, grantedMode);
 
-        getOperation().doOperation(wrappedService, TEST_USER, "1234");
+        getOperation().doOperation(wrappedService, TEST_USER, TEST_PASSWORD);
     }
 
-    protected RequestContext createContext(String userName, String password, String host) throws JasDBStorageException {
+    RequestContext createContext(String userName, String password) throws JasDBStorageException {
         RequestContext context = new RequestContext(true, true);
-        Credentials credentials = new BasicCredentials(userName, host, password);
+        Credentials credentials = new BasicCredentials(userName, "localhost", password);
         UserSession session = sessionManager.startSession(credentials);
         context.setUserSession(session);
 
@@ -144,8 +146,8 @@ public abstract class AbstractAuthorizationTest {
         userManager.grantUser(adminSession, object, user, mode);
     }
 
-    private void createUser(String userName, String password) throws JasDBStorageException {
-        userManager.addUser(adminSession, userName, "localhost", password);
+    private void createUser(String userName) throws JasDBStorageException {
+        userManager.addUser(adminSession, userName, "localhost", TEST_PASSWORD);
     }
 
 }

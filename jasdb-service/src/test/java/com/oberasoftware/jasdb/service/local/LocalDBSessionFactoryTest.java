@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.service.local;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.JasDBMain;
 import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.exceptions.JasDBException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,14 +34,14 @@ public class LocalDBSessionFactoryTest {
     }
 
     @Test
-    public void testCreateDefaultSession() throws JasDBStorageException {
+    public void testCreateDefaultSession() throws JasDBException {
         LocalDBSessionFactory localDBSessionFactory = new LocalDBSessionFactory();
         DBSession dbSession = localDBSessionFactory.createSession();
         assertThat(dbSession.getInstanceId(), is("default"));
     }
 
     @Test
-    public void testCreateWithInstancId() throws JasDBStorageException, IOException {
+    public void testCreateWithInstancId() throws JasDBException, IOException {
         LocalDBSessionFactory localDBSessionFactory = new LocalDBSessionFactory();
         localDBSessionFactory.createSession().addInstance("testInstance");
 
@@ -50,7 +50,7 @@ public class LocalDBSessionFactoryTest {
     }
 
     @Test
-    public void testCreateInstanceIdProperty() throws JasDBStorageException, IOException {
+    public void testCreateInstanceIdProperty() throws JasDBException, IOException {
         LocalDBSessionFactory localDBSessionFactory = new LocalDBSessionFactory();
         localDBSessionFactory.createSession().addInstance("testInstance");
 

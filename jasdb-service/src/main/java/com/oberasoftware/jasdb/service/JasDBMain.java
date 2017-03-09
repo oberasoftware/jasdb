@@ -57,18 +57,25 @@ public class JasDBMain {
         start(new String[]{});
     }
 
-    public static void start(String[] args) throws JasDBException {
-        LOG.info("Starting JaSDB");
+    public static synchronized void start(String[] args) throws JasDBException {
+        if(CONTEXT == null) {
+            LOG.info("Starting JaSDB");
+            SpringApplicationBuilder builder = new SpringApplicationBuilder(JasDBMain.class)
+                    .bannerMode(Banner.Mode.OFF).web(RestConfigurationLoader.isEnabled());
+            CONTEXT = builder.run(args);
+            LATCH = new CountDownLatch(1);
+            registerShutdownHooks();
 
-        SpringApplicationBuilder builder = new SpringApplicationBuilder(JasDBMain.class)
-                .bannerMode(Banner.Mode.OFF).web(RestConfigurationLoader.isEnabled());
-        CONTEXT = builder.run(args);
-        LATCH = new CountDownLatch(1);
-        registerShutdownHooks();
+            EngineManager engineManager = CONTEXT.getBean(EngineManager.class);
+            NodeInformation nodeInformation = engineManager.startEngine();
+            LOG.info("JasDB started: {}", nodeInformation);
+        } else {
+            LOG.info("JasDB was already started");
+        }
+    }
 
-        EngineManager engineManager = CONTEXT.getBean(EngineManager.class);
-        NodeInformation nodeInformation = engineManager.startEngine();
-        LOG.info("JasDB started: {}", nodeInformation);
+    public static boolean isStarted() {
+        return CONTEXT != null;
     }
 
     public static void waitForShutdown() {

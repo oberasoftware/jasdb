@@ -46,9 +46,8 @@ import java.util.concurrent.Future;
 @Component("LocalStorageService")
 @Scope("prototype")
 public class LocalStorageServiceImpl implements StorageService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalStorageServiceImpl.class);
-    public static final String BAG_EXTENSION = ".pjs";
-    public static final String FORCE_REBUILD_COMMAND = "forceRebuild";
+    private static final Logger LOG = LoggerFactory.getLogger(LocalStorageServiceImpl.class);
+    private static final String FORCE_REBUILD_COMMAND = "forceRebuild";
 
     private ExecutorService indexRebuilder = Executors.newFixedThreadPool(INDEX_REBUILD_THREADS);
 
@@ -119,7 +118,7 @@ public class LocalStorageServiceImpl implements StorageService {
     public void flush() throws JasDBStorageException {
         resourceLockManager.exclusiveLock();
         try {
-            LOGGER.debug("Flushing bag data: {}", bagName);
+            LOG.debug("Flushing bag data: {}", bagName);
             recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).flush();
             indexManagerFactory.getIndexManager(instanceId).flush(bagName);
         } finally {
@@ -133,17 +132,17 @@ public class LocalStorageServiceImpl implements StorageService {
 
 	@Override
 	public void  openService(Configuration configuration) throws JasDBStorageException {
-        LOGGER.info("Opening storage service for bag: {}", bagName);
+        LOG.info("Opening storage service for bag: {}", bagName);
 
         if(!recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName).isOpen()) {
             throw new ConfigurationException("Unable to open record writer for instance/bag: " + instanceId + '/' + bagName);
         }
 
         if(!metadataStore.isLastShutdownClean() || Boolean.parseBoolean(System.getProperty(FORCE_REBUILD_COMMAND))) {
-            LOGGER.info("Previous shutdown of: {} was unclean or forced rebuild triggered, scanning and rebuilding indexes", this);
+            LOG.info("Previous shutdown of: {} was unclean or forced rebuild triggered, scanning and rebuilding indexes", this);
             handleIndexScanAndRebuild();
         }
-        LOGGER.info("Finished opening storage service for bag: {}", bagName);
+        LOG.info("Finished opening storage service for bag: {}", bagName);
 	}
 
     @Override
@@ -166,11 +165,11 @@ public class LocalStorageServiceImpl implements StorageService {
     private void handleIndexScanAndRebuild() throws JasDBStorageException {
         Collection<Index> indexes = getIndexManager().getIndexes(bagName).values();
         List<Future<?>> indexRebuilds = new ArrayList<>(indexes.size());
-        LOGGER.info("Doing index scan for: {} items", getSize());
+        LOG.info("Doing index scan for: {} items", getSize());
         RecordWriter recordWriter = recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName);
         if(recordWriter instanceof TransactionalRecordWriter) {
             TransactionalRecordWriter transactionalRecordWriter = (TransactionalRecordWriter) recordWriter;
-            LOGGER.info("Forcing primary key rebuild first, we need to ensure integrity");
+            LOG.info("Forcing primary key rebuild first, we need to ensure integrity");
             transactionalRecordWriter.verify(recordResult -> {
                 try {
                     return new UUIDKey(BagOperationUtil.toEntity(recordResult.getStream()).getInternalId());
@@ -180,8 +179,8 @@ public class LocalStorageServiceImpl implements StorageService {
             });
         }
 
-        LOGGER.info("Doing index scans");
         for(final Index index : indexes) {
+            LOG.info("Scheduling index rebuild of index: {} for bag: {}", index, bagName);
             indexRebuilds.add(indexRebuilder.submit(new IndexScanAndRecovery(index, getRecordWriter().readAllRecords())));
         }
         for(Future<?> indexRebuild : indexRebuilds) {

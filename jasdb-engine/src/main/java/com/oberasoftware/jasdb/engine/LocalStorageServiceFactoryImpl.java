@@ -1,7 +1,5 @@
 package com.oberasoftware.jasdb.engine;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 import nl.renarj.core.exceptions.CoreConfigException;
 import nl.renarj.core.utilities.configuration.Configuration;
@@ -23,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
 public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
@@ -147,11 +146,8 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
 	}
 
 	private List<String> getBags(String instanceId) throws JasDBStorageException {
-        return new ArrayList<>(Collections2.transform(metadataStore.getBags(instanceId), new Function<Bag, String>() {
-            @Override
-            public String apply(Bag bag) {
-                return bag.getName();
-            }
-        }));
+        return metadataStore.getBags(instanceId).stream()
+                .map(Bag::getName)
+                .collect(Collectors.toList());
 	}
 }

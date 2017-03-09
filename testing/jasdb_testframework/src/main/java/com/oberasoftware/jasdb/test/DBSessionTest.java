@@ -8,7 +8,7 @@ import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.index.keys.types.StringKeyType;
 import nl.renarj.jasdb.index.search.IndexField;
 import org.junit.After;
@@ -61,7 +61,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testGetInstances() throws JasDBStorageException {
+    public void testGetInstances() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         List<Instance> instanceList = session.getInstances();
         assertEquals(1, instanceList.size());
@@ -72,7 +72,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void addInstance() throws JasDBStorageException, IOException {
+    public void addInstance() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         session.addInstance(MY_INSTANCE);
 
@@ -86,7 +86,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void addSessionInstanceBound() throws JasDBStorageException, IOException {
+    public void addSessionInstanceBound() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         assertEquals("default", session.getInstanceId());
         session.createOrGetBag("testbag");
@@ -105,7 +105,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testCreateAndGetInstanceBag() throws JasDBStorageException, IOException {
+    public void testCreateAndGetInstanceBag() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         session.addInstance(MY_INSTANCE);
 
@@ -117,7 +117,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testCreateAndInsertEntities() throws JasDBStorageException, IOException {
+    public void testCreateAndInsertEntities() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         session.addInstance(MY_INSTANCE);
 
@@ -132,7 +132,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testSwitchInstance() throws JasDBStorageException, IOException {
+    public void testSwitchInstance() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         session.addInstance(MY_INSTANCE);
         assertEquals("default", session.getInstanceId());
@@ -144,13 +144,13 @@ public abstract class DBSessionTest {
         assertEquals("anotherInstance", session.getInstanceId());
     }
 
-    @Test(expected = JasDBStorageException.class)
-    public void testGetNonExistingInstance() throws JasDBStorageException, IOException {
+    @Test(expected = JasDBException.class)
+    public void testGetNonExistingInstance() throws JasDBException, IOException {
         sessionFactory.createSession("myNotExistingInstance");
     }
 
     @Test
-    public void testDeleteInstance() throws JasDBStorageException, IOException {
+    public void testDeleteInstance() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         File instanceFolder = new File(storageLocation + "/.jasdb/myInstance");
         session.addAndSwitchInstance(MY_INSTANCE);
@@ -171,7 +171,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testGetBagList() throws JasDBStorageException, IOException {
+    public void testGetBagList() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         session.addAndSwitchInstance(MY_INSTANCE);
 
@@ -184,7 +184,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testBagCreateOrGet() throws JasDBStorageException {
+    public void testBagCreateOrGet() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         session.createOrGetBag("testbag1");
 
@@ -193,7 +193,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testBagGetNonExisting() throws JasDBStorageException {
+    public void testBagGetNonExisting() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         assertNull(session.getBag("testbag1"));
         assertNull(session.getBag("testbag2"));
@@ -207,7 +207,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testBagRemove() throws JasDBStorageException {
+    public void testBagRemove() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag1");
         bag.ensureIndex(new IndexField("field1", new StringKeyType()), false);
@@ -221,7 +221,7 @@ public abstract class DBSessionTest {
     }
 
     @Test
-    public void testBagRemoveInstance() throws JasDBStorageException, IOException {
+    public void testBagRemoveInstance() throws JasDBException, IOException {
         DBSession session = sessionFactory.createSession();
         File newInstanceFolder = new File(storageLocation + "/.jasdb/myInstance");
         session.addAndSwitchInstance(MY_INSTANCE);

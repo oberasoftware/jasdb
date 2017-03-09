@@ -1,4 +1,4 @@
-package com.obera.service.acl;
+package com.oberasoftware.jasdb.acl;
 
 import com.oberasoftware.jasdb.engine.StorageService;
 

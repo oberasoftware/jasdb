@@ -10,6 +10,7 @@ import nl.renarj.jasdb.api.DBSessionFactory;
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.api.query.QueryBuilder;
+import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public abstract class EntityManagerTest extends QueryBaseTest {
     }
 
     @Test
-    public void testEntityManagerUpdate() throws JasDBStorageException {
+    public void testEntityManagerUpdate() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         EntityManager entityManager = session.getEntityManager();
 
@@ -217,12 +218,12 @@ public abstract class EntityManagerTest extends QueryBaseTest {
     }
 
     private void assertHasExactlyOneId(EntityManager entityManager, QueryBuilder query, String id) throws JasDBStorageException{
-        assertResults(entityManager, query, 1, Lists.newArrayList(id));
+        assertResults(entityManager, query, Lists.newArrayList(id));
     }
 
-    private void assertResults(EntityManager entityManager, QueryBuilder query, int results, List<String> ids) throws JasDBStorageException {
+    private void assertResults(EntityManager entityManager, QueryBuilder query, List<String> ids) throws JasDBStorageException {
         List<TestEntity> entities = entityManager.findEntities(TestEntity.class, query);
-        assertThat(entities.size(), is(results));
+        assertThat(entities.size(), is(1));
 
         List<String> foundIds = entities.stream().map(TestEntity::getId).collect(Collectors.toList());
         assertThat(foundIds, hasItems(ids.toArray(new String[ids.size()])));

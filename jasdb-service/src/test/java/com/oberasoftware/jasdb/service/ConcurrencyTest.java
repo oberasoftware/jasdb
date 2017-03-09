@@ -43,11 +43,6 @@ public class ConcurrencyTest {
         System.setProperty(HomeLocatorUtil.JASDB_HOME, temporaryFolder.newFolder().toString());
         JasDBMain.start();
 	}
-	
-	@After
-	public void tearDown() throws JasDBException {
-        JasDBMain.shutdown();
-	}
 
     private List<String> createData(int amount) throws JasDBException {
         return createData(amount, true);
@@ -81,7 +76,7 @@ public class ConcurrencyTest {
 		}
 	}
 
-    private Map<Thread, ReadThread> createReaderThreads(int amount, boolean start) throws JasDBStorageException {
+    private Map<Thread, ReadThread> createReaderThreads(int amount, boolean start) throws JasDBException {
         Map<Thread, ReadThread> readers = new HashMap<>();
         for(int i=0; i<amount; i++) {
             ReadThread reader = new ReadThread("reader" + i, new ArrayList<>(createdIds));
@@ -96,7 +91,7 @@ public class ConcurrencyTest {
         return readers;
     }
 
-    private Map<Thread, WriterThread> createWriterThreads(int amount, int storeAmount) throws JasDBStorageException {
+    private Map<Thread, WriterThread> createWriterThreads(int amount, int storeAmount) throws JasDBException {
         Map<Thread, WriterThread> writers = new HashMap<>();
         for(int i=0; i<amount; i++) {
             WriterThread writer = new WriterThread("writer" + i, storeAmount);
@@ -108,7 +103,7 @@ public class ConcurrencyTest {
         return writers;
     }
 
-    private Map<Thread, UpdateThread> createUpdateThreads(int amount) throws JasDBStorageException {
+    private Map<Thread, UpdateThread> createUpdateThreads(int amount) throws JasDBException {
         Map<Thread, UpdateThread> updaters = new HashMap<>();
         for(int i=0; i<amount; i++) {
             UpdateThread update = new UpdateThread("update" + i, createdIds);
@@ -295,7 +290,7 @@ public class ConcurrencyTest {
         JasDBMain.shutdown();
     }
 
-    private void assertWriteFailures(Map<Thread, WriterThread> writers) throws InterruptedException, JasDBStorageException {
+    private void assertWriteFailures(Map<Thread, WriterThread> writers) throws InterruptedException, JasDBException {
         for(Map.Entry<Thread, WriterThread> writerEntry : writers.entrySet()) {
             writerEntry.getKey().join();
             WriterThread writerThread = writerEntry.getValue();
@@ -322,7 +317,7 @@ public class ConcurrencyTest {
         }
     }
 
-    private void assertUpdateFailures(Map<Thread, UpdateThread> updaters) throws InterruptedException, JasDBStorageException {
+    private void assertUpdateFailures(Map<Thread, UpdateThread> updaters) throws InterruptedException, JasDBException {
         for(Map.Entry<Thread, UpdateThread> updateEntry : updaters.entrySet()) {
             updateEntry.getKey().join();
             UpdateThread updateThread = updateEntry.getValue();
@@ -343,7 +338,7 @@ public class ConcurrencyTest {
         }
     }
 
-    private void assertRemoveFailures(Map<Thread, RemoveThread> removers) throws InterruptedException, JasDBStorageException {
+    private void assertRemoveFailures(Map<Thread, RemoveThread> removers) throws InterruptedException, JasDBException {
         for(Map.Entry<Thread, RemoveThread> removeEntry : removers.entrySet()) {
             removeEntry.getKey().join();
             RemoveThread removeThread = removeEntry.getValue();
@@ -363,7 +358,7 @@ public class ConcurrencyTest {
 
     }
 	
-	private void loadRecords(List<String> ids) throws JasDBStorageException {
+	private void loadRecords(List<String> ids) throws JasDBException {
         DBSession session = new LocalDBSession();
         EntityBag entityBag = session.getBag(TESTBAG);
 
@@ -396,7 +391,7 @@ public class ConcurrencyTest {
         private int success = 0;
         private int failures = 0;
 
-        RemoveThread(String threadId, List<String> removeIds) throws JasDBStorageException {
+        RemoveThread(String threadId, List<String> removeIds) throws JasDBException {
             this.removeIds = removeIds;
             this.threadId = threadId;
             this.bag = new LocalDBSession().createOrGetBag(TESTBAG);
@@ -447,7 +442,7 @@ public class ConcurrencyTest {
         private int failures = 0;
         private int success = 0;
 
-        private UpdateThread(String updateId, List<String> updateIds) throws JasDBStorageException {
+        private UpdateThread(String updateId, List<String> updateIds) throws JasDBException {
             this.updateIds = updateIds;
             this.updateId = updateId;
             this.bag = new LocalDBSession().createOrGetBag(TESTBAG);
@@ -499,7 +494,7 @@ public class ConcurrencyTest {
 		private long firstRead = 0;
 		private long lastRead = 0;
 		
-		private ReadThread(String readerId, List<String> internalIds) throws JasDBStorageException {
+		private ReadThread(String readerId, List<String> internalIds) throws JasDBException {
 			this.internalIds = internalIds;
 			
 			DBSession pojoDb = new LocalDBSession();
@@ -565,7 +560,7 @@ public class ConcurrencyTest {
 		private long firstWrite = 0;
 		private long lastWrite = 0;
 		
-		private WriterThread(String writerId, int createItems) throws JasDBStorageException {
+		private WriterThread(String writerId, int createItems) throws JasDBException {
 			DBSession pojoDb = new LocalDBSession();
 			this.bag = pojoDb.createOrGetBag(TESTBAG);
 			this.writerId = writerId;

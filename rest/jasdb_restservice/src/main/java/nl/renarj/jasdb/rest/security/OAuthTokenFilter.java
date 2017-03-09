@@ -1,6 +1,6 @@
 package nl.renarj.jasdb.rest.security;
 
-import com.obera.service.acl.UserSessionImpl;
+import com.oberasoftware.jasdb.acl.UserSessionImpl;
 import nl.renarj.core.utilities.StringUtils;
 import nl.renarj.jasdb.api.acl.SessionManager;
 import nl.renarj.jasdb.api.acl.UserSession;

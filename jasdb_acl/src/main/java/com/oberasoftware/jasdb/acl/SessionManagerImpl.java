@@ -1,4 +1,4 @@
-package com.obera.service.acl;
+package com.oberasoftware.jasdb.acl;
 
 import nl.renarj.jasdb.api.acl.AccessMode;
 import nl.renarj.jasdb.api.acl.SessionManager;

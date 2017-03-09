@@ -1,2 +1,2 @@
-com.obera.service.acl.UserMetadataProvider
-com.obera.service.acl.GrantMetadataProvider
+com.oberasoftware.jasdb.acl.UserMetadataProvider
+com.oberasoftware.jasdb.acl.GrantMetadataProvider

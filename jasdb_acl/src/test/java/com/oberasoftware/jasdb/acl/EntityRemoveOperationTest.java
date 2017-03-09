@@ -1,4 +1,4 @@
-package com.obera.service.acl;
+package com.oberasoftware.jasdb.acl;
 
 import nl.renarj.jasdb.api.SimpleEntity;
 import nl.renarj.jasdb.api.acl.AccessMode;
@@ -23,16 +23,13 @@ public class EntityRemoveOperationTest extends AbstractAuthorizationTest {
 
     @Override
     protected AuthorizationOperation getOperation() {
-        return new AuthorizationOperation() {
-            @Override
-            public void doOperation(StorageService wrappedService, String user, String password) throws Exception {
-                SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
-                wrappedService.removeEntity(createContext(user, password, "localhost"), entity);
+        return (wrappedService, user, password) -> {
+            SimpleEntity entity = new SimpleEntity(UUID.randomUUID().toString());
+            wrappedService.removeEntity(createContext(user, password), entity);
 
-                Advised advised = (Advised) wrappedService;
-                StorageService mock = (StorageService) advised.getTargetSource().getTarget();
-                verify(mock, times(1)).removeEntity(any(RequestContext.class), eq(entity));
-            }
+            Advised advised = (Advised) wrappedService;
+            StorageService mock = (StorageService) advised.getTargetSource().getTarget();
+            verify(mock, times(1)).removeEntity(any(RequestContext.class), eq(entity));
         };
     }
 }

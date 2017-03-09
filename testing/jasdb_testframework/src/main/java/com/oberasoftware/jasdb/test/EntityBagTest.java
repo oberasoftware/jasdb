@@ -533,7 +533,7 @@ public abstract class EntityBagTest {
 	}
 
     @Test
-    public void testInsertOrUpdatePersist() throws JasDBStorageException {
+    public void testInsertOrUpdatePersist() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("insertOrUpdateBag");
 
@@ -553,7 +553,7 @@ public abstract class EntityBagTest {
     }
 
     @Test
-    public void testEnsureAndRemoveIndex() throws JasDBStorageException {
+    public void testEnsureAndRemoveIndex() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
         bag.ensureIndex(new IndexField("field1", new StringKeyType()), true);
@@ -638,7 +638,7 @@ public abstract class EntityBagTest {
     }
 
     @Test
-    public void testBagFlush() throws JasDBStorageException {
+    public void testBagFlush() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
 

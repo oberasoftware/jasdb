@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component("IndexManager")
 @Scope("prototype")
 final public class IndexManagerImpl implements IndexManager {
-	private Logger log = LoggerFactory.getLogger(IndexManagerImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(IndexManagerImpl.class);
 
 	private static final String INDEX_CONFIG_XPATH = "/jasdb/Index";
     private static final String BAG_INDEX_NAME_SPLITTER = "_";
@@ -60,10 +60,10 @@ final public class IndexManagerImpl implements IndexManager {
 
 	@Override
 	public void shutdownIndexes() throws JasDBStorageException {
-		log.info("Shutting down {} indexes", indexes.size());
+		LOG.info("Shutting down {} indexes", indexes.size());
 		for(String bagName : indexes.keySet()) {
 			for(Index index : indexes.get(bagName).values()) {
-				log.debug("Closing index: {} on bag: {}", index.getKeyInfo().getKeyName(), bagName);
+				LOG.debug("Closing index: {} on bag: {}", index.getKeyInfo().getKeyName(), bagName);
 				index.close();
 			}
 		}
@@ -73,9 +73,9 @@ final public class IndexManagerImpl implements IndexManager {
     @Override
     public void flush() throws JasDBStorageException {
         for(Map.Entry<String, Map<String, Index>> entry : indexes.entrySet()) {
-            log.debug("Flushing index for bag: {}", entry.getKey());
+            LOG.debug("Flushing index for bag: {}", entry.getKey());
             for(Index index : entry.getValue().values()) {
-                log.debug("Flushing index: {}", index);
+                LOG.debug("Flushing index: {}", index);
                 index.flushIndex();
             }
         }
@@ -84,7 +84,7 @@ final public class IndexManagerImpl implements IndexManager {
     @Override
     public void flush(String bagName) throws JasDBStorageException {
         for(Index index : getIndexes(bagName).values()) {
-            log.debug("Flushing index: {}", index);
+            LOG.debug("Flushing index: {}", index);
             index.flushIndex();
         }
     }
@@ -118,14 +118,14 @@ final public class IndexManagerImpl implements IndexManager {
 
 	@Override
 	public Map<String, Index> getIndexes(String bagName) throws JasDBStorageException {
-		log.debug("Loading indexes for bag: {}", bagName);
+		LOG.debug("Loading indexes for bag: {}", bagName);
 		if(!indexes.containsKey(bagName)) {
-			log.debug("Indexes where not loaded or not present yet for bag: {}, attempt load", bagName);
+			LOG.debug("Indexes where not loaded or not present yet for bag: {}, attempt load", bagName);
 			loadIndexes(bagName);
 		}
 
 		if(indexes.containsKey(bagName)) {
-			log.debug("Indexes are present and loaded returning for bag: {}", bagName);
+			LOG.debug("Indexes are present and loaded returning for bag: {}", bagName);
             return new HashMap<>(indexes.get(bagName));
 		} else {
 			throw new JasDBStorageException("No indexes found for bag: " + bagName);
@@ -134,16 +134,16 @@ final public class IndexManagerImpl implements IndexManager {
 
 	@Override
 	public Index getIndex(String bagName, String keyName) throws JasDBStorageException {
-		log.debug("Loading indexes for bag: {} and key: {}", bagName, keyName);
+		LOG.debug("Loading indexes for bag: {} and key: {}", bagName, keyName);
 		if(!indexes.containsKey(bagName)) {
-			log.debug("Indexes where not loaded or not present yet for bag: {}, attempt load", bagName);
+			LOG.debug("Indexes where not loaded or not present yet for bag: {}, attempt load", bagName);
 			loadIndexes(bagName);
 		}
 
 		if(indexes.containsKey(bagName)) {
 			Map<String, Index> bagIndexes = indexes.get(bagName);
 			if(bagIndexes.containsKey(keyName)) {
-				log.debug("Index found for key: {} in bag: {}", keyName, bagName);
+				LOG.debug("Index found for key: {} in bag: {}", keyName, bagName);
 				return bagIndexes.get(keyName);
 			} else {
 				throw new JasDBStorageException("No index found for key: " + keyName + " in bag: " + bagName);
@@ -241,13 +241,13 @@ final public class IndexManagerImpl implements IndexManager {
 	}
 
 	private synchronized void loadIndexes(final String bagName) throws JasDBStorageException {
-		log.debug("Loading indexes for bag: {}", bagName);
+		LOG.debug("Loading indexes for bag: {}", bagName);
 		if(!indexes.containsKey(bagName)) {
             Bag bag = metadataStore.getBag(instanceId, bagName);
             if(bag != null) {
                 Set<IndexDefinition> indexDefinitions = new HashSet<>(bag.getIndexDefinitions());
 
-                log.info("Found {} potential indexes for bag: {}", indexDefinitions.size(), bagName);
+                LOG.info("Found {} potential indexes for bag: {}", indexDefinitions.size(), bagName);
                 Map<String, Index> bagIndexes = new HashMap<>();
                 for(IndexDefinition indexDefinition : indexDefinitions) {
                     Index index = loadIndex(bagName, indexDefinition);
@@ -265,7 +265,7 @@ final public class IndexManagerImpl implements IndexManager {
 
             switch(IndexTypes.getTypeFor(indexDefinition.getIndexType())) {
                 case BTREE:
-                    log.debug("Loaded BTree Index for key: {}", indexDefinition.getIndexName());
+                    LOG.debug("Loaded BTree Index for key: {}", indexDefinition.getIndexName());
                     Index btreeIndex = new BTreeIndex(indexFile, keyInfo);
 
                     return configureIndex(IndexTypes.BTREE, btreeIndex);
@@ -283,10 +283,10 @@ final public class IndexManagerImpl implements IndexManager {
 		Configuration indexConfig = configuration.getChildConfiguration(INDEX_CONFIG_XPATH + "[@Type='" + indexType.getName() + "']");
 
 		if(indexConfig != null) {
-			log.info("Using configuration for index type: {}", indexType.getName());
+			LOG.info("Using configuration for index type: {}", indexType.getName());
 			indexPersister.configure(indexConfig);
 		} else {
-			log.info("There is no configuration for index type: {} using defaults", indexType.getName());
+			LOG.info("There is no configuration for index type: {} using defaults", indexType.getName());
 		}
 		return indexPersister;
 	}

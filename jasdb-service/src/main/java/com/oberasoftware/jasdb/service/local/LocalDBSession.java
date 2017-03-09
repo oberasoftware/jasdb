@@ -9,6 +9,7 @@ package com.oberasoftware.jasdb.service.local;
 
 import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
 import com.oberasoftware.jasdb.entitymapper.EntityManagerImpl;
+import com.oberasoftware.jasdb.service.JasDBMain;
 import nl.renarj.jasdb.api.DBInstance;
 import nl.renarj.jasdb.api.DBInstanceFactory;
 import nl.renarj.jasdb.api.DBSession;
@@ -20,6 +21,7 @@ import nl.renarj.jasdb.api.metadata.Bag;
 import nl.renarj.jasdb.api.metadata.Instance;
 import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;
+import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 
@@ -41,7 +43,8 @@ public class LocalDBSession implements DBSession {
      * Creates a local DB session to the default instance
      * @throws JasDBStorageException If unable to request the session
      */
-	public LocalDBSession() throws JasDBStorageException {
+	public LocalDBSession() throws JasDBException {
+	    ensureStarted();
         instanceFactory = ApplicationContextProvider.getApplicationContext().getBean(DBInstanceFactory.class);
         instance = instanceFactory.getInstance();
 	}
@@ -51,7 +54,7 @@ public class LocalDBSession implements DBSession {
      * @param credentials The credentials
      * @throws JasDBStorageException If unable to request the session
      */
-    public LocalDBSession(Credentials credentials) throws JasDBStorageException {
+    public LocalDBSession(Credentials credentials) throws JasDBException {
         this();
 
         SessionManager sessionManager = ApplicationContextProvider.getApplicationContext().getBean(SessionManager.class);
@@ -63,7 +66,8 @@ public class LocalDBSession implements DBSession {
      * @param instanceId The instance
      * @throws JasDBStorageException If unable to request the session
      */
-	public LocalDBSession(String instanceId) throws JasDBStorageException {
+	public LocalDBSession(String instanceId) throws JasDBException {
+	    ensureStarted();
         instanceFactory = ApplicationContextProvider.getApplicationContext().getBean(DBInstanceFactory.class);
 		instance = instanceFactory.getInstance(instanceId);
 	}
@@ -74,7 +78,7 @@ public class LocalDBSession implements DBSession {
      * @param credentials The credentials
      * @throws JasDBStorageException If unable to request the session
      */
-    public LocalDBSession(String instanceId, Credentials credentials) throws JasDBStorageException {
+    public LocalDBSession(String instanceId, Credentials credentials) throws JasDBException {
         this(instanceId);
 
         SessionManager sessionManager = ApplicationContextProvider.getApplicationContext().getBean(SessionManager.class);
@@ -207,4 +211,10 @@ public class LocalDBSession implements DBSession {
     public void closeSession() throws JasDBStorageException {
 		
 	}
+
+	private void ensureStarted() throws JasDBException {
+        if(!JasDBMain.isStarted()) {
+            JasDBMain.start();
+        }
+    }
 }
