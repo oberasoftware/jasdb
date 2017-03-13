@@ -1,24 +1,21 @@
 package com.oberasoftware.jasdb.test;
 
+import com.oberasoftware.jasdb.api.session.*;
+import com.oberasoftware.jasdb.core.index.query.SimpleCompositeIndexField;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.core.utilities.ResourceUtil;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.EmbeddedEntity;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.keys.types.LongKeyType;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.core.utils.ResourceUtil;
+import com.oberasoftware.jasdb.core.EmbeddedEntity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.core.caching.GlobalCachingMemoryManager;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.index.keys.types.LongKeyType;
+import com.oberasoftware.jasdb.core.index.keys.types.StringKeyType;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -69,7 +66,7 @@ public abstract class EntityBagTest {
 		String randomId = "";
 		DBSession pojoDb = sessionFactory.createSession();
 		EntityBag bag = pojoDb.createOrGetBag("testbag");
-        bag.ensureIndex(new IndexField("title", new StringKeyType()), true);
+        bag.ensureIndex(new SimpleIndexField("title", new StringKeyType()), true);
 		
 		try {
             log.info("Starting insert of: {}", NUMBER_ENTITIES);
@@ -138,7 +135,7 @@ public abstract class EntityBagTest {
 	
 	private int getResultSize(QueryResult result) {
 		int foundEntities = 0;
-		for(SimpleEntity entity : result) {
+		for(Entity entity : result) {
 			foundEntities++;
 			log.debug("Iterating entity: {} found: {}", entity.getInternalId(), foundEntities);
 		}
@@ -155,7 +152,7 @@ public abstract class EntityBagTest {
 		try {
 			log.info("Starting search for: {}", searchTestId);
 			long startSearch = System.nanoTime();
-			SimpleEntity entity = bag.getEntity(searchTestId);
+            Entity entity = bag.getEntity(searchTestId);
 			long endSearch = System.nanoTime();
 			log.info("Search finished in: {}", (endSearch - startSearch));
 
@@ -189,7 +186,7 @@ public abstract class EntityBagTest {
         QueryResult result = executor.execute();
 
         assertThat(result.size(), is(1L));
-        for(SimpleEntity resultEntity : result) {
+        for(Entity resultEntity : result) {
             String json = SimpleEntity.toJson(resultEntity);
             log.info("Output: {}", json);
         }
@@ -200,11 +197,11 @@ public abstract class EntityBagTest {
         try {
             DBSession session = sessionFactory.createSession();
             EntityBag bag = session.createOrGetBag("websites");
-            bag.ensureIndex(new IndexField("url", new StringKeyType()), false);
+            bag.ensureIndex(new SimpleIndexField("url", new StringKeyType()), false);
             bag.ensureIndex(
-                    new CompositeIndexField(
-                            new IndexField("stepid", new StringKeyType()),
-                            new IndexField("workflow", new LongKeyType())
+                    new SimpleCompositeIndexField(
+                            new SimpleIndexField("stepid", new StringKeyType()),
+                            new SimpleIndexField("workflow", new LongKeyType())
                     ),false);
 
             bag.addEntity(new SimpleEntity().addProperty("url", "").addProperty("stepid", 1L).addProperty("workflow", 1L));
@@ -229,7 +226,7 @@ public abstract class EntityBagTest {
         try {
             DBSession session = sessionFactory.createSession();
             EntityBag bag = session.createOrGetBag("somebag");
-            bag.ensureIndex(new IndexField("field", new StringKeyType()), false);
+            bag.ensureIndex(new SimpleIndexField("field", new StringKeyType()), false);
 
             String id = bag.addEntity(new SimpleEntity().addProperty("anotherfield", "somevalue")).getInternalId();
 
@@ -241,7 +238,7 @@ public abstract class EntityBagTest {
 
     @Test
     public void testPersistUpdateShutdownRead() throws Exception {
-        SimpleEntity entity1 = null, entity2 = null;
+        Entity entity1 = null, entity2 = null;
         try {
             DBSession pojoDb = sessionFactory.createSession();
             EntityBag bag = pojoDb.createOrGetBag("mybag");
@@ -311,7 +308,7 @@ public abstract class EntityBagTest {
 
 		try {
 			for(String id : entityIds) {
-				SimpleEntity entity = bag.getEntity(id);
+                Entity entity = bag.getEntity(id);
 				Assert.assertNotNull("Entity for id: " + id + " should be found", entity);
 				assertEquals("Id should match expected id", id, entity.getInternalId());
 				Assert.assertNotNull("There should be a property doubleId", entity.getProperty("doubleId"));
@@ -328,7 +325,7 @@ public abstract class EntityBagTest {
         EntityBag bag = session.createOrGetBag("testbag");
 
         try {
-            SimpleEntity entity = new SimpleEntity();
+            Entity entity = new SimpleEntity();
             entity.addProperty("field1", "value1");
             entity.addProperty("field1", "value2");
             entity.addProperty("field1", "value3");
@@ -362,8 +359,8 @@ public abstract class EntityBagTest {
         int testSize = 1000;
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
-        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
-        bag.ensureIndex(new IndexField("itemId", new LongKeyType()), true);
+        bag.ensureIndex(new SimpleIndexField("city", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("itemId", new LongKeyType()), true);
         try {
             Map<String, Integer> cityCounts = generateCities(testSize, bag);
             assertCityIndexes(bag, cities, cityCounts);
@@ -371,7 +368,7 @@ public abstract class EntityBagTest {
             for(int i=200; i<400; i++) {
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("itemId").value((long)i));
                 QueryResult result = executor.execute();
-                for(SimpleEntity entity : result) {
+                for(Entity entity : result) {
                     String city = entity.getProperty("city").getFirstValueObject().toString();
                     entity.setProperty("city", "unknown");
                     bag.updateEntity(entity);
@@ -393,8 +390,8 @@ public abstract class EntityBagTest {
         int testSize = 1000;
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
-        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
-        bag.ensureIndex(new IndexField("itemId", new LongKeyType()), true);
+        bag.ensureIndex(new SimpleIndexField("city", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("itemId", new LongKeyType()), true);
         try {
 
             Map<String, Integer> cityCounts = generateCities(testSize, bag);
@@ -403,7 +400,7 @@ public abstract class EntityBagTest {
             for(int i=200; i<400; i++) {
                 QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("itemId").value((long)i));
                 QueryResult result = executor.execute();
-                for(SimpleEntity entity : result) {
+                for(Entity entity : result) {
                     String city = entity.getProperty("city").getFirstValueObject().toString();
                     entity.setProperty("city", "unknown");
                     entity.setProperty("bigdatafield", htmlData);
@@ -440,8 +437,8 @@ public abstract class EntityBagTest {
         int testSize = 1000;
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
-        bag.ensureIndex(new IndexField("city", new StringKeyType(100)), false);
-        bag.ensureIndex(new IndexField("testField", new LongKeyType()), true);
+        bag.ensureIndex(new SimpleIndexField("city", new StringKeyType(100)), false);
+        bag.ensureIndex(new SimpleIndexField("testField", new LongKeyType()), true);
 
         Random rnd = new Random();
         for(int i=0; i<testSize; i++) {
@@ -456,7 +453,7 @@ public abstract class EntityBagTest {
 
         for(String city : SimpleBaseTest.possibleCities) {
             QueryResult result = bag.find(QueryBuilder.createBuilder().field("city").value(city)).execute();
-            for(SimpleEntity foundEntity : result) {
+            for(Entity foundEntity : result) {
                 Long testFieldValue = foundEntity.getProperty("testField").getFirstValueObject();
                 bag.removeEntity(foundEntity);
 
@@ -497,7 +494,7 @@ public abstract class EntityBagTest {
 		List<String> entities = new ArrayList<>();
 		try {
 			for(int i=0; i<INITIAL_SIZE; i++) {
-				SimpleEntity entity = bag.addEntity(new SimpleEntity().addProperty("testfield", "test" + i));
+                Entity entity = bag.addEntity(new SimpleEntity().addProperty("testfield", "test" + i));
 				entities.add(entity.getInternalId());
 			}
 		} finally {
@@ -509,19 +506,19 @@ public abstract class EntityBagTest {
 		bag = session.createOrGetBag("testbag");
 		try {
 			for(int i=0; i<NUMBER_ENTITIES; i++) {
-				SimpleEntity entity = bag.addEntity(new SimpleEntity().addProperty("testfield", "test" + (i + INITIAL_SIZE)));
+                Entity entity = bag.addEntity(new SimpleEntity().addProperty("testfield", "test" + (i + INITIAL_SIZE)));
 				entities.add(entity.getInternalId());			
 			}
 			
 			for(String id : entities) {
-				SimpleEntity entity = bag.getEntity(id);
+                Entity entity = bag.getEntity(id);
 				Assert.assertNotNull("Entity for id: " + id + " should be found", entity);
 				assertEquals("Id should match expected id", id, entity.getInternalId());
 				Assert.assertNotNull("There should be a property doubleId", entity.getProperty("testfield").getFirstValueObject());
 			}
 			
 			int recordsFound = 0;
-			for(SimpleEntity en : bag.getEntities()) {
+			for(Entity en : bag.getEntities()) {
 				log.debug("Loaded entity: {}", en.getInternalId());
 				recordsFound++;
 			}
@@ -556,8 +553,8 @@ public abstract class EntityBagTest {
     public void testEnsureAndRemoveIndex() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag");
-        bag.ensureIndex(new IndexField("field1", new StringKeyType()), true);
-        bag.ensureIndex(new IndexField("field2", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("field1", new StringKeyType()), true);
+        bag.ensureIndex(new SimpleIndexField("field2", new StringKeyType()), false);
         bag.addEntity(new SimpleEntity().addProperty("field1", "value1").addProperty("field2", "testkey2value"));
 
         String jasdbHome = storageLocation + "/.jasdb";
@@ -606,7 +603,7 @@ public abstract class EntityBagTest {
         session = sessionFactory.createSession();
         bag = session.createOrGetBag("testbag");
 
-        SimpleEntity foundEntity = bag.getEntity(documentId);
+        Entity foundEntity = bag.getEntity(documentId);
         assertEquals("Internal Doc id's should be the same", documentId, foundEntity.getInternalId());
 
         assertTrue(foundEntity.hasProperty("simpleProperty1"));
@@ -667,7 +664,7 @@ public abstract class EntityBagTest {
         assertThat(result.size(), is(2L));
         result.close();
 
-        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("city", new StringKeyType()), false);
 
         //let's give the index some time to build
         Thread.sleep(5000);

@@ -1,22 +1,19 @@
 package com.oberasoftware.jasdb.test;
 
 import com.google.common.collect.Lists;
+import com.oberasoftware.jasdb.api.session.*;
+import com.oberasoftware.jasdb.core.index.query.SimpleCompositeIndexField;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.EmbeddedEntity;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.keys.types.LongKeyType;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.core.EmbeddedEntity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.index.keys.types.LongKeyType;
+import com.oberasoftware.jasdb.core.index.keys.types.StringKeyType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,13 +56,13 @@ public abstract class QueryBaseTest {
 
         DBSession pojoDb = sessionFactory.createSession();
         EntityBag bag = pojoDb.createOrGetBag("inverted");
-        bag.ensureIndex(new IndexField("field1", new StringKeyType()), false);
-        bag.ensureIndex(new IndexField("field5", new LongKeyType()), false, new IndexField("field6", new LongKeyType()));
-        bag.ensureIndex(new IndexField("field6", new LongKeyType()), false);
-        bag.ensureIndex(new IndexField("age", new LongKeyType()), false);
-        bag.ensureIndex(new IndexField("city", new StringKeyType()), false);
-        bag.ensureIndex(new IndexField("embed.embeddedProperty", new StringKeyType()), false);
-        bag.ensureIndex(new CompositeIndexField(new IndexField("age", new LongKeyType()), new IndexField("mainCity", new StringKeyType())), false);
+        bag.ensureIndex(new SimpleIndexField("field1", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("field5", new LongKeyType()), false, new SimpleIndexField("field6", new LongKeyType()));
+        bag.ensureIndex(new SimpleIndexField("field6", new LongKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("age", new LongKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("city", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("embed.embeddedProperty", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleCompositeIndexField(new SimpleIndexField("age", new LongKeyType()), new SimpleIndexField("mainCity", new StringKeyType())), false);
 
         Random rnd = new Random(System.currentTimeMillis());
         for(int i=0; i< NUMBER_ENTITIES; i++) {
@@ -85,7 +82,7 @@ public abstract class QueryBaseTest {
             embeddedEntity.addProperty("embeddedProperty", value);
             embeddedEntity.addProperty("embeddedNoIndexProperty", value);
 
-            SimpleEntity entity = bag.addEntity(new SimpleEntity()
+            Entity entity = bag.addEntity(new SimpleEntity()
                             .addProperty("field1", value)
                             .addProperty("field5", lValue)
                             .addProperty("field6", Long.valueOf(NUMBER_ENTITIES - i))
@@ -124,8 +121,8 @@ public abstract class QueryBaseTest {
         cityCounters.put(counterId, counter);
     }
 
-    List<SimpleEntity> toList(QueryResult result) {
-        List<SimpleEntity> entities = new ArrayList<>();
+    List<Entity> toList(QueryResult result) {
+        List<Entity> entities = new ArrayList<>();
         result.forEach(entities::add);
         return entities;
     }
@@ -134,7 +131,7 @@ public abstract class QueryBaseTest {
         List<String> keysFoundInOrder = new ArrayList<>();
 
         for(int i=start; i<(start + amount) && result.hasNext(); i++) {
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
 
             String expectedId = longToId.get((long) i);
             assertNotNull("There should be a returned entity", entity);
@@ -150,18 +147,18 @@ public abstract class QueryBaseTest {
         return keysFoundInOrder;
     }
 
-    List<String> getEntityValue(List<SimpleEntity> entities, final String property) {
+    List<String> getEntityValue(List<Entity> entities, final String property) {
         return Lists.transform(entities, entity -> {
             assert entity != null;
             return entity.getProperty(property).getFirstValue().toString();
         });
     }
 
-    List<SimpleEntity> getEntities(EntityBag bag, QueryBuilder query) throws JasDBStorageException {
+    List<Entity> getEntities(EntityBag bag, QueryBuilder query) throws JasDBStorageException {
         return getEntities(bag, query, -1, -1);
     }
 
-    private List<SimpleEntity> getEntities(EntityBag bag, QueryBuilder query, int start, int limit) throws JasDBStorageException {
+    private List<Entity> getEntities(EntityBag bag, QueryBuilder query, int start, int limit) throws JasDBStorageException {
         QueryExecutor executor = bag.find(query);
 
         if(start > 0 && limit > 0) {
@@ -170,9 +167,9 @@ public abstract class QueryBaseTest {
             executor.limit(limit);
         }
 
-        final List<SimpleEntity> entities = new ArrayList<>();
+        final List<Entity> entities = new ArrayList<>();
         try (QueryResult result = executor.execute()) {
-            for (SimpleEntity entity : result) {
+            for (Entity entity : result) {
                 entities.add(entity);
             }
         }

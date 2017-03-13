@@ -1,10 +1,11 @@
 package com.oberasoftware.jasdb.engine;
 
-import nl.renarj.core.exceptions.CoreConfigException;
-import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.CoreConfigException;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.core.utils.configuration.XMLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -25,14 +26,14 @@ public class JasDBConfigurationLoader implements ConfigurationLoader {
         try {
             String overrideConfigProperty = System.getProperty("jasdb-config");
             if(StringUtils.stringEmpty(overrideConfigProperty)) {
-                this.configuration = Configuration.loadConfiguration(JASDB_CONFIG);
+                this.configuration = XMLConfiguration.loadConfiguration(JASDB_CONFIG);
             } else {
                 LOG.info("Override configuration path specified: {}", overrideConfigProperty);
-                this.configuration = Configuration.loadConfiguration(overrideConfigProperty);
+                this.configuration = XMLConfiguration.loadConfiguration(overrideConfigProperty);
             }
         } catch (CoreConfigException e) {
             try {
-                this.configuration = Configuration.loadConfiguration(FALLBACK_JASDB_XML);
+                this.configuration = XMLConfiguration.loadConfiguration(FALLBACK_JASDB_XML);
             } catch(CoreConfigException ex) {
                 throw new ConfigurationException("Unable to load Default JasDB configuration file", ex);
             }

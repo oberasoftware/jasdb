@@ -4,10 +4,10 @@ import com.obera.service.acl.BasicCredentials;
 import com.oberasoftware.jasdb.engine.EntityQueryTest;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.SimpleBaseTest;
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.acl.SessionManager;
-import nl.renarj.jasdb.api.acl.UserManager;
-import nl.renarj.jasdb.api.acl.UserSession;
+import com.oberasoftware.jasdb.core.acl.AccessMode;
+import com.oberasoftware.jasdb.core.acl.SessionManager;
+import com.oberasoftware.jasdb.core.acl.UserManager;
+import com.oberasoftware.jasdb.core.acl.UserSession;
 import nl.renarj.jasdb.core.SimpleKernel;
 
 /**

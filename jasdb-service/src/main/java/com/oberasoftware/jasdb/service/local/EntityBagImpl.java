@@ -7,18 +7,18 @@
  */
 package com.oberasoftware.jasdb.service.local;
 
+import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.security.UserSession;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.*;
+import com.oberasoftware.jasdb.core.context.RequestContext;
+import com.oberasoftware.jasdb.api.index.CompositeIndexField;
+import com.oberasoftware.jasdb.api.index.IndexField;
+import com.oberasoftware.jasdb.api.session.EntityBag;
 import com.oberasoftware.jasdb.engine.StorageService;
 import com.oberasoftware.jasdb.engine.StorageServiceFactory;
-import nl.renarj.jasdb.api.DBInstanceFactory;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.acl.UserSession;
-import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.query.*;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -90,25 +90,25 @@ public class EntityBagImpl implements EntityBag {
          * @see nl.renarj.pojodb.model.EntityBag#addEntity(nl.renarj.pojodb.model.PojoEntity)
          */
 	@Override
-	public SimpleEntity addEntity(SimpleEntity entity) throws JasDBStorageException {
+	public Entity addEntity(Entity entity) throws JasDBStorageException {
 		this.storageService.insertEntity(getContext(), entity);
 		return entity;
 	}
 	
 	@Override
-	public SimpleEntity updateEntity(SimpleEntity entity) throws JasDBStorageException {
+	public Entity updateEntity(Entity entity) throws JasDBStorageException {
         this.storageService.updateEntity(getContext(), entity);
         return entity;
 	}
 
 	@Override
-	public SimpleEntity persist(SimpleEntity entity) throws JasDBStorageException {
+	public Entity persist(Entity entity) throws JasDBStorageException {
 		this.storageService.persistEntity(getContext(), entity);
 		return entity;
 	}
 
 	@Override
-    public void removeEntity(SimpleEntity entity) throws JasDBStorageException {
+    public void removeEntity(Entity entity) throws JasDBStorageException {
         this.storageService.removeEntity(getContext(), entity);
     }
 
@@ -179,7 +179,7 @@ public class EntityBagImpl implements EntityBag {
 	 * @see nl.renarj.pojodb.model.EntityBag#getEntity(java.lang.String)
 	 */
 	@Override
-	public SimpleEntity getEntity(String entityId) throws JasDBStorageException {
+	public Entity getEntity(String entityId) throws JasDBStorageException {
 		return storageService.getEntityById(getContext(), entityId);
 	}
 		

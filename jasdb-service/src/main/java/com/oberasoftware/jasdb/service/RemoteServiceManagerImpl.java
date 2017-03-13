@@ -1,9 +1,9 @@
 package com.oberasoftware.jasdb.service;
 
-import nl.renarj.jasdb.api.engine.RemoteServiceManager;
-import nl.renarj.jasdb.core.RemoteService;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.locator.ServiceInformation;
+import com.oberasoftware.jasdb.api.engine.RemoteServiceManager;
+import com.oberasoftware.jasdb.api.engine.RemoteService;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.model.ServiceInformation;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

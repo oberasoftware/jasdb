@@ -1,0 +1,108 @@
+package com.oberasoftware.jasdb.rest.service.loaders;
+
+import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.api.security.UserManager;
+import com.oberasoftware.jasdb.core.context.RequestContext;
+import com.oberasoftware.jasdb.api.model.GrantObject;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.RestException;
+import com.oberasoftware.jasdb.rest.service.input.InputElement;
+import com.oberasoftware.jasdb.rest.service.input.conditions.FieldCondition;
+import com.oberasoftware.jasdb.rest.service.input.OrderParam;
+import com.oberasoftware.jasdb.rest.model.mappers.GrantModelMapper;
+import com.oberasoftware.jasdb.rest.model.RestEntity;
+import com.oberasoftware.jasdb.rest.model.RestGrant;
+import com.oberasoftware.jasdb.rest.model.RestGrantObject;
+import com.oberasoftware.jasdb.rest.model.RestGrantObjectCollection;
+import com.oberasoftware.jasdb.rest.model.serializers.RestResponseHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author Renze de Vries
+ */
+@Component
+public class GrantModelLoader extends AbstractModelLoader {
+
+    @Autowired(required = false)
+    private UserManager userManager;
+
+    @Override
+    public String[] getModelNames() {
+        return new String[] { "Grants" };
+    }
+
+    @Override
+    public RestEntity loadModel(InputElement input, String begin, String top, List<OrderParam> orderParamList, RequestContext requestContext) throws RestException {
+        if(input.getCondition() != null) {
+            return loadSpecificGrantObject(requestContext, ((FieldCondition) input.getCondition()).getValue());
+        } else {
+            return loadAllGrantObjects(requestContext);
+        }
+    }
+
+    private RestEntity loadSpecificGrantObject(RequestContext context, String object) throws RestException {
+        try {
+            GrantObject grantObject = userManager.getGrantObject(context.getUserSession(), object);
+
+            return GrantModelMapper.map(grantObject);
+        } catch(JasDBStorageException e) {
+            throw new RestException("Unable to load grant objects", e);
+        }
+    }
+
+    private RestEntity loadAllGrantObjects(RequestContext context) throws RestException {
+        try {
+            List<GrantObject> grantObjects = userManager.getGrantObjects(context.getUserSession());
+            List<RestGrantObject> restGrantObjects = new ArrayList<>();
+            for(GrantObject grantObject : grantObjects) {
+                restGrantObjects.add(GrantModelMapper.map(grantObject));
+            }
+
+            return new RestGrantObjectCollection(restGrantObjects);
+        } catch(JasDBStorageException e) {
+            throw new RestException("Unable to load grant objects", e);
+        }
+
+    }
+
+    @Override
+    public RestEntity writeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext requestContext) throws RestException {
+        if(requestContext.isSecure()) {
+            RestGrant grant = serializer.deserialize(RestGrant.class, rawData);
+
+            if(StringUtils.stringNotEmpty(grant.getObjectName()) && StringUtils.stringNotEmpty(grant.getUsername())) {
+                try {
+                    userManager.grantUser(requestContext.getUserSession(), grant.getObjectName(), grant.getUsername(), grant.getMode());
+
+                    return loadSpecificGrantObject(requestContext, grant.getObjectName());
+                } catch(JasDBStorageException e) {
+                    throw new RestException("Unable to grant", e);
+                }
+            } else {
+                throw new RestException("Incomplete grant details");
+            }
+        } else {
+            throw new RestException("Unable to create grant, unsecure connection");
+        }
+    }
+
+    @Override
+    public RestEntity removeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext requestContext) throws RestException {
+        RestGrant grant = serializer.deserialize(RestGrant.class, rawData);
+        if(StringUtils.stringNotEmpty(grant.getObjectName()) && StringUtils.stringNotEmpty(grant.getUsername())) {
+            try {
+                userManager.revoke(requestContext.getUserSession(), grant.getObjectName(), grant.getUsername());
+
+                return null;
+            } catch(JasDBStorageException e) {
+                throw new RestException("Unable to revoke grant", e);
+            }
+        } else {
+            throw new RestException("Cannot remove without user and object specified");
+        }
+    }
+}

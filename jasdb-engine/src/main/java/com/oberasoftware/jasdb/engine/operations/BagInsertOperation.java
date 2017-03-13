@@ -1,17 +1,17 @@
 package com.oberasoftware.jasdb.engine.operations;
 
+import com.oberasoftware.jasdb.api.engine.IndexManagerFactory;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.storage.ClonableDataStream;
+import com.oberasoftware.jasdb.core.index.keys.KeyUtil;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.core.statistics.StatRecord;
+import com.oberasoftware.jasdb.core.statistics.StatisticsMonitor;
 import com.oberasoftware.jasdb.engine.BagOperationUtil;
 import com.oberasoftware.jasdb.engine.RecordWriterFactoryLoader;
-import nl.renarj.core.statistics.StatRecord;
-import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.engine.IndexManagerFactory;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.streams.ClonableDataStream;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ public class BagInsertOperation implements DataOperation {
     private RecordWriterFactoryLoader recordWriterFactory;
 
 	@Override
-	public void doDataOperation(String instanceId, String bag, SimpleEntity entity) throws JasDBStorageException {
+	public void doDataOperation(String instanceId, String bag, Entity entity) throws JasDBStorageException {
         ClonableDataStream entityStream = BagOperationUtil.toStream(entity);
         if(entityStream != null) {
             StatRecord bagWrite = StatisticsMonitor.createRecord("bag:writeRecord");
@@ -45,7 +45,7 @@ public class BagInsertOperation implements DataOperation {
         }
 	}
 
-	private void insertIntoIndexes(String instanceId, String bagName, SimpleEntity entity) throws JasDBStorageException {
+	private void insertIntoIndexes(String instanceId, String bagName, Entity entity) throws JasDBStorageException {
 		StatRecord getIndexes = StatisticsMonitor.createRecord("bag:getIndexes");
 		Map<String, Index> indexes = indexManagerFactory.getIndexManager(instanceId).getIndexes(bagName);
 		getIndexes.stop();

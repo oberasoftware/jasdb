@@ -1,14 +1,15 @@
 package com.oberasoftware.jasdb.acl;
 
+import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.engine.metadata.Constants;
-import nl.renarj.jasdb.api.EmbeddedEntity;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.metadata.Grant;
-import nl.renarj.jasdb.api.metadata.GrantObject;
-import nl.renarj.jasdb.api.properties.EntityValue;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.Value;
+import com.oberasoftware.jasdb.core.EmbeddedEntity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.security.AccessMode;
+import com.oberasoftware.jasdb.api.model.Grant;
+import com.oberasoftware.jasdb.api.model.GrantObject;
+import com.oberasoftware.jasdb.core.properties.EntityValue;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.session.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class GrantObjectMeta implements GrantObject {
         }
     }
 
-    public static GrantObject fromEntity(SimpleEntity entity) {
+    public static GrantObject fromEntity(Entity entity) {
         String grantObject = entity.getValue(Constants.GRANT_OBJECT).toString();
         Map<String, Grant> userGrants = new ConcurrentHashMap<>();
         Property grantsProperty = entity.getProperty(Constants.GRANTS);

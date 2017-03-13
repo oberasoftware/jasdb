@@ -7,10 +7,11 @@
  */
 package com.oberasoftware.jasdb.engine.metadata;
 
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class BagMeta implements Bag {
         this.indexDefinitions = indexDefinitions;
     }
 
-    public static BagMeta fromEntity(SimpleEntity entity) throws JasDBStorageException {
+    public static BagMeta fromEntity(Entity entity) throws JasDBStorageException {
         String instance = entity.getValue(Constants.INSTANCE).toString();
         String name = entity.getValue(Constants.NAME).toString();
 

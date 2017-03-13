@@ -1,6 +1,6 @@
 package com.obera.jasdb.console;
 
-import nl.renarj.core.utilities.configuration.Configuration;
+import com.oberasoftware.jasdb.core.utils.configuration.Configuration;
 import nl.renarj.jasdb.core.ConfigurationLoader;
 import nl.renarj.jasdb.core.RemoteService;
 import nl.renarj.jasdb.core.exceptions.ConfigurationException;

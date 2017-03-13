@@ -1,11 +1,11 @@
 package com.oberasoftware.jasdb.service.local;
 
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.context.Credentials;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.DBSessionFactory;
+import com.oberasoftware.jasdb.api.security.Credentials;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
 
 /**
  * @author Renze de Vries

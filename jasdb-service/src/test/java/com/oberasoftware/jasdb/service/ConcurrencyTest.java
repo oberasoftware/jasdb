@@ -1,15 +1,16 @@
 package com.oberasoftware.jasdb.service;
 
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.local.LocalDBSession;
-import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.core.statistics.StatisticsMonitor;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.index.keys.types.StringKeyType;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class ConcurrencyTest {
 	private List<String> createData(int amount, boolean shutdownKernel) throws JasDBException {
 		DBSession pojoDb = new LocalDBSession();
 		EntityBag bag = pojoDb.createOrGetBag(TESTBAG);
-        bag.ensureIndex(new IndexField("invertedkey", new StringKeyType(20)), false);
+        bag.ensureIndex(new SimpleIndexField("invertedkey", new StringKeyType(20)), false);
 
 		try {
 			log.info("Starting data preperations");
@@ -332,7 +333,7 @@ public class ConcurrencyTest {
 
         EntityBag bag = new LocalDBSession().createOrGetBag(TESTBAG);
         for(String updateId : createdIds) {
-            SimpleEntity entity = bag.getEntity(updateId);
+            Entity entity = bag.getEntity(updateId);
             Assert.assertTrue(entity.hasProperty(NEW_PROPERTY));
             assertEquals("Unexpected value after update", MY_NEW_VALUE, entity.getProperty(NEW_PROPERTY).getFirstValueObject());
         }
@@ -363,7 +364,7 @@ public class ConcurrencyTest {
         EntityBag entityBag = session.getBag(TESTBAG);
 
 		for(String id : ids) {
-            SimpleEntity entity = entityBag.getEntity(id);
+            Entity entity = entityBag.getEntity(id);
 
 			assertNotNull("There should be an entity present for id: " + id, entity);
 		}
@@ -405,7 +406,7 @@ public class ConcurrencyTest {
             for(String removeId : removeIds) {
                 if(shouldContinue()) {
                     try {
-                        SimpleEntity entity = bag.getEntity(removeId);
+                        Entity entity = bag.getEntity(removeId);
                         if(entity != null) {
                             long start = System.nanoTime();
                             bag.removeEntity(entity);
@@ -456,7 +457,7 @@ public class ConcurrencyTest {
             for(String id : updateIds) {
                 if(shouldContinue()) {
                     try {
-                        SimpleEntity entity = bag.getEntity(id);
+                        Entity entity = bag.getEntity(id);
                         if(entity != null) {
                             entity.addProperty(NEW_PROPERTY, MY_NEW_VALUE);
                             long start = System.nanoTime();
@@ -520,7 +521,7 @@ public class ConcurrencyTest {
 				String internalId = internalIds.get(rnd.nextInt(internalIds.size()));
 				try {
 					long startRecord = System.nanoTime();
-					SimpleEntity entity = this.bag.getEntity(internalId);
+                    Entity entity = this.bag.getEntity(internalId);
 					long endRecord = System.nanoTime();
 					long timePassed = (endRecord - startRecord);
 					

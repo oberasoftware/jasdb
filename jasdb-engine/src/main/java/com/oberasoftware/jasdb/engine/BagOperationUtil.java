@@ -7,21 +7,22 @@
  */
 package com.oberasoftware.jasdb.engine;
 
-import nl.renarj.core.statistics.StatRecord;
-import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.exceptions.MetadataParseException;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.streams.ClonableByteArrayInputStream;
-import nl.renarj.jasdb.core.streams.ClonableDataStream;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.factory.KeyFactory;
-import nl.renarj.jasdb.index.keys.impl.CompositeKey;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapperImpl;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.statistics.StatRecord;
+import com.oberasoftware.jasdb.core.statistics.StatisticsMonitor;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.MetadataParseException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.core.storage.ClonableByteArrayInputStream;
+import com.oberasoftware.jasdb.api.storage.ClonableDataStream;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.api.index.keys.KeyFactory;
+import com.oberasoftware.jasdb.core.index.keys.CompositeKey;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.core.index.keys.keyinfo.KeyNameMapperImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class BagOperationUtil {
         DEFAULT_DOC_ID_MAPPER.addMappedField(0, SimpleEntity.DOCUMENT_ID);
     }
 
-    public static ClonableDataStream toStream(SimpleEntity entity) throws JasDBStorageException {
+    public static ClonableDataStream toStream(Entity entity) throws JasDBStorageException {
         try {
             String entityJson = SimpleEntity.toJson(entity);
 
@@ -57,11 +58,11 @@ public class BagOperationUtil {
         }
     }
 
-    public static SimpleEntity toEntity(InputStream stream) throws JasDBStorageException {
+    public static Entity toEntity(InputStream stream) throws JasDBStorageException {
         return SimpleEntity.fromStream(stream);
     }
 
-    public static Set<Key> createEntityKeys(SimpleEntity entity, Index index) throws JasDBStorageException {
+    public static Set<Key> createEntityKeys(Entity entity, Index index) throws JasDBStorageException {
         StatRecord createKey = StatisticsMonitor.createRecord("bag:createKey");
         KeyFactory keyFactory = index.getKeyInfo().getKeyFactory();
         Set<Key> insertKeys;
@@ -86,14 +87,14 @@ public class BagOperationUtil {
 
     public static Key recordToKey(RecordResult recordResult) {
         try {
-            SimpleEntity entity = toEntity(recordResult.getStream());
+            Entity entity = toEntity(recordResult.getStream());
             return entityToKey(entity);
         } catch (JasDBStorageException e) {
             throw new RuntimeJasDBException("Unable to read record Document Id", e);
         }
     }
 
-    public static Key entityToKey(SimpleEntity entity) throws JasDBStorageException {
+    public static Key entityToKey(Entity entity) throws JasDBStorageException {
         CompositeKey compositeKey = new CompositeKey();
         compositeKey.addKey(DEFAULT_DOC_ID_MAPPER, SimpleEntity.DOCUMENT_ID, new UUIDKey(entity.getInternalId()));
 

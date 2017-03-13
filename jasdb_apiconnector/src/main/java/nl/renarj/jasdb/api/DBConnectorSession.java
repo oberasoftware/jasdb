@@ -7,13 +7,15 @@
  */
 package nl.renarj.jasdb.api;
 
-import nl.renarj.jasdb.api.context.Credentials;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.Instance;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.locator.NodeInformation;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.UserAdministration;
+import com.oberasoftware.jasdb.api.security.Credentials;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
 import nl.renarj.jasdb.remote.BagConnector;
 import nl.renarj.jasdb.remote.InstanceConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;

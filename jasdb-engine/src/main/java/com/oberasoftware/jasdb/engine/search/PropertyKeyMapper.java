@@ -7,15 +7,15 @@
  */
 package com.oberasoftware.jasdb.engine.search;
 
-import nl.renarj.jasdb.api.properties.IntegerValue;
-import nl.renarj.jasdb.api.properties.LongValue;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.StringValue;
-import nl.renarj.jasdb.api.properties.Value;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.impl.LongKey;
-import nl.renarj.jasdb.index.keys.impl.StringKey;
+import com.oberasoftware.jasdb.core.properties.IntegerValue;
+import com.oberasoftware.jasdb.core.properties.LongValue;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.core.properties.StringValue;
+import com.oberasoftware.jasdb.api.session.Value;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.core.index.keys.LongKey;
+import com.oberasoftware.jasdb.core.index.keys.StringKey;
 
 import java.util.HashSet;
 import java.util.List;

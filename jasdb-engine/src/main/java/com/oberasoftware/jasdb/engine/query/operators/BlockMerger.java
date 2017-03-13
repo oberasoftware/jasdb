@@ -7,8 +7,8 @@
  */
 package com.oberasoftware.jasdb.engine.query.operators;
 
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.query.IndexSearchResultIteratorCollection;
 
 public interface BlockMerger {
 	public IndexSearchResultIteratorCollection mergeIterators(IndexSearchResultIteratorCollection mergeInto, IndexSearchResultIteratorCollection... results) throws JasDBStorageException;

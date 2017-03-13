@@ -2,14 +2,14 @@ package com.oberasoftware.jasdb.entitymapper.types;
 
 import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
-import nl.renarj.jasdb.api.EmbeddedEntity;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.properties.EntityValue;
-import nl.renarj.jasdb.api.properties.MultivalueProperty;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.Value;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.session.Value;
+import com.oberasoftware.jasdb.core.EmbeddedEntity;
+import com.oberasoftware.jasdb.core.properties.EntityValue;
+import com.oberasoftware.jasdb.core.properties.MultivalueProperty;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public class MapEntityMapper implements TypeMapper<Map<String, ?>> {
     @Override
     public Object mapFromProperty(PropertyMetadata propertyMetadata, Property property) {
         EntityValue entityValue = (EntityValue) property.getFirstValue();
-        SimpleEntity embeddedEntity = entityValue.getValue();
+        Entity embeddedEntity = entityValue.getValue();
         List<Property> embeddedProperties = embeddedEntity.getProperties();
 
         Map<String, Object> properties = new HashMap<>();

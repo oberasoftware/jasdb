@@ -7,7 +7,7 @@
  */
 package nl.renarj.jasdb.remote.exceptions;
 
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 /**
  * User: renarj

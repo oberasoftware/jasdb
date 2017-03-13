@@ -7,13 +7,13 @@
  */
 package nl.renarj.jasdb.api;
 
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.index.result.SearchLimit;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.session.query.SortParameter;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
 import nl.renarj.jasdb.remote.EntityConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;

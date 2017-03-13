@@ -1,10 +1,10 @@
 package com.oberasoftware.jasdb.engine.query.operators;
 
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorImpl;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.core.index.keys.KeyUtil;
+import com.oberasoftware.jasdb.api.index.query.IndexSearchResultIteratorCollection;
+import com.oberasoftware.jasdb.core.index.query.IndexSearchResultIteratorImpl;
 
 import java.util.HashSet;
 import java.util.Iterator;

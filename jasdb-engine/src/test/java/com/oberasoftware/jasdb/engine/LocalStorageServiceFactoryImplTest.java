@@ -2,11 +2,11 @@ package com.oberasoftware.jasdb.engine;
 
 import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 import com.oberasoftware.jasdb.engine.metadata.InstanceMeta;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -94,7 +94,6 @@ public class LocalStorageServiceFactoryImplTest {
         assertNotNull(storageService);
         assertThat(storageService, is(this.storageService));
         verify(storageService, times(1)).openService(eq(configuration));
-        verify(storageService, times(1)).initializePartitions();
 
         StorageService nonExistingStorageService = storageServiceFactory.getStorageService(TEST_INSTANCE, NONEXISTING_BAG);
         assertNull(nonExistingStorageService);
@@ -113,14 +112,12 @@ public class LocalStorageServiceFactoryImplTest {
         assertNotNull(storageService);
         assertThat(storageService, is(storageService));
         verify(storageService, times(1)).openService(eq(configuration));
-        verify(storageService, times(1)).initializePartitions();
 
 
         StorageService newStorageservice = storageServiceFactory.getOrCreateStorageService(TEST_INSTANCE, NONEXISTING_BAG);
         assertNotNull(newStorageservice);
         assertThat(newStorageservice, is(storageService2));
         verify(newStorageservice, times(1)).openService(eq(configuration));
-        verify(newStorageservice, times(1)).initializePartitions();
 
         ArgumentCaptor<BagMeta> bagMetaArgumentCaptor = ArgumentCaptor.forClass(BagMeta.class);
         verify(metadataStore, times(1)).addBag(bagMetaArgumentCaptor.capture());
@@ -143,7 +140,6 @@ public class LocalStorageServiceFactoryImplTest {
         assertNotNull(storageService);
         assertThat(storageService, is(storageService));
         verify(storageService, times(1)).openService(eq(configuration));
-        verify(storageService, times(1)).initializePartitions();
 
         storageServiceFactory.removeStorageService(TEST_INSTANCE, TEST_BAG_NAME);
 
@@ -172,13 +168,11 @@ public class LocalStorageServiceFactoryImplTest {
         assertNotNull(storageService);
         assertThat(storageService, is(this.storageService));
         verify(storageService, times(1)).openService(eq(configuration));
-        verify(storageService, times(1)).initializePartitions();
 
         storageService = storageServiceFactory.getOrCreateStorageService(TEST_INSTANCE, "bag2");
         assertNotNull(storageService);
         assertThat(storageService, is(this.storageService2));
         verify(storageService, times(1)).openService(eq(configuration));
-        verify(storageService, times(1)).initializePartitions();
 
         storageServiceFactory.removeAllStorageService(TEST_INSTANCE);
 

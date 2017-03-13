@@ -7,12 +7,12 @@
  */
 package com.oberasoftware.jasdb.engine;
 
-import nl.renarj.jasdb.api.DBInstance;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.Instance;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.DBInstance;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 import java.util.List;
 

@@ -1,14 +1,15 @@
 package com.oberasoftware.jasdb.acl;
 
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.acl.SessionManager;
-import nl.renarj.jasdb.api.acl.UserManager;
-import nl.renarj.jasdb.api.acl.UserSession;
-import nl.renarj.jasdb.api.context.Credentials;
-import nl.renarj.jasdb.api.metadata.User;
-import nl.renarj.jasdb.core.crypto.CryptoEngine;
-import nl.renarj.jasdb.core.crypto.CryptoFactory;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.security.AccessMode;
+import com.oberasoftware.jasdb.api.security.SessionManager;
+import com.oberasoftware.jasdb.api.security.UserManager;
+import com.oberasoftware.jasdb.api.security.UserSession;
+import com.oberasoftware.jasdb.api.security.Credentials;
+import com.oberasoftware.jasdb.api.model.User;
+import com.oberasoftware.jasdb.api.security.CryptoEngine;
+import com.oberasoftware.jasdb.core.crypto.CryptoFactory;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.security.UserSessionImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -1,10 +1,10 @@
 package nl.renarj.jasdb.remote;
 
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
+import com.oberasoftware.jasdb.api.session.query.SortParameter;
 import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.index.result.SearchLimit;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.List;
  */
 public interface EntityConnector extends  RemoteConnector {
     /* All entity modification operations */
-    SimpleEntity insertEntity(RemotingContext context, String instance, String bag, SimpleEntity entity) throws RemoteException;
+    Entity insertEntity(RemotingContext context, String instance, String bag, Entity entity) throws RemoteException;
 
-    SimpleEntity updateEntity(RemotingContext context, String instance, String bag, SimpleEntity entity) throws RemoteException;
+    Entity updateEntity(RemotingContext context, String instance, String bag, Entity entity) throws RemoteException;
 
     boolean removeEntity(RemotingContext context, String instance, String bag, String entityId) throws RemoteException;
 
@@ -27,5 +27,5 @@ public interface EntityConnector extends  RemoteConnector {
 
     QueryResult find(RemotingContext context, String instance, String bag, int max) throws RemoteException;
 
-    SimpleEntity findById(RemotingContext context, String instance, String bag, String id) throws RemoteException;
+    Entity findById(RemotingContext context, String instance, String bag, String id) throws RemoteException;
 }

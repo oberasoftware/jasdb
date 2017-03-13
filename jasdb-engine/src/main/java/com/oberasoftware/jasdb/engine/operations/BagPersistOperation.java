@@ -1,11 +1,11 @@
 package com.oberasoftware.jasdb.engine.operations;
 
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
 import com.oberasoftware.jasdb.engine.RecordWriterFactoryLoader;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +30,9 @@ public class BagPersistOperation implements DataOperation {
     private RecordWriterFactoryLoader recordWriterFactory;
 
     @Override
-    public void doDataOperation(String instanceId, String bag, SimpleEntity entity) throws JasDBStorageException {
+    public void doDataOperation(String instanceId, String bag, Entity entity) throws JasDBStorageException {
         UUIDKey documentKey = new UUIDKey(entity.getInternalId());
-        RecordWriter recordWriter = recordWriterFactory.loadRecordWriter(instanceId, bag);
+        RecordWriter<UUIDKey> recordWriter = recordWriterFactory.loadRecordWriter(instanceId, bag);
         RecordResult result = recordWriter.readRecord(documentKey);
 
         if(result != null && result.isRecordFound()) {

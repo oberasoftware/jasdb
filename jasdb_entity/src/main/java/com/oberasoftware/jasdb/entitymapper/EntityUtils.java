@@ -2,8 +2,8 @@ package com.oberasoftware.jasdb.entitymapper;
 
 import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Property;
 import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;

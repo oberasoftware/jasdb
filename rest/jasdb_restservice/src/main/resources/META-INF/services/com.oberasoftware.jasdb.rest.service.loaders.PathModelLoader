@@ -1,0 +1,8 @@
+com.oberasoftware.jasdb.rest.service.loaders.InstanceModelLoader
+com.oberasoftware.jasdb.rest.service.loaders.BagModelLoader
+com.oberasoftware.jasdb.rest.service.loaders.EntityModelLoader
+com.oberasoftware.jasdb.rest.service.loaders.CacheModelLoader
+com.oberasoftware.jasdb.rest.service.loaders.StatisticsModelLoader
+com.oberasoftware.jasdb.rest.service.loaders.IndexModelLoader
+com.oberasoftware.jasdb.rest.service.loaders.UserModelLoader
+com.oberasoftware.jasdb.rest.service.loaders.GrantModelLoader

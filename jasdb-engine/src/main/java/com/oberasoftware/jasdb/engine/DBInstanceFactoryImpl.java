@@ -1,13 +1,13 @@
 package com.oberasoftware.jasdb.engine;
 
 import com.oberasoftware.jasdb.engine.metadata.JasDBMetadataStore;
-import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.jasdb.api.DBInstance;
-import nl.renarj.jasdb.api.DBInstanceFactory;
-import nl.renarj.jasdb.api.metadata.Instance;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.api.session.DBInstance;
+import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,9 @@
 package com.oberasoftware.jasdb.acl;
 
+import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.engine.metadata.Constants;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.User;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.model.User;
 
 /**
  * @author Renze de Vries
@@ -26,7 +27,7 @@ public final class UserMeta implements User {
         this.engine = engine;
     }
 
-    public static User fromEntity(SimpleEntity entity) {
+    public static User fromEntity(Entity entity) {
         String userName = entity.getValue(Constants.USER_NAME).toString();
         String host = entity.getValue(Constants.HOST).toString();
         String contentKey = entity.getValue(Constants.USER_CONTENT_KEY).toString();

@@ -7,7 +7,7 @@
  */
 package nl.renarj.jasdb.remote;
 
-import nl.renarj.jasdb.api.context.RequestContext;
+import com.oberasoftware.jasdb.core.context.RequestContext;
 
 /**
  * @author Renze de Vries

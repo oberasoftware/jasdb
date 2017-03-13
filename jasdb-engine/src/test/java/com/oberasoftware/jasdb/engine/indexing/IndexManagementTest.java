@@ -2,25 +2,26 @@ package com.oberasoftware.jasdb.engine.indexing;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.Instance;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.IndexState;
-import nl.renarj.jasdb.index.keys.impl.StringKey;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
-import nl.renarj.jasdb.index.keys.types.LongKeyType;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.keys.types.UUIDKeyType;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.core.index.query.SimpleCompositeIndexField;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.IndexState;
+import com.oberasoftware.jasdb.core.index.keys.StringKey;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.api.index.keys.KeyInfo;
+import com.oberasoftware.jasdb.core.index.keys.keyinfo.KeyInfoImpl;
+import com.oberasoftware.jasdb.core.index.keys.types.LongKeyType;
+import com.oberasoftware.jasdb.core.index.keys.types.StringKeyType;
+import com.oberasoftware.jasdb.core.index.keys.types.UUIDKeyType;
+import com.oberasoftware.jasdb.api.index.CompositeIndexField;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,7 +87,7 @@ public class IndexManagementTest {
             when(instance.getPath()).thenReturn(instanceDirectory.toString());
             when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
 
-            Index createdIndex = indexManager.createIndex(TESTBAG, new IndexField("testkey", new StringKeyType()), true, new IndexField("payload", new StringKeyType()));
+            Index createdIndex = indexManager.createIndex(TESTBAG, new SimpleIndexField("testkey", new StringKeyType()), true, new SimpleIndexField("payload", new StringKeyType()));
 
             File indexFile = new File(instanceDirectory, "testbag_testkey.idx");
 
@@ -101,7 +102,7 @@ public class IndexManagementTest {
                     .addKey(index.getKeyInfo().getKeyNameMapper(), "payload", new StringKey("testvalue"))
                     .addKey(index.getKeyInfo().getKeyNameMapper(), "__ID", new UUIDKey(UUID.randomUUID())));
 
-            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("testkey", new StringKeyType())), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new SimpleIndexField("testkey", new StringKeyType())), Lists.newArrayList(new SimpleIndexField("payload", new StringKeyType()), new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
             IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
 
             verify(metadataStore, times(1)).addBagIndex(TEST_INSTANCE, TESTBAG, definition);
@@ -119,7 +120,7 @@ public class IndexManagementTest {
             when(instance.getPath()).thenReturn(instanceDirectory.toString());
             when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
 
-            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("testkey", new StringKeyType())), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new SimpleIndexField("testkey", new StringKeyType())), Lists.newArrayList(new SimpleIndexField("payload", new StringKeyType()), new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
             IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), IndexTypes.BTREE.getType());
 
             Bag bag = mock(Bag.class);
@@ -151,7 +152,7 @@ public class IndexManagementTest {
             when(instance.getPath()).thenReturn(instanceDirectory.toString());
             when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
 
-            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new IndexField("testkey", new StringKeyType())), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(new SimpleIndexField("testkey", new StringKeyType())), Lists.newArrayList(new SimpleIndexField("payload", new StringKeyType()), new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
             IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), IndexTypes.BTREE.getType());
 
             Bag bag = mock(Bag.class);
@@ -177,7 +178,7 @@ public class IndexManagementTest {
     @Test
     public void testCreateUniqueComplexIndex() throws JasDBStorageException, IOException {
         try {
-            CompositeIndexField complexIndexField = new CompositeIndexField(new IndexField("field1", new StringKeyType(100)), new IndexField("field2", new LongKeyType()));
+            CompositeIndexField complexIndexField = new SimpleCompositeIndexField(new SimpleIndexField("field1", new StringKeyType(100)), new SimpleIndexField("field2", new LongKeyType()));
 
             File instanceDirectory = temporaryFolder.newFolder();
 
@@ -189,7 +190,7 @@ public class IndexManagementTest {
             when(instance.getPath()).thenReturn(instanceDirectory.toString());
             when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
 
-            Index createdIndex = indexManager.createIndex(TESTBAG, complexIndexField, true, new IndexField("payload", new StringKeyType()));
+            Index createdIndex = indexManager.createIndex(TESTBAG, complexIndexField, true, new SimpleIndexField("payload", new StringKeyType()));
 
             File indexFile = new File(instanceDirectory, "testbag_field1field2.idx");
 
@@ -200,7 +201,7 @@ public class IndexManagementTest {
             index.flushIndex();
             assertTrue("There should be an index", indexFile.exists());
 
-            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(complexIndexField.getIndexFields()), Lists.newArrayList(new IndexField("payload", new StringKeyType()), new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
+            KeyInfo keyInfo = new KeyInfoImpl(Lists.newArrayList(complexIndexField.getIndexFields()), Lists.newArrayList(new SimpleIndexField("payload", new StringKeyType()), new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())));
             IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
 
             verify(metadataStore, times(1)).addBagIndex(TEST_INSTANCE, TESTBAG, definition);
@@ -222,9 +223,9 @@ public class IndexManagementTest {
             when(instance.getPath()).thenReturn(instanceDirectory.toString());
             when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
 
-            indexManager.createIndex(TESTBAG, new IndexField("field1", new StringKeyType(100)), false);
-            indexManager.createIndex(TESTBAG, new IndexField("field2", new StringKeyType(100)), false);
-            indexManager.createIndex(TESTBAG, new IndexField("field3", new StringKeyType(100)), false);
+            indexManager.createIndex(TESTBAG, new SimpleIndexField("field1", new StringKeyType(100)), false);
+            indexManager.createIndex(TESTBAG, new SimpleIndexField("field2", new StringKeyType(100)), false);
+            indexManager.createIndex(TESTBAG, new SimpleIndexField("field3", new StringKeyType(100)), false);
 
             assertThat(indexManager.getIndexes(TESTBAG).size(), is(3));
 
@@ -252,8 +253,8 @@ public class IndexManagementTest {
             when(instance.getPath()).thenReturn(instanceDirectory.toString());
             when(metadataStore.getInstance(TEST_INSTANCE)).thenReturn(instance);
 
-            indexManager.createIndex(TESTBAG, new IndexField("field1", new StringKeyType()), false);
-            indexManager.createIndex(TESTBAG, new CompositeIndexField(new IndexField("field1", new StringKeyType()), new IndexField("field2", new StringKeyType())), false);
+            indexManager.createIndex(TESTBAG, new SimpleIndexField("field1", new StringKeyType()), false);
+            indexManager.createIndex(TESTBAG, new SimpleCompositeIndexField(new SimpleIndexField("field1", new StringKeyType()), new SimpleIndexField("field2", new StringKeyType())), false);
 
             Map<String, Index> indexes = indexManager.getIndexes(TESTBAG);
             assertThat(indexes.containsKey("field1ID"), is(true));

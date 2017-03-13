@@ -7,20 +7,24 @@
  */
 package com.oberasoftware.jasdb.engine.query;
 
+import com.oberasoftware.jasdb.core.index.keys.LongKey;
+import com.oberasoftware.jasdb.core.index.keys.StringKey;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
 import com.oberasoftware.jasdb.engine.query.operators.AndBlock;
 import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
 import com.oberasoftware.jasdb.engine.query.operators.OrBlock;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryField;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.search.EqualsCondition;
-import nl.renarj.jasdb.index.search.NotEqualsCondition;
-import nl.renarj.jasdb.index.search.RangeCondition;
-import nl.renarj.jasdb.index.search.SearchCondition;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryField;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.core.index.query.EqualsCondition;
+import com.oberasoftware.jasdb.core.index.query.NotEqualsCondition;
+import com.oberasoftware.jasdb.core.index.query.RangeCondition;
+import com.oberasoftware.jasdb.api.index.query.SearchCondition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * User: renarj
@@ -94,20 +98,31 @@ public class BuilderTransformer {
     }
 
     private static SearchCondition createCondition(QueryField queryField) {
+        Key searchKey = valueToKey(queryField.getSearchKey());
         switch(queryField.getOperator()) {
             case LARGER_THAN:
-                return new RangeCondition(queryField.getSearchKey(), false, null, false);
+                return new RangeCondition(searchKey, false, null, false);
             case LARGER_THAN_OR_EQUALS:
-                return new RangeCondition(queryField.getSearchKey(), true, null, false);
+                return new RangeCondition(searchKey, true, null, false);
             case SMALLER_THAN:
-                return new RangeCondition(null,  false, queryField.getSearchKey(), false);
+                return new RangeCondition(null,  false, searchKey, false);
             case SMALLER_THAN_OR_EQUALS:
-                return new RangeCondition(null,  false, queryField.getSearchKey(), true);
+                return new RangeCondition(null,  false, searchKey, true);
             case NOT_EQUALS:
-                return new NotEqualsCondition(queryField.getSearchKey());
+                return new NotEqualsCondition(searchKey);
             case EQUALS:
             default:
-                return new EqualsCondition(queryField.getSearchKey());
+                return new EqualsCondition(searchKey);
+        }
+    }
+
+    private static Key valueToKey(Object value) {
+        if(value instanceof Long) {
+            return new LongKey((long) value);
+        } else if(value instanceof UUID) {
+            return new UUIDKey((UUID)value);
+        } else {
+            return new StringKey(value.toString());
         }
     }
 

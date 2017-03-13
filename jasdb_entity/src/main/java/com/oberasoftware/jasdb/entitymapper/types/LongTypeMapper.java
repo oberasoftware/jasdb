@@ -2,11 +2,11 @@ package com.oberasoftware.jasdb.entitymapper.types;
 
 import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
-import nl.renarj.jasdb.api.properties.LongValue;
-import nl.renarj.jasdb.api.properties.MultivalueProperty;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.Value;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.session.Value;
+import com.oberasoftware.jasdb.core.properties.LongValue;
+import com.oberasoftware.jasdb.core.properties.MultivalueProperty;
 import org.springframework.stereotype.Component;
 
 /**

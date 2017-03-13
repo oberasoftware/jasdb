@@ -1,13 +1,18 @@
 package com.oberasoftware.jasdb.engine.metadata;
 
+import com.oberasoftware.jasdb.api.engine.MetadataProvider;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.utils.FileUtils;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.*;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.utils.FileUtils;
-import nl.renarj.jasdb.storage.transactional.FSWriter;
-import nl.renarj.jasdb.storage.transactional.RecordIteratorImpl;
-import nl.renarj.jasdb.storage.transactional.RecordResultImpl;
+import com.oberasoftware.jasdb.writer.transactional.FSWriter;
+import com.oberasoftware.jasdb.writer.transactional.RecordIteratorImpl;
+import com.oberasoftware.jasdb.writer.transactional.RecordResultImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -88,7 +93,7 @@ public class JasDBMetadataStore implements MetadataStore {
     private void loadRecords() throws JasDBStorageException {
         for(RecordIteratorImpl recordIterator = writer.readAllRecords(); recordIterator.hasNext(); ) {
             RecordResultImpl recordResult = recordIterator.next();
-            SimpleEntity entity = SimpleEntity.fromStream(recordResult.getStream());
+            Entity entity = SimpleEntity.fromStream(recordResult.getStream());
             String type = entity.getValue(Constants.META_TYPE).toString();
             if(type.equals(Constants.INSTANCE_TYPE)) {
                 InstanceMeta instance = InstanceMeta.fromEntity(entity);
@@ -131,12 +136,12 @@ public class JasDBMetadataStore implements MetadataStore {
     }
 
     @Override
-    public long addMetadataEntity(SimpleEntity entity) throws JasDBStorageException {
+    public long addMetadataEntity(Entity entity) throws JasDBStorageException {
         return writer.writeRecord(SimpleEntity.toJson(entity), null);
     }
 
     @Override
-    public long updateMetadataEntity(SimpleEntity entity, long previousRecord) throws JasDBStorageException {
+    public long updateMetadataEntity(Entity entity, long previousRecord) throws JasDBStorageException {
         return writer.updateRecord(SimpleEntity.toJson(entity), () -> of(previousRecord), null);
     }
 

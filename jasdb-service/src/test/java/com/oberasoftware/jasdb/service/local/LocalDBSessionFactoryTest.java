@@ -2,8 +2,8 @@ package com.oberasoftware.jasdb.service.local;
 
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

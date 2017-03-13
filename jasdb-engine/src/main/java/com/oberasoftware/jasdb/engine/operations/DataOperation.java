@@ -1,8 +1,8 @@
 package com.oberasoftware.jasdb.engine.operations;
 
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 public interface DataOperation {
-	void doDataOperation(String instanceId, String bag, SimpleEntity entity) throws JasDBStorageException;
+	void doDataOperation(String instanceId, String bag, Entity entity) throws JasDBStorageException;
 }

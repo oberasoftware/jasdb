@@ -1,18 +1,15 @@
 package com.oberasoftware.jasdb.entitymapper;
 
-import com.oberasoftware.jasdb.api.entitymapper.EntityMapper;
-import com.oberasoftware.jasdb.api.entitymapper.EntityMetadata;
-import com.oberasoftware.jasdb.api.entitymapper.MapResult;
-import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
-import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
+import com.oberasoftware.jasdb.api.entitymapper.*;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
-import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +25,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static com.oberasoftware.core.utils.AnnotationUtils.getAnnotation;
-import static com.oberasoftware.core.utils.AnnotationUtils.getOptionalAnnotation;
+import static com.oberasoftware.jasdb.core.utils.AnnotationUtils.getAnnotation;
+import static com.oberasoftware.jasdb.core.utils.AnnotationUtils.getOptionalAnnotation;
 import static com.oberasoftware.jasdb.entitymapper.types.TypeMapperFactory.getTypeMapper;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -99,7 +96,7 @@ public class AnnotationEntityMapper implements EntityMapper {
     }
 
     @Override
-    public <T> T mapFrom(Class<T> targetType, SimpleEntity entity) throws JasDBStorageException {
+    public <T> T mapFrom(Class<T> targetType, Entity entity) throws JasDBStorageException {
         try {
             if(entity != null) {
                 Object instance = targetType.newInstance();

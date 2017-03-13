@@ -1,16 +1,17 @@
 package com.oberasoftware.jasdb.test;
 
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.Instance;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.DBSessionFactory;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.core.index.keys.types.StringKeyType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -126,7 +127,7 @@ public abstract class DBSessionTest {
 
         QueryResult result = bag.getEntities();
         assertThat(result.size(), is(1l));
-        SimpleEntity entity = result.next();
+        Entity entity = result.next();
         assertThat(entity, notNullValue());
         assertThat(entity.getProperty("test").getFirstValue().toString(), is("value"));
     }
@@ -210,7 +211,7 @@ public abstract class DBSessionTest {
     public void testBagRemove() throws JasDBException {
         DBSession session = sessionFactory.createSession();
         EntityBag bag = session.createOrGetBag("testbag1");
-        bag.ensureIndex(new IndexField("field1", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("field1", new StringKeyType()), false);
         assertTrue(new File(jasdbHome, "testbag1.pjs").exists());
         assertTrue(new File(jasdbHome, "testbag1_field1ID.idx").exists());
         assertEquals(1, session.getBags().size());
@@ -227,7 +228,7 @@ public abstract class DBSessionTest {
         session.addAndSwitchInstance(MY_INSTANCE);
 
         EntityBag bag = session.createOrGetBag("testbag1");
-        bag.ensureIndex(new IndexField("field1", new StringKeyType()), false);
+        bag.ensureIndex(new SimpleIndexField("field1", new StringKeyType()), false);
         assertTrue(new File(newInstanceFolder, "testbag1.pjs").exists());
         assertTrue(new File(newInstanceFolder, "testbag1_field1ID.idx").exists());
         assertEquals(1, session.getBags().size());

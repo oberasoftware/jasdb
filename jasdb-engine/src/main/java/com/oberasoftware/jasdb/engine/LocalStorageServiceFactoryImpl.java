@@ -1,15 +1,15 @@
 package com.oberasoftware.jasdb.engine;
 
 import com.oberasoftware.jasdb.engine.metadata.BagMeta;
-import nl.renarj.core.exceptions.CoreConfigException;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.core.utilities.conversion.ValueConverterUtil;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.Instance;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.CoreConfigException;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.core.utils.conversion.ValueConverterUtil;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +98,6 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
                 Instance instance = metadataStore.getInstance(instanceId);
                 StorageService serviceInstance = createStorageServiceInstance(instance, bagName);
                 serviceInstance.openService(configurationLoader.getConfiguration());
-                serviceInstance.initializePartitions();
 
                 storageServices.put(key, serviceInstance); //wrappedInstance);
                 return serviceInstance;

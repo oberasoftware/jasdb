@@ -1,8 +1,9 @@
 package nl.renarj.jasdb.api;
 
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.locator.NodeInformation;
+import com.oberasoftware.jasdb.api.session.UserAdministration;
+import com.oberasoftware.jasdb.api.security.AccessMode;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;
 import nl.renarj.jasdb.remote.UserConnector;

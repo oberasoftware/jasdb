@@ -1,6 +1,6 @@
 package nl.renarj.jasdb.remote;
 
-import nl.renarj.jasdb.api.acl.UserSession;
+import com.oberasoftware.jasdb.api.security.UserSession;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 
 /**

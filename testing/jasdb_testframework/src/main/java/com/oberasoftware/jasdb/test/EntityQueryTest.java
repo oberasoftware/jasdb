@@ -7,22 +7,19 @@
  */
 package com.oberasoftware.jasdb.test;
 
+import com.oberasoftware.jasdb.api.session.*;
+import com.oberasoftware.jasdb.core.index.query.SimpleCompositeIndexField;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.EmbeddedEntity;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.properties.EntityValue;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.query.BlockType;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.core.EmbeddedEntity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.properties.EntityValue;
+import com.oberasoftware.jasdb.api.session.query.BlockType;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.index.keys.types.StringKeyType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -78,7 +75,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertNotNull("There should be a returned entity", entity);
             assertEquals("The id's should match", expectedId, entity.getInternalId());
 
@@ -112,7 +109,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
                 try (QueryResult result = executor.execute()) {
                     int expected = NUMBER_ENTITIES - ageAmounts.get((long) age);
 
-                    for (SimpleEntity entity : result) {
+                    for (Entity entity : result) {
                         assertThat(entity.getValue("age").toString(), not(equalTo(String.valueOf(age))));
                     }
                     assertThat(result.size(), is((long) expected));
@@ -144,7 +141,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertNotNull("There should be a returned entity", entity);
             assertEquals("The id's should match", expectedId, entity.getInternalId());
 
@@ -181,7 +178,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertNotNull("There should be a returned entity", entity);
             assertEquals("The id's should match", expectedId, entity.getInternalId());
 
@@ -190,7 +187,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             assertTrue("Property should be long", property.getFirstValueObject() instanceof EmbeddedEntity);
 
             EntityValue value = (EntityValue) property.getFirstValue();
-            SimpleEntity embedEntity = value.toEntity();
+            Entity embedEntity = value.toEntity();
 
             assertNotNull("Property should be set", embedEntity);
 
@@ -220,7 +217,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertNotNull("There should be a returned entity", entity);
             assertEquals("The id's should match", expectedId, entity.getInternalId());
 
@@ -229,7 +226,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             assertTrue("Property should be long", property.getFirstValueObject() instanceof EmbeddedEntity);
 
             EntityValue value = (EntityValue) property.getFirstValue();
-            SimpleEntity embedEntity = value.toEntity();
+            Entity embedEntity = value.toEntity();
 
             assertNotNull("Property should be set", embedEntity);
 
@@ -291,9 +288,9 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity1 = result.next();
+            Entity entity1 = result.next();
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity2 = result.next();
+            Entity entity2 = result.next();
 
             assertNotNull("There should be a returned entity", entity1);
             assertEquals("The id's should match", expectedId1, entity1.getInternalId());
@@ -320,7 +317,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
                             Long counter = (long) cityCounters.get(city + "_" + i);
                             assertEquals(counter, new Long(result.size()));
 
-                            for (SimpleEntity entity : result) {
+                            for (Entity entity : result) {
                                 assertEquals((long) i, (long)entity.getProperty("age").getFirstValueObject());
                                 assertEquals(city, entity.getProperty("mainCity").getFirstValueObject());
                             }
@@ -474,7 +471,7 @@ public abstract class EntityQueryTest extends QueryBaseTest {
             QueryExecutor executor = bag.find(QueryBuilder.createBuilder().field("field1").value("coëfficiënt van Poisson"));
             QueryResult result = executor.execute();
             assertTrue(result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertEquals("coëfficiënt van Poisson", entity.getProperty("field1").getFirstValueObject());
             assertFalse(result.hasNext());
         } finally {
@@ -489,11 +486,11 @@ public abstract class EntityQueryTest extends QueryBaseTest {
         EntityBag bag = pojoDb.createOrGetBag("homeautotest");
 
         bag.ensureIndex(
-                new CompositeIndexField(
-                        new IndexField("controllerId", new StringKeyType()),
-                        new IndexField("pluginId", new StringKeyType()),
-                        new IndexField("deviceId", new StringKeyType()),
-                        new IndexField("type", new StringKeyType())
+                new SimpleCompositeIndexField(
+                        new SimpleIndexField("controllerId", new StringKeyType()),
+                        new SimpleIndexField("pluginId", new StringKeyType()),
+                        new SimpleIndexField("deviceId", new StringKeyType()),
+                        new SimpleIndexField("type", new StringKeyType())
                 ), false);
 
         try {
@@ -534,15 +531,15 @@ public abstract class EntityQueryTest extends QueryBaseTest {
 
     private void assertPartialIndexItems(EntityBag bag, String pluginId, String deviceId, String controllerId) throws JasDBStorageException {
 
-        List<SimpleEntity> plugins = getEntities(bag, PLUGIN_QUERY);
+        List<Entity> plugins = getEntities(bag, PLUGIN_QUERY);
         assertThat(plugins.size(), is(1));
         assertThat(getEntityValue(plugins, SimpleEntity.DOCUMENT_ID), hasItems(pluginId));
 
-        List<SimpleEntity> controllers = getEntities(bag, CONTROLLER_QUERY);
+        List<Entity> controllers = getEntities(bag, CONTROLLER_QUERY);
         assertThat(controllers.size(), is(1));
         assertThat(getEntityValue(controllers, SimpleEntity.DOCUMENT_ID), hasItems(controllerId));
 
-        List<SimpleEntity> devices = getEntities(bag, DEVICE_QUERY);
+        List<Entity> devices = getEntities(bag, DEVICE_QUERY);
         assertThat(devices.size(), is(1));
         assertThat(getEntityValue(devices, SimpleEntity.DOCUMENT_ID), hasItems(deviceId));
     }

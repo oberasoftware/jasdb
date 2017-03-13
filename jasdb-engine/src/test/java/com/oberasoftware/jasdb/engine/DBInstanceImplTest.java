@@ -2,10 +2,10 @@ package com.oberasoftware.jasdb.engine;
 
 import com.google.common.collect.Lists;
 import com.oberasoftware.jasdb.engine.metadata.InstanceMeta;
-import nl.renarj.jasdb.api.DBInstance;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.DBInstance;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

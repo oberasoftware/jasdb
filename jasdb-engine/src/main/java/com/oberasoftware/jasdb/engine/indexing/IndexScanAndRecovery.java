@@ -1,11 +1,11 @@
 package com.oberasoftware.jasdb.engine.indexing;
 
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordIterator;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.IndexScanReport;
-import nl.renarj.jasdb.index.IndexState;
-import nl.renarj.jasdb.index.ScanIntent;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.storage.RecordIterator;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.IndexScanReport;
+import com.oberasoftware.jasdb.api.index.IndexState;
+import com.oberasoftware.jasdb.api.index.ScanIntent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

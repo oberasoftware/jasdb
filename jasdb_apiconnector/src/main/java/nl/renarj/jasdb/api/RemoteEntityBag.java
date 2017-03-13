@@ -8,21 +8,22 @@
 package nl.renarj.jasdb.api;
 
 import com.google.common.collect.Lists;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.query.CompositeQueryField;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryField;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.index.keys.KeyInfo;
+import com.oberasoftware.jasdb.core.index.keys.keyinfo.KeyInfoImpl;
+import com.oberasoftware.jasdb.api.index.CompositeIndexField;
+import com.oberasoftware.jasdb.api.index.IndexField;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.session.query.CompositeQueryField;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryField;
+import com.oberasoftware.jasdb.api.session.query.SortParameter;
 import nl.renarj.jasdb.remote.BagConnector;
 import nl.renarj.jasdb.remote.EntityConnector;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
@@ -71,24 +72,24 @@ public final class RemoteEntityBag implements EntityBag {
     }
 
     @Override
-    public SimpleEntity addEntity(SimpleEntity entity) throws JasDBStorageException {
+    public Entity addEntity(Entity entity) throws JasDBStorageException {
         EntityConnector connector = RemoteConnectorFactory.createConnector(nodeInformation, EntityConnector.class);
         return connector.insertEntity(context, instance, meta.getName(), entity);
     }
 
     @Override
-    public SimpleEntity updateEntity(SimpleEntity entity) throws JasDBStorageException {
+    public Entity updateEntity(Entity entity) throws JasDBStorageException {
         return persist(entity);
     }
 
     @Override
-    public SimpleEntity persist(SimpleEntity entity) throws JasDBStorageException {
+    public Entity persist(Entity entity) throws JasDBStorageException {
         EntityConnector connector = RemoteConnectorFactory.createConnector(nodeInformation, EntityConnector.class);
         return connector.updateEntity(context, instance, meta.getName(), entity);
     }
 
     @Override
-    public void removeEntity(SimpleEntity entity) throws JasDBStorageException {
+    public void removeEntity(Entity entity) throws JasDBStorageException {
         removeEntity(entity.getInternalId());
     }
 
@@ -177,7 +178,7 @@ public final class RemoteEntityBag implements EntityBag {
     }
 
     @Override
-    public SimpleEntity getEntity(String entityId) throws JasDBStorageException {
+    public Entity getEntity(String entityId) throws JasDBStorageException {
         EntityConnector connector = RemoteConnectorFactory.createConnector(nodeInformation, EntityConnector.class);
         return connector.findById(context, instance, meta.getName(), entityId);
     }

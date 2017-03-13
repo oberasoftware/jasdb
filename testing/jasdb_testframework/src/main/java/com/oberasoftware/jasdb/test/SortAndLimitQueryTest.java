@@ -1,15 +1,12 @@
 package com.oberasoftware.jasdb.test;
 
+import com.oberasoftware.jasdb.api.session.*;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.query.Order;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.query.Order;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -110,7 +107,7 @@ public abstract class SortAndLimitQueryTest extends QueryBaseTest {
             long passed = (end - start);
             LOG.info("Age query took: {} with: {} results", passed, result.size());
 
-            List<SimpleEntity> entities = aggregateResult(result);
+            List<Entity> entities = aggregateResult(result);
             assertEquals("There should only be three results", limit, entities.size());
         } finally {
             pojoDb.closeSession();
@@ -154,7 +151,7 @@ public abstract class SortAndLimitQueryTest extends QueryBaseTest {
 
         try {
             QueryBuilder query = QueryBuilder.createBuilder().field("field5").greaterThan(10).field("field5").smallerThan(30).sortBy("field6", Order.ASCENDING);
-            List<SimpleEntity> entities = getEntities(bag, query);
+            List<Entity> entities = getEntities(bag, query);
             List<String> field6Values = getEntityValue(entities, "field6");
 
             long previous = 0;
@@ -186,7 +183,7 @@ public abstract class SortAndLimitQueryTest extends QueryBaseTest {
                 executor.paging(start, batchSize);
                 try (QueryResult result = executor.execute()) {
                     assertEquals("Unexpected query size", batchSize, result.size());
-                    for (SimpleEntity entity : result) {
+                    for (Entity entity : result) {
                         Property property = entity.getProperty("field5");
                         Property fProperty = entity.getProperty("field1");
                         assertEquals("Unexpected value", current, (long) property.getFirstValueObject());
@@ -220,7 +217,7 @@ public abstract class SortAndLimitQueryTest extends QueryBaseTest {
                 executor.paging(start, batchSize);
                 QueryResult result = executor.execute();
                 assertEquals("Unexpected query size", batchSize, result.size());
-                for(SimpleEntity entity : result) {
+                for(Entity entity : result) {
                     Property property = entity.getProperty("field9");
                     Property fProperty = entity.getProperty("field1");
                     assertEquals("Unexpected value", current, (long) property.getFirstValueObject());
@@ -255,7 +252,7 @@ public abstract class SortAndLimitQueryTest extends QueryBaseTest {
                 executor.paging(start, batchSize);
                 QueryResult result = executor.execute();
                 assertEquals("Unexpected query size", batchSize, result.size());
-                for(SimpleEntity entity : result) {
+                for(Entity entity : result) {
                     String age = entity.getProperty("age").getFirstValueObject().toString();
                     assertEquals("Unexpected age", String.valueOf(MAX_AGE / 2), age);
                 }
@@ -280,10 +277,10 @@ public abstract class SortAndLimitQueryTest extends QueryBaseTest {
         }
     }
 
-    private List<SimpleEntity> aggregateResult(QueryResult result) {
-        List<SimpleEntity> entities = new ArrayList<>();
+    private List<Entity> aggregateResult(QueryResult result) {
+        List<Entity> entities = new ArrayList<>();
 
-        for(SimpleEntity entity : result) {
+        for(Entity entity : result) {
             entities.add(entity);
         }
 

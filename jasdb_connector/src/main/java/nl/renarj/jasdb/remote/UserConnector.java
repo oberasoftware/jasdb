@@ -1,6 +1,6 @@
 package nl.renarj.jasdb.remote;
 
-import nl.renarj.jasdb.api.acl.AccessMode;
+import com.oberasoftware.jasdb.api.security.AccessMode;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 
 import java.util.List;

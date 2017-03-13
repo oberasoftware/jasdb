@@ -20,17 +20,5 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_restmodel</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.oberasoftware</groupId>-->
-            <!--<artifactId>jasdb_entity</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb_acl</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.sun.jersey</groupId>-->
-            <!--<artifactId>jersey-client</artifactId>-->
-        <!--</dependency>-->
     </dependencies>
 </project>

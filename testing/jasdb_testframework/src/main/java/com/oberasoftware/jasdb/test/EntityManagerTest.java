@@ -3,15 +3,15 @@ package com.oberasoftware.jasdb.test;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.DBSessionFactory;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public abstract class EntityManagerTest extends QueryBaseTest {
 
         EntityBag testBag = session.createOrGetBag("TEST_BAG");
         assertThat(testBag.getSize(), is(1l));
-        SimpleEntity mappedEntity = testBag.getEntity(id);
+        Entity mappedEntity = testBag.getEntity(id);
 
         assertThat(mappedEntity.getValue("firstName"), is("Renze"));
         assertThat(mappedEntity.getValue("lastName"), is("de Vries"));

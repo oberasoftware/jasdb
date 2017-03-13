@@ -7,8 +7,8 @@
  */
 package com.oberasoftware.jasdb.engine.query.operators;
 
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
-import nl.renarj.jasdb.index.search.SearchCondition;
+import com.oberasoftware.jasdb.api.index.keys.KeyNameMapper;
+import com.oberasoftware.jasdb.api.index.query.SearchCondition;
 
 import java.util.List;
 import java.util.Map;

@@ -1,35 +1,35 @@
 package com.oberasoftware.jasdb.engine.search;
 
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.core.statistics.StatRecord;
+import com.oberasoftware.jasdb.core.statistics.StatisticsMonitor;
 import com.oberasoftware.jasdb.engine.BagOperationUtil;
 import com.oberasoftware.jasdb.engine.query.StorageRecordIterator;
-import nl.renarj.core.statistics.StatRecord;
-import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EntityRetrievalOperation {
 	private static final Logger LOG = LoggerFactory.getLogger(EntityRetrievalOperation.class);
 	
-	private RecordWriter recordWriter;
+	private RecordWriter<UUIDKey> recordWriter;
 
-	public EntityRetrievalOperation(RecordWriter recordWriter) {
+	public EntityRetrievalOperation(RecordWriter<UUIDKey> recordWriter) {
 		this.recordWriter = recordWriter;
 	}
 	
-	public SimpleEntity getEntityById(String entityId) throws JasDBStorageException {
+	public Entity getEntityById(String entityId) throws JasDBStorageException {
         StatRecord record = StatisticsMonitor.createRecord("findById:RecordRead");
         RecordResult recordResult = recordWriter.readRecord(new UUIDKey(entityId));
         record.stop();
 
 		if(recordResult.isRecordFound()) {
             StatRecord deserializeRecord = StatisticsMonitor.createRecord("findById:deserialize");
-            SimpleEntity entity = BagOperationUtil.toEntity(recordResult.getStream());
+			Entity entity = BagOperationUtil.toEntity(recordResult.getStream());
             deserializeRecord.stop();
 
             return entity;

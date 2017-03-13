@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.api.entitymapper;
 
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.Value;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.session.Value;
 
 /**
  * @author Renze de Vries

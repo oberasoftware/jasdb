@@ -7,8 +7,8 @@
  */
 package com.oberasoftware.jasdb.engine.query;
 
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.query.QueryResult;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,12 +19,12 @@ import java.util.Iterator;
  * Time: 2:40 PM
  */
 public class EntityQueryResult implements QueryResult {
-    private Collection<SimpleEntity> entities;
-    private Iterator<SimpleEntity> entityIterator;
+    private Collection<Entity> entities;
+    private Iterator<Entity> entityIterator;
 
     private boolean closed = false;
 
-    public EntityQueryResult(Collection<SimpleEntity> entities) {
+    public EntityQueryResult(Collection<Entity> entities) {
         this.entities = entities;
         this.entityIterator = entities.iterator();
     }
@@ -35,7 +35,7 @@ public class EntityQueryResult implements QueryResult {
     }
 
     @Override
-    public Iterator<SimpleEntity> iterator() {
+    public Iterator<Entity> iterator() {
         return entities.iterator();
     }
 
@@ -45,7 +45,7 @@ public class EntityQueryResult implements QueryResult {
     }
 
     @Override
-    public SimpleEntity next() {
+    public Entity next() {
         return entityIterator.next();
     }
 

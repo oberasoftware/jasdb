@@ -2,10 +2,10 @@ package com.oberasoftware.jasdb.engine;
 
 import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 import com.oberasoftware.jasdb.engine.metadata.JasDBMetadataStore;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.Instance;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.model.Instance;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

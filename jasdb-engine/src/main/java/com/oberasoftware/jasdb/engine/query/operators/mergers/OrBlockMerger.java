@@ -1,8 +1,8 @@
 package com.oberasoftware.jasdb.engine.query.operators.mergers;
 
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorImpl;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.api.index.query.IndexSearchResultIteratorCollection;
+import com.oberasoftware.jasdb.core.index.query.IndexSearchResultIteratorImpl;
 import com.oberasoftware.jasdb.engine.query.operators.BlockMerger;
 
 import java.util.ArrayList;

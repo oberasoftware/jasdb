@@ -1,14 +1,15 @@
 package com.oberasoftware.jasdb.test;
 
+import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.service.JasDBMain;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.query.BlockType;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.DBSessionFactory;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.session.query.BlockType;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public abstract class TableScanQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertNotNull("There should be a returned entity", entity);
             assertEquals("The id's should match", expectedId1, entity.getInternalId());
 
@@ -84,7 +85,7 @@ public abstract class TableScanQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertNotNull("There should be a returned entity", entity);
             assertEquals("The id's should match", expectedId1, entity.getInternalId());
 
@@ -114,7 +115,7 @@ public abstract class TableScanQueryTest extends QueryBaseTest {
             assertNotNull(result);
 
             assertTrue("There should be a result", result.hasNext());
-            SimpleEntity entity = result.next();
+            Entity entity = result.next();
             assertNotNull("There should be a returned entity", entity);
             assertEquals("The id's should match", expectedId1, entity.getInternalId());
 
@@ -140,7 +141,7 @@ public abstract class TableScanQueryTest extends QueryBaseTest {
             builder.addQueryBlock(QueryBuilder.createBuilder().field("type").value("contribution"));
 
             QueryExecutor executor = bag.find(builder);
-            List<SimpleEntity> entities = toList(executor.execute());
+            List<Entity> entities = toList(executor.execute());
             assertThat(entities.size(), is(1));
         } finally {
             pojoDb.closeSession();
@@ -161,8 +162,8 @@ public abstract class TableScanQueryTest extends QueryBaseTest {
             QueryBuilder builder = QueryBuilder.createBuilder();
 
             QueryExecutor executor = bag.find(builder);
-            List<SimpleEntity> entities = toList(executor.execute());
-            List<String> entityIds = entities.stream().map(SimpleEntity::getInternalId).collect(Collectors.toList());
+            List<Entity> entities = toList(executor.execute());
+            List<String> entityIds = entities.stream().map(Entity::getInternalId).collect(Collectors.toList());
 
             assertThat(entityIds, hasItems(ID1, ID2, ID3, ID4));
         } finally {

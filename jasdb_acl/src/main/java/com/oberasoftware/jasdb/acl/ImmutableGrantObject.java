@@ -1,9 +1,9 @@
 package com.oberasoftware.jasdb.acl;
 
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.metadata.Grant;
-import nl.renarj.jasdb.api.metadata.GrantObject;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.security.AccessMode;
+import com.oberasoftware.jasdb.api.model.Grant;
+import com.oberasoftware.jasdb.api.model.GrantObject;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
 
 import java.util.List;
 

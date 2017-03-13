@@ -1,20 +1,20 @@
 package com.oberasoftware.jasdb.service;
 
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.service.local.ApplicationContextProvider;
 import com.oberasoftware.jasdb.service.local.LocalDBSession;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.engine.IndexManager;
-import nl.renarj.jasdb.api.engine.IndexManagerFactory;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.impl.LongKey;
-import nl.renarj.jasdb.index.keys.types.LongKeyType;
-import nl.renarj.jasdb.index.search.EqualsCondition;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.engine.IndexManager;
+import com.oberasoftware.jasdb.api.engine.IndexManagerFactory;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.core.index.keys.LongKey;
+import com.oberasoftware.jasdb.core.index.keys.types.LongKeyType;
+import com.oberasoftware.jasdb.core.index.query.EqualsCondition;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,7 +63,7 @@ public class IndexRebuildTest {
         for(int i=0; i<testSize; i++) {
             bag.addEntity(new SimpleEntity().addProperty("field1", (long) i));
         }
-        bag.ensureIndex(new IndexField("field1", new LongKeyType()), true);
+        bag.ensureIndex(new SimpleIndexField("field1", new LongKeyType()), true);
 
         Thread.sleep(10000);
 
@@ -84,7 +84,7 @@ public class IndexRebuildTest {
         DBSession session = new LocalDBSession();
         try {
             EntityBag bag = session.createOrGetBag("bag0");
-            bag.ensureIndex(new IndexField("field1", new LongKeyType()), true);
+            bag.ensureIndex(new SimpleIndexField("field1", new LongKeyType()), true);
             for(int i=0; i<testSize; i++) {
                 bag.addEntity(new SimpleEntity().addProperty("field1", (long) i));
             }

@@ -1,6 +1,6 @@
 package com.oberasoftware.jasdb.api.entitymapper;
 
-import nl.renarj.jasdb.api.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.Entity;
 
 /**
  * @author Renze de Vries
@@ -8,7 +8,7 @@ import nl.renarj.jasdb.api.SimpleEntity;
 public interface MapResult {
     EntityMetadata getMetadata();
 
-    SimpleEntity getJasDBEntity();
+    Entity getJasDBEntity();
 
     Object getOriginal();
 

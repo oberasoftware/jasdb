@@ -4,15 +4,15 @@ import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
 import com.oberasoftware.jasdb.api.entitymapper.EntityMapper;
 import com.oberasoftware.jasdb.api.entitymapper.EntityMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.MapResult;
-import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -34,14 +34,14 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     @Override
-    public SimpleEntity persist(Object persistableObject) throws JasDBStorageException {
+    public Entity persist(Object persistableObject) throws JasDBStorageException {
         MapResult mappedResult = ENTITY_MAPPER.mapTo(persistableObject);
         String bagName = mappedResult.getBagName();
         EntityBag bag = session.createOrGetBag(bagName);
 
-        SimpleEntity persistedEntity;
+        Entity persistedEntity;
         try {
-            SimpleEntity entity = mappedResult.getJasDBEntity();
+            Entity entity = mappedResult.getJasDBEntity();
             if(StringUtils.stringNotEmpty(entity.getInternalId()) && bag.getEntity(entity.getInternalId()) != null) {
                 //update
                 persistedEntity = bag.updateEntity(mappedResult.getJasDBEntity());
@@ -75,7 +75,7 @@ public class EntityManagerImpl implements EntityManager {
         EntityMetadata entityMetadata = ENTITY_MAPPER.getEntityMetadata(type);
         EntityBag bag = session.getBag(entityMetadata.getBagName());
         if(bag != null) {
-            SimpleEntity entity = bag.getEntity(entityId);
+            Entity entity = bag.getEntity(entityId);
             return ENTITY_MAPPER.mapFrom(type, entity);
         }
 
@@ -108,7 +108,7 @@ public class EntityManagerImpl implements EntityManager {
 
             QueryResult result = executor.execute();
             LOG.debug("Executing Query: {} results: {}", builder, result.size());
-            for(SimpleEntity entity : result) {
+            for(Entity entity : result) {
                 entities.add(ENTITY_MAPPER.mapFrom(types, entity));
             }
         }

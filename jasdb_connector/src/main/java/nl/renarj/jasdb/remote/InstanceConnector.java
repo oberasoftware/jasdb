@@ -1,6 +1,6 @@
 package nl.renarj.jasdb.remote;
 
-import nl.renarj.jasdb.api.metadata.Instance;
+import com.oberasoftware.jasdb.api.model.Instance;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 
 import java.util.List;

@@ -8,7 +8,7 @@
 package com.obera.jasdb.rest;
 
 import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.context.Credentials;
+import com.oberasoftware.jasdb.core.context.Credentials;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.RestBaseTest;
 import nl.renarj.jasdb.rest.client.RestDBSessionFactory;

@@ -1,29 +1,28 @@
 package com.oberasoftware.jasdb.engine.search;
 
-import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordIterator;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorImpl;
-import nl.renarj.jasdb.index.search.SearchCondition;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.api.index.query.IndexSearchResultIteratorCollection;
+import com.oberasoftware.jasdb.api.index.query.SearchCondition;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.storage.RecordIterator;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.index.keys.KeyUtil;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.core.index.query.IndexSearchResultIteratorImpl;
 import com.oberasoftware.jasdb.engine.query.operators.BlockMerger;
+import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.oberasoftware.jasdb.engine.BagOperationUtil.DEFAULT_DOC_ID_MAPPER;
-import static com.oberasoftware.jasdb.engine.BagOperationUtil.entityToKey;
-import static com.oberasoftware.jasdb.engine.BagOperationUtil.recordToKey;
+import static com.oberasoftware.jasdb.engine.BagOperationUtil.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -32,9 +31,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class TableScanOperation {
     private static final Logger LOG = getLogger(TableScanOperation.class);
 
-    private final RecordWriter recordWriter;
+    private final RecordWriter<UUIDKey> recordWriter;
 
-    public TableScanOperation(RecordWriter recordWriter) {
+    public TableScanOperation(RecordWriter<UUIDKey> recordWriter) {
         this.recordWriter = recordWriter;
     }
 
@@ -53,12 +52,7 @@ public class TableScanOperation {
         Set<String> payloadFields = new HashSet<>(fields);
         payloadFields.add(SimpleEntity.DOCUMENT_ID);
 
-        for(Iterator<String> fieldIterator = payloadFields.iterator(); fieldIterator.hasNext();) {
-            String field = fieldIterator.next();
-            if(!operation.hasConditions(field)) {
-                fieldIterator.remove();
-            }
-        }
+        payloadFields.removeIf(field -> !operation.hasConditions(field));
 
         if(currentResults != null) {
             LOG.debug("Doing table scan for fields: {} with limited set: {}", fields, currentResults.size());
@@ -79,7 +73,7 @@ public class TableScanOperation {
     }
 
     private void doTableScanConditions(BlockOperation operation, BlockMerger merger, List<Key> foundKeys, RecordResult result, Set<String> fields) throws JasDBStorageException {
-        SimpleEntity entity = SimpleEntity.fromStream(result.getStream());
+        Entity entity = SimpleEntity.fromStream(result.getStream());
 
         boolean first = true;
         boolean match = false;

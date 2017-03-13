@@ -7,8 +7,8 @@
  */
 package nl.renarj.jasdb.remote;
 
-import nl.renarj.jasdb.core.locator.NodeInformation;
-import nl.renarj.jasdb.core.locator.ServiceInformation;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
+import com.oberasoftware.jasdb.api.model.ServiceInformation;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 import org.junit.Assert;
 import org.junit.Test;

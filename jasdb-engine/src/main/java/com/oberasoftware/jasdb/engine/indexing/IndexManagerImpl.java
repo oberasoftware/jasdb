@@ -8,22 +8,23 @@
 package com.oberasoftware.jasdb.engine.indexing;
 
 import com.google.common.collect.Lists;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.engine.IndexManager;
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.btreeplus.BTreeIndex;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
-import nl.renarj.jasdb.index.keys.types.UUIDKeyType;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.engine.IndexManager;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.CompositeIndexField;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.IndexField;
+import com.oberasoftware.jasdb.api.index.keys.KeyInfo;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.index.btreeplus.BTreeIndex;
+import com.oberasoftware.jasdb.core.index.keys.keyinfo.KeyInfoImpl;
+import com.oberasoftware.jasdb.core.index.keys.types.UUIDKeyType;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,7 +178,7 @@ final public class IndexManagerImpl implements IndexManager {
             keyInfo = new KeyInfoImpl(compositeIndexFields.getIndexFields(), guaranteeIdKey(values));
         } else {
             List<IndexField> indexFields = Lists.newArrayList(compositeIndexFields.getIndexFields());
-            indexFields.add(new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType()));
+            indexFields.add(new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType()));
             keyInfo = new KeyInfoImpl(indexFields, Lists.newArrayList(values));
         }
 
@@ -190,7 +191,7 @@ final public class IndexManagerImpl implements IndexManager {
         if(unique) {
             keyInfo = new KeyInfoImpl(indexField, guaranteeIdKey(valueFields));
         } else {
-            keyInfo = new KeyInfoImpl(Lists.newArrayList(indexField, new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())), Lists.newArrayList(valueFields));
+            keyInfo = new KeyInfoImpl(Lists.newArrayList(indexField, new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())), Lists.newArrayList(valueFields));
         }
 
 		return createInStore(bagName, keyInfo);
@@ -234,7 +235,7 @@ final public class IndexManagerImpl implements IndexManager {
 		}
 
 		if(!fields.contains(SimpleEntity.DOCUMENT_ID)) {
-			indexFields.add(new IndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType()));
+			indexFields.add(new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType()));
 		}
 
 		return indexFields;

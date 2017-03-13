@@ -7,17 +7,18 @@
  */
 package com.oberasoftware.jasdb.engine.search;
 
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.result.IndexSearchResultIterator;
-import nl.renarj.jasdb.index.result.SearchLimit;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.core.index.keys.KeyUtil;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.api.index.query.IndexSearchResultIterator;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +30,9 @@ public class QueryResultIteratorImpl implements QueryResult {
 	private IndexSearchResultIterator indexIterator;
 	private SearchLimit limit;
 	private int currentIndex = 0;
-    private RecordWriter recordWriter;
+    private RecordWriter<UUIDKey> recordWriter;
 	
-	protected QueryResultIteratorImpl(IndexSearchResultIterator indexIterator, SearchLimit limit, RecordWriter recordWriter) {
+	protected QueryResultIteratorImpl(IndexSearchResultIterator indexIterator, SearchLimit limit, RecordWriter<UUIDKey> recordWriter) {
 		this.indexIterator = indexIterator;
 		this.limit = limit;
         this.recordWriter = recordWriter;
@@ -43,13 +44,12 @@ public class QueryResultIteratorImpl implements QueryResult {
 	}
 
 	@Override
-	public SimpleEntity next() {
+	public Entity next() {
 		if(hasNext()) {
 			if(!limit.isMaxReached(currentIndex)) {
 				currentIndex++;
 				Key key = indexIterator.next();
 				try {
-//					long recordPointer = KeyUtil.getRecordPointer(indexIterator.getKeyNameMapper(), key);
                     UUIDKey documentKey = KeyUtil.getDocumentKey(indexIterator.getKeyNameMapper(), key);
 
 					RecordResult result = recordWriter.readRecord(documentKey);
@@ -81,7 +81,7 @@ public class QueryResultIteratorImpl implements QueryResult {
 	}
 
 	@Override
-	public Iterator<SimpleEntity> iterator() {
+	public Iterator<Entity> iterator() {
 		return this;
 	}
 

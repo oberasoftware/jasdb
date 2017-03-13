@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb_api</artifactId>
+            <artifactId>jasdb_core</artifactId>
         </dependency>
     </dependencies>
 </project>

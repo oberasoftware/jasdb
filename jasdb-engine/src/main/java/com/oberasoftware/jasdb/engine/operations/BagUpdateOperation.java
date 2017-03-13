@@ -7,17 +7,17 @@
  */
 package com.oberasoftware.jasdb.engine.operations;
 
+import com.oberasoftware.jasdb.api.engine.IndexManagerFactory;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.core.index.keys.KeyUtil;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
 import com.oberasoftware.jasdb.engine.BagOperationUtil;
 import com.oberasoftware.jasdb.engine.RecordWriterFactoryLoader;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.engine.IndexManagerFactory;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +43,13 @@ public class BagUpdateOperation implements DataOperation {
     private IndexManagerFactory indexManagerFactory;
 
     @Override
-    public void doDataOperation(String instanceId, String bag, SimpleEntity entity) throws JasDBStorageException {
+    public void doDataOperation(String instanceId, String bag, Entity entity) throws JasDBStorageException {
         UUIDKey documentKey = new UUIDKey(entity.getInternalId());
-        RecordWriter recordWriter = recordWriterFactoryLoader.loadRecordWriter(instanceId, bag);
+        RecordWriter<UUIDKey> recordWriter = recordWriterFactoryLoader.loadRecordWriter(instanceId, bag);
         RecordResult result = recordWriter.readRecord(documentKey);
 
         if(result != null && result.isRecordFound()) {
-            SimpleEntity oldEntity = BagOperationUtil.toEntity(result.getStream());
+            Entity oldEntity = BagOperationUtil.toEntity(result.getStream());
 
             //let's update the actual record, so we can get the new record pointer and set this on the entity
             log.debug("Updating record: {}", entity.getInternalId());
@@ -61,7 +61,7 @@ public class BagUpdateOperation implements DataOperation {
         }
     }
 
-    private void doIndexModifications(String instanceId, String bagName, SimpleEntity oldEntity, SimpleEntity entity) throws JasDBStorageException {
+    private void doIndexModifications(String instanceId, String bagName, Entity oldEntity, Entity entity) throws JasDBStorageException {
         log.debug("Starting index update for entity: {}", entity.getInternalId());
         //let's start updating the indexes
         Map<String, Index> indexes = indexManagerFactory.getIndexManager(instanceId).getIndexes(bagName);

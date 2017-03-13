@@ -1,6 +1,6 @@
 package com.oberasoftware.jasdb.acl;
 
-import nl.renarj.jasdb.api.context.Credentials;
+import com.oberasoftware.jasdb.api.security.Credentials;
 
 /**
  * @author Renze de Vries

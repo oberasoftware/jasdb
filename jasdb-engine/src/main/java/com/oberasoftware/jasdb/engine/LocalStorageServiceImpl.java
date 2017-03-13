@@ -1,33 +1,33 @@
 package com.oberasoftware.jasdb.engine;
 
-import com.oberasoftware.core.concurrency.ResourceLockManager;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.concurrency.ResourceLockManager;
+import com.oberasoftware.jasdb.core.context.RequestContext;
+import com.oberasoftware.jasdb.api.engine.IndexManager;
+import com.oberasoftware.jasdb.api.engine.IndexManagerFactory;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.api.index.keys.KeyInfo;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
+import com.oberasoftware.jasdb.api.index.CompositeIndexField;
+import com.oberasoftware.jasdb.api.index.IndexField;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.session.query.SortParameter;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.api.engine.Configuration;
 import com.oberasoftware.jasdb.engine.indexing.IndexScanAndRecovery;
 import com.oberasoftware.jasdb.engine.operations.DataOperation;
-import com.oberasoftware.jasdb.engine.partitioning.PartitioningManager;
 import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
 import com.oberasoftware.jasdb.engine.search.EntityRetrievalOperation;
 import com.oberasoftware.jasdb.engine.search.QuerySearchOperation;
-import nl.renarj.core.utilities.StringUtils;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.engine.IndexManager;
-import nl.renarj.jasdb.api.engine.IndexManagerFactory;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
-import nl.renarj.jasdb.index.result.SearchLimit;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
-import nl.renarj.jasdb.storage.transactional.TransactionalRecordWriter;
+import com.oberasoftware.jasdb.writer.transactional.TransactionalRecordWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +58,6 @@ public class LocalStorageServiceImpl implements StorageService {
 
     private String instanceId;
     private String bagName;
-
-    @Autowired
-    private PartitioningManager partitionManager;
 
     @Autowired
     private IdGenerator generator;
@@ -193,17 +190,7 @@ public class LocalStorageServiceImpl implements StorageService {
     }
 
     @Override
-    public PartitioningManager getPartitionManager() {
-        return partitionManager;
-    }
-
-    @Override
-    public void initializePartitions() throws JasDBStorageException {
-        partitionManager.initializePartitions();
-    }
-
-    @Override
-	public void insertEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
+	public void insertEntity(RequestContext context, Entity entity) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
             runIdGeneration(entity);
@@ -215,7 +202,7 @@ public class LocalStorageServiceImpl implements StorageService {
 	}
 	
 	@Override
-	public void removeEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
+	public void removeEntity(RequestContext context, Entity entity) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
             if(StringUtils.stringNotEmpty(entity.getInternalId())) {
@@ -234,7 +221,7 @@ public class LocalStorageServiceImpl implements StorageService {
     }
 
     @Override
-	public void updateEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
+	public void updateEntity(RequestContext context, Entity entity) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
             if(StringUtils.stringNotEmpty(entity.getInternalId())) {
@@ -248,7 +235,7 @@ public class LocalStorageServiceImpl implements StorageService {
 	}
 
     @Override
-    public void persistEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException {
+    public void persistEntity(RequestContext context, Entity entity) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
             runIdGeneration(entity);
@@ -259,7 +246,7 @@ public class LocalStorageServiceImpl implements StorageService {
         }
     }
 
-    private void runIdGeneration(SimpleEntity entity) throws JasDBStorageException {
+    private void runIdGeneration(Entity entity) throws JasDBStorageException {
         if(entity.getInternalId() == null || entity.getInternalId().isEmpty()) {
             entity.setInternalId(generator.generateNewId());
         }
@@ -276,7 +263,7 @@ public class LocalStorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public SimpleEntity getEntityById(RequestContext requestContext, String id) throws JasDBStorageException {
+	public Entity getEntityById(RequestContext requestContext, String id) throws JasDBStorageException {
         resourceLockManager.sharedLock();
         try {
 		    return new EntityRetrievalOperation(getRecordWriter()).getEntityById(id);
@@ -376,7 +363,7 @@ public class LocalStorageServiceImpl implements StorageService {
         return indexManagerFactory.getIndexManager(instanceId);
     }
 
-    private RecordWriter getRecordWriter() throws JasDBStorageException {
+    private RecordWriter<UUIDKey> getRecordWriter() throws JasDBStorageException {
         return recordWriterFactoryLoader.loadRecordWriter(instanceId, bagName);
     }
 

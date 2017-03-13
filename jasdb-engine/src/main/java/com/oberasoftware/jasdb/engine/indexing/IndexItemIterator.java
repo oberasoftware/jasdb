@@ -1,9 +1,9 @@
 package com.oberasoftware.jasdb.engine.indexing;
 
-import nl.renarj.jasdb.core.IndexableItem;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordIterator;
-import nl.renarj.jasdb.core.storage.RecordResult;
+import com.oberasoftware.jasdb.api.session.IndexableItem;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.storage.RecordIterator;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
 import com.oberasoftware.jasdb.engine.BagOperationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

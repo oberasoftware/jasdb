@@ -1,12 +1,13 @@
 package com.oberasoftware.jasdb.engine;
 
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.core.storage.RecordWriterFactory;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.api.storage.RecordWriterFactory;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static nl.renarj.jasdb.core.utils.FileUtils.deleteSafely;
-import static nl.renarj.jasdb.core.utils.FileUtils.removeExtension;
+import static com.oberasoftware.jasdb.core.utils.FileUtils.deleteSafely;
+import static com.oberasoftware.jasdb.core.utils.FileUtils.removeExtension;
 
 /**
  * @author Renze de Vries
@@ -34,9 +35,9 @@ public class RecordWriterFactoryLoader {
 
     private final MetadataStore metadataStore;
 
-    private Map<String, RecordWriter> recordWriters = new ConcurrentHashMap<>();
+    private Map<String, RecordWriter<UUIDKey>> recordWriters = new ConcurrentHashMap<>();
 
-    private RecordWriterFactory recordWriterFactory;
+    private RecordWriterFactory<UUIDKey> recordWriterFactory;
 
     @Autowired
     public RecordWriterFactoryLoader(ConfigurationLoader configurationLoader, MetadataStore metadataStore) throws ConfigurationException {
@@ -48,7 +49,7 @@ public class RecordWriterFactoryLoader {
 
         for(RecordWriterFactory recordWriterFactory : recordWriterFactories) {
             if(recordWriterFactory.providerName().equals(recordWriterProvider)) {
-                this.recordWriterFactory = recordWriterFactory;
+                this.recordWriterFactory = (RecordWriterFactory<UUIDKey>)recordWriterFactory;
                 LOG.info("Using RecordWriterFactory: {}", recordWriterFactory);
             }
         }
@@ -66,7 +67,7 @@ public class RecordWriterFactoryLoader {
         }
     }
 
-    public RecordWriter loadRecordWriter(String instanceId, String bagName) throws JasDBStorageException {
+    public RecordWriter<UUIDKey> loadRecordWriter(String instanceId, String bagName) throws JasDBStorageException {
         File filePath = getWriterPath(instanceId, bagName);
         String fileKey = filePath.toString();
         if(recordWriters.containsKey(fileKey)) {
@@ -93,9 +94,9 @@ public class RecordWriterFactoryLoader {
         return new File(instancePath, bagName + BAG_EXTENSION);
     }
 
-    private synchronized RecordWriter loadExistingWriter(File file) throws JasDBStorageException {
+    private synchronized RecordWriter<UUIDKey> loadExistingWriter(File file) throws JasDBStorageException {
         if(!recordWriters.containsKey(file.toString())) {
-            RecordWriter recordWriter = recordWriterFactory.createWriter(file);
+            RecordWriter<UUIDKey> recordWriter = recordWriterFactory.createWriter(file);
             recordWriter.openWriter();
             recordWriters.put(file.toString(), recordWriter);
         }

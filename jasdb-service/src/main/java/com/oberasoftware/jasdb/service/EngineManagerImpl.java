@@ -1,14 +1,14 @@
 package com.oberasoftware.jasdb.service;
 
 import com.oberasoftware.jasdb.engine.metadata.JasDBMetadataStore;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.api.engine.EngineManager;
-import nl.renarj.jasdb.api.engine.RemoteServiceManager;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.caching.GlobalCachingMemoryManager;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.locator.NodeInformation;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.api.engine.EngineManager;
+import com.oberasoftware.jasdb.api.engine.RemoteServiceManager;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.core.caching.GlobalCachingMemoryManager;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;

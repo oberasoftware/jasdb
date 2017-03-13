@@ -1,8 +1,8 @@
 package com.oberasoftware.jasdb.acl;
 
 import com.oberasoftware.jasdb.engine.StorageService;
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.context.RequestContext;
+import com.oberasoftware.jasdb.api.security.AccessMode;
+import com.oberasoftware.jasdb.core.context.RequestContext;
 import org.springframework.aop.framework.Advised;
 
 import java.util.UUID;

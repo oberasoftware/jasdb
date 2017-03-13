@@ -1,11 +1,11 @@
 package com.oberasoftware.jasdb.acl;
 
-import nl.renarj.jasdb.api.acl.UserSession;
-import nl.renarj.jasdb.api.metadata.User;
-import nl.renarj.jasdb.core.crypto.CryptoEngine;
-import nl.renarj.jasdb.core.crypto.CryptoFactory;
-import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
-import nl.renarj.jasdb.core.exceptions.RuntimeJasDBException;
+import com.oberasoftware.jasdb.api.security.UserSession;
+import com.oberasoftware.jasdb.api.model.User;
+import com.oberasoftware.jasdb.api.security.CryptoEngine;
+import com.oberasoftware.jasdb.core.crypto.CryptoFactory;
+import com.oberasoftware.jasdb.api.exceptions.JasDBSecurityException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
 
 /**
  * @author Renze de Vries

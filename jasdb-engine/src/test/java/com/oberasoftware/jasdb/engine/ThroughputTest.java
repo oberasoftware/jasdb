@@ -1,15 +1,15 @@
 package com.oberasoftware.jasdb.engine;
 
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.btreeplus.BTreeIndex;
-import nl.renarj.jasdb.index.keys.impl.DataKey;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfoImpl;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
-import nl.renarj.jasdb.index.keys.types.DataKeyType;
-import nl.renarj.jasdb.index.keys.types.UUIDKeyType;
-import nl.renarj.jasdb.index.search.IndexField;
-import nl.renarj.jasdb.storage.transactional.FSWriter;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.index.btreeplus.BTreeIndex;
+import com.oberasoftware.jasdb.core.index.keys.DataKey;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.core.index.keys.keyinfo.KeyInfoImpl;
+import com.oberasoftware.jasdb.api.index.keys.KeyNameMapper;
+import com.oberasoftware.jasdb.core.index.keys.types.DataKeyType;
+import com.oberasoftware.jasdb.core.index.keys.types.UUIDKeyType;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
+import com.oberasoftware.jasdb.writer.transactional.FSWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,7 +70,7 @@ public class ThroughputTest {
 
     @Test
     public void testStringKeyWriteThroughput() throws Exception {
-        KeyInfoImpl keyInfo = new KeyInfoImpl(new IndexField("id", new UUIDKeyType()), new IndexField("data", new DataKeyType()));
+        KeyInfoImpl keyInfo = new KeyInfoImpl(new SimpleIndexField("id", new UUIDKeyType()), new SimpleIndexField("data", new DataKeyType()));
         File dataFile = new File(storageLocation, "throughput.data");
         if(dataFile.exists()) {
             dataFile.delete();

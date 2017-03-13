@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.entitymapper.types;
 
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

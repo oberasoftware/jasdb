@@ -1,10 +1,10 @@
 package com.oberasoftware.jasdb.acl;
 
+import com.oberasoftware.jasdb.api.engine.MetadataProvider;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.engine.metadata.MetaWrapper;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.MetadataProvider;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class GrantMetadataProvider implements MetadataProvider {
     }
 
     @Override
-    public void registerMetadataEntity(SimpleEntity entity, long recordPointer) throws JasDBStorageException {
+    public void registerMetadataEntity(Entity entity, long recordPointer) throws JasDBStorageException {
         EncryptedGrants encryptedGrants = EncryptedGrants.fromEntity(entity);
         grantMetaMap.put(encryptedGrants.getObjectName(), new MetaWrapper<>(encryptedGrants, recordPointer));
     }

@@ -1,12 +1,12 @@
 package com.oberasoftware.jasdb.service.local;
 
-import nl.renarj.jasdb.api.UserAdministration;
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.acl.SessionManager;
-import nl.renarj.jasdb.api.acl.UserManager;
-import nl.renarj.jasdb.api.acl.UserSession;
-import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.UserAdministration;
+import com.oberasoftware.jasdb.api.security.AccessMode;
+import com.oberasoftware.jasdb.api.security.SessionManager;
+import com.oberasoftware.jasdb.api.security.UserManager;
+import com.oberasoftware.jasdb.api.security.UserSession;
+import com.oberasoftware.jasdb.api.exceptions.JasDBSecurityException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 import java.util.List;
 

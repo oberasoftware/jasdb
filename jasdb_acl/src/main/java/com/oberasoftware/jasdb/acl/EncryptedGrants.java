@@ -1,7 +1,8 @@
 package com.oberasoftware.jasdb.acl;
 
+import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.engine.metadata.Constants;
-import nl.renarj.jasdb.api.SimpleEntity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
 
 /**
  * @author Renze de Vries
@@ -19,7 +20,7 @@ public class EncryptedGrants {
         this.salt = salt;
     }
 
-    public static EncryptedGrants fromEntity(SimpleEntity entity) {
+    public static EncryptedGrants fromEntity(Entity entity) {
         return new EncryptedGrants(entity.getValue(Constants.GRANT_OBJECT).toString(),
                 entity.getValue(Constants.GRANTS).toString(),
                 entity.getValue(Constants.SALT).toString(),

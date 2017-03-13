@@ -1,7 +1,7 @@
 package nl.renarj.jasdb.remote;
 
-import nl.renarj.jasdb.api.metadata.Bag;
-import nl.renarj.jasdb.api.metadata.IndexDefinition;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 import nl.renarj.jasdb.remote.model.RemoteBag;
 

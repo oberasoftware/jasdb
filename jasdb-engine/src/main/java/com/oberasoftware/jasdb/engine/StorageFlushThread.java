@@ -1,6 +1,6 @@
 package com.oberasoftware.jasdb.engine;
 
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,16 +1,15 @@
 package com.oberasoftware.jasdb.engine;
 
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.core.context.RequestContext;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
+import com.oberasoftware.jasdb.api.index.CompositeIndexField;
+import com.oberasoftware.jasdb.api.index.IndexField;
+import com.oberasoftware.jasdb.api.session.query.SortParameter;
+import com.oberasoftware.jasdb.api.engine.Configuration;
 import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
-import nl.renarj.core.utilities.configuration.Configuration;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.result.SearchLimit;
-import nl.renarj.jasdb.index.search.CompositeIndexField;
-import nl.renarj.jasdb.index.search.IndexField;
-import com.oberasoftware.jasdb.engine.partitioning.PartitioningManager;
 
 import java.util.List;
 
@@ -20,8 +19,6 @@ import java.util.List;
  * go through this interface.
  */
 public interface StorageService {
-    public static final String PARTITION_PROPERTY = "partitions";
-
     /**
      * Gets the name of the bag that this storage service represents
      * @return The name of the bag
@@ -56,22 +53,18 @@ public interface StorageService {
 
     /**
      * Removes the bag and all related resources from the storage location
-     * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to remove the bag and related resources
+     * @throws JasDBStorageException If unable to remove the bag and related resources
      */
     void remove() throws JasDBStorageException;
-
-    void initializePartitions() throws JasDBStorageException;
-
-    PartitioningManager getPartitionManager();
 
 	/**
 	 * This inserts the entity into the storage and indexes
 	 *
      * @param context The request context
      * @param entity The entity to store in the storage and which is used to populate the indexes
-     * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to insert the entity or the indexes
+     * @throws JasDBStorageException If unable to insert the entity or the indexes
 	 */
-	void insertEntity(RequestContext context, SimpleEntity entity)	throws JasDBStorageException;
+	void insertEntity(RequestContext context, Entity entity)	throws JasDBStorageException;
 
 	/**
 	 * This removes and entity from storage and the indexes
@@ -79,9 +72,9 @@ public interface StorageService {
      *
      * @param context The request context
      * @param entity The entity to remove from the storage and the indexes
-     * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to remove the entity from the indexes or storage
+     * @throws JasDBStorageException If unable to remove the entity from the indexes or storage
 	 */
-	void removeEntity(RequestContext context, SimpleEntity entity)	throws JasDBStorageException;
+	void removeEntity(RequestContext context, Entity entity)	throws JasDBStorageException;
 
     /**
      * This removes the entity based on the internal id of the entity
@@ -96,9 +89,9 @@ public interface StorageService {
 	 *
      * @param context The request context
      * @param entity The entity to update
-     * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to update
+     * @throws JasDBStorageException If unable to update
 	 */
-	void updateEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException;
+	void updateEntity(RequestContext context, Entity entity) throws JasDBStorageException;
 
 	/**
 	 * This either creates or updates the entity
@@ -106,7 +99,7 @@ public interface StorageService {
 	 * @param entity the entity to persist
 	 * @throws JasDBStorageException If unable to persist the entity
      */
-	void persistEntity(RequestContext context, SimpleEntity entity) throws JasDBStorageException;
+	void persistEntity(RequestContext context, Entity entity) throws JasDBStorageException;
 
     /**
      * Gets the amount of items stored
@@ -130,13 +123,13 @@ public interface StorageService {
      * @return The entity loaded from storage
 	 * @throws JasDBStorageException If unable to retrieve the item from storage
 	 */
-	SimpleEntity getEntityById(RequestContext requestContext, String id) throws JasDBStorageException;
+	Entity getEntityById(RequestContext requestContext, String id) throws JasDBStorageException;
 
 	/**
 	 * This retrieves all items from storage with an iterator, the documents are only loaded once the iterator is used.
 	 *
 	 * @return The QueryResult for all records in storage
-	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to load the iterator over all documents
+	 * @throws JasDBStorageException If unable to load the iterator over all documents
 	 */
 	QueryResult getEntities(RequestContext context) throws JasDBStorageException;
 
@@ -146,7 +139,7 @@ public interface StorageService {
 	 * 
 	 * @param max The maximum amount of records to retrieve
 	 * @return The QueryResult for all records in storage
-	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to load the iterator over all documents
+	 * @throws JasDBStorageException If unable to load the iterator over all documents
 	 */
 	QueryResult getEntities(RequestContext context, int max) throws JasDBStorageException;
 
@@ -159,7 +152,7 @@ public interface StorageService {
      * @param limit The limits of the given query
      * @param params The sorting paramaters to be applied to the resultset
      * @return A Query ResultSet which can be iterated over, the records are only loaded when iterating.
-	 * @throws nl.renarj.jasdb.core.exceptions.JasDBStorageException If unable to execute the search query
+	 * @throws JasDBStorageException If unable to execute the search query
 	 */
 	QueryResult search(RequestContext context, BlockOperation blockOperation, SearchLimit limit, List<SortParameter> params) throws JasDBStorageException;
 

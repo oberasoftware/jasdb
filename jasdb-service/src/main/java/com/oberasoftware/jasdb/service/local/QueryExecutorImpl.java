@@ -11,13 +11,13 @@ import com.oberasoftware.jasdb.engine.StorageService;
 import com.oberasoftware.jasdb.engine.StorageServiceFactory;
 import com.oberasoftware.jasdb.engine.query.BuilderTransformer;
 import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
-import nl.renarj.jasdb.api.context.RequestContext;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.api.query.QueryExecutor;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.index.result.SearchLimit;
+import com.oberasoftware.jasdb.core.context.RequestContext;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryExecutor;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
 
 public class QueryExecutorImpl implements QueryExecutor {
 	private QueryBuilder queryBuilder;

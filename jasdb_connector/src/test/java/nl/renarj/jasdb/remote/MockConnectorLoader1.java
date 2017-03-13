@@ -7,7 +7,7 @@
  */
 package nl.renarj.jasdb.remote;
 
-import nl.renarj.jasdb.core.locator.NodeInformation;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
 import nl.renarj.jasdb.remote.exceptions.RemoteException;
 
 /**

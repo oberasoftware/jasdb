@@ -1,31 +1,32 @@
 package com.oberasoftware.jasdb.engine.search;
 
+import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.engine.query.operators.BlockMerger;
 import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
 import com.oberasoftware.jasdb.engine.query.operators.DistinctCollectionUtil;
-import nl.renarj.core.statistics.StatRecord;
-import nl.renarj.core.statistics.StatisticsMonitor;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.engine.IndexManager;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.query.Order;
-import nl.renarj.jasdb.api.query.QueryResult;
-import nl.renarj.jasdb.api.query.SortParameter;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyInfo;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapper;
-import nl.renarj.jasdb.index.keys.keyinfo.KeyNameMapperImpl;
-import nl.renarj.jasdb.index.result.IndexSearchResultIterator;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorCollection;
-import nl.renarj.jasdb.index.result.IndexSearchResultIteratorImpl;
-import nl.renarj.jasdb.index.result.SearchLimit;
-import nl.renarj.jasdb.index.search.SearchCondition;
+import com.oberasoftware.jasdb.core.statistics.StatRecord;
+import com.oberasoftware.jasdb.core.statistics.StatisticsMonitor;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.engine.IndexManager;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.session.query.Order;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.session.query.SortParameter;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.core.index.keys.KeyUtil;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import com.oberasoftware.jasdb.api.index.keys.KeyInfo;
+import com.oberasoftware.jasdb.api.index.keys.KeyNameMapper;
+import com.oberasoftware.jasdb.core.index.keys.keyinfo.KeyNameMapperImpl;
+import com.oberasoftware.jasdb.api.index.query.IndexSearchResultIterator;
+import com.oberasoftware.jasdb.api.index.query.IndexSearchResultIteratorCollection;
+import com.oberasoftware.jasdb.core.index.query.IndexSearchResultIteratorImpl;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
+import com.oberasoftware.jasdb.api.index.query.SearchCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +38,11 @@ import java.util.Set;
 public class QuerySearchOperation {
 	private static final Logger LOG = LoggerFactory.getLogger(QuerySearchOperation.class);
 	
-	private RecordWriter recordWriter;
+	private RecordWriter<UUIDKey> recordWriter;
 	private IndexManager indexManager;
 	private String bagName;
 	
-	public QuerySearchOperation(String bagName, IndexManager indexManager, RecordWriter recordWriter) {
+	public QuerySearchOperation(String bagName, IndexManager indexManager, RecordWriter<UUIDKey> recordWriter) {
 		this.recordWriter = recordWriter;
 		this.bagName = bagName;
 		this.indexManager = indexManager;
@@ -149,7 +150,7 @@ public class QuerySearchOperation {
 			for(Key key : results) {
 				UUIDKey documentKey = KeyUtil.getDocumentKey(results.getKeyNameMapper(), key);
 				RecordResult recordResult = recordWriter.readRecord(documentKey);
-				SimpleEntity entity = SimpleEntity.fromStream(recordResult.getStream());
+				Entity entity = SimpleEntity.fromStream(recordResult.getStream());
 				
 				for(String requiredField : requiredFields) {
 					Property property = entity.getProperty(requiredField);

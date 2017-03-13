@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.acl;
 
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.metadata.Grant;
+import com.oberasoftware.jasdb.api.security.AccessMode;
+import com.oberasoftware.jasdb.api.model.Grant;
 
 /**
  * @author Renze de Vries

@@ -2,10 +2,10 @@ package com.obera.jasdb.rest;
 
 import com.obera.jasdb.UserAdministrationTest;
 import com.obera.service.acl.BasicCredentials;
-import nl.renarj.jasdb.api.acl.AccessMode;
-import nl.renarj.jasdb.api.acl.SessionManager;
-import nl.renarj.jasdb.api.acl.UserManager;
-import nl.renarj.jasdb.api.acl.UserSession;
+import com.oberasoftware.jasdb.core.acl.AccessMode;
+import com.oberasoftware.jasdb.core.acl.SessionManager;
+import com.oberasoftware.jasdb.core.acl.UserManager;
+import com.oberasoftware.jasdb.core.acl.UserSession;
 import nl.renarj.jasdb.core.SimpleKernel;
 
 /**

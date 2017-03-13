@@ -1,9 +1,9 @@
 package com.oberasoftware.jasdb.engine.indexing;
 
-import nl.renarj.jasdb.api.engine.IndexManager;
-import nl.renarj.jasdb.api.engine.IndexManagerFactory;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.engine.IndexManager;
+import com.oberasoftware.jasdb.api.engine.IndexManagerFactory;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

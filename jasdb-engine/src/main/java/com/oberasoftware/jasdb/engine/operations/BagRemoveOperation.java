@@ -7,17 +7,17 @@
  */
 package com.oberasoftware.jasdb.engine.operations;
 
+import com.oberasoftware.jasdb.api.engine.IndexManagerFactory;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.keys.Key;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
+import com.oberasoftware.jasdb.core.index.keys.KeyUtil;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
 import com.oberasoftware.jasdb.engine.BagOperationUtil;
 import com.oberasoftware.jasdb.engine.RecordWriterFactoryLoader;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.engine.IndexManagerFactory;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
-import nl.renarj.jasdb.core.storage.RecordResult;
-import nl.renarj.jasdb.core.storage.RecordWriter;
-import nl.renarj.jasdb.index.Index;
-import nl.renarj.jasdb.index.keys.Key;
-import nl.renarj.jasdb.index.keys.KeyUtil;
-import nl.renarj.jasdb.index.keys.impl.UUIDKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -39,11 +39,11 @@ public class BagRemoveOperation implements DataOperation {
     private IndexManagerFactory indexManagerFactory;
 
     @Override
-    public void doDataOperation(String instanceId, String bag, SimpleEntity entity) throws JasDBStorageException {
-        RecordWriter recordWriter = recordWriterFactoryLoader.loadRecordWriter(instanceId, bag);
+    public void doDataOperation(String instanceId, String bag, Entity entity) throws JasDBStorageException {
+        RecordWriter<UUIDKey> recordWriter = recordWriterFactoryLoader.loadRecordWriter(instanceId, bag);
         RecordResult recordResult = recordWriter.readRecord(new UUIDKey(entity.getInternalId()));
         if(recordResult.isRecordFound()) {
-            SimpleEntity removeEntity = BagOperationUtil.toEntity(recordResult.getStream());
+            Entity removeEntity = BagOperationUtil.toEntity(recordResult.getStream());
             if(removeEntity != null) {
                 recordWriter.removeRecord(new UUIDKey(entity.getInternalId()));
                 removeFromIndex(instanceId, bag, removeEntity);
@@ -55,7 +55,7 @@ public class BagRemoveOperation implements DataOperation {
         }
     }
 
-    private void removeFromIndex(String instanceId, String bagName, SimpleEntity removeEntity) throws JasDBStorageException {
+    private void removeFromIndex(String instanceId, String bagName, Entity removeEntity) throws JasDBStorageException {
         Map<String, Index> indexes = indexManagerFactory.getIndexManager(instanceId).getIndexes(bagName);
         for(Map.Entry<String, Index> indexEntry : indexes.entrySet()) {
             Index index = indexEntry.getValue();

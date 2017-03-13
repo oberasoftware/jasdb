@@ -1,12 +1,13 @@
 package com.oberasoftware.jasdb.acl;
 
+import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.engine.metadata.MetaWrapper;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.MetadataProvider;
-import nl.renarj.jasdb.api.metadata.MetadataStore;
-import nl.renarj.jasdb.api.metadata.User;
-import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.engine.MetadataProvider;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.model.User;
+import com.oberasoftware.jasdb.api.exceptions.JasDBSecurityException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class UserMetadataProvider implements MetadataProvider {
     }
 
     @Override
-    public void registerMetadataEntity(SimpleEntity entity, long recordPointer) throws JasDBStorageException {
+    public void registerMetadataEntity(Entity entity, long recordPointer) throws JasDBStorageException {
         User user = UserMeta.fromEntity(entity);
         userMetaMap.put(user.getUsername(), new MetaWrapper<>(user, recordPointer));
     }

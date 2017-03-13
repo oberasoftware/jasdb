@@ -2,7 +2,7 @@
 <jasdb kernel="nl.renarj.jasdb.core.ConfigurableKernel">
     <modules>
         <!-- Set the used kernel modules -->
-        <module type="record" class="nl.renarj.jasdb.storage.transactional.TransactionalRecordWriterFactory"/>
+        <module type="record" class="com.oberasoftware.jasdb.writer.transactional.TransactionalRecordWriterFactory"/>
         <!--<module type="record" class="nl.renarj.jasdb.storage.btree.BTreeRecordWriterFactory"/>-->
 
         <!--<module type="remote" class="nl.renarj.jasdb.rest.RestService"/>-->

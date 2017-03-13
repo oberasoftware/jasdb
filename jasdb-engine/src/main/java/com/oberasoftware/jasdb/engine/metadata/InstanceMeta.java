@@ -1,7 +1,8 @@
 package com.oberasoftware.jasdb.engine.metadata;
 
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.metadata.Instance;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.api.model.Instance;
 
 /**
  * @author Renze de Vries
@@ -15,7 +16,7 @@ public class InstanceMeta implements Instance {
         this.path = path;
     }
 
-    public static InstanceMeta fromEntity(SimpleEntity entity) {
+    public static InstanceMeta fromEntity(Entity entity) {
         return new InstanceMeta(entity.getValue(Constants.INSTANCE).toString(),
                 entity.getValue(Constants.INSTANCE_PATH).toString());
     }
