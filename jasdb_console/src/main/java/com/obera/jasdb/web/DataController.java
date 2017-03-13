@@ -4,10 +4,10 @@ import com.obera.jasdb.web.model.Bag;
 import com.obera.jasdb.web.model.SearchForm;
 import com.obera.jasdb.web.model.WebEntity;
 import com.obera.jasdb.web.model.WebInstance;
+import com.oberasoftware.jasdb.core.model.EntityBag;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
 import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -61,7 +61,7 @@ public class DataController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public String createInstance(@Valid WebInstance instance) throws JasDBException {
         DBSession session = sessionFactory.createSession();
-        session.addInstance(instance.getName(), instance.getPath());
+        session.addInstance(instance.getName());
 
         return "redirect:/data/";
     }

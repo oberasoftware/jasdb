@@ -1,6 +1,6 @@
 package com.obera.jasdb.local;
 
-import nl.renarj.jasdb.service.EntityQueryTest;
+import com.oberasoftware.jasdb.engine.EntityQueryTest;
 
 /**
  * @author Renze de Vries

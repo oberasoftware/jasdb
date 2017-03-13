@@ -28739,7 +28739,7 @@ Bevoegdheden
 Belgisch glazenier
 Gheynst, Johanna
 Film van Michel Gondry
-2012-07-06 15:12:12,632 INFO  IndexRebuildUtil - Index: nl.renarj.jasdb.index.reverse.InvertedIndex@2236052c rebuild at: 100000 items
+2012-07-06 15:12:12,632 INFO  IndexRebuildUtil - Index: com.oberasoftware.jasdb.core.index.reverse.InvertedIndex@2236052c rebuild at: 100000 items
 Japans gameregisseur
 Werknemer bij Nintendo
 Koekelberg
@@ -45563,7 +45563,7 @@ Vlag QA
 QA
 SL
 Vlag SL
-2012-07-06 15:12:17,228 INFO  IndexRebuildUtil - Index: nl.renarj.jasdb.index.reverse.InvertedIndex@2236052c rebuild at: 200000 items
+2012-07-06 15:12:17,228 INFO  IndexRebuildUtil - Index: com.oberasoftware.jasdb.core.index.reverse.InvertedIndex@2236052c rebuild at: 200000 items
 Vlag NE
 NE
 Vlag PK
@@ -60391,7 +60391,7 @@ Film van Werner Herzog
 categorie:fytopathologie
 Europese weg 234
 234, Europese weg
-2012-07-06 15:12:22,315 INFO  IndexRebuildUtil - Index: nl.renarj.jasdb.index.reverse.InvertedIndex@2236052c rebuild at: 300000 items
+2012-07-06 15:12:22,315 INFO  IndexRebuildUtil - Index: com.oberasoftware.jasdb.core.index.reverse.InvertedIndex@2236052c rebuild at: 300000 items
 Gesteente Stollingsgesteente
 Generar
 Genol
@@ -71032,7 +71032,7 @@ Voetbal in 1962
 Voetbal in Ethiopië
 Voetbal in Ghana
 Voetbal in 1963
-2012-07-06 15:12:26,485 INFO  IndexRebuildUtil - Index: nl.renarj.jasdb.index.reverse.InvertedIndex@2236052c rebuild at: 400000 items
+2012-07-06 15:12:26,485 INFO  IndexRebuildUtil - Index: com.oberasoftware.jasdb.core.index.reverse.InvertedIndex@2236052c rebuild at: 400000 items
 Voetbal in Guinee-Bissau
 School in Groningen (stad)
 Gewenste artikels

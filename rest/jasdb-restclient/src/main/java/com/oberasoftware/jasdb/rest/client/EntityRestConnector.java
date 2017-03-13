@@ -1,0 +1,213 @@
+package com.oberasoftware.jasdb.rest.client;
+
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.RestException;
+import com.oberasoftware.jasdb.api.index.query.SearchLimit;
+import com.oberasoftware.jasdb.api.model.NodeInformation;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.api.session.query.SortParameter;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.engine.query.operators.BlockOperation;
+import com.oberasoftware.jasdb.rest.model.serializers.json.JsonRestResponseHandler;
+import com.oberasoftware.jasdb.rest.model.streaming.StreamableEntityCollection;
+import com.oberasoftware.jasdb.rest.model.streaming.StreamedEntity;
+import nl.renarj.jasdb.remote.EntityConnector;
+import nl.renarj.jasdb.remote.RemotingContext;
+import nl.renarj.jasdb.remote.exceptions.RemoteException;
+import org.slf4j.Logger;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
+/**
+ * @author Renze de Vries
+ */
+public class EntityRestConnector extends RemoteRestConnector implements EntityConnector {
+    private static final Logger LOG = getLogger(EntityRestConnector.class);
+
+    public EntityRestConnector(NodeInformation nodeInformation) throws ConfigurationException {
+        super(nodeInformation);
+    }
+
+    @Override
+    public Entity insertEntity(RemotingContext context, String instance, String bag, Entity entity) throws RemoteException {
+        String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities().getConnectionString();
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            new JsonRestResponseHandler().serialize(new StreamedEntity(entity), bos);
+
+            ClientResponse clientResponse = doInternalRequest(context, connectionString, new HashMap<>(), bos.toByteArray(), REQUEST_MODE.POST);
+
+            try {
+                StreamedEntity returnedEntity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, clientResponse.getEntityInputStream());
+                entity.setInternalId(returnedEntity.getEntity().getInternalId());
+                return returnedEntity.getEntity();
+            } finally {
+                clientResponse.close();
+            }
+        } catch(RestException e) {
+            throw new RemoteException("Unable to insert entity on remote destination", e);
+        }
+    }
+
+    @Override
+    public Entity updateEntity(RemotingContext context, String instance, String bag, Entity entity) throws RemoteException {
+        String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities().getConnectionString();
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            new JsonRestResponseHandler().serialize(new StreamedEntity(entity), bos);
+
+            ClientResponse clientResponse = doRequest(context, connectionString, new HashMap<>(), bos.toString(CHARACTER_ENCODING), REQUEST_MODE.PUT);
+            try {
+            	StreamedEntity returnedEntity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, clientResponse.getEntityInputStream());
+            	return returnedEntity.getEntity();
+            } finally {
+            	clientResponse.close();
+            }            
+        } catch(RestException e) {
+            throw new RemoteException("Unable to update entity on remote destination", e);
+        } catch(UnsupportedEncodingException e) {
+            throw new RemoteException("Unable to serialize entity", e);
+        }
+    }
+
+    @Override
+    public boolean removeEntity(RemotingContext context, String instance, String bag, String entityId) throws RemoteException {
+        String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities(entityId).getConnectionString();
+
+        doRequest(context, connectionString, new HashMap<>(), null, REQUEST_MODE.DELETE).close();
+        return true;
+    }
+
+    @Override
+    public QueryResult find(RemotingContext context, String instance, String bag, BlockOperation blockOperation, SearchLimit limit, List<SortParameter> sortParams) throws RemoteException {
+        String query = RestQueryGenerator.generatorQuery(blockOperation);
+        String orderParams = RestQueryGenerator.generateOrderParams(sortParams);
+        String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities(query).getConnectionString();
+
+        Map<String, String> params = new HashMap<>();
+        if(limit.getBegin() > 0) {
+            params.put("begin", String.valueOf(limit.getBegin()));
+        }
+        if(limit.getMax() > 0) {
+            params.put("top", String.valueOf(limit.getMax()));
+        }
+        if(StringUtils.stringNotEmpty(orderParams)) params.put("orderBy", orderParams);
+        ClientResponse response = doRequest(context, connectionString, params);
+
+        return parseAsEntityCollection(response);
+    }
+
+    @Override
+    public QueryResult find(RemotingContext context, String instance, String bag) throws RemoteException {
+        String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities().getConnectionString();
+        ClientResponse response = doRequest(context, connectionString);
+
+        return parseAsEntityCollection(response);
+    }
+
+    @Override
+    public QueryResult find(RemotingContext context, String instance, String bag, int limit) throws RemoteException {
+        String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entities().getConnectionString();
+        Map<String, String> params = new HashMap<>();
+        if(limit > 0) {
+            params.put("top", "" + limit);
+        }
+
+        ClientResponse response = doRequest(context, connectionString, params);
+
+        return parseAsEntityCollection(response);
+    }
+
+    @Override
+    public Entity findById(RemotingContext context, String instance, String bag, String id) throws RemoteException {
+        String connectionString = new RestConnectionBuilder().instance(instance).bag(bag).entityById(id).getConnectionString();
+        try {
+            ClientResponse response = doRequest(context, connectionString);
+            try {
+                StreamedEntity entity = new JsonRestResponseHandler().deserialize(StreamedEntity.class, response.getEntityInputStream());
+                return entity.getEntity();
+            } catch (RestException e) {
+                throw new RemoteException("Unable to parse remote entity data", e);
+            } finally {
+                response.close();
+            }
+        } catch(ResourceNotFoundException e) {
+            LOG.debug("Entity: {} not found in bag: {} on instance: {}", id, bag, instance);
+            return null;
+        }
+    }
+
+    private QueryResult parseAsEntityCollection(ClientResponse response) throws RemoteException {
+        try {
+            StreamableEntityCollection entityCollection =  new JsonRestResponseHandler().deserialize(StreamableEntityCollection.class, new WrappedInputStream(response));
+            return entityCollection.getResult();
+        } catch(RestException e) {
+            throw new RemoteException("Unable to parse remote entity data", e);
+        }
+    }
+
+    private class WrappedInputStream extends InputStream {
+        private ClientResponse clientResponse;
+        private InputStream inputStream;
+
+        private WrappedInputStream(ClientResponse clientResponse) {
+            this.clientResponse = clientResponse;
+            this.inputStream = clientResponse.getEntityInputStream();
+        }
+
+        @Override
+        public int read() throws IOException {
+            return inputStream.read();
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            return inputStream.read(b, off, len);
+        }
+
+        @Override
+        public long skip(long n) throws IOException {
+            return inputStream.skip(n);
+        }
+
+        @Override
+        public int available() throws IOException {
+            return inputStream.available();
+        }
+
+        @Override
+        public void close() throws IOException {
+            clientResponse.close();
+        }
+
+        @Override
+        public boolean markSupported() {
+            return inputStream.markSupported();
+        }
+
+        @Override
+        public int read(byte[] b) throws IOException {
+            return inputStream.read(b);
+        }
+
+        @Override
+        public synchronized void mark(int readlimit) {
+            inputStream.mark(readlimit);
+        }
+
+        @Override
+        public synchronized void reset() throws IOException {
+            inputStream.reset();
+        }
+    }
+
+}

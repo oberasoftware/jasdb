@@ -3,10 +3,11 @@ package com.oberasoftware.jasdb.entitymapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.oberasoftware.jasdb.api.entitymapper.MapResult;
-import nl.renarj.jasdb.api.EmbeddedEntity;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.core.EmbeddedEntity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -54,7 +55,7 @@ public class EntityMapperTest {
         MapResult result = mapper.mapTo(basicEntity);
 
         assertThat(result.getBagName(), is("MyBAG"));
-        SimpleEntity entity = result.getJasDBEntity();
+        Entity entity = result.getJasDBEntity();
 
         List<Property> properties = entity.getProperties();
         assertThat(properties.size(), is(4));
@@ -96,14 +97,14 @@ public class EntityMapperTest {
         MapResult result = mapper.mapTo(complexEntity);
         assertThat(result.getBagName(), is("COMPLEX_TEST"));
 
-        SimpleEntity entity = result.getJasDBEntity();
+        Entity entity = result.getJasDBEntity();
         assertThat(entity.getValue(NAME), is(MY_NAME));
         assertThat(entity.getValue(CUSTOM_KEY), is(keyField));
         assertThat(entity.getValue(EMAIL_ADDRESS), is(SOME_EMAIL));
         assertThat(entity.getValue(CUSTOM_ENUM), is(ComplexEntity.CUSTOM_ENUM.VALUE2.name()));
         assertThat(entity.getInternalId(), is(keyField));
 
-        SimpleEntity propertiesEntity = entity.getEntity(PROPERTIES);
+        Entity propertiesEntity = entity.getEntity(PROPERTIES);
         assertThat(propertiesEntity.getValue(FIELD_4), is(SOME_VALUE_1));
         assertThat(propertiesEntity.getValue(FIELD_0), is(SOME_VALUE_8));
 
@@ -153,7 +154,7 @@ public class EntityMapperTest {
         MapResult result = mapper.mapTo(complexEntity);
         assertThat(result.getBagName(), is("COMPLEX_TEST"));
 
-        SimpleEntity entity = result.getJasDBEntity();
+        Entity entity = result.getJasDBEntity();
         List<String> values = entity.getValues(ITEMS);
         assertThat(values, hasItems(TEST_1));
 

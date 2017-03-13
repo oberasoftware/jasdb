@@ -1,6 +1,6 @@
 package com.obera.jasdb.local;
 
-import nl.renarj.jasdb.service.DBSessionTest;
+import com.oberasoftware.jasdb.engine.DBSessionTest;
 
 /**
  * @author Renze de Vries

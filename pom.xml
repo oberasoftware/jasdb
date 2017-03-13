@@ -8,10 +8,16 @@
     <parent>
         <groupId>com.oberasoftware</groupId>
         <artifactId>oss-maven</artifactId>
-        <version>1.0.1</version>
+        <version>1.1</version>
     </parent>
+    <!--<parent>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-starter-parent</artifactId>-->
+        <!--<version>1.5.2.RELEASE</version>-->
+    <!--</parent>-->
 
-	<version>1.2.0-SNAPSHOT</version>
+	<version>2.0-SNAPSHOT</version>
+    <!--<groupId>com.oberasoftware</groupId>-->
 	<artifactId>jasdb</artifactId>
 	<packaging>pom</packaging>
 
@@ -19,11 +25,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jersey.version>1.13</jersey.version>
         <jetty.version>9.1.2.v20140210</jetty.version>
-        <logback.version>1.0.13</logback.version>
-        <slf4j.version>1.7.5</slf4j.version>
+        <!--<logback.version>1.0.13</logback.version>-->
+        <!--<slf4j.version>1.7.5</slf4j.version>-->
         <guava.version>16.0</guava.version>
         <guice.version>3.0</guice.version>
-        <spring.version>4.0.0.RELEASE</spring.version>
+        <!--<spring.version>4.0.0.RELEASE</spring.version>-->
 	</properties>
 
     <licenses>
@@ -50,58 +56,9 @@
     <dependencyManagement>
 		<dependencies>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aspects</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjrt</artifactId>
                 <version>1.7.4</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>3.2.0.RELEASE</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>spring-core</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-aop</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-beans</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>spring-expression</artifactId>
-                        <groupId>org.springframework</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>aopalliance</artifactId>
-                        <groupId>aopalliance</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <!-- Test related libraries -->
@@ -131,7 +88,7 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
-                <artifactId>jasdb_localservice</artifactId>
+                <artifactId>jasdb-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -157,6 +114,11 @@
             <dependency>
                 <groupId>com.oberasoftware</groupId>
                 <artifactId>jasdb_entity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
+                <artifactId>jasdb-engine</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -187,109 +149,79 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
-                <artifactId>jasdb_android</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oberasoftware</groupId>
-                <artifactId>jasdb_restconnector</artifactId>
+                <artifactId>jasdb-restclient</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
 
-            <!-- jersey related libraries -->
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-servlet</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
+            <!--&lt;!&ndash; jersey related libraries &ndash;&gt;-->
+			<!--<dependency>-->
+				<!--<groupId>com.sun.jersey</groupId>-->
+				<!--<artifactId>jersey-server</artifactId>-->
+				<!--<version>${jersey.version}</version>-->
+			<!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.sun.jersey</groupId>-->
+                <!--<artifactId>jersey-client</artifactId>-->
+                <!--<version>${jersey.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.sun.jersey</groupId>-->
+                <!--<artifactId>jersey-servlet</artifactId>-->
+                <!--<version>${jersey.version}</version>-->
+            <!--</dependency>-->
 
-            <!-- jetty related libraries -->
-            <dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-servlet</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-deploy</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-
-            <!-- android related libraries -->
-            <dependency>
-                <groupId>com.github.tony19</groupId>
-                <artifactId>logback-android-core</artifactId>
-                <version>1.0.10-2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.android</groupId>
-                <artifactId>android</artifactId>
-                <version>4.1.1.4</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.github.tony19</groupId>
-                <artifactId>logback-android-classic</artifactId>
-                <version>1.0.10-2</version>
-            </dependency>
-            <dependency>
-				<groupId>com.google.inject</groupId>
-				<artifactId>guice</artifactId>
-                <classifier>no_aop</classifier>
-				<version>${guice.version}</version>
-			</dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-assistedinject</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
+            <!--&lt;!&ndash; jetty related libraries &ndash;&gt;-->
+            <!--<dependency>-->
+				<!--<groupId>org.eclipse.jetty</groupId>-->
+				<!--<artifactId>jetty-servlet</artifactId>-->
+				<!--<version>${jetty.version}</version>-->
+			<!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.eclipse.jetty</groupId>-->
+                <!--<artifactId>jetty-deploy</artifactId>-->
+                <!--<version>${jetty.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.eclipse.jetty</groupId>-->
+                <!--<artifactId>jetty-server</artifactId>-->
+                <!--<version>${jetty.version}</version>-->
+            <!--</dependency>-->
 
             <!-- core libraries -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>2.7.1</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+                <!--<artifactId>jackson-core</artifactId>-->
+                <!--<version>2.7.1</version>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.slf4j</groupId>-->
+                <!--<artifactId>slf4j-api</artifactId>-->
+                <!--<version>${slf4j.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.slf4j</groupId>-->
+                <!--<artifactId>jcl-over-slf4j</artifactId>-->
+                <!--<version>${slf4j.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ch.qos.logback</groupId>-->
+                <!--<artifactId>logback-classic</artifactId>-->
+                <!--<version>${logback.version}</version>-->
+            <!--</dependency>-->
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -300,14 +232,6 @@
             <artifactId>mockito-all</artifactId>
             <version>1.9.0</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
         </dependency>
 	</dependencies>
 	<build>
@@ -329,19 +253,18 @@
         <module>jasdb_acl</module>
         <module>jasdb_memorywriter</module>
         <module>jasdb_entity</module>
-        <module>testing/jasdb_ent_integration</module>
         <module>rest/jasdb_restservice</module>
-        <module>rest/jasdb_restconnector</module>
+        <module>rest/jasdb-restclient</module>
         <module>rest/jasdb_restmodel</module>
-		<module>servicelogic/jasdb_localservice</module>
-		<module>testing/jasdb_testframework</module>
-        <module>connectors/jasdb_connector</module>
-        <module>connectors/jasdb_apiconnector</module>
-        <module>testing/jasdb_integration_test</module>
-        <module>jasdb_android</module>
+        <module>jasdb-service</module>
+        <module>jasdb_connector</module>
+        <module>jasdb_apiconnector</module>
         <module>jasdb_assembly</module>
-        <module>jasdb_console</module>
-        <module>jasdb_buildtools</module>
+        <!--<module>jasdb_console</module>-->
+        <!--<module>jasdb_buildtools</module>-->
+        <module>jasdb-engine</module>
+        <module>testing/jasdb_testframework</module>
+        <module>testing/jasdb-integration-test</module>
     </modules>
 
     <profiles>

@@ -7,7 +7,7 @@
  */
 package com.obera.jasdb.local;
 
-import nl.renarj.jasdb.service.EntityBagTest;
+import com.oberasoftware.jasdb.engine.EntityBagTest;
 
 /**
  * @author Renze de Vries

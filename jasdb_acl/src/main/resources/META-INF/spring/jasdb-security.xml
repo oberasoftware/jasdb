@@ -9,5 +9,5 @@
 
     <context:component-scan base-package="com.obera.service.acl"/>
 
-    <bean id="securityAspect" class="com.obera.service.acl.AuthorizationServiceWrapper"/>
+    <bean id="securityAspect" class="com.oberasoftware.jasdb.acl.AuthorizationServiceWrapper"/>
 </beans>

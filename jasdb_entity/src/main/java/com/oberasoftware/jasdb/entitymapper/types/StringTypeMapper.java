@@ -2,10 +2,10 @@ package com.oberasoftware.jasdb.entitymapper.types;
 
 import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
-import nl.renarj.jasdb.api.properties.MultivalueProperty;
-import nl.renarj.jasdb.api.properties.Property;
-import nl.renarj.jasdb.api.properties.StringValue;
-import nl.renarj.jasdb.api.properties.Value;
+import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.session.Value;
+import com.oberasoftware.jasdb.core.properties.MultivalueProperty;
+import com.oberasoftware.jasdb.core.properties.StringValue;
 
 /**
  * @author Renze de Vries

@@ -2,7 +2,7 @@ package com.oberasoftware.jasdb.entitymapper;
 
 import com.oberasoftware.jasdb.api.entitymapper.EntityMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.MapResult;
-import nl.renarj.jasdb.api.SimpleEntity;
+import com.oberasoftware.jasdb.api.session.Entity;
 
 /**
  * @author Renze de Vries
@@ -10,11 +10,11 @@ import nl.renarj.jasdb.api.SimpleEntity;
 public class MapResultImpl implements MapResult {
 
     private final EntityMetadata metadata;
-    private final SimpleEntity entity;
+    private final Entity entity;
     private final Object original;
     private final String bagName;
 
-    public MapResultImpl(EntityMetadata metadata, SimpleEntity entity, Object original, String bagName) {
+    public MapResultImpl(EntityMetadata metadata, Entity entity, Object original, String bagName) {
         this.metadata = metadata;
         this.entity = entity;
         this.original = original;
@@ -27,7 +27,7 @@ public class MapResultImpl implements MapResult {
     }
 
     @Override
-    public SimpleEntity getJasDBEntity() {
+    public Entity getJasDBEntity() {
         return entity;
     }
 

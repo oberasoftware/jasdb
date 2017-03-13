@@ -2,11 +2,11 @@
 <jasdb kernel="nl.renarj.jasdb.core.ConfigurableKernel">
     <modules>
         <!-- Set the used kernel modules -->
-        <module type="record" class="nl.renarj.jasdb.storage.transactional.TransactionalRecordWriterFactory"/>
+        <module type="record" class="com.oberasoftware.jasdb.writer.transactional.TransactionalRecordWriterFactory"/>
 
         <!--<module type="remote" class="nl.renarj.jasdb.rest.RestService"/>-->
 
-        <module type="storageservice" class="nl.renarj.jasdb.service.LocalStorageServiceFactoryImpl"/>
+        <module type="storageservice" class="com.oberasoftware.jasdb.engine.LocalStorageServiceFactoryImpl"/>
     </modules>
 
     <!-- This allows selecting the mode of flushing data to disk -->

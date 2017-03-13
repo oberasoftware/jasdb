@@ -1,15 +1,15 @@
 package nl.renarj.jasdb.rest;
 
-import nl.renarj.jasdb.LocalDBSession;
+import com.oberasoftware.jasdb.core.index.keys.types.LongKeyType;
+import com.oberasoftware.jasdb.core.index.keys.types.StringKeyType;
+import com.oberasoftware.jasdb.core.index.query.IndexField;
+import com.oberasoftware.jasdb.core.model.EntityBag;
+import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.model.EntityBag;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.index.keys.types.LongKeyType;
-import nl.renarj.jasdb.index.keys.types.StringKeyType;
-import nl.renarj.jasdb.index.search.IndexField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

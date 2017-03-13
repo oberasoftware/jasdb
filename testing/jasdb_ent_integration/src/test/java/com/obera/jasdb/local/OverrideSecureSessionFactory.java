@@ -1,7 +1,7 @@
 package com.obera.jasdb.local;
 
 import com.obera.service.acl.BasicCredentials;
-import nl.renarj.jasdb.LocalDBSessionFactory;
+import com.oberasoftware.jasdb.service.local.LocalDBSessionFactory;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 

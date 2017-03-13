@@ -1,0 +1,305 @@
+/*
+ * The JASDB software and code is Copyright protected 2011 and owned by Renze de Vries
+ *
+ * All the code and design principals in the codebase are also Copyright 2011
+ * protected and owned Renze de Vries. Any unauthorized usage of the code or the
+ * design and principals as in this code is prohibited.
+ */
+package com.oberasoftware.jasdb.engine.indexing;
+
+import com.google.common.collect.Lists;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.engine.IndexManager;
+import com.oberasoftware.jasdb.api.engine.MetadataStore;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.index.CompositeIndexField;
+import com.oberasoftware.jasdb.api.index.Index;
+import com.oberasoftware.jasdb.api.index.IndexField;
+import com.oberasoftware.jasdb.api.index.keys.KeyInfo;
+import com.oberasoftware.jasdb.api.model.Bag;
+import com.oberasoftware.jasdb.api.model.IndexDefinition;
+import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.index.btreeplus.BTreeIndex;
+import com.oberasoftware.jasdb.core.index.keys.keyinfo.KeyInfoImpl;
+import com.oberasoftware.jasdb.core.index.keys.types.UUIDKeyType;
+import com.oberasoftware.jasdb.core.index.query.SimpleIndexField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Component("IndexManager")
+@Scope("prototype")
+final public class IndexManagerImpl implements IndexManager {
+	private static final Logger LOG = LoggerFactory.getLogger(IndexManagerImpl.class);
+
+	private static final String INDEX_CONFIG_XPATH = "/jasdb/Index";
+    private static final String BAG_INDEX_NAME_SPLITTER = "_";
+	private static final String INDEX_EXTENSION = ".idx";
+	private static final String INDEX_EXTENSION_MULTI = ".idxm";
+
+	private Map<String, Map<String, Index>> indexes = new ConcurrentHashMap<>();
+
+    @Autowired
+    private ConfigurationLoader configurationLoader;
+
+    @Autowired
+    private MetadataStore metadataStore;
+
+    private final String instanceId;
+
+    public IndexManagerImpl(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+	@Override
+	public void shutdownIndexes() throws JasDBStorageException {
+		LOG.info("Shutting down {} indexes", indexes.size());
+		for(String bagName : indexes.keySet()) {
+			for(Index index : indexes.get(bagName).values()) {
+				LOG.debug("Closing index: {} on bag: {}", index.getKeyInfo().getKeyName(), bagName);
+				index.close();
+			}
+		}
+		indexes.clear();
+	}
+
+    @Override
+    public void flush() throws JasDBStorageException {
+        for(Map.Entry<String, Map<String, Index>> entry : indexes.entrySet()) {
+            LOG.debug("Flushing index for bag: {}", entry.getKey());
+            for(Index index : entry.getValue().values()) {
+                LOG.debug("Flushing index: {}", index);
+                index.flushIndex();
+            }
+        }
+    }
+
+    @Override
+    public void flush(String bagName) throws JasDBStorageException {
+        for(Index index : getIndexes(bagName).values()) {
+            LOG.debug("Flushing index: {}", index);
+            index.flushIndex();
+        }
+    }
+
+    @Override
+	public List<Index> getLoadedIndexes() {
+		List<Index> loadedIndexes = new ArrayList<>();
+		Collection<Map<String, Index>> allBagIndexes = indexes.values();
+		for(Map<String, Index> bagIndexes : allBagIndexes) {
+			loadedIndexes.addAll(bagIndexes.values());
+		}
+
+		return loadedIndexes;
+	}
+
+	@Override
+	public Index getBestMatchingIndex(String bagName, Set<String> fields) throws JasDBStorageException {
+		Collection<Index> indexes = getIndexes(bagName).values();
+		int bestMatch = 0;
+		Index currentBestMatch = null;
+		for(Index index : indexes) {
+			int match = index.match(fields);
+			if(match > 0 && match > bestMatch) {
+				bestMatch = match;
+				currentBestMatch = index;
+			}
+		}
+
+		return currentBestMatch;
+	}
+
+	@Override
+	public Map<String, Index> getIndexes(String bagName) throws JasDBStorageException {
+		LOG.debug("Loading indexes for bag: {}", bagName);
+		if(!indexes.containsKey(bagName)) {
+			LOG.debug("Indexes where not loaded or not present yet for bag: {}, attempt load", bagName);
+			loadIndexes(bagName);
+		}
+
+		if(indexes.containsKey(bagName)) {
+			LOG.debug("Indexes are present and loaded returning for bag: {}", bagName);
+            return new HashMap<>(indexes.get(bagName));
+		} else {
+			throw new JasDBStorageException("No indexes found for bag: " + bagName);
+		}
+	}
+
+	@Override
+	public Index getIndex(String bagName, String keyName) throws JasDBStorageException {
+		LOG.debug("Loading indexes for bag: {} and key: {}", bagName, keyName);
+		if(!indexes.containsKey(bagName)) {
+			LOG.debug("Indexes where not loaded or not present yet for bag: {}, attempt load", bagName);
+			loadIndexes(bagName);
+		}
+
+		if(indexes.containsKey(bagName)) {
+			Map<String, Index> bagIndexes = indexes.get(bagName);
+			if(bagIndexes.containsKey(keyName)) {
+				LOG.debug("Index found for key: {} in bag: {}", keyName, bagName);
+				return bagIndexes.get(keyName);
+			} else {
+				throw new JasDBStorageException("No index found for key: " + keyName + " in bag: " + bagName);
+			}
+		} else {
+			throw new JasDBStorageException("No indexes found for bag: " + bagName);
+		}
+	}
+
+    @Override
+    public void removeIndex(String bagName, String keyName) throws JasDBStorageException {
+        Index index = getIndex(bagName, keyName);
+        if(index != null) {
+            Map<String, Index> bagIndexes = indexes.get(bagName);
+            bagIndexes.remove(keyName);
+
+            KeyInfo keyInfo = index.getKeyInfo();
+            IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
+            metadataStore.removeBagIndex(instanceId, bagName, definition);
+
+            index.removeIndex();
+        } else {
+            throw new JasDBStorageException("Could not remove index, does not exist");
+        }
+    }
+
+    @Override
+	public Index createIndex(String bagName, CompositeIndexField compositeIndexFields, boolean unique, IndexField... values) throws JasDBStorageException {
+        KeyInfo keyInfo;
+        if(unique) {
+            keyInfo = new KeyInfoImpl(compositeIndexFields.getIndexFields(), guaranteeIdKey(values));
+        } else {
+            List<IndexField> indexFields = Lists.newArrayList(compositeIndexFields.getIndexFields());
+            indexFields.add(new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType()));
+            keyInfo = new KeyInfoImpl(indexFields, Lists.newArrayList(values));
+        }
+
+		return createInStore(bagName, keyInfo);
+	}
+
+	@Override
+	public Index createIndex(String bagName, IndexField indexField, boolean unique, IndexField... valueFields) throws JasDBStorageException {
+        KeyInfo keyInfo;
+        if(unique) {
+            keyInfo = new KeyInfoImpl(indexField, guaranteeIdKey(valueFields));
+        } else {
+            keyInfo = new KeyInfoImpl(Lists.newArrayList(indexField, new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType())), Lists.newArrayList(valueFields));
+        }
+
+		return createInStore(bagName, keyInfo);
+	}
+
+    private Index createInStore(String bagName, KeyInfo keyInfo) throws JasDBStorageException {
+		if(!indexes.containsKey(bagName)) {
+			loadIndexes(bagName);
+		}
+
+		Map<String, Index> bagIndexes = this.indexes.get(bagName);
+		if(bagIndexes != null && !bagIndexes.containsKey(keyInfo.getKeyName())) {
+            File indexFile = createIndexFile(bagName, keyInfo.getKeyName(), false);
+
+			try {
+				Index index = new BTreeIndex(indexFile, keyInfo);
+				configureIndex(IndexTypes.BTREE, index);
+
+                IndexDefinition definition = new IndexDefinition(keyInfo.getKeyName(), keyInfo.keyAsHeader(), keyInfo.valueAsHeader(), index.getIndexType());
+                metadataStore.addBagIndex(instanceId, bagName, definition);
+
+				bagIndexes.put(keyInfo.getKeyName(), index);
+				return index;
+			} catch(ConfigurationException e) {
+				throw new JasDBStorageException("Unable to create index, configuration error", e);
+			}
+		} else if(bagIndexes != null){
+			return bagIndexes.get(keyInfo.getKeyName());
+		} else {
+			return null;
+		}
+
+	}
+
+	private List<IndexField> guaranteeIdKey(IndexField... valueFields) throws JasDBStorageException {
+		Set<String> fields = new HashSet<>();
+		List<IndexField> indexFields = new ArrayList<>();
+		for(IndexField valueField : valueFields) {
+			fields.add(valueField.getField());
+			indexFields.add(valueField);
+		}
+
+		if(!fields.contains(SimpleEntity.DOCUMENT_ID)) {
+			indexFields.add(new SimpleIndexField(SimpleEntity.DOCUMENT_ID, new UUIDKeyType()));
+		}
+
+		return indexFields;
+	}
+
+	private synchronized void loadIndexes(final String bagName) throws JasDBStorageException {
+		LOG.debug("Loading indexes for bag: {}", bagName);
+		if(!indexes.containsKey(bagName)) {
+            Bag bag = metadataStore.getBag(instanceId, bagName);
+            if(bag != null) {
+                Set<IndexDefinition> indexDefinitions = new HashSet<>(bag.getIndexDefinitions());
+
+                LOG.info("Found {} potential indexes for bag: {}", indexDefinitions.size(), bagName);
+                Map<String, Index> bagIndexes = new HashMap<>();
+                for(IndexDefinition indexDefinition : indexDefinitions) {
+                    Index index = loadIndex(bagName, indexDefinition);
+                    bagIndexes.put(index.getKeyInfo().getKeyName(), index);
+                }
+                this.indexes.put(bagName, bagIndexes);
+            }
+		}
+	}
+
+	private Index loadIndex(String bagName, IndexDefinition indexDefinition) throws JasDBStorageException {
+		try {
+            KeyInfo keyInfo = new KeyInfoImpl(indexDefinition.getHeaderDescriptor(), indexDefinition.getValueDescriptor());
+            File indexFile = createIndexFile(bagName, indexDefinition.getIndexName(), false);
+
+            switch(IndexTypes.getTypeFor(indexDefinition.getIndexType())) {
+                case BTREE:
+                    LOG.debug("Loaded BTree Index for key: {}", indexDefinition.getIndexName());
+                    Index btreeIndex = new BTreeIndex(indexFile, keyInfo);
+
+                    return configureIndex(IndexTypes.BTREE, btreeIndex);
+                default:
+                    throw new JasDBStorageException("Reading from this index type: " + indexDefinition.getIndexName() +
+                            " is not supported");
+            }
+        } catch(ConfigurationException e) {
+			throw new JasDBStorageException("Unable to load index, invalid configuration", e);
+		}
+	}
+
+	private Index configureIndex(IndexTypes indexType, Index indexPersister) throws ConfigurationException {
+        Configuration configuration = configurationLoader.getConfiguration();
+		Configuration indexConfig = configuration.getChildConfiguration(INDEX_CONFIG_XPATH + "[@Type='" + indexType.getName() + "']");
+
+		if(indexConfig != null) {
+			LOG.info("Using configuration for index type: {}", indexType.getName());
+			indexPersister.configure(indexConfig);
+		} else {
+			LOG.info("There is no configuration for index type: {} using defaults", indexType.getName());
+		}
+		return indexPersister;
+	}
+    
+    private File createIndexFile(String bagName, String indexName, boolean multi) throws JasDBStorageException {
+        StringBuilder indexFileNameBuilder = new StringBuilder();
+        String extension = multi ? INDEX_EXTENSION_MULTI : INDEX_EXTENSION;
+
+        indexFileNameBuilder.append(bagName).append(BAG_INDEX_NAME_SPLITTER);
+        indexFileNameBuilder.append(indexName).append(extension);
+
+        String instancePath = metadataStore.getInstance(instanceId).getPath();
+        return new File(instancePath, indexFileNameBuilder.toString());
+    }
+}

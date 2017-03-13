@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <keyFactories>
-	<keyFactory class="nl.renarj.jasdb.index.keys.factory.StringKeyFactory" id="stringType" />
-	<keyFactory class="nl.renarj.jasdb.index.keys.factory.LongKeyFactory" id="longType" />
-	<keyFactory class="nl.renarj.jasdb.index.keys.factory.UUIDKeyFactory" id="uuidType" />
-    <keyFactory class="nl.renarj.jasdb.index.keys.factory.DataKeyFactory" id="dataType" />
+	<keyFactory class="com.oberasoftware.jasdb.core.index.keys.factory.StringKeyFactory" id="stringType" />
+	<keyFactory class="com.oberasoftware.jasdb.core.index.keys.factory.LongKeyFactory" id="longType" />
+	<keyFactory class="com.oberasoftware.jasdb.core.index.keys.factory.UUIDKeyFactory" id="uuidType" />
+    <keyFactory class="com.oberasoftware.jasdb.core.index.keys.factory.DataKeyFactory" id="dataType" />
 </keyFactories>

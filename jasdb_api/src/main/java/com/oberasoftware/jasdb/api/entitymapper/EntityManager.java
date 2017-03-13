@@ -1,8 +1,8 @@
 package com.oberasoftware.jasdb.api.entitymapper;
 
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.api.query.QueryBuilder;
-import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public interface EntityManager {
      * @return The persisted JasDB object that was stored
      * @throws JasDBStorageException If unable to store the object
      */
-    SimpleEntity persist(Object persistableObject) throws JasDBStorageException;
+    Entity persist(Object persistableObject) throws JasDBStorageException;
 
     /**
      * Removes the object from storage
