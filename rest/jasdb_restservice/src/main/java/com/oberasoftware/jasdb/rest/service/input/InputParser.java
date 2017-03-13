@@ -1,6 +1,6 @@
 package com.oberasoftware.jasdb.rest.service.input;
 
-import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
+import com.oberasoftware.jasdb.api.exceptions.SyntaxException;
 import com.oberasoftware.jasdb.rest.service.input.conditions.BlockOperation;
 import com.oberasoftware.jasdb.rest.service.input.conditions.FieldCondition;
 import com.oberasoftware.jasdb.rest.service.input.conditions.InputCondition;

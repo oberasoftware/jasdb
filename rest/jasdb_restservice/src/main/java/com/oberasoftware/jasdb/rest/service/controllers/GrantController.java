@@ -1,48 +1,53 @@
-package com.oberasoftware.jasdb.rest.service.loaders;
+package com.oberasoftware.jasdb.rest.service.controllers;
 
-import com.oberasoftware.jasdb.core.utils.StringUtils;
-import com.oberasoftware.jasdb.api.security.UserManager;
-import com.oberasoftware.jasdb.core.context.RequestContext;
-import com.oberasoftware.jasdb.api.model.GrantObject;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.exceptions.RestException;
-import com.oberasoftware.jasdb.rest.service.input.InputElement;
-import com.oberasoftware.jasdb.rest.service.input.conditions.FieldCondition;
-import com.oberasoftware.jasdb.rest.service.input.OrderParam;
-import com.oberasoftware.jasdb.rest.model.mappers.GrantModelMapper;
+import com.oberasoftware.jasdb.api.model.GrantObject;
+import com.oberasoftware.jasdb.api.security.UserManager;
+import com.oberasoftware.jasdb.core.context.RequestContext;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
 import com.oberasoftware.jasdb.rest.model.RestEntity;
 import com.oberasoftware.jasdb.rest.model.RestGrant;
 import com.oberasoftware.jasdb.rest.model.RestGrantObject;
 import com.oberasoftware.jasdb.rest.model.RestGrantObjectCollection;
-import com.oberasoftware.jasdb.rest.model.serializers.RestResponseHandler;
+import com.oberasoftware.jasdb.rest.model.mappers.GrantModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.oberasoftware.jasdb.rest.service.controllers.ControllerUtil.getRequestContext;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author Renze de Vries
  */
-@Component
-public class GrantModelLoader extends AbstractModelLoader {
+@RestController
+public class GrantController {
 
-    @Autowired(required = false)
     private UserManager userManager;
 
-    @Override
-    public String[] getModelNames() {
-        return new String[] { "Grants" };
+    @Autowired(required = false)
+    public GrantController(UserManager userManager) {
+        this.userManager = userManager;
     }
 
-    @Override
-    public RestEntity loadModel(InputElement input, String begin, String top, List<OrderParam> orderParamList, RequestContext requestContext) throws RestException {
-        if(input.getCondition() != null) {
-            return loadSpecificGrantObject(requestContext, ((FieldCondition) input.getCondition()).getValue());
-        } else {
-            return loadAllGrantObjects(requestContext);
-        }
+    public GrantController() {
     }
+
+    @RequestMapping(value = "/Grants", produces = "application/json", method = RequestMethod.GET)
+    public RestEntity getAllGrants(HttpServletRequest request) throws RestException {
+        return loadAllGrantObjects(getRequestContext(request));
+    }
+
+    @RequestMapping(value = "/Grants({grantId})", produces = "application/json", method = RequestMethod.GET)
+    public RestEntity getGrant(@PathVariable String grantId, HttpServletRequest request) throws RestException {
+        return loadSpecificGrantObject(getRequestContext(request), grantId);
+    }
+
 
     private RestEntity loadSpecificGrantObject(RequestContext context, String object) throws RestException {
         try {
@@ -69,11 +74,10 @@ public class GrantModelLoader extends AbstractModelLoader {
 
     }
 
-    @Override
-    public RestEntity writeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext requestContext) throws RestException {
+    @RequestMapping(value = "/Grants", consumes = "application/json", produces = "application/json", method = POST)
+    public RestEntity writeEntry(@RequestBody RestGrant grant, HttpServletRequest request) throws RestException {
+        RequestContext requestContext = getRequestContext(request);
         if(requestContext.isSecure()) {
-            RestGrant grant = serializer.deserialize(RestGrant.class, rawData);
-
             if(StringUtils.stringNotEmpty(grant.getObjectName()) && StringUtils.stringNotEmpty(grant.getUsername())) {
                 try {
                     userManager.grantUser(requestContext.getUserSession(), grant.getObjectName(), grant.getUsername(), grant.getMode());
@@ -90,11 +94,11 @@ public class GrantModelLoader extends AbstractModelLoader {
         }
     }
 
-    @Override
-    public RestEntity removeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext requestContext) throws RestException {
-        RestGrant grant = serializer.deserialize(RestGrant.class, rawData);
+    @RequestMapping(value = "/Grants({grantId})", produces = "application/json", method = DELETE)
+    public RestEntity removeEntry(@RequestBody RestGrant grant, HttpServletRequest request) throws RestException {
         if(StringUtils.stringNotEmpty(grant.getObjectName()) && StringUtils.stringNotEmpty(grant.getUsername())) {
             try {
+                RequestContext requestContext = getRequestContext(request);
                 userManager.revoke(requestContext.getUserSession(), grant.getObjectName(), grant.getUsername());
 
                 return null;

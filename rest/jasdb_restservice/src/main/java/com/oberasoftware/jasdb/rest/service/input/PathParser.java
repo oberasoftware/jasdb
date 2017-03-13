@@ -2,7 +2,7 @@ package com.oberasoftware.jasdb.rest.service.input;
 
 import com.oberasoftware.jasdb.core.utils.StringUtils;
 import com.oberasoftware.jasdb.rest.service.input.conditions.InputCondition;
-import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
+import com.oberasoftware.jasdb.api.exceptions.SyntaxException;
 import com.oberasoftware.jasdb.rest.service.input.conditions.AndBlockOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.oberasoftware.jasdb.rest.service.loaders;
+package com.oberasoftware.jasdb.rest.service.controllers;
 
 import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
 import com.oberasoftware.jasdb.api.exceptions.JasDBException;
@@ -26,18 +26,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.oberasoftware.jasdb.rest.service.loaders.DataUtil.*;
+import static com.oberasoftware.jasdb.rest.service.controllers.ControllerUtil.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-public class BagModelLoader {
-    private static final Logger LOG = LoggerFactory.getLogger(BagModelLoader.class);
+public class BagController {
+    private static final Logger LOG = LoggerFactory.getLogger(BagController.class);
 
     private final DBInstanceFactory instanceFactory;
     private final StorageServiceFactory storageServiceFactory;
 
     @Autowired
-    public BagModelLoader(DBInstanceFactory instanceFactory, StorageServiceFactory storageServiceFactory) {
+    public BagController(DBInstanceFactory instanceFactory, StorageServiceFactory storageServiceFactory) {
         this.instanceFactory = instanceFactory;
         this.storageServiceFactory = storageServiceFactory;
     }
@@ -103,6 +103,7 @@ public class BagModelLoader {
 
     private ResponseEntity<RestEntity> createBag(String instanceId, RestBag bag) throws JasDBException {
         DBInstance instance = getInstance(instanceFactory, instanceId);
+        LOG.debug("Creating on instance: {} bag: {}", instanceId, bag);
 
         if(StringUtils.stringNotEmpty(bag.getName())) {
             StorageService storageService = storageServiceFactory.getOrCreateStorageService(instance.getInstanceId(), bag.getName());
@@ -115,7 +116,7 @@ public class BagModelLoader {
 
     private ResponseEntity<RestEntity> doSearch(String instanceId, String bagName) throws JasDBException {
         DBInstance instance = getInstance(instanceFactory, instanceId);
-
+        LOG.debug("Searching for a bag on instance: {} with name: {}", instanceId, bagName);
         try {
             StorageService storageService = storageServiceFactory.getStorageService(instance.getInstanceId(), bagName);
             if(storageService != null) {

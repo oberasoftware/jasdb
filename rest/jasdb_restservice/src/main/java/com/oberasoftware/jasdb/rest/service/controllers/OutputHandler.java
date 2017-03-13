@@ -1,4 +1,4 @@
-package com.oberasoftware.jasdb.rest.service.providers;
+package com.oberasoftware.jasdb.rest.service.controllers;
 
 import com.oberasoftware.jasdb.api.exceptions.RestException;
 import com.oberasoftware.jasdb.rest.model.ErrorEntity;
@@ -16,8 +16,8 @@ import java.io.OutputStream;
 /**
  * @author Renze de Vries
  */
-public class ServiceOutputHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceOutputHandler.class);
+public class OutputHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(OutputHandler.class);
 
     private static final JsonRestResponseHandler restResponseHandler = new JsonRestResponseHandler();
 

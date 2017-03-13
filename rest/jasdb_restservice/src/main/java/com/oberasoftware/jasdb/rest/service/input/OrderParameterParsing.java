@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.rest.service.input;
 
 import com.oberasoftware.jasdb.core.utils.StringUtils;
-import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
+import com.oberasoftware.jasdb.api.exceptions.SyntaxException;
 
 import java.util.ArrayList;
 import java.util.Collections;

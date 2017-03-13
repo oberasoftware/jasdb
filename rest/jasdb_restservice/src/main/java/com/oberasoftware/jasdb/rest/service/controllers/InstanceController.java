@@ -1,4 +1,4 @@
-package com.oberasoftware.jasdb.rest.service.loaders;
+package com.oberasoftware.jasdb.rest.service.controllers;
 
 import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
 import com.oberasoftware.jasdb.api.engine.EngineManager;
@@ -23,15 +23,15 @@ import java.util.List;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-public class InstanceModelLoader {
-    private static final Logger LOG = LoggerFactory.getLogger(InstanceModelLoader.class);
+public class InstanceController {
+    private static final Logger LOG = LoggerFactory.getLogger(InstanceController.class);
 
     private final DBInstanceFactory instanceFactory;
 
     private final EngineManager engineManager;
 
     @Autowired
-    public InstanceModelLoader(DBInstanceFactory instanceFactory, EngineManager engineManager) {
+    public InstanceController(DBInstanceFactory instanceFactory, EngineManager engineManager) {
         this.instanceFactory = instanceFactory;
         this.engineManager = engineManager;
     }

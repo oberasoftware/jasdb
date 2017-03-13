@@ -38,14 +38,6 @@ public class RestConnectionBuilder {
         return appendRequest("Bags", bag);
     }
 
-    public RestConnectionBuilder partitions() {
-        return partition(null);
-    }
-    
-    public RestConnectionBuilder partition(String partitionId) {
-        return appendRequest("Partitions", partitionId);
-    }
-    
     public RestConnectionBuilder entities() {
         return entityById(null);
     }

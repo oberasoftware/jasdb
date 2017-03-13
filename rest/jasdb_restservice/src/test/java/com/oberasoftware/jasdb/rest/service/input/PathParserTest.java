@@ -2,7 +2,7 @@ package com.oberasoftware.jasdb.rest.service.input;
 
 import com.oberasoftware.jasdb.api.exceptions.RestException;
 import com.oberasoftware.jasdb.rest.service.input.conditions.*;
-import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
+import com.oberasoftware.jasdb.api.exceptions.SyntaxException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

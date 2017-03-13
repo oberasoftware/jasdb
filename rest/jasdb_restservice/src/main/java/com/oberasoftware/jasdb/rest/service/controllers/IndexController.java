@@ -1,4 +1,4 @@
-package com.oberasoftware.jasdb.rest.service.loaders;
+package com.oberasoftware.jasdb.rest.service.controllers;
 
 import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
 import com.oberasoftware.jasdb.api.engine.IndexManager;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.oberasoftware.jasdb.rest.service.loaders.DataUtil.response;
+import static com.oberasoftware.jasdb.rest.service.controllers.ControllerUtil.response;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -46,8 +46,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * Time: 16:38
  */
 @RestController
-public class IndexModelLoader {
-    private static final Logger LOG = getLogger(IndexModelLoader.class);
+public class IndexController {
+    private static final Logger LOG = getLogger(IndexController.class);
 
     private static final int SINGLE_KEY_FIELD = 1;
 
@@ -58,7 +58,7 @@ public class IndexModelLoader {
     private final DBInstanceFactory dbInstanceFactory;
 
     @Autowired
-    public IndexModelLoader(IndexManagerFactory indexManagerFactory, StorageServiceFactory storageServiceFactory, DBInstanceFactory dbInstanceFactory) {
+    public IndexController(IndexManagerFactory indexManagerFactory, StorageServiceFactory storageServiceFactory, DBInstanceFactory dbInstanceFactory) {
         this.indexManagerFactory = indexManagerFactory;
         this.storageServiceFactory = storageServiceFactory;
         this.dbInstanceFactory = dbInstanceFactory;
@@ -76,7 +76,7 @@ public class IndexModelLoader {
     }
 
     private IndexManager getIndexManager(String instanceId) throws JasDBException {
-        DBInstance instance = DataUtil.getInstance(dbInstanceFactory, instanceId);
+        DBInstance instance = ControllerUtil.getInstance(dbInstanceFactory, instanceId);
 
         return indexManagerFactory.getIndexManager(instance.getInstanceId());
     }

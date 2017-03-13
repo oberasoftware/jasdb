@@ -2,7 +2,7 @@ package com.oberasoftware.jasdb.rest.service.input.model;
 
 import com.oberasoftware.jasdb.engine.StorageService;
 import com.oberasoftware.jasdb.engine.StorageServiceFactory;
-import com.oberasoftware.jasdb.rest.service.loaders.EntityModelLoader;
+import com.oberasoftware.jasdb.rest.service.controllers.EntityController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,7 +22,7 @@ public class EntityModelTest {
     private StorageService storageService;
 
     @InjectMocks
-    private EntityModelLoader entityModelLoader;
+    private EntityController entityModelLoader;
 
 
 	@Test

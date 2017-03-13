@@ -1,4 +1,4 @@
-package com.oberasoftware.jasdb.rest.service.loaders;
+package com.oberasoftware.jasdb.rest.service.controllers;
 
 import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
 import com.oberasoftware.jasdb.api.exceptions.JasDBException;
@@ -20,13 +20,12 @@ import com.oberasoftware.jasdb.rest.model.RestEntity;
 import com.oberasoftware.jasdb.rest.model.serializers.json.entity.EntityHandler;
 import com.oberasoftware.jasdb.rest.model.streaming.StreamableEntityCollection;
 import com.oberasoftware.jasdb.rest.model.streaming.StreamedEntity;
-import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
+import com.oberasoftware.jasdb.api.exceptions.SyntaxException;
 import com.oberasoftware.jasdb.rest.service.input.*;
 import com.oberasoftware.jasdb.rest.service.input.conditions.AndBlockOperation;
 import com.oberasoftware.jasdb.rest.service.input.conditions.BlockOperation;
 import com.oberasoftware.jasdb.rest.service.input.conditions.FieldCondition;
 import com.oberasoftware.jasdb.rest.service.input.conditions.InputCondition;
-import com.oberasoftware.jasdb.rest.service.providers.ServiceOutputHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +39,12 @@ import java.util.List;
 
 import static com.oberasoftware.jasdb.core.utils.StringUtils.stringNotEmpty;
 import static com.oberasoftware.jasdb.rest.service.input.OrderParameterParsing.getOrderParams;
-import static com.oberasoftware.jasdb.rest.service.loaders.DataUtil.getRequestContext;
+import static com.oberasoftware.jasdb.rest.service.controllers.ControllerUtil.getRequestContext;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-public class EntityModelLoader {
-    private static final Logger LOG = LoggerFactory.getLogger(EntityModelLoader.class);
+public class EntityController {
+    private static final Logger LOG = LoggerFactory.getLogger(EntityController.class);
 
     private static final EntityHandler ENTITY_HANDLER = new EntityHandler();
 
@@ -59,7 +58,7 @@ public class EntityModelLoader {
     private final StorageServiceFactory storageServiceFactory;
 
     @Autowired
-    public EntityModelLoader(StorageServiceFactory storageServiceFactory, DBInstanceFactory dbInstanceFactory) {
+    public EntityController(StorageServiceFactory storageServiceFactory, DBInstanceFactory dbInstanceFactory) {
         this.storageServiceFactory = storageServiceFactory;
         this.dbInstanceFactory = dbInstanceFactory;
     }
@@ -68,19 +67,21 @@ public class EntityModelLoader {
     public void getEntities(@PathVariable String instanceId, @PathVariable String bagName,
                             @RequestParam(required = false, defaultValue = "-1") int top,
                             HttpServletRequest request, HttpServletResponse response) throws JasDBStorageException {
-        ServiceOutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
+        LOG.debug("Entity listing request instance/bag {}/{} top: {}", instanceId, bagName, top);
+        OutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
     }
 
     @RequestMapping(value = "/Bags({bagName})/Entities")
     public void getEntities(@PathVariable String bagName, @RequestParam(required = false, defaultValue = "-1") int top,
                             HttpServletRequest request, HttpServletResponse response) throws JasDBException {
-        String instanceId = DataUtil.getInstance(dbInstanceFactory, null).getInstanceId();
+        String instanceId = ControllerUtil.getInstance(dbInstanceFactory, null).getInstanceId();
+        LOG.debug("Entity listing request instance/bag {}/{} top: {}", instanceId, bagName, top);
 
-        ServiceOutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
+        OutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
     }
 
     @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities({entityQuery:.*})")
-    public void getEntityById(@PathVariable String instanceId, @PathVariable String bagName,
+    public void queryEntities(@PathVariable String instanceId, @PathVariable String bagName,
                               @RequestParam(required = false, defaultValue = "0") int begin,
                               @RequestParam(required = false, defaultValue = "-1") int top,
                               @RequestParam(required = false, defaultValue = "") String orderBy,
@@ -96,18 +97,18 @@ public class EntityModelLoader {
         List<OrderParam> orderParamList = getOrderParams(orderBy);
 
         RestEntity entity = handleQuery(storageService, inputCondition, begin, top, orderParamList, context);
-        ServiceOutputHandler.createResponse(entity, response);
+        OutputHandler.createResponse(entity, response);
 
     }
 
     @RequestMapping(value = "/Bags({bagName})/Entities({entityQuery:.*})")
-    public void getEntityById(@PathVariable String bagName, @PathVariable String entityQuery,
+    public void queryEntities(@PathVariable String bagName, @PathVariable String entityQuery,
                               @RequestParam(required = false, defaultValue = "0") int begin,
                               @RequestParam(required = false, defaultValue = "-1") int max,
                               @RequestParam(required = false, defaultValue = "") String orderBy,
                               HttpServletRequest request, HttpServletResponse response) throws JasDBException, UnsupportedEncodingException {
         DBInstance instance = dbInstanceFactory.getInstance();
-        getEntityById(instance.getInstanceId(), bagName, begin, max, orderBy, entityQuery, request, response);
+        queryEntities(instance.getInstanceId(), bagName, begin, max, orderBy, entityQuery, request, response);
     }
 
     @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities", consumes = "application/json",
@@ -115,7 +116,7 @@ public class EntityModelLoader {
 	public void writeEntry(@PathVariable String instanceId, @PathVariable String bagName,
                                  HttpServletRequest request, HttpServletResponse response, @RequestBody String rawData) throws RestException {
         RestEntity entity = doModificationOperation(instanceId, bagName, rawData, getRequestContext(request), OPERATION_TYPE.INSERT);
-        ServiceOutputHandler.createResponse(entity, response);
+        OutputHandler.createResponse(entity, response);
 	}
 
     @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities", consumes = "application/json",
@@ -123,7 +124,7 @@ public class EntityModelLoader {
     public void updateEntry(@PathVariable String instanceId, @PathVariable String bagName,
                                   HttpServletRequest request, HttpServletResponse response, @RequestBody String rawData) throws RestException {
         RestEntity entity = doModificationOperation(instanceId, bagName, rawData, getRequestContext(request), OPERATION_TYPE.UPDATE);
-        ServiceOutputHandler.createResponse(entity, response);
+        OutputHandler.createResponse(entity, response);
     }
 
     @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities({entityId})", produces = "application/json", method = DELETE)

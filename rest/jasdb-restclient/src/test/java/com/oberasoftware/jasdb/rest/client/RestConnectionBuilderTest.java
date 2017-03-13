@@ -18,23 +18,23 @@ import org.junit.Test;
 public class RestConnectionBuilderTest {
     @Test
     public void testConnectionGeneration() {
-        String connectionString = new RestConnectionBuilder().instance("default").bag("bag0").partitions().getConnectionString();
+        String connectionString = new RestConnectionBuilder().instance("default").bag("bag0").entities().getConnectionString();
         Assert.assertNotNull(connectionString);
-        Assert.assertEquals("Unexpected connection string", "Instance(default)/Bags(bag0)/Partitions", connectionString);
+        Assert.assertEquals("Unexpected connection string", "Instances(default)/Bags(bag0)/Entities", connectionString);
     }
 
     @Test
     public void testConnectInstanceBags() {
         String connectionString = new RestConnectionBuilder().instance("default").bags().getConnectionString();
         Assert.assertNotNull(connectionString);
-        Assert.assertEquals("Unexpected connection string", "Instance(default)/Bags", connectionString);
+        Assert.assertEquals("Unexpected connection string", "Instances(default)/Bags", connectionString);
     }
 
     @Test
     public void testConnectInstanceBagsPartitionSplitOperation() {
-        String connectionString = new RestConnectionBuilder().instance("default").bag("bag0").partition("partitionId").doOperation("split").getConnectionString();
+        String connectionString = new RestConnectionBuilder().instance("default").bag("bag0").doOperation("flush").getConnectionString();
         Assert.assertNotNull(connectionString);
-        Assert.assertEquals("Unexpected connection string", "Instance(default)/Bags(bag0)/Partitions(partitionId)/split", connectionString);
+        Assert.assertEquals("Unexpected connection string", "Instances(default)/Bags(bag0)/flush", connectionString);
     }
 
 }

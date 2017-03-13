@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.rest.service.input;
 
 import com.oberasoftware.jasdb.api.session.query.QueryFieldOperator;
-import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
+import com.oberasoftware.jasdb.api.exceptions.SyntaxException;
 
 public enum Operator {
 	Equals("=", QueryFieldOperator.EQUALS),
