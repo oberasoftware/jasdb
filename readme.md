@@ -21,6 +21,8 @@ For more information have a look at http://www.oberasoftware.com
 Wiki for installation and API usage: https://github.com/oberasoftware/jasdb-open/wiki
 Javadoc: http://oberasoftware.github.io/jasdb/apidocs/
 
+**Note: The above documentation is for the current LTS version of JasDB, the current master Branch points to version 2.0 which will break compatibility on the API (not the data format)**
+
 ## Quick Installation
 1. Install JasDB by unzipping the download
 2. Start the database using start.bat or start.sh
