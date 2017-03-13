@@ -1,142 +1,164 @@
 package com.oberasoftware.jasdb.rest.service.loaders;
 
+import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.exceptions.RestException;
 import com.oberasoftware.jasdb.api.index.query.SearchLimit;
+import com.oberasoftware.jasdb.api.session.DBInstance;
 import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.api.session.query.BlockType;
 import com.oberasoftware.jasdb.api.session.query.Order;
 import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
 import com.oberasoftware.jasdb.api.session.query.QueryResult;
 import com.oberasoftware.jasdb.core.context.RequestContext;
-import com.oberasoftware.jasdb.core.utils.StringUtils;
 import com.oberasoftware.jasdb.engine.StorageService;
 import com.oberasoftware.jasdb.engine.StorageServiceFactory;
 import com.oberasoftware.jasdb.engine.query.BuilderTransformer;
 import com.oberasoftware.jasdb.rest.model.ErrorEntity;
-import com.oberasoftware.jasdb.rest.model.RestBag;
 import com.oberasoftware.jasdb.rest.model.RestEntity;
-import com.oberasoftware.jasdb.rest.model.serializers.RestResponseHandler;
+import com.oberasoftware.jasdb.rest.model.serializers.json.entity.EntityHandler;
 import com.oberasoftware.jasdb.rest.model.streaming.StreamableEntityCollection;
 import com.oberasoftware.jasdb.rest.model.streaming.StreamedEntity;
 import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
-import com.oberasoftware.jasdb.rest.service.input.InputElement;
-import com.oberasoftware.jasdb.rest.service.input.OrderParam;
-import com.oberasoftware.jasdb.rest.service.input.TokenType;
+import com.oberasoftware.jasdb.rest.service.input.*;
+import com.oberasoftware.jasdb.rest.service.input.conditions.AndBlockOperation;
 import com.oberasoftware.jasdb.rest.service.input.conditions.BlockOperation;
 import com.oberasoftware.jasdb.rest.service.input.conditions.FieldCondition;
 import com.oberasoftware.jasdb.rest.service.input.conditions.InputCondition;
+import com.oberasoftware.jasdb.rest.service.providers.ServiceOutputHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
-@Component
-public class EntityModelLoader extends AbstractModelLoader {
-    private static final Logger log = LoggerFactory.getLogger(EntityModelLoader.class);
+import static com.oberasoftware.jasdb.core.utils.StringUtils.stringNotEmpty;
+import static com.oberasoftware.jasdb.rest.service.input.OrderParameterParsing.getOrderParams;
+import static com.oberasoftware.jasdb.rest.service.loaders.DataUtil.getRequestContext;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
+@RestController
+public class EntityModelLoader {
+    private static final Logger LOG = LoggerFactory.getLogger(EntityModelLoader.class);
+
+    private static final EntityHandler ENTITY_HANDLER = new EntityHandler();
 
     private enum OPERATION_TYPE {
         UPDATE,
         INSERT
     }
 
+    private final DBInstanceFactory dbInstanceFactory;
+
     private final StorageServiceFactory storageServiceFactory;
 
     @Autowired
-    public EntityModelLoader(StorageServiceFactory storageServiceFactory) {
+    public EntityModelLoader(StorageServiceFactory storageServiceFactory, DBInstanceFactory dbInstanceFactory) {
         this.storageServiceFactory = storageServiceFactory;
+        this.dbInstanceFactory = dbInstanceFactory;
     }
 
-	@Override
-	public String[] getModelNames() {
-		return new String[] {"Entities"};
+    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities")
+    public void getEntities(@PathVariable String instanceId, @PathVariable String bagName,
+                            @RequestParam(required = false, defaultValue = "-1") int top,
+                            HttpServletRequest request, HttpServletResponse response) throws JasDBStorageException {
+        ServiceOutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
+    }
+
+    @RequestMapping(value = "/Bags({bagName})/Entities")
+    public void getEntities(@PathVariable String bagName, @RequestParam(required = false, defaultValue = "-1") int top,
+                            HttpServletRequest request, HttpServletResponse response) throws JasDBException {
+        String instanceId = DataUtil.getInstance(dbInstanceFactory, null).getInstanceId();
+
+        ServiceOutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
+    }
+
+    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities({entityQuery:.*})")
+    public void getEntityById(@PathVariable String instanceId, @PathVariable String bagName,
+                              @RequestParam(required = false, defaultValue = "0") int begin,
+                              @RequestParam(required = false, defaultValue = "-1") int top,
+                              @RequestParam(required = false, defaultValue = "") String orderBy,
+                              @PathVariable String entityQuery, HttpServletRequest request, HttpServletResponse response) throws JasDBException, UnsupportedEncodingException {
+        String q = URLDecoder.decode(entityQuery, "UTF8");
+        LOG.debug("Received query: {} begin: {} top: {} orderBy: {} for instance/bag: {}/{}", q, begin, top, orderBy, instanceId, bagName);
+        InputCondition inputCondition = new InputParser(new InputScanner(q)).getCondition();
+        if(inputCondition == null) {
+            inputCondition = new AndBlockOperation();
+        }
+        StorageService storageService = storageServiceFactory.getStorageService(instanceId, bagName);
+        RequestContext context = getRequestContext(request);
+        List<OrderParam> orderParamList = getOrderParams(orderBy);
+
+        RestEntity entity = handleQuery(storageService, inputCondition, begin, top, orderParamList, context);
+        ServiceOutputHandler.createResponse(entity, response);
+
+    }
+
+    @RequestMapping(value = "/Bags({bagName})/Entities({entityQuery:.*})")
+    public void getEntityById(@PathVariable String bagName, @PathVariable String entityQuery,
+                              @RequestParam(required = false, defaultValue = "0") int begin,
+                              @RequestParam(required = false, defaultValue = "-1") int max,
+                              @RequestParam(required = false, defaultValue = "") String orderBy,
+                              HttpServletRequest request, HttpServletResponse response) throws JasDBException, UnsupportedEncodingException {
+        DBInstance instance = dbInstanceFactory.getInstance();
+        getEntityById(instance.getInstanceId(), bagName, begin, max, orderBy, entityQuery, request, response);
+    }
+
+    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities", consumes = "application/json",
+            produces = "application/json", method = POST)
+	public void writeEntry(@PathVariable String instanceId, @PathVariable String bagName,
+                                 HttpServletRequest request, HttpServletResponse response, @RequestBody String rawData) throws RestException {
+        RestEntity entity = doModificationOperation(instanceId, bagName, rawData, getRequestContext(request), OPERATION_TYPE.INSERT);
+        ServiceOutputHandler.createResponse(entity, response);
 	}
 
-    @Override
-    public RestEntity loadModel(InputElement input, String start, String top, List<OrderParam> orderParamList, RequestContext context) throws RestException {
-        InputElement previous = input.getPrevious();
-        int max = getSafeInteger(top, -1);
-        int begin = getSafeInteger(start, 0);
-
-        try {
-            if(previous != null && previous.getResult() instanceof RestBag) {
-                RestBag bag = (RestBag) previous.getResult();
-
-                return handleBagRelation(bag, input, begin, max, orderParamList, context);
-            } else {
-                throw new SyntaxException("Cannot retrieve entities, no Bag specified");
-            }
-        } catch(JasDBStorageException e) {
-            throw new RestException("Unable to retrieve the entities", e);
-        }
-
+    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities", consumes = "application/json",
+            produces = "application/json", method = PUT)
+    public void updateEntry(@PathVariable String instanceId, @PathVariable String bagName,
+                                  HttpServletRequest request, HttpServletResponse response, @RequestBody String rawData) throws RestException {
+        RestEntity entity = doModificationOperation(instanceId, bagName, rawData, getRequestContext(request), OPERATION_TYPE.UPDATE);
+        ServiceOutputHandler.createResponse(entity, response);
     }
 
-    private RestEntity handleBagRelation(RestBag bag, InputElement input, int begin, int max, List<OrderParam> orderParams, RequestContext requestContext) throws JasDBStorageException {
-        StorageService storageService = storageServiceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
+    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities({entityId})", produces = "application/json", method = DELETE)
+    public RestEntity removeEntry(@PathVariable String instanceId, @PathVariable String bagName, @PathVariable String entityId,
+                                  HttpServletRequest request) throws RestException {
+        if(stringNotEmpty(instanceId) && stringNotEmpty(bagName) && stringNotEmpty(entityId)) {
+            try {
+                LOG.debug("Doing remove of entity with id: {}", entityId);
+                StorageService storageService = storageServiceFactory.getOrCreateStorageService(instanceId, bagName);
 
-        if(input.getCondition() != null) {
-            return handleQuery(storageService, input, begin, max, orderParams, requestContext);
-        } else {
-            return handleCollection(storageService, requestContext, max);
-        }
-    }
-
-	@Override
-	public RestEntity writeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context) throws RestException {
-        return doModificationOperation(input, serializer, rawData, context, OPERATION_TYPE.INSERT);
-	}
-
-    @Override
-    public RestEntity removeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context) throws RestException {
-        InputElement previous = input.getPrevious();
-        if(previous != null && previous.getResult() instanceof RestBag) {
-            RestBag bag = (RestBag) previous.getResult();
-
-            InputCondition condition = input.getCondition();
-            if(condition.getTokenType() == TokenType.LITERAL && ((FieldCondition)condition).getField().equals(FieldCondition.ID_PARAM)) {
-                FieldCondition idCondition = (FieldCondition) condition;
-
-                try {
-                    log.debug("Doing remove of entity with id: {}", idCondition.getValue());
-                    StorageService storageService = storageServiceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
-
-                    storageService.removeEntity(context, idCondition.getValue());
-                    return null;
-                } catch(JasDBStorageException e) {
-                    throw new RestException("Unable to remove entity: " + e.getMessage());
-                }
-            } else {
-                throw new RestException("Unable to do remove operation, no id was specified");
+                storageService.removeEntity(getRequestContext(request), entityId);
+                return null;
+            } catch(JasDBStorageException e) {
+                throw new RestException("Unable to remove entity: " + e.getMessage());
             }
         } else {
-            throw new SyntaxException("Cannot store entity, no Bag specified");
+            throw new SyntaxException("Cannot remove entity, invalid parameters for delete operation");
         }
     }
 
-    @Override
-    public RestEntity updateEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context) throws RestException {
-        return doModificationOperation(input, serializer, rawData, context, OPERATION_TYPE.UPDATE);
-    }
+    private RestEntity doModificationOperation(String instanceId, String bagName, String rawData, RequestContext context, OPERATION_TYPE type) throws RestException {
+        if(stringNotEmpty(instanceId) && stringNotEmpty(bagName)) {
 
-    private RestEntity doModificationOperation(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context, OPERATION_TYPE type) throws RestException {
-        InputElement previous = input.getPrevious();
-        if(previous != null && previous.getResult() instanceof RestBag) {
-            RestBag bag = (RestBag) previous.getResult();
-            log.debug("Raw entity data received: {}", rawData);
-            StreamedEntity streamedEntity = serializer.deserialize(StreamedEntity.class, rawData);
+            LOG.debug("Raw entity data received: {}", rawData);
+
+            StreamedEntity streamedEntity = ENTITY_HANDLER.deserialize(StreamedEntity.class, rawData);
             Entity storeEntity = streamedEntity.getEntity();
 
             try {
-                StorageService storageService = storageServiceFactory.getOrCreateStorageService(bag.getInstanceId(), bag.getName());
-
+                StorageService storageService = storageServiceFactory.getOrCreateStorageService(instanceId, bagName);
                 if(type == OPERATION_TYPE.UPDATE) {
-                    log.debug("Updating entity with id: {}", storeEntity.getInternalId());
+                    LOG.debug("Updating entity with id: {}", storeEntity.getInternalId());
                     storageService.persistEntity(context, storeEntity);
                 } else if(type == OPERATION_TYPE.INSERT) {
-                    log.debug("Inserting new entity into bag: {}", bag.getName());
+                    LOG.debug("Inserting new entity into bag: {}", bagName);
 
                     storageService.insertEntity(context, storeEntity);
                 }
@@ -149,25 +171,8 @@ public class EntityModelLoader extends AbstractModelLoader {
         }
     }
 
-    private int getSafeInteger(String top, int fallback) throws SyntaxException {
-		if(StringUtils.stringNotEmpty(top)) {
-			try {
-				int parsedInt = Integer.parseInt(top);
-				if(parsedInt > 0) {
-					return parsedInt;
-				} else {
-					throw new SyntaxException("Integer should be higher than 0");
-				}
-			} catch(NumberFormatException e) {
-				throw new SyntaxException("Invalid Integer specified: " + top);
-			}
-		} else {
-			return fallback;
-		}
-	}
-
-	private RestEntity handleQuery(StorageService storageService, InputElement element, int begin, int top, List<OrderParam> orderParams, RequestContext context) throws JasDBStorageException {
-        InputCondition condition = element.getCondition();
+	private RestEntity handleQuery(StorageService storageService, InputCondition condition, int begin, int top, List<OrderParam> orderParams, RequestContext context) throws JasDBStorageException {
+        LOG.debug("Query: {} begin: {} top: {}", condition, begin, top);
         if(condition.getTokenType() == TokenType.LITERAL && ((FieldCondition)condition).getField().equals(FieldCondition.ID_PARAM)) {
             FieldCondition idCondition = (FieldCondition) condition;
             return requestById(storageService, idCondition.getValue(), context);
@@ -220,13 +225,15 @@ public class EntityModelLoader extends AbstractModelLoader {
 		return parentBuilder;
 	}
 
-	private StreamableEntityCollection handleCollection(StorageService storageService, RequestContext context, int max) throws JasDBStorageException {
+	private StreamableEntityCollection handleCollection(HttpServletRequest request, String instanceId, String bagName, int max) throws JasDBStorageException {
+        StorageService storageService = storageServiceFactory.getOrCreateStorageService(instanceId, bagName);
+
 		long start = System.currentTimeMillis();
 		QueryResult queryResult;
 		if(max != -1) {
-			queryResult = storageService.getEntities(context, max);
+			queryResult = storageService.getEntities(getRequestContext(request), max);
 		} else {
-			queryResult = storageService.getEntities(context);
+			queryResult = storageService.getEntities(getRequestContext(request));
 		}
 
         StreamableEntityCollection collection = new StreamableEntityCollection(queryResult);

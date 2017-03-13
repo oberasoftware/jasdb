@@ -264,8 +264,7 @@
         <!--<module>jasdb_buildtools</module>-->
         <module>jasdb-engine</module>
         <module>testing/jasdb_testframework</module>
-        <!--<module>testing/jasdb_ent_integration</module>-->
-        <module>testing/jasdb_integration_test</module>
+        <module>testing/jasdb-integration-test</module>
     </modules>
 
     <profiles>

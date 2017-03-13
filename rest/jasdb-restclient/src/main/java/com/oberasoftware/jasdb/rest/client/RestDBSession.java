@@ -8,14 +8,15 @@
 package com.oberasoftware.jasdb.rest.client;
 
 import com.oberasoftware.jasdb.api.entitymapper.EntityManager;
-import com.oberasoftware.jasdb.core.utils.StringUtils;
-import nl.renarj.jasdb.api.DBConnectorSession;
-import com.oberasoftware.jasdb.api.security.UserSession;
-import com.oberasoftware.jasdb.api.security.Credentials;
 import com.oberasoftware.jasdb.api.exceptions.JasDBSecurityException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.model.NodeInformation;
 import com.oberasoftware.jasdb.api.model.ServiceInformation;
+import com.oberasoftware.jasdb.api.security.Credentials;
+import com.oberasoftware.jasdb.api.security.UserSession;
+import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.entitymapper.EntityManagerImpl;
+import nl.renarj.jasdb.api.DBConnectorSession;
 import nl.renarj.jasdb.remote.RemoteConnectorFactory;
 import nl.renarj.jasdb.remote.RemotingContext;
 import nl.renarj.jasdb.remote.TokenConnector;
@@ -49,8 +50,7 @@ public class RestDBSession extends DBConnectorSession {
 
     @Override
     public EntityManager getEntityManager() {
-//        return new EntityManagerImpl(this);
-        return null;
+        return new EntityManagerImpl(this);
     }
 
     @Override

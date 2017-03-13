@@ -44,7 +44,7 @@ import java.util.Map;
  * Time: 9:39 PM
  */
 public class RemoteRestConnector implements RemoteConnector {
-    private static final Logger log = LoggerFactory.getLogger(RemoteRestConnector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteRestConnector.class);
 
     protected static final String CHARACTER_ENCODING = "UTF8";
     protected enum REQUEST_MODE {
@@ -85,7 +85,7 @@ public class RemoteRestConnector implements RemoteConnector {
                     int portNumber = Integer.parseInt(port);
 
                     this.baseUrl = protocol + "://" + host + ":" + portNumber + "/";
-                    log.debug("Loaded rest connector with baseUrl: {}", baseUrl);
+                    LOG.debug("Loaded rest connector with baseUrl: {}", baseUrl);
                 } catch(NumberFormatException e) {
                     throw new ConfigurationException("Invalid Rest client port number: " + port);
                 }
@@ -139,7 +139,7 @@ public class RemoteRestConnector implements RemoteConnector {
 
     private URL getUrl(String resource, Map<String, String> params) throws MalformedURLException, UnsupportedEncodingException {
         StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append(baseUrl).append(URLEncoder.encode(resource, "UTF8"));
+        urlBuilder.append(baseUrl).append(resource);
 
         boolean first = true;
         for(Map.Entry<String, String> param : params.entrySet()) {
@@ -157,7 +157,7 @@ public class RemoteRestConnector implements RemoteConnector {
     }
 
     protected ClientResponse doRequest(RemotingContext context, String connectionString) throws RemoteException {
-        return doRequest(context, connectionString, new HashMap<String, String>());
+        return doRequest(context, connectionString, new HashMap<>());
     }
 
     protected ClientResponse doRequest(RemotingContext context, String connectionString, Map<String, String> params) throws RemoteException {
@@ -173,11 +173,10 @@ public class RemoteRestConnector implements RemoteConnector {
     }
     
     protected ClientResponse doInternalRequest(RemotingContext context, String connectionString, Map<String, String> params, byte[] postStream, REQUEST_MODE mode) throws RemoteException {
-        log.debug("Doing request to resource: {}", connectionString);
-
         HttpURLConnection urlConnection = null;
         try {
             URL url = getUrl(connectionString, params);
+            LOG.debug("Doing request to resource: {}", url);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(mode.toString());
             urlConnection.setRequestProperty("Accept-Charset", "UTF-8");
@@ -217,6 +216,9 @@ public class RemoteRestConnector implements RemoteConnector {
             return response;
         } else if(Range.closedOpen(400, 500).contains(response.getStatus())) {
             String responseEntity = response.getEntityAsString();
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Response: {}", responseEntity);
+            }
 
             try {
                 String message = "";
@@ -228,6 +230,7 @@ public class RemoteRestConnector implements RemoteConnector {
                 if(response.getStatus() == HttpStatus.NOT_FOUND.value()) {
                     throw new ResourceNotFoundException("No resource was found, " + message);
                 } else {
+                    LOG.error("Raw response: {}", responseEntity);
                     throw new RemoteException("Unable to execute remote operation: " + message + " statuscode: " + response.getStatus());
                 }
             } catch(RestException e) {
@@ -236,7 +239,7 @@ public class RemoteRestConnector implements RemoteConnector {
             }
         } else {
             String responseEntity = response.getEntityAsString();
-            log.error("Remote server response with an error: {}", responseEntity);
+            LOG.error("Remote server response with an error: {}", responseEntity);
             throw new RemoteException("Unable to execute remote operation: " + response.getStatus());
         }
     }

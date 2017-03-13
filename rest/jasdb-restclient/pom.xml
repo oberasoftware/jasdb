@@ -20,5 +20,9 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_restmodel</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb_entity</artifactId>
+        </dependency>
     </dependencies>
 </project>

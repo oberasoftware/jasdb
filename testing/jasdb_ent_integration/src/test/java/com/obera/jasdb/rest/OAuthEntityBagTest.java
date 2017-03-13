@@ -1,11 +1,11 @@
 package com.obera.jasdb.rest;
 
 import com.obera.service.acl.BasicCredentials;
-import com.oberasoftware.jasdb.engine.EntityBagTest;
 import com.oberasoftware.jasdb.core.acl.AccessMode;
 import com.oberasoftware.jasdb.core.acl.SessionManager;
 import com.oberasoftware.jasdb.core.acl.UserManager;
 import com.oberasoftware.jasdb.core.acl.UserSession;
+import com.oberasoftware.jasdb.engine.EntityBagTest;
 import nl.renarj.jasdb.core.SimpleKernel;
 
 /**

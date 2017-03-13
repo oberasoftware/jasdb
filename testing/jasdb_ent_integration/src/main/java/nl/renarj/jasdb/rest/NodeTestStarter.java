@@ -1,9 +1,9 @@
 package nl.renarj.jasdb.rest;
 
+import com.oberasoftware.jasdb.core.model.EntityBag;
 import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.SimpleEntity;
-import com.oberasoftware.jasdb.core.model.EntityBag;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBStorageException;
 import nl.renarj.jasdb.rest.client.ResourceNotFoundException;

@@ -40,7 +40,9 @@ public class BagRestConnector extends RemoteRestConnector implements BagConnecto
         try {
             ClientResponse clientResponse = doRequest(context, connectionString);
             try {
-                RestBag bag = new JsonRestResponseHandler().deserialize(RestBag.class, clientResponse.getEntityInputStream());
+                String response = clientResponse.getEntityAsString();
+                log.debug("Response: {}", response);
+                RestBag bag = new JsonRestResponseHandler().deserialize(RestBag.class, response);
                 return new RemoteBag(bag.getInstanceId(), bag.getName(), new ArrayList<>(), bag.getSize(), bag.getDiskSize());
             } catch(RestException e) {
                 throw new RemoteException("Unable to parse remote bag data", e);

@@ -1,68 +1,50 @@
 package com.oberasoftware.jasdb.rest.service.loaders;
 
-import com.oberasoftware.jasdb.api.session.DBInstance;
 import com.oberasoftware.jasdb.api.engine.DBInstanceFactory;
-import com.oberasoftware.jasdb.core.context.RequestContext;
 import com.oberasoftware.jasdb.api.engine.EngineManager;
 import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.exceptions.RestException;
-import com.oberasoftware.jasdb.rest.service.input.InputElement;
-import com.oberasoftware.jasdb.rest.service.exceptions.SyntaxException;
-import com.oberasoftware.jasdb.rest.service.input.OrderParam;
-import com.oberasoftware.jasdb.rest.service.input.TokenType;
-import com.oberasoftware.jasdb.rest.service.input.conditions.FieldCondition;
-import com.oberasoftware.jasdb.rest.service.input.conditions.InputCondition;
+import com.oberasoftware.jasdb.api.session.DBInstance;
 import com.oberasoftware.jasdb.rest.model.InstanceCollection;
 import com.oberasoftware.jasdb.rest.model.InstanceRest;
 import com.oberasoftware.jasdb.rest.model.RestEntity;
-import com.oberasoftware.jasdb.rest.model.serializers.RestResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class InstanceModelLoader  extends AbstractModelLoader {
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
+@RestController
+public class InstanceModelLoader {
     private static final Logger LOG = LoggerFactory.getLogger(InstanceModelLoader.class);
 
-	private static final String MODEL_NAME = "Instance";
-    private static final String INSTANCES = "Instances";
+    private final DBInstanceFactory instanceFactory;
+
+    private final EngineManager engineManager;
 
     @Autowired
-    private DBInstanceFactory instanceFactory;
+    public InstanceModelLoader(DBInstanceFactory instanceFactory, EngineManager engineManager) {
+        this.instanceFactory = instanceFactory;
+        this.engineManager = engineManager;
+    }
 
-    @Autowired
-    private EngineManager engineManager;
+    @RequestMapping(value = "/Instances", produces = "application/json", method = GET)
+    public RestEntity getInstances() throws RestException {
+        return new InstanceCollection(loadInstances());
+    }
 
-	@Override
-	public String[] getModelNames() {
-		return new String[] { MODEL_NAME, INSTANCES };
-	}
-
-	@Override
-	public RestEntity loadModel(InputElement input, String begin, String top, List<OrderParam> orderParamList, RequestContext context) throws RestException {
-		if(input.getCondition() == null) {
-            LOG.debug("Loading instances list");
-            return new InstanceCollection(loadInstances());
-		} else {
-            InputCondition condition = input.getCondition();
-            if(condition instanceof FieldCondition) {
-                FieldCondition fieldCondition = (FieldCondition) condition;
-                LOG.debug("Loading instance data for instance: {}", fieldCondition);
-
-                InstanceRest instance = getInstance(fieldCondition.getValue());
-                input.setResult(instance);
-
-                return instance;
-            } else {
-			    throw new SyntaxException("Requesting instance data is not supported");
-            }
-		}
-	}
+    @RequestMapping(value = "/Instances({instanceId})", produces = "application/json", method = GET)
+    public RestEntity getInstance(@PathVariable String instanceId) throws RestException {
+        return loadInstance(instanceId);
+    }
 
     private List<InstanceRest> loadInstances() throws RestException {
         List<InstanceRest> instances = new ArrayList<>();
@@ -72,20 +54,18 @@ public class InstanceModelLoader  extends AbstractModelLoader {
         return instances;
     }
     
-    private InstanceRest getInstance(String instanceId) throws RestException {
+    private InstanceRest loadInstance(String instanceId) throws RestException {
         try {
             DBInstance dbInstance = instanceFactory.getInstance(instanceId);
-            InstanceRest instance = new InstanceRest(dbInstance.getPath(), "OK", engineManager.getEngineVersion(), dbInstance.getInstanceId());
 
-            return instance;
+            return new InstanceRest(dbInstance.getPath(), "OK", engineManager.getEngineVersion(), dbInstance.getInstanceId());
         } catch(ConfigurationException e) {
             throw new RestException("Unable to retrieve the instance", e);
         }
     }
 
-	@Override
-	public RestEntity writeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context) throws RestException {
-        InstanceRest dbInstance = serializer.deserialize(InstanceRest.class, rawData);
+	@RequestMapping(value = "/Instances", method = POST, consumes = "application/json", produces = "application/json")
+	public RestEntity writeEntry(@RequestBody InstanceRest dbInstance) throws RestException {
         try {
             instanceFactory.addInstance(dbInstance.getInstanceId());
 
@@ -95,22 +75,15 @@ public class InstanceModelLoader  extends AbstractModelLoader {
         }
 	}
 
-    @Override
-    public RestEntity removeEntry(InputElement input, RestResponseHandler serializer, String rawData, RequestContext context) throws RestException {
-        InputCondition condition = input.getCondition();
-        if(condition.getTokenType() == TokenType.LITERAL && ((FieldCondition)condition).getField().equals(FieldCondition.ID_PARAM)) {
-            FieldCondition idCondition = (FieldCondition) condition;
+    @RequestMapping(value = "/Instances({instanceId})", method = DELETE, produces = "application/json")
+    public RestEntity removeEntry(@PathVariable String instanceId) throws RestException {
+        try {
+            LOG.debug("Receiving a instance delete operation for instance: {}", instanceId);
+            instanceFactory.deleteInstance(instanceId);
 
-            try {
-                LOG.debug("Receiving a instance delete operation for instance: {}", idCondition.getValue());
-                instanceFactory.deleteInstance(idCondition.getValue());
-
-                return null;
-            } catch(JasDBStorageException e) {
-                throw new RestException("Unable to remove instance: " + idCondition.getValue());
-            }
-        } else {
-            throw new RestException("Unable to remove instance, no instanceId specified");
+            return null;
+        } catch(JasDBStorageException e) {
+            throw new RestException("Unable to remove instance: " + instanceId);
         }
     }
 }

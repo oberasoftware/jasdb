@@ -1,12 +1,12 @@
 package nl.renarj.jasdb.rest;
 
+import com.oberasoftware.jasdb.core.metadata.Bag;
+import com.oberasoftware.jasdb.core.metadata.IndexDefinition;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.engine.metadata.BagMeta;
 import com.oberasoftware.jasdb.service.local.LocalDBSession;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
-import com.oberasoftware.jasdb.core.metadata.Bag;
-import com.oberasoftware.jasdb.core.metadata.IndexDefinition;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.locator.NodeInformation;
 import nl.renarj.jasdb.remote.BagConnector;

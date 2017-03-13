@@ -7,6 +7,9 @@
  */
 package com.oberasoftware.jasdb.rest.client;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
 * User: renarj
 * Date: 3/16/12
@@ -20,11 +23,11 @@ public class RestConnectionBuilder {
     }
 
     public RestConnectionBuilder instance(String instance) {
-        return appendRequest("Instance", instance);
+        return appendRequest("Instances", instance);
     }
 
     public RestConnectionBuilder instance() {
-        return appendRequest("Instance", null);
+        return appendRequest("Instances", null);
     }
 
     public RestConnectionBuilder bags() {
@@ -52,7 +55,11 @@ public class RestConnectionBuilder {
     }
 
     public RestConnectionBuilder entities(String query) {
-        return appendRequest("Entities", query);
+        try {
+            return appendRequest("Entities", URLEncoder.encode(query, "UTF8"));
+        } catch (UnsupportedEncodingException e) {
+            return appendRequest("Entities", query);
+        }
     }
 
     public RestConnectionBuilder indexes() {

@@ -155,7 +155,7 @@ public class DataWebservice {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/**", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> handleRemoveData(HttpServletRequest request, @RequestBody String data) {
+    public ResponseEntity<?> handleRemoveData(HttpServletRequest request) {
         String path = request.getRequestURI();
         LOG.debug("Removing for path: {}", path);
         StatRecord removeHandleRecord = StatisticsMonitor.createRecord("ws:handleRemove");
@@ -164,7 +164,7 @@ public class DataWebservice {
                 InputElement lastElement = processPath(path, getRequestContext(request));
                 if(lastElement != null) {
                     PathModelLoader loader = modelLoaderFactory.getModelLoader(lastElement.getElementName());
-                    loader.removeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), data, getRequestContext(request));
+                    loader.removeEntry(lastElement, ServiceOutputHandler.getResponseHandler(), null, getRequestContext(request));
 
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 } else {

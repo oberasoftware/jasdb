@@ -1,14 +1,14 @@
 package com.obera.jasdb;
 
 import com.obera.service.acl.BasicCredentials;
+import com.oberasoftware.jasdb.core.acl.AccessMode;
+import com.oberasoftware.jasdb.core.acl.SessionManager;
+import com.oberasoftware.jasdb.core.acl.UserManager;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import nl.renarj.jasdb.SimpleBaseTest;
 import nl.renarj.jasdb.api.DBSession;
 import nl.renarj.jasdb.api.DBSessionFactory;
 import nl.renarj.jasdb.api.UserAdministration;
-import com.oberasoftware.jasdb.core.acl.AccessMode;
-import com.oberasoftware.jasdb.core.acl.SessionManager;
-import com.oberasoftware.jasdb.core.acl.UserManager;
 import nl.renarj.jasdb.core.SimpleKernel;
 import nl.renarj.jasdb.core.exceptions.JasDBException;
 import nl.renarj.jasdb.core.exceptions.JasDBSecurityException;

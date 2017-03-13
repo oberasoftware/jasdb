@@ -24,7 +24,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorEntity> defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
         LOG.error("Intercepted exception: {} for URL: {}", e.getMessage(), req.getRequestURL());
-        LOG.error("Exception stacktrace: {}", e);
+        LOG.error("Exception stacktrace:", e);
 
         if (AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class) != null) {
             throw e;
