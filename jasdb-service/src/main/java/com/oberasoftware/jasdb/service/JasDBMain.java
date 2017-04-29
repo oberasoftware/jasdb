@@ -1,10 +1,10 @@
 package com.oberasoftware.jasdb.service;
 
-import com.oberasoftware.jasdb.engine.EngineConfiguation;
 import com.oberasoftware.jasdb.api.engine.EngineManager;
 import com.oberasoftware.jasdb.api.exceptions.JasDBException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.model.NodeInformation;
+import com.oberasoftware.jasdb.engine.EngineConfiguation;
 import com.oberasoftware.jasdb.rest.service.RestConfiguration;
 import com.oberasoftware.jasdb.rest.service.RestConfigurationLoader;
 import org.slf4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 import javax.management.JMX;
@@ -33,8 +32,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
-@ComponentScan
-@Import({RestConfiguration.class, EngineConfiguation.class})
+@Import({RestConfiguration.class, EngineConfiguation.class, ServiceConfiguration.class})
 public class JasDBMain {
     private static final Logger LOG = getLogger(JasDBMain.class);
 
