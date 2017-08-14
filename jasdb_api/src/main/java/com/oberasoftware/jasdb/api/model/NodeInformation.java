@@ -7,6 +7,7 @@
  */
 package com.oberasoftware.jasdb.api.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Map;
  * Date: 1/16/12
  * Time: 9:23 PM
  */
-public class NodeInformation {
+public class NodeInformation implements Serializable {
     private String instanceId;
     private String gridId;
 

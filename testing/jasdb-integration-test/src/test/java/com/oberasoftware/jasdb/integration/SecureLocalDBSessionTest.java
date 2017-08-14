@@ -1,10 +1,13 @@
-package com.obera.jasdb.local;
+package com.oberasoftware.jasdb.integration;
 
-import com.oberasoftware.jasdb.engine.DBSessionTest;
+
+import com.oberasoftware.jasdb.test.DBSessionTest;
+import org.junit.Ignore;
 
 /**
  * @author Renze de Vries
  */
+@Ignore
 public class SecureLocalDBSessionTest extends DBSessionTest {
     public SecureLocalDBSessionTest() {
         super(new OverrideSecureSessionFactory());
