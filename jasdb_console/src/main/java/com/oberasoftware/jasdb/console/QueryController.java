@@ -1,15 +1,16 @@
-package com.obera.jasdb.web;
+package com.oberasoftware.jasdb.console;
 
-import com.obera.jasdb.web.model.PageResult;
-import com.obera.jasdb.web.model.SearchForm;
-import com.obera.jasdb.web.model.WebEntity;
-import com.oberasoftware.jasdb.core.model.EntityBag;
-import com.oberasoftware.jasdb.core.query.QueryBuilder;
-import com.oberasoftware.jasdb.core.query.QueryResult;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.DBSessionFactory;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.api.session.query.QueryBuilder;
+import com.oberasoftware.jasdb.api.session.query.QueryResult;
+import com.oberasoftware.jasdb.console.model.PageResult;
+import com.oberasoftware.jasdb.console.model.SearchForm;
+import com.oberasoftware.jasdb.console.model.WebEntity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,7 +72,7 @@ public class QueryController {
 
     private List<WebEntity> loadEntities(QueryResult result) throws JasDBException {
         List<WebEntity> entities = new ArrayList<>();
-        for(SimpleEntity entity : result) {
+        for(Entity entity : result) {
             WebEntity webEntity = new WebEntity();
             webEntity.setData(SimpleEntity.toJson(entity));
             webEntity.setId(entity.getInternalId());

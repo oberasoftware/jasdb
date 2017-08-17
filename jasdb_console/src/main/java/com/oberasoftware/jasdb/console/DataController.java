@@ -1,14 +1,14 @@
-package com.obera.jasdb.web;
+package com.oberasoftware.jasdb.console;
 
-import com.obera.jasdb.web.model.Bag;
-import com.obera.jasdb.web.model.SearchForm;
-import com.obera.jasdb.web.model.WebEntity;
-import com.obera.jasdb.web.model.WebInstance;
-import com.oberasoftware.jasdb.core.model.EntityBag;
-import nl.renarj.jasdb.api.DBSession;
-import nl.renarj.jasdb.api.DBSessionFactory;
-import nl.renarj.jasdb.api.SimpleEntity;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.session.DBSession;
+import com.oberasoftware.jasdb.api.session.DBSessionFactory;
+import com.oberasoftware.jasdb.api.session.EntityBag;
+import com.oberasoftware.jasdb.console.model.Bag;
+import com.oberasoftware.jasdb.console.model.SearchForm;
+import com.oberasoftware.jasdb.console.model.WebEntity;
+import com.oberasoftware.jasdb.console.model.WebInstance;
+import com.oberasoftware.jasdb.core.SimpleEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

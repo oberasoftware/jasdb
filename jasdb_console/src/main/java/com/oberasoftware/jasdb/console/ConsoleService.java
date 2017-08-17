@@ -1,12 +1,12 @@
-package com.obera.jasdb.console;
+package com.oberasoftware.jasdb.console;
 
-import com.oberasoftware.jasdb.core.utils.configuration.Configuration;
-import nl.renarj.jasdb.core.ConfigurationLoader;
-import nl.renarj.jasdb.core.RemoteService;
-import nl.renarj.jasdb.core.exceptions.ConfigurationException;
-import nl.renarj.jasdb.core.exceptions.JasDBException;
-import nl.renarj.jasdb.core.locator.GridLocatorUtil;
-import nl.renarj.jasdb.core.locator.ServiceInformation;
+import com.oberasoftware.jasdb.api.engine.Configuration;
+import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
+import com.oberasoftware.jasdb.api.engine.RemoteService;
+import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import com.oberasoftware.jasdb.api.model.ServiceInformation;
+import com.oberasoftware.jasdb.core.locator.GridLocatorUtil;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;

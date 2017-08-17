@@ -211,7 +211,7 @@
         <module>jasdb_connector</module>
         <module>jasdb_apiconnector</module>
         <module>jasdb_assembly</module>
-        <!--<module>jasdb_console</module>-->
+        <module>jasdb_console</module>
         <!--<module>jasdb_buildtools</module>-->
         <module>jasdb-engine</module>
         <module>testing/jasdb_testframework</module>
