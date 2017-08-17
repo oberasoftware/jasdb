@@ -1,4 +1,4 @@
-package com.obera.jasdb.web.model;
+package com.oberasoftware.jasdb.console.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

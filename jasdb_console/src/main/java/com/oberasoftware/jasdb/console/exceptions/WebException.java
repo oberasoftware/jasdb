@@ -1,6 +1,7 @@
-package com.obera.jasdb.web.exceptions;
+package com.oberasoftware.jasdb.console.exceptions;
 
-import nl.renarj.jasdb.core.exceptions.JasDBException;
+
+import com.oberasoftware.jasdb.api.exceptions.JasDBException;
 
 /**
  * @author renarj

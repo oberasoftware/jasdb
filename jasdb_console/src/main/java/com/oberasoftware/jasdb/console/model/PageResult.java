@@ -1,4 +1,4 @@
-package com.obera.jasdb.web.model;
+package com.oberasoftware.jasdb.console.model;
 
 import java.util.List;
 
