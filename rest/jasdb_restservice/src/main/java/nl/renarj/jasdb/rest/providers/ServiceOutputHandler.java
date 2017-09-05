@@ -27,7 +27,10 @@ public class ServiceOutputHandler {
             if(entity instanceof ErrorEntity) {
                 return handleError((ErrorEntity)entity);
             } else {
-                return Response.ok(createStreamOutput(entity), restResponseHandler.getMediaType()).build();
+                return Response
+                        .ok(createStreamOutput(entity), restResponseHandler.getMediaType())
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();
             }
         } else {
             return handleError(new ErrorEntity(Response.Status.NOT_FOUND.getStatusCode(), "Resource could not be found"));
@@ -39,7 +42,10 @@ public class ServiceOutputHandler {
     }
 
     private static Response handleError(ErrorEntity errorEntity)  {
-        return Response.status(errorEntity.getStatusCode()).entity(createStreamOutput(errorEntity)).build();
+        return Response.status(errorEntity.getStatusCode())
+                .entity(createStreamOutput(errorEntity))
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
     public static RestResponseHandler getResponseHandler() {
