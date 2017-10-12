@@ -1,3 +1,5 @@
+## NOTE: JasDB is currently in low maintenance mode and does not receive any further big updates
+
 JasDB is an open Document based database that can be used to store
 unstructured data. The database can be used standalone and accessed
 through a java client library or the REST interface.
