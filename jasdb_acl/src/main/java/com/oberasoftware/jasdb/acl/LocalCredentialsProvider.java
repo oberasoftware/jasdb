@@ -2,6 +2,7 @@ package com.oberasoftware.jasdb.acl;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.oberasoftware.jasdb.api.engine.MetadataProviderFactory;
 import com.oberasoftware.jasdb.engine.metadata.Constants;
 import com.oberasoftware.jasdb.core.SimpleEntity;
 import com.oberasoftware.jasdb.api.security.AccessMode;
@@ -34,12 +35,12 @@ public class LocalCredentialsProvider implements CredentialsProvider {
     private GrantMetadataProvider grantMetadataProvider;
 
     @Autowired
-    private MetadataStore metadataStore;
+    private MetadataProviderFactory metadataProviderFactory;
 
     @PostConstruct
     public void initialize() throws JasDBStorageException {
-        userMetadataProvider = metadataStore.getMetadataProvider(UserMetadataProvider.USERMETA_TYPE);
-        grantMetadataProvider = metadataStore.getMetadataProvider(GrantMetadataProvider.GRANT_TYPE);
+        userMetadataProvider = metadataProviderFactory.getProvider(UserMetadataProvider.USERMETA_TYPE);
+        grantMetadataProvider = metadataProviderFactory.getProvider(GrantMetadataProvider.GRANT_TYPE);
 
         //Checks if there is at least a basic user present, if not creates one
         if(userMetadataProvider.getUsers().isEmpty()) {
@@ -85,12 +86,7 @@ public class LocalCredentialsProvider implements CredentialsProvider {
 
     @Override
     public List<String> getUsers() throws JasDBStorageException {
-        return Lists.transform(userMetadataProvider.getUsers(), new Function<User, String>() {
-            @Override
-            public String apply(User user) {
-                return user.getUsername();
-            }
-        });
+        return Lists.transform(userMetadataProvider.getUsers(), User::getUsername);
     }
 
     @Override

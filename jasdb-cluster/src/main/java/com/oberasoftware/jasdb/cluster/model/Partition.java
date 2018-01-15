@@ -1,6 +1,8 @@
 package com.oberasoftware.jasdb.cluster.model;
 
 import com.oberasoftware.jasdb.api.model.NodeInformation;
+import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.core.SimpleEntity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +27,34 @@ public class Partition implements Serializable {
     public Partition(String instanceId, String bag) {
         this.instanceId = instanceId;
         this.bag = bag;
+    }
+
+    public static Partition fromEntity(Entity entity) {
+        String instanceId = entity.getValue("instanceId");
+        String bag = entity.getValue("bag");
+        String key = entity.getValue("key");
+        List<String> fields = entity.getValues("fields");
+        PartitionStatus status = PartitionStatus.valueOf(entity.getValue("status"));
+        PartitionType type = PartitionType.valueOf(entity.getValue("partitionType"));
+
+        Partition partition = new Partition(instanceId, bag);
+        partition.setFields(fields);
+        partition.setPartitionKey(key);
+        partition.setStatus(status);
+        partition.setType(type);
+        return partition;
+    }
+
+    public static Entity toEntity(Partition partition) {
+        SimpleEntity entity = new SimpleEntity();
+        entity.setProperty("instanceId", partition.getInstanceId());
+        entity.setProperty("bag", partition.getBag());
+        entity.setProperty("key", partition.getPartitionKey());
+        entity.setProperty("fields", partition.getFields().toArray(new String[0]));
+        entity.setProperty("status", partition.getStatus().toString());
+        entity.setProperty("partitionType", partition.getType().toString());
+
+        return entity;
     }
 
     public String getInstanceId() {

@@ -36,6 +36,8 @@ import java.io.File;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.oberasoftware.jasdb.core.utils.FileUtils.removeExtension;
+
 public class TransactionalRecordWriter implements RecordWriter<UUIDKey> {
     private static final Logger LOG = LoggerFactory.getLogger(TransactionalRecordWriter.class);
 
@@ -47,7 +49,7 @@ public class TransactionalRecordWriter implements RecordWriter<UUIDKey> {
     private Writer writer;
 
 	public TransactionalRecordWriter(File recordLocation) {
-        this.indexLocation = new File(FileUtils.removeExtension(recordLocation.toString()) + ".idx");
+        this.indexLocation = new File(removeExtension(recordLocation.toString()) + ".idx");
         this.writer = new FSWriter(recordLocation);
 	}
 

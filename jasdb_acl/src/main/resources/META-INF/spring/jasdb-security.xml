@@ -7,7 +7,7 @@
 
     <aop:aspectj-autoproxy/>
 
-    <context:component-scan base-package="com.obera.service.acl"/>
+    <context:component-scan base-package="com.oberasoftware.jasdb.acl"/>
 
     <bean id="securityAspect" class="com.oberasoftware.jasdb.acl.AuthorizationServiceWrapper"/>
 </beans>

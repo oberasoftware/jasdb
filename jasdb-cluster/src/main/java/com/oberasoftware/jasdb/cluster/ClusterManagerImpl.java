@@ -75,7 +75,7 @@ public class ClusterManagerImpl implements ClusterManager {
     }
 
     @Override
-    public List<Partition> getPartitions(String instanceId, String bag) {
+    public List<Partition> getPartitions(String instanceId, String bag, String field) {
         return null;
     }
 }

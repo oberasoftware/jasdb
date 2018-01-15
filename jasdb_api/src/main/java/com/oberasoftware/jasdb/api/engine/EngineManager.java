@@ -14,4 +14,6 @@ public interface EngineManager {
     String getEngineVersion();
 
     NodeInformation getNodeInformation();
+
+    MetadataStore getMetadataStore();
 }

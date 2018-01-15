@@ -1,5 +1,6 @@
 package com.oberasoftware.jasdb.acl;
 
+import com.oberasoftware.jasdb.api.engine.MetadataProviderFactory;
 import com.oberasoftware.jasdb.engine.metadata.Constants;
 import com.oberasoftware.jasdb.core.statistics.StatRecord;
 import com.oberasoftware.jasdb.core.statistics.StatisticsMonitor;
@@ -37,7 +38,7 @@ public class UserManagerImpl implements UserManager {
     private ConcurrentHashMap<String, GrantObject> cachedGrants = new ConcurrentHashMap<>();
 
     @Autowired
-    private MetadataStore metadataStore;
+    private MetadataProviderFactory metadataProviderFactory;
 
     @Autowired
     public UserManagerImpl(CredentialsProvider credentialsProvider) {
@@ -217,7 +218,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     private GrantMetadataProvider getGrantProvider() throws JasDBStorageException {
-        return metadataStore.getMetadataProvider(GrantMetadataProvider.GRANT_TYPE);
+        return metadataProviderFactory.getProvider(GrantMetadataProvider.GRANT_TYPE);
     }
 
     private AccessMode getGrantedMode(String objectName, UserSession userSession) throws JasDBStorageException {

@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.engine;
 
-import com.oberasoftware.jasdb.engine.metadata.BagMeta;
-import com.oberasoftware.jasdb.engine.metadata.JasDBMetadataStore;
+import com.oberasoftware.jasdb.api.engine.MetadataProviderFactory;
+import com.oberasoftware.jasdb.engine.metadata.*;
 import com.oberasoftware.jasdb.api.model.Bag;
 import com.oberasoftware.jasdb.api.model.IndexDefinition;
 import com.oberasoftware.jasdb.api.model.Instance;
@@ -12,6 +12,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,28 +28,45 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Renze de Vries
  */
+@RunWith(MockitoJUnitRunner.class)
 public class JasDBMetadataStoreTest {
     public static final String TEST_INSTANCE_1 = "testInstance1";
     public static final String TEST_INSTANCE_2 = "testInstance2";
     public static final String DEFAULT = "default";
+
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    @Mock
+    private MetadataProviderFactory providerFactory;
+
     private String storeLocation;
+
+
     private JasDBMetadataStore metadataStore;
 
     @Before
     public void before() throws IOException, JasDBStorageException {
         storeLocation = temporaryFolder.newFolder().toString();
         System.setProperty("JASDB_HOME", storeLocation);
-        metadataStore = new JasDBMetadataStore();
+        metadataStore = new JasDBMetadataStore(providerFactory);
+
+        InstanceMetadataProvider instanceMetadataProvider = new InstanceMetadataProvider(metadataStore);
+        instanceMetadataProvider.loadData();
+
+        BagMetadataProvider bagMetadataProvider = new BagMetadataProvider(metadataStore, instanceMetadataProvider);
+        bagMetadataProvider.loadData();
+
+        when(providerFactory.getProvider(Constants.BAG_TYPE)).thenReturn(bagMetadataProvider);
+        when(providerFactory.getProvider(Constants.INSTANCE_TYPE)).thenReturn(instanceMetadataProvider);
     }
 
     @After
@@ -61,7 +82,7 @@ public class JasDBMetadataStoreTest {
         metadataStore.addBag(new BagMeta(DEFAULT, "bag3", new ArrayList<>()));
 
         metadataStore.closeStore();
-        metadataStore = new JasDBMetadataStore();
+        metadataStore = new JasDBMetadataStore(providerFactory);
 
         assertThat(metadataStore.getInstances().size(), is(2));
         assertThat(getInstanceIds(metadataStore.getInstances()), hasItems(DEFAULT, TEST_INSTANCE_1));
@@ -80,7 +101,7 @@ public class JasDBMetadataStoreTest {
         File pidFile = new File(jasdbHome, "metadata.pid");
         assertTrue(pidFile.createNewFile());
 
-        metadataStore = new JasDBMetadataStore();
+        metadataStore = new JasDBMetadataStore(providerFactory);
         assertFalse(metadataStore.isLastShutdownClean());
     }
 

@@ -1,15 +1,17 @@
 package com.oberasoftware.jasdb.engine.metadata;
 
+import java.util.UUID;
+
 /**
 * @author Renze de Vries
 */
 public class MetaWrapper<T> {
     private T metadataObject;
-    private long recordPointer;
+    private UUID key;
 
-    public MetaWrapper(T metadataObject, long recordPointer) {
+    public MetaWrapper(T metadataObject, UUID key) {
         this.metadataObject = metadataObject;
-        this.recordPointer = recordPointer;
+        this.key = key;
     }
 
     public T getMetadataObject() {
@@ -20,11 +22,11 @@ public class MetaWrapper<T> {
         this.metadataObject = metadataObject;
     }
 
-    public long getRecordPointer() {
-        return recordPointer;
+    public UUID getKey() {
+        return key;
     }
 
-    public void setRecordPointer(long recordPointer) {
-        this.recordPointer = recordPointer;
+    public void setKey(UUID key) {
+        this.key = key;
     }
 }

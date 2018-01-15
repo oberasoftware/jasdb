@@ -1,32 +1,40 @@
 package com.oberasoftware.jasdb.engine.metadata;
 
-import com.oberasoftware.jasdb.api.engine.MetadataProvider;
+import com.oberasoftware.jasdb.api.engine.MetadataProviderFactory;
 import com.oberasoftware.jasdb.api.engine.MetadataStore;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
 import com.oberasoftware.jasdb.api.model.Bag;
 import com.oberasoftware.jasdb.api.model.IndexDefinition;
 import com.oberasoftware.jasdb.api.model.Instance;
 import com.oberasoftware.jasdb.api.session.Entity;
+import com.oberasoftware.jasdb.api.storage.RecordResult;
+import com.oberasoftware.jasdb.api.storage.RecordWriter;
 import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
 import com.oberasoftware.jasdb.core.utils.FileUtils;
 import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
-import com.oberasoftware.jasdb.writer.transactional.FSWriter;
-import com.oberasoftware.jasdb.writer.transactional.RecordIteratorImpl;
 import com.oberasoftware.jasdb.writer.transactional.RecordResultImpl;
+import com.oberasoftware.jasdb.writer.transactional.TransactionalRecordWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.lang.management.ManagementFactory;
 import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import static java.util.Optional.of;
+import static com.oberasoftware.jasdb.core.SimpleEntity.toJson;
+import static com.oberasoftware.jasdb.core.utils.RecordStreamUtil.toStream;
 
 /**
  * @author Renze de Vries
@@ -40,20 +48,24 @@ public class JasDBMetadataStore implements MetadataStore {
 
     public static final String DEFAULT_INSTANCE = "default";
 
-    private FSWriter writer;
+    private RecordWriter<UUIDKey> recordWriter;
     private File datastoreLocation;
 
     private boolean lastShutdownClean = true;
 
-    public static String PID = "1";//ManagementFactory.getRuntimeMXBean().getName();
+    public static String PID = ManagementFactory.getRuntimeMXBean().getName();
 
-    private Map<String, MetaWrapper<Instance>> instanceMetaMap = new ConcurrentHashMap<>();
-    private Map<String, MetaWrapper<Bag>> bagMetaMap = new ConcurrentHashMap<>();
+    private MetadataProviderFactory metadataProviderFactory;
 
-    private Map<String, MetadataProvider> metadataProviders = new ConcurrentHashMap<>();
-
-    public JasDBMetadataStore() throws JasDBStorageException {
+    @Autowired
+    public JasDBMetadataStore(MetadataProviderFactory metadataProviderFactory) throws JasDBStorageException {
+        this.metadataProviderFactory = metadataProviderFactory;
         openStore();
+    }
+
+    @Override
+    public File getDatastoreLocation() {
+        return datastoreLocation;
     }
 
     private void openStore() throws JasDBStorageException {
@@ -61,17 +73,9 @@ public class JasDBMetadataStore implements MetadataStore {
 
         handleCreateNewPidFile();
 
-        writer = new FSWriter(new File(datastoreLocation, METADATA_FILE));
-        writer.openWriter();
+        recordWriter = new TransactionalRecordWriter(new File(datastoreLocation, METADATA_FILE));
+        recordWriter.openWriter();
 
-        ServiceLoader<MetadataProvider> providers = ServiceLoader.load(MetadataProvider.class);
-        for(MetadataProvider provider : providers) {
-            metadataProviders.put(provider.getMetadataType(), provider);
-            provider.setMetadataStore(this);
-        }
-
-        loadRecords();
-        ensureDefaultInstance();
     }
 
     private void handleCreateNewPidFile() throws JasDBStorageException {
@@ -90,43 +94,25 @@ public class JasDBMetadataStore implements MetadataStore {
         }
     }
 
-    private void loadRecords() throws JasDBStorageException {
-        for(RecordIteratorImpl recordIterator = writer.readAllRecords(); recordIterator.hasNext(); ) {
-            RecordResultImpl recordResult = recordIterator.next();
-            Entity entity = SimpleEntity.fromStream(recordResult.getStream());
-            String type = entity.getValue(Constants.META_TYPE).toString();
-            if(type.equals(Constants.INSTANCE_TYPE)) {
-                InstanceMeta instance = InstanceMeta.fromEntity(entity);
-                instanceMetaMap.put(instance.getInstanceId(), new MetaWrapper<>(instance, recordResult.getRecordPointer()));
-            } else if(type.equals(Constants.BAG_TYPE)) {
-                BagMeta bagMeta = BagMeta.fromEntity(entity);
-                String bagId = getBagKey(bagMeta.getInstanceId(), bagMeta.getName());
-                bagMetaMap.put(bagId, new MetaWrapper<>(bagMeta, recordResult.getRecordPointer()));
-            } else if(metadataProviders.containsKey(type)) {
-                metadataProviders.get(type).registerMetadataEntity(entity, recordResult.getRecordPointer());
-            } else {
-                throw new JasDBStorageException("Unable to load metadata record: " + entity.toString() + " unknown type: " + type);
-            }
-        }
+    private InstanceMetadataProvider getInstanceProvider() {
+        return metadataProviderFactory.getProvider(Constants.INSTANCE_TYPE);
+    }
+
+    private BagMetadataProvider getBagProvider() {
+        return metadataProviderFactory.getProvider(Constants.BAG_TYPE);
     }
 
     @Override
-    public boolean isLastShutdownClean() throws JasDBStorageException {
+    public boolean isLastShutdownClean() {
         return lastShutdownClean;
-    }
-
-    private void ensureDefaultInstance() throws JasDBStorageException {
-        if(!instanceMetaMap.containsKey(DEFAULT_INSTANCE)) {
-            addInstance(DEFAULT_INSTANCE, datastoreLocation.toString());
-        }
     }
 
     @Override
     @PreDestroy
     public void closeStore() throws JasDBStorageException {
-        if(writer != null) {
-            writer.closeWriter();
-            writer = null;
+        if(recordWriter != null) {
+            recordWriter.closeWriter();
+            recordWriter = null;
 
             File pidFile = new File(datastoreLocation, PID_FILE);
             if(!pidFile.delete()) {
@@ -136,216 +122,118 @@ public class JasDBMetadataStore implements MetadataStore {
     }
 
     @Override
-    public long addMetadataEntity(Entity entity) throws JasDBStorageException {
-        return writer.writeRecord(SimpleEntity.toJson(entity), null);
+    public UUID addMetadataEntity(Entity entity) throws JasDBStorageException {
+        UUIDKey key = new UUIDKey(UUID.randomUUID());
+        recordWriter.writeRecord(key, toStream(toJson(entity)));
+        entity.setInternalId(key.getValue());
+
+        return new UUID(key.getMostSignificant(), key.getLeastSignificant());
     }
 
     @Override
-    public long updateMetadataEntity(Entity entity, long previousRecord) throws JasDBStorageException {
-        return writer.updateRecord(SimpleEntity.toJson(entity), () -> of(previousRecord), null);
+    public UUID updateMetadataEntity(Entity entity) throws JasDBStorageException {
+        recordWriter.updateRecord(new UUIDKey(entity.getInternalId()), toStream(toJson(entity)));
+
+        return UUID.fromString(entity.getInternalId());
     }
 
     @Override
-    public void deleteMetadataEntity(long recordPointer) throws JasDBStorageException {
-        writer.removeRecord(() -> of(recordPointer), null);
+    public void deleteMetadataEntity(UUID recordKey) throws JasDBStorageException {
+        recordWriter.removeRecord(new UUIDKey(recordKey));
     }
 
     @Override
-    public List<Bag> getBags(String instanceId) throws JasDBStorageException {
-        List<Bag> bags = new ArrayList<>();
-        for(Map.Entry<String, MetaWrapper<Bag>> bagEntry : bagMetaMap.entrySet()) {
-            if(bagEntry.getKey().startsWith(instanceId)) {
-                bags.add(bagEntry.getValue().getMetadataObject());
-            }
-        }
-        return bags;
+    public List<Bag> getBags(String instanceId) {
+        return getBagProvider().getBags(instanceId);
     }
 
     @Override
-    public Bag getBag(String instanceId, String name) throws JasDBStorageException {
-        MetaWrapper<Bag> bagWrapper = bagMetaMap.get(getBagKey(instanceId, name));
-        if(bagWrapper != null) {
-            return bagWrapper.getMetadataObject();
-        } else {
-            return null;
-        }
+    public Bag getBag(String instanceId, String name) {
+        return getBagProvider().getBag(instanceId, name);
     }
 
     @Override
-    public boolean containsBag(String instanceId, String bag) throws JasDBStorageException {
-        return bagMetaMap.containsKey(getBagKey(instanceId, bag));
-    }
-
-    private String getBagKey(String instanceId, String bag) {
-        return instanceId + "_" + bag;
+    public boolean containsBag(String instanceId, String bag) {
+        return getBagProvider().containsBag(instanceId, bag);
     }
 
     @Override
     public void addBag(Bag bag) throws JasDBStorageException {
-        if(instanceMetaMap.containsKey(bag.getInstanceId())) {
-            String bagId = getBagKey(bag.getInstanceId(), bag.getName());
-            if(!bagMetaMap.containsKey(bagId)) {
-                SimpleEntity entity = BagMeta.toEntity(bag);
-                String bagData = SimpleEntity.toJson(entity);
-                long recordPointer = writer.writeRecord(bagData, null);
-                bagMetaMap.put(bagId, new MetaWrapper<>(bag, recordPointer));
-            } else {
-                throw new JasDBStorageException("Unable to add bag: " + bag.getName() + ", already exists");
-            }
-        } else {
-            throw new JasDBStorageException("Unable to create bag, instance: " + bag.getInstanceId() + " does not exist");
-        }
+        getBagProvider().addBag(bag);
     }
 
     @Override
     public void removeBag(String instanceId, String name) throws JasDBStorageException {
-        String bagId = getBagKey(instanceId, name);
-        if(bagMetaMap.containsKey(bagId)) {
-            MetaWrapper<Bag> bagMetaWrapper = bagMetaMap.get(bagId);
-            writer.removeRecord(() -> of(bagMetaWrapper.getRecordPointer()), null);
-            bagMetaMap.remove(bagId);
-        } else {
-            throw new JasDBStorageException("Unable to delete bag: " + name + " does not exist");
-        }
+        getBagProvider().removeBag(instanceId, name);
     }
 
     @Override
     public void addBagIndex(String instanceId, String bagName, IndexDefinition indexDefinition) throws JasDBStorageException {
-        Bag bag = getBag(instanceId, bagName);
-        if(bag != null) {
-            List<IndexDefinition> indexDefinitions = new ArrayList<>(bag.getIndexDefinitions());
-            if(!indexDefinitions.contains(indexDefinition)) {
-                indexDefinitions.add(indexDefinition);
-
-                updateBag(instanceId, bagName, new BagMeta(instanceId, bagName, indexDefinitions));
-            }
-        } else {
-            throw new JasDBStorageException("Unable to add index to bag: " + bagName + ",could not be found");
-        }
+        getBagProvider().addBagIndex(instanceId, bagName, indexDefinition);
     }
 
     @Override
     public void removeBagIndex(String instanceId, String bagName, IndexDefinition indexDefinition) throws JasDBStorageException {
-        Bag bag = getBag(instanceId, bagName);
-        if(bag != null) {
-            List<IndexDefinition> indexDefinitions = new ArrayList<>(bag.getIndexDefinitions());
-            if(indexDefinitions.contains(indexDefinition)) {
-                indexDefinitions.remove(indexDefinition);
-
-                updateBag(instanceId, bagName, new BagMeta(instanceId, bagName, indexDefinitions));
-            }
-        } else {
-            throw new JasDBStorageException("Unable to remove index for bag: " + bagName + ",could not be found");
-        }
-    }
-
-    /**
-     * Small helper method to update the bag definition
-     * @param instanceId The instanceId
-     * @param bagName The name of the bag
-     * @param newBagData The new updated bag data
-     * @throws JasDBStorageException If unable to update the bag
-     */
-    private void updateBag(String instanceId, String bagName, Bag newBagData) throws JasDBStorageException {
-        String bagId = getBagKey(instanceId, bagName);
-        MetaWrapper<Bag> bagMetaWrapper = bagMetaMap.get(bagId);
-
-        long recordPointer = writer.updateRecord(SimpleEntity.toJson(BagMeta.toEntity(newBagData)), () -> of(bagMetaWrapper.getRecordPointer()), null);
-        bagMetaWrapper.setRecordPointer(recordPointer);
-        bagMetaWrapper.setMetadataObject(newBagData);
+        getBagProvider().removeBagIndex(instanceId, bagName, indexDefinition);
     }
 
     @Override
-    public boolean containsIndex(String instanceId, String bagName, IndexDefinition indexDefinition) throws JasDBStorageException {
+    public boolean containsIndex(String instanceId, String bagName, IndexDefinition indexDefinition) {
         Bag bag = getBag(instanceId, bagName);
         return bag.getIndexDefinitions().contains(indexDefinition);
     }
 
     @Override
-    public List<Instance> getInstances() throws JasDBStorageException {
-        List<Instance> instances = new ArrayList<>();
-        for(MetaWrapper<Instance> instanceMeta : instanceMetaMap.values()) {
-            instances.add(instanceMeta.getMetadataObject());
-        }
-        return instances;
+    public List<Instance> getInstances() {
+        return getInstanceProvider().getInstances();
     }
 
     @Override
-    public Instance getInstance(String instanceId) throws JasDBStorageException {
-        MetaWrapper<Instance> metaWrapper = instanceMetaMap.get(instanceId);
-        if(metaWrapper != null) {
-            return metaWrapper.getMetadataObject();
-        } else {
-            return null;
-        }
+    public Instance getInstance(String instanceId) {
+        return getInstanceProvider().getInstance(instanceId);
     }
 
     @Override
-    public boolean containsInstance(String instanceId) throws JasDBStorageException {
-        return instanceMetaMap.containsKey(instanceId);
+    public boolean containsInstance(String instanceId) {
+        return getInstanceProvider().containsInstance(instanceId);
     }
 
     @Override
     public Instance addInstance(String instanceId) throws JasDBStorageException {
-        return addInstance(instanceId, determinePath(instanceId));
-    }
-
-    private Instance addInstance(String instanceId, String path) throws JasDBStorageException {
-        if(!instanceMetaMap.containsKey(instanceId)) {
-            InstanceMeta instance = new InstanceMeta(instanceId, path);
-            SimpleEntity entity = InstanceMeta.toEntity(instance);
-            String jsonData = SimpleEntity.toJson(entity);
-            long recordPointer = writer.writeRecord(jsonData, null);
-
-            instanceMetaMap.put(instanceId, new MetaWrapper<>(instance, recordPointer));
-            return instance;
-        } else {
-            throw new JasDBStorageException("Unable to create instance, already exists");
-        }
-    }
-
-    private String determinePath(String instanceId) throws JasDBStorageException {
-        File instanceDirectory = new File(datastoreLocation, instanceId);
-        if(instanceDirectory.mkdirs()) {
-            return instanceDirectory.toString();
-        } else {
-            throw new JasDBStorageException("Could not create instance storage directory: " + instanceDirectory.toString());
-        }
+        return getInstanceProvider().addInstance(instanceId);
     }
 
     @Override
     public void removeInstance(String instanceId) throws JasDBStorageException {
-        if(!DEFAULT_INSTANCE.equalsIgnoreCase(instanceId)) {
-            MetaWrapper<Instance> instanceMetaWrapper = instanceMetaMap.get(instanceId);
-            if(instanceMetaWrapper != null) {
-                writer.removeRecord(() -> of(instanceMetaWrapper.getRecordPointer()), null);
-                instanceMetaMap.remove(instanceId);
-            } else {
-                throw new JasDBStorageException("Unable to delete non existing instance: " + instanceId);
-            }
-        } else {
-            throw new JasDBStorageException("Not allowed to remove default instance");
-        }
+        getInstanceProvider().removeInstance(instanceId);
     }
 
     @Override
     public void updateInstance(Instance instance) throws JasDBStorageException {
-        if(instanceMetaMap.containsKey(instance.getInstanceId())) {
-            SimpleEntity entity = InstanceMeta.toEntity(instance);
-            String jsonData = SimpleEntity.toJson(entity);
-
-            removeInstance(instance.getInstanceId());
-            long recordPointer = writer.writeRecord(jsonData, null);
-
-            instanceMetaMap.put(instance.getInstanceId(), new MetaWrapper<>(instance, recordPointer));
-        } else {
-            throw new JasDBStorageException("Unable to update instance, does not exists");
-        }
+        getInstanceProvider().updateInstance(instance);
     }
 
     @Override
-    public <T extends MetadataProvider> T getMetadataProvider(String type) {
-        return (T)metadataProviders.get(type);
+    public List<Entity> getMetadataEntities() throws JasDBStorageException {
+        return getEntityStream().collect(Collectors.toList());
     }
 
+    @Override
+    public List<Entity> getMetadataEntities(String metadataType) throws JasDBStorageException {
+        return getEntityStream()
+                .filter(e -> e.getValue(Constants.META_TYPE).toString().equalsIgnoreCase(metadataType))
+                .collect(Collectors.toList());
+    }
+
+    private Stream<Entity> getEntityStream() throws JasDBStorageException {
+        Spliterator<RecordResult> stream = Spliterators.spliteratorUnknownSize(recordWriter.readAllRecords(), Spliterator.ORDERED);
+        return StreamSupport.stream(stream, false).map(r -> {
+            RecordResultImpl recordResult = (RecordResultImpl) r;
+            try {
+                return SimpleEntity.fromStream(recordResult.getStream());
+            } catch (JasDBStorageException e) {
+                throw new RuntimeJasDBException("Unable to map entity", e);
+            }
+        });
+    }
 }

@@ -5,7 +5,6 @@ import com.oberasoftware.jasdb.api.exceptions.CoreConfigException;
 import com.oberasoftware.jasdb.api.engine.Configuration;
 import com.oberasoftware.jasdb.core.utils.conversion.ValueConverterUtil;
 import com.oberasoftware.jasdb.api.model.Bag;
-import com.oberasoftware.jasdb.api.model.IndexDefinition;
 import com.oberasoftware.jasdb.api.model.Instance;
 import com.oberasoftware.jasdb.api.engine.MetadataStore;
 import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
@@ -33,14 +32,18 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
 
     private StorageFlushThread storageFlushThread;
 
-    @Autowired
-    private ConfigurationLoader configurationLoader;
+    private final ConfigurationLoader configurationLoader;
+
+    private final MetadataStore metadataStore;
+
+    private final ApplicationContext applicationContext;
 
     @Autowired
-    private MetadataStore metadataStore;
-
-    @Autowired
-    private ApplicationContext applicationContext;
+    public LocalStorageServiceFactoryImpl(ConfigurationLoader configurationLoader, MetadataStore metadataStore, ApplicationContext applicationContext) {
+        this.configurationLoader = configurationLoader;
+        this.metadataStore = metadataStore;
+        this.applicationContext = applicationContext;
+    }
 
     @PostConstruct
     public void initializeServices() throws JasDBStorageException {
@@ -92,7 +95,7 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
         } else {
             if(metadataStore.containsInstance(instanceId)) {
                 if(!metadataStore.containsBag(instanceId, bagName)) {
-                    metadataStore.addBag(new BagMeta(instanceId, bagName, new ArrayList<IndexDefinition>()));
+                    metadataStore.addBag(new BagMeta(instanceId, bagName, new ArrayList<>()));
                 }
 
                 Instance instance = metadataStore.getInstance(instanceId);
@@ -107,7 +110,7 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
         }
     }
 	
-	protected StorageService createStorageServiceInstance(Instance instance, String bagName) throws JasDBStorageException {
+	private StorageService createStorageServiceInstance(Instance instance, String bagName) throws JasDBStorageException {
         return (StorageService) applicationContext.getBean("LocalStorageService", instance.getInstanceId(), bagName);
 	}
 

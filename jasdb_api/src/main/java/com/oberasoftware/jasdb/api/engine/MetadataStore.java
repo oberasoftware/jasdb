@@ -6,7 +6,9 @@ import com.oberasoftware.jasdb.api.model.IndexDefinition;
 import com.oberasoftware.jasdb.api.model.Instance;
 import com.oberasoftware.jasdb.api.session.Entity;
 
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Renze de Vries
@@ -18,6 +20,8 @@ public interface MetadataStore {
      */
     void closeStore() throws JasDBStorageException;
 
+    File getDatastoreLocation();
+
     /**
      * Checks whether the last shutdown was done cleanly
      * @return True if the last shutdown was clean, False if not
@@ -28,26 +32,25 @@ public interface MetadataStore {
     /**
      * Generic operation to add a metadata entity to the metadata store
      * @param entity The metadata entity to add
-     * @return The data pointer for the metadata record
+     * @return The metadata key
      * @throws JasDBStorageException If unable to add the metadata entity
      */
-    long addMetadataEntity(Entity entity) throws JasDBStorageException;
+    UUID addMetadataEntity(Entity entity) throws JasDBStorageException;
 
     /**
      * Generic operation to update a metadata entity in the metadata store
      * @param entity The updated entity
-     * @param previousRecord The previous record pointer
-     * @return The new record pointer
+     * @return The metadata key
      * @throws JasDBStorageException If unable to update the entity
      */
-    long updateMetadataEntity(Entity entity, long previousRecord) throws JasDBStorageException;
+    UUID updateMetadataEntity(Entity entity) throws JasDBStorageException;
 
     /**
      * Deletes a generic metadata entity
-     * @param recordPointer The record pointer
+     * @param metadataKey The key of the metadata to delete
      * @throws JasDBStorageException If unable to delete the entity
      */
-    void deleteMetadataEntity(long recordPointer) throws JasDBStorageException;
+    void deleteMetadataEntity(UUID metadataKey) throws JasDBStorageException;
 
     /**
      * Gets the bags for the given instanceId
@@ -163,10 +166,18 @@ public interface MetadataStore {
     void updateInstance(Instance instance) throws JasDBStorageException;
 
     /**
-     * Gets a metadata provider that can handle non standard metadata stored in the metadata store
-     * @param type The type of metadata provider requested
-     * @param <T> The subtype of the metadata provider
-     * @return The metadataprovider if it exists
+     * Gets a list of metadata entities from the metadata store
+     * @return The list of metadata entities
+     * @throws JasDBStorageException If unable to retrieve the list of metadata instances
      */
-    <T extends MetadataProvider> T getMetadataProvider(String type);
+    List<Entity> getMetadataEntities() throws JasDBStorageException;
+
+    /**
+     * Gets a list of metadata entities from the metadata store with a specific type
+     * @param metadataType The type of metadata entities you want to retrieve
+     * @return The list of metadata entities of the specified type
+     * @throws JasDBStorageException If unable to retrieve the list of metadata instances
+     */
+    List<Entity> getMetadataEntities(String metadataType) throws JasDBStorageException;
+
 }

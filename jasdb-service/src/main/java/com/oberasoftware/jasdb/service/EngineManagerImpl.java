@@ -1,10 +1,7 @@
 package com.oberasoftware.jasdb.service;
 
+import com.oberasoftware.jasdb.api.engine.*;
 import com.oberasoftware.jasdb.engine.metadata.JasDBMetadataStore;
-import com.oberasoftware.jasdb.api.engine.Configuration;
-import com.oberasoftware.jasdb.api.engine.EngineManager;
-import com.oberasoftware.jasdb.api.engine.RemoteServiceManager;
-import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
 import com.oberasoftware.jasdb.core.caching.GlobalCachingMemoryManager;
 import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBException;
@@ -44,6 +41,9 @@ public class EngineManagerImpl implements EngineManager {
 
     @Autowired
     private ConfigurableApplicationContext applicationContext;
+
+    @Autowired
+    private MetadataStore metadataStore;
 
     private String engineVersion;
     private NodeInformation nodeInformation;
@@ -97,6 +97,11 @@ public class EngineManagerImpl implements EngineManager {
     @Override
     public NodeInformation getNodeInformation() {
         return this.nodeInformation;
+    }
+
+    @Override
+    public MetadataStore getMetadataStore() {
+        return metadataStore;
     }
 
     private String loadVersionData() {

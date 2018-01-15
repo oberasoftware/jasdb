@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -63,15 +60,23 @@ public class ClusterConfiguration {
         });
 
         partitionConfigs = new ArrayList<>();
-        clusterConfig.getChildConfigurations("Partition").forEach(p -> {
+        Set<String> configuredBags = new HashSet<>();
+        for (Configuration p : clusterConfig.getChildConfigurations("Partition")) {
             String bag = p.getAttribute("Bag");
             String instance = p.getAttribute("Instance");
+            String key = instance + '.' + bag;
+
+            if (configuredBags.contains(key)) {
+                throw new ConfigurationException("Instance.Bag " + key + " cannot have multiple partition configurations");
+            } else {
+                configuredBags.add(key);
+            }
 
             List<String> fields = p.getChildConfigurations("Field").stream()
                     .map(f -> f.getAttribute("Name"))
                     .collect(Collectors.toList());
             partitionConfigs.add(new PartitionConfig(instance, bag, fields));
-        });
+        }
     }
 
     List<PartitionConfig> getPartitionConfigurations() {

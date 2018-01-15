@@ -10,5 +10,5 @@ import java.util.List;
 public interface ClusterManager {
     boolean join();
 
-    List<Partition> getPartitions(String instanceId, String bag);
+    List<Partition> getPartitions(String instanceId, String bag, String field);
 }
