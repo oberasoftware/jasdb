@@ -24,7 +24,7 @@ import java.util.jar.Manifest;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Component
 public class EngineManagerImpl implements EngineManager {

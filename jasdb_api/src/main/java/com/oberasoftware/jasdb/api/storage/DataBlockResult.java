@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.api.storage;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface DataBlockResult<T> {
     int getNextOffset();

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Controller
 @RequestMapping(value = "/search")

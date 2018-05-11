@@ -4,7 +4,7 @@ import com.oberasoftware.jasdb.core.index.btreeplus.BlockPersister;
 import com.oberasoftware.jasdb.core.index.btreeplus.IndexBlock;
 
 /**
- * @author: renarj
+ * @author Renze de Vries
  * Date: 7-6-12
  * Time: 22:27
  */

@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @SpringBootApplication
 @ComponentScan

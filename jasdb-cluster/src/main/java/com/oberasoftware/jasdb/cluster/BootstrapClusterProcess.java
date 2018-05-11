@@ -20,7 +20,7 @@ import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Component
 public class BootstrapClusterProcess implements JoinProcess {

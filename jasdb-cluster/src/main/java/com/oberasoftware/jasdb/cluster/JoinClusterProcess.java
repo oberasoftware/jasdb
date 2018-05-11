@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Component
 public class JoinClusterProcess implements JoinProcess {

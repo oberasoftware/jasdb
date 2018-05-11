@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.cluster.api;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface DistributedLock {
     void lock();

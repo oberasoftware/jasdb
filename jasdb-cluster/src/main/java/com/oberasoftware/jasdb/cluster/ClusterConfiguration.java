@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Component
 public class ClusterConfiguration {

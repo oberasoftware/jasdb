@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.rest.model;
 
 /**
- * @author: renarj
+ * @author Renze de Vries
  * Date: 3-6-12
  * Time: 16:42
  */

@@ -26,7 +26,7 @@ import static com.oberasoftware.jasdb.engine.BagOperationUtil.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class TableScanOperation {
     private static final Logger LOG = getLogger(TableScanOperation.class);

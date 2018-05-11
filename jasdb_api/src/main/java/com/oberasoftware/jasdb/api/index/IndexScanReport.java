@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.api.index;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface IndexScanReport {
     IndexState getState();

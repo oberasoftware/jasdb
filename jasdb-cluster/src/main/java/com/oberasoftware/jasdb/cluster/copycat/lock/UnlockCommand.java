@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.cluster.copycat.lock;
 import io.atomix.copycat.Command;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class UnlockCommand implements Command<Void> {
     private String name;

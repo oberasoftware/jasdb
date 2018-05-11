@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class LongUtilsTest {
     @Test

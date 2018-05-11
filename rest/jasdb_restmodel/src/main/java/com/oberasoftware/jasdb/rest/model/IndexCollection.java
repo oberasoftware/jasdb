@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.rest.model;
 import java.util.List;
 
 /**
- * @author: renarj
+ * @author Renze de Vries
  * Date: 3-6-12
  * Time: 16:43
  */

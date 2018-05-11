@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author: renarj
+ * @author Renze de Vries
  * Date: 13-4-12
  * Time: 21:12
  */

@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.api.index;
 import java.util.List;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface CompositeIndexField {
     List<IndexField> getIndexFields();

@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class ControllerUtil {
     public static DBInstance getInstance(DBInstanceFactory instanceFactory, String instanceId) throws ConfigurationException {

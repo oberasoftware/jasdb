@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.core.properties;
 import com.oberasoftware.jasdb.api.session.Value;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class BooleanValue implements Value {
 

@@ -5,7 +5,7 @@ import com.oberasoftware.jasdb.cluster.model.Partition;
 import java.util.List;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface ClusterManager {
     boolean join();

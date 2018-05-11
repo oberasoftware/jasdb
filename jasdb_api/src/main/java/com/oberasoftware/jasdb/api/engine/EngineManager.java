@@ -4,7 +4,7 @@ import com.oberasoftware.jasdb.api.exceptions.JasDBException;
 import com.oberasoftware.jasdb.api.model.NodeInformation;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface EngineManager {
     NodeInformation startEngine() throws JasDBException;

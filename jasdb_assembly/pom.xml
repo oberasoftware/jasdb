@@ -15,10 +15,10 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb_restservice</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.oberasoftware</groupId>-->
-            <!--<artifactId>jasdb_console</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb_console</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb-restclient</artifactId>

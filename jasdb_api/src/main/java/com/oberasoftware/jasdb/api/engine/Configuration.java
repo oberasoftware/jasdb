@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.api.engine;
 import java.util.List;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface Configuration {
     String getAttribute(String attributeName);

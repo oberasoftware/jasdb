@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Component
 public class ConsoleService implements RemoteService {

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Controller
 @RequestMapping(value = "/data")

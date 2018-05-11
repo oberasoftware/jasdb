@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author: renarj
+ * @author Renze de Vries
  * Date: 1-5-12
  * Time: 21:40
  */

@@ -29,7 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 @Import({RestConfiguration.class, EngineConfiguation.class, ServiceConfiguration.class})

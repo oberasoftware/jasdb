@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class LockStateMachine {
     private ConcurrentMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();

@@ -4,7 +4,7 @@ import com.oberasoftware.jasdb.cluster.api.DistributedLock;
 import io.atomix.copycat.client.CopycatClient;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class LockClientImpl implements DistributedLock {
     private String lockName;

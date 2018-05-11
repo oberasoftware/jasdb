@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Component
 public class ClusterManagerImpl implements ClusterManager {

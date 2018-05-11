@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface Entity extends IndexableItem {
     String DOCUMENT_ID = "__ID";

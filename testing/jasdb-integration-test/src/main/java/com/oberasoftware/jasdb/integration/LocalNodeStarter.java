@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class LocalNodeStarter {
     private static final Logger LOG = getLogger(LocalNodeStarter.class);

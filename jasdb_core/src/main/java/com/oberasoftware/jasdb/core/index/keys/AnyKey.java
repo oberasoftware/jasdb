@@ -7,7 +7,7 @@ import com.oberasoftware.jasdb.api.index.keys.CompareResult;
 import com.oberasoftware.jasdb.api.index.keys.Key;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class AnyKey extends AbstractKey {
 

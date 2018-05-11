@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.cluster;
 import com.oberasoftware.jasdb.cluster.api.ClusterClient;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface JoinProcess {
     boolean shouldRun(ClusterClient client);

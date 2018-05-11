@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.console.model;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class SearchForm {
     private String field;

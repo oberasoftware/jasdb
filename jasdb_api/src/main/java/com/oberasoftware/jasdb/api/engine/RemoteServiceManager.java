@@ -6,7 +6,7 @@ import com.oberasoftware.jasdb.api.model.ServiceInformation;
 import java.util.List;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface RemoteServiceManager {
     void startRemoteServices() throws JasDBException;

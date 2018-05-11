@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.cluster;
 import java.util.List;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class PartitionConfig {
     private String instanceId;

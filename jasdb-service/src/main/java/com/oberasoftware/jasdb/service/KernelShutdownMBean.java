@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.service;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface KernelShutdownMBean {
     void doKernelShutdown();

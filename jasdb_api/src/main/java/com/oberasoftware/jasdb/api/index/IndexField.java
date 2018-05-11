@@ -3,7 +3,7 @@ package com.oberasoftware.jasdb.api.index;
 import com.oberasoftware.jasdb.api.index.keys.KeyType;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public interface IndexField {
     /**

@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.core.utils.conversion;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public final class LongUtils {
 

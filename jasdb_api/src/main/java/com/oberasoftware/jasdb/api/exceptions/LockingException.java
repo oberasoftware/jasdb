@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.api.exceptions;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class LockingException extends RuntimeException {
     public LockingException(String message) {

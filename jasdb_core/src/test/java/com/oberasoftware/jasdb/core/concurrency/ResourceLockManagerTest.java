@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class ResourceLockManagerTest {
     @Test(expected = TimeoutException.class)

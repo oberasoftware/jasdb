@@ -1,7 +1,7 @@
 package com.oberasoftware.jasdb.core.index.btreeplus.locking;
 
 /**
-* @author: renarj
+* @author Renze de Vries
 * Date: 6-6-12
 * Time: 21:50
 */

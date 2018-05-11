@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
-            <artifactId>jasdb_restconnector</artifactId>
+            <artifactId>jasdb-restclient</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

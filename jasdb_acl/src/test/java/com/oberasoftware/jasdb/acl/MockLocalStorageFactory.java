@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 @Component
 public class MockLocalStorageFactory implements StorageServiceFactory {

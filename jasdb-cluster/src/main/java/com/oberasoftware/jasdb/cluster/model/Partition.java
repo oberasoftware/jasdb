@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author renarj
+ * @author Renze de Vries
  */
 public class Partition implements Serializable {
     private String instanceId;
