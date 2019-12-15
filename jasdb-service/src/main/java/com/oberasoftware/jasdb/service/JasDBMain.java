@@ -9,9 +9,8 @@ import com.oberasoftware.jasdb.rest.service.RestConfiguration;
 import com.oberasoftware.jasdb.rest.service.RestConfigurationLoader;
 import org.slf4j.Logger;
 import org.springframework.boot.Banner;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
@@ -31,7 +30,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * @author Renze de Vries
  */
-@SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
+@SpringBootApplication
 @Import({RestConfiguration.class, EngineConfiguation.class, ServiceConfiguration.class})
 public class JasDBMain {
     private static final Logger LOG = getLogger(JasDBMain.class);
@@ -59,7 +58,7 @@ public class JasDBMain {
         if(CONTEXT == null) {
             LOG.info("Starting JaSDB");
             SpringApplicationBuilder builder = new SpringApplicationBuilder(JasDBMain.class)
-                    .bannerMode(Banner.Mode.OFF).web(RestConfigurationLoader.isEnabled());
+                    .bannerMode(Banner.Mode.OFF).web(RestConfigurationLoader.isEnabled() ? WebApplicationType.SERVLET : WebApplicationType.NONE);
             CONTEXT = builder.run(args);
             LATCH = new CountDownLatch(1);
             registerShutdownHooks();

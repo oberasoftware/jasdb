@@ -1,11 +1,13 @@
 package com.oberasoftware.jasdb.core.crypto;
 
 import com.oberasoftware.jasdb.api.security.CryptoEngine;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.crypto.encrypt.BytesEncryptor;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.keygen.KeyGenerators;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 import java.nio.charset.Charset;
 
@@ -23,25 +25,25 @@ public class StrongCryptoEngine implements CryptoEngine {
 
     @Override
     public String encrypt(String salt, String password, String textToEncrypt) {
-        BytesEncryptor bytesEncryptor = Encryptors.standard(password, salt);
+
+        BytesEncryptor bytesEncryptor = Encryptors.standard(password, new String(Hex.encode(salt.getBytes())));
         return new String(Hex.encode(bytesEncryptor.encrypt(textToEncrypt.getBytes(UTF_CHARSET))));
     }
 
     @Override
     public String decrypt(String salt, String password, String encrypted) {
-        BytesEncryptor bytesEncryptor = Encryptors.standard(password, salt);
+        BytesEncryptor bytesEncryptor = Encryptors.standard(password, new String(Hex.encode(salt.getBytes())));
 
         return new String(bytesEncryptor.decrypt(Hex.decode(encrypted)), UTF_CHARSET);
     }
 
     @Override
     public String hash(String salt, String password) {
-        ShaPasswordEncoder shaPasswordEncoder = new ShaPasswordEncoder(256);
-        return shaPasswordEncoder.encodePassword(password, salt);
+        return BCrypt.hashpw(password, salt);
     }
 
     @Override
     public String generateSalt() {
-        return KeyGenerators.string().generateKey();
+        return BCrypt.gensalt(10);
     }
 }

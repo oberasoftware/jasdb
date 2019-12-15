@@ -10,8 +10,8 @@ import com.oberasoftware.jasdb.api.model.ServiceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.web.server.ConfigurableWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class RestService implements RemoteService {
+public class RestService implements RemoteService, WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
     private static final Logger LOG = LoggerFactory.getLogger(RestService.class);
 
     private static final String REST_CONFIG_PATH = "/jasdb/Services/Remote[@service='rest']";
@@ -54,14 +54,12 @@ public class RestService implements RemoteService {
         loadNodeData();
     }
 
-    @Bean
-    @Autowired
-    public EmbeddedServletContainerCustomizer container(ConfigurationLoader configurationLoader) {
-        return (container -> {
-            int port = getRestPort(configurationLoader);
-            LOG.info("Setting rest port to: {}", port);
-            container.setPort(port);
-        });
+    @Override
+    public void customize(ConfigurableWebServerFactory factory) {
+        int port = getRestPort(configurationLoader);
+        LOG.info("Setting rest port to: {}", port);
+
+        factory.setPort(port);
     }
 
     private int getRestPort(ConfigurationLoader configurationLoader) {
