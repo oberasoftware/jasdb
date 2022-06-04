@@ -1,5 +1,3 @@
-## NOTE: JasDB is currently in low maintenance mode and does not receive any further big updates
-
 JasDB is an open Document based database that can be used to store
 unstructured data. The database can be used standalone and accessed
 through a java client library or the REST interface.
@@ -24,6 +22,12 @@ Wiki for installation and API usage: https://github.com/oberasoftware/jasdb-open
 Javadoc: http://oberasoftware.github.io/jasdb/apidocs/
 
 **Note: The above documentation is for the current LTS version of JasDB, the current master Branch points to version 2.0 which will break compatibility on the API (not the data format)**
+
+**Note: Currently no artifacts available for JasDB 2.0, current code requires Java 17**
+## Jasdb 2.0
+In order to run JasDB 2.0, please build a local copy for now using in the root of the repository
+```make clean install``` 
+
 
 ## Quick Installation
 1. Install JasDB by unzipping the download
