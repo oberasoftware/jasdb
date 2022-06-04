@@ -63,7 +63,7 @@ public class EntityController {
         this.dbInstanceFactory = dbInstanceFactory;
     }
 
-    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities")
+    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities", method = GET)
     public void getEntities(@PathVariable String instanceId, @PathVariable String bagName,
                             @RequestParam(required = false, defaultValue = "-1") int top,
                             HttpServletRequest request, HttpServletResponse response) throws JasDBStorageException {
@@ -71,7 +71,7 @@ public class EntityController {
         OutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
     }
 
-    @RequestMapping(value = "/Bags({bagName})/Entities")
+    @RequestMapping(value = "/Bags({bagName})/Entities", method = GET)
     public void getEntities(@PathVariable String bagName, @RequestParam(required = false, defaultValue = "-1") int top,
                             HttpServletRequest request, HttpServletResponse response) throws JasDBException {
         String instanceId = ControllerUtil.getInstance(dbInstanceFactory, null).getInstanceId();
@@ -80,7 +80,7 @@ public class EntityController {
         OutputHandler.createResponse(handleCollection(request, instanceId, bagName, top), response);
     }
 
-    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities({entityQuery:.*})")
+    @RequestMapping(value = "/Instances({instanceId})/Bags({bagName})/Entities({entityQuery:.*})", method = GET)
     public void queryEntities(@PathVariable String instanceId, @PathVariable String bagName,
                               @RequestParam(required = false, defaultValue = "0") int begin,
                               @RequestParam(required = false, defaultValue = "-1") int top,
@@ -101,7 +101,7 @@ public class EntityController {
 
     }
 
-    @RequestMapping(value = "/Bags({bagName})/Entities({entityQuery:.*})")
+    @RequestMapping(value = "/Bags({bagName})/Entities({entityQuery:.*})", method = GET)
     public void queryEntities(@PathVariable String bagName, @PathVariable String entityQuery,
                               @RequestParam(required = false, defaultValue = "0") int begin,
                               @RequestParam(required = false, defaultValue = "-1") int max,

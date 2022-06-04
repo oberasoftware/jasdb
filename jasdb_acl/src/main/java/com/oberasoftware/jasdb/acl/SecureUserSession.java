@@ -23,7 +23,8 @@ public class SecureUserSession implements UserSession {
 
         try {
             CryptoEngine cryptoEngine = CryptoFactory.getEngine();
-            accessTokenHash = cryptoEngine.hash(sessionId, userSession.getAccessToken());
+            String rSalt = cryptoEngine.generateSalt();
+            accessTokenHash = cryptoEngine.hash(rSalt, userSession.getAccessToken());
         } catch(JasDBSecurityException e) {
             throw new RuntimeJasDBException("Unable to hash token", e);
         }

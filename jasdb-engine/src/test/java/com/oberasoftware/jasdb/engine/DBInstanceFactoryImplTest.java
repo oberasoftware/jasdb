@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,22 +37,6 @@ public class DBInstanceFactoryImplTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-
-//    @Rule
-//    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-//    @Before
-//    public void before() throws Exception {
-//        System.setProperty(HomeLocatorUtil.JASDB_HOME, DBBaseTest.tmpDir.toString());
-//
-//        DBBaseTest.cleanData();
-//    }
-
-//    @After
-//    public void tearDown() throws Exception {
-//        JasDBMain.shutdown();
-//        DBBaseTest.cleanData();
-//    }
 
     @Test
     public void testLoadInstances() throws JasDBStorageException {
@@ -103,7 +87,6 @@ public class DBInstanceFactoryImplTest {
 
         assertThat(getInstanceIds(instanceFactory.listInstances()), hasItems(INSTANCE_1));
 
-        when(metadataStore.containsInstance(INSTANCE_1)).thenReturn(true);
         instanceFactory.deleteInstance(INSTANCE_1);
 
         verify(metadataStore, times(1)).removeInstance(INSTANCE_1);
@@ -112,8 +95,6 @@ public class DBInstanceFactoryImplTest {
     @Test(expected = JasDBStorageException.class)
     public void testDeleteNotExisting() throws JasDBStorageException {
         MetadataStore metadataStore = mock(MetadataStore.class);
-
-        when(metadataStore.containsInstance("notexisting")).thenReturn(false);
 
         DBInstanceFactoryImpl instanceFactory = new DBInstanceFactoryImpl(metadataStore, storageServiceFactory);
 

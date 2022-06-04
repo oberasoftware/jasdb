@@ -6,12 +6,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.oberasoftware</groupId>
-        <artifactId>oss-maven</artifactId>
-        <version>2.4</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.7</version>
     </parent>
 
 	<version>2.0-SNAPSHOT</version>
+    <groupId>com.oberasoftware</groupId>
 	<artifactId>jasdb</artifactId>
 	<packaging>pom</packaging>
 
@@ -19,7 +20,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--<jersey.version>1.13</jersey.version>-->
         <!--<jetty.version>9.1.2.v20140210</jetty.version>-->
-        <!--<guava.version>21.0</guava.version>-->
+        <guava.version>31.1-jre</guava.version>
+        <java.version>17</java.version>
+
+        <compiler.plugin.version>3.8.1</compiler.plugin.version>
+        <javadoc.plugin.version>3.3.0</javadoc.plugin.version>
+        <source.plugin.version>3.2.0</source.plugin.version>
+        <jar.plugin.version>3.2.0</jar.plugin.version>
+        <maven.surefire.version>3.0.0-M6</maven.surefire.version>
 	</properties>
 
     <licenses>
@@ -180,22 +188,112 @@
 		</dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
+            <artifactId>mockito-core</artifactId>
+            <version>4.5.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.12.10</version>
             <scope>test</scope>
         </dependency>
 	</dependencies>
-	<build>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <ReleaseVersion>${project.version}</ReleaseVersion>
+                            <BuildNumber>${BUILD_NUMBER}</BuildNumber>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.17</version>
+                    <version>${maven.surefire.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${compiler.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${javadoc.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${source.plugin.version}</version>
+                    <configuration>
+                        <attach>true</attach>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${jar.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
-	</build>
+    </build>
+
 	<modules>
         <module>jasdb_api</module>
         <module>jasdb_core</module>

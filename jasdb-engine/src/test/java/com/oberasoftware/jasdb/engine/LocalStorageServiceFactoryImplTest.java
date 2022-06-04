@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
@@ -24,8 +24,6 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -75,8 +73,6 @@ public class LocalStorageServiceFactoryImplTest {
 
 
         when(metadataStore.containsInstance(TEST_INSTANCE)).thenReturn(true);
-        when(metadataStore.isLastShutdownClean()).thenReturn(true);
-
     }
 
     @After
