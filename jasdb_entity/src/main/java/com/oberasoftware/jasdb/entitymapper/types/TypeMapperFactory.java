@@ -15,6 +15,7 @@ public class TypeMapperFactory {
     private static List<TypeMapper> typeMappers = new ArrayList<>();
     static {
         typeMappers.add(new StringTypeMapper());
+        typeMappers.add(new SetEntityMapper());
         typeMappers.add(new LongTypeMapper());
         typeMappers.add(new MapEntityMapper());
         typeMappers.add(new ListEntityMapper());
