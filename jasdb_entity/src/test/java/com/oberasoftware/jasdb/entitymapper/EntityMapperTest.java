@@ -14,8 +14,7 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -130,6 +129,12 @@ public class EntityMapperTest {
         propertiesEntity.addProperty(FIELD_4, SOME_VALUE_1);
         propertiesEntity.addProperty(FIELD_0, SOME_VALUE_8);
 
+        EmbeddedEntity basicEntityEmbedded = new EmbeddedEntity();
+        basicEntityEmbedded.setProperty("someField", "thisIsSomeField");
+        basicEntityEmbedded.setProperty("anotherNumberField", 9999333);
+        basicEntityEmbedded.setProperty("differentNameThanField", "bladiebla");
+        entity.addEntity("basicEntity", basicEntityEmbedded);
+
         ComplexEntity complexEntity = mapper.mapFrom(ComplexEntity.class, entity);
         assertThat(complexEntity.getCustomKey(), is(keyField));
         assertThat(complexEntity.getName(), is(MY_NAME));
@@ -140,6 +145,11 @@ public class EntityMapperTest {
         assertThat(complexEntity.getProperties().size(), is(2));
         assertThat(complexEntity.getProperties().get(FIELD_4), is(SOME_VALUE_1));
         assertThat(complexEntity.getProperties().get(FIELD_0), is(SOME_VALUE_8));
+
+        assertThat(complexEntity.getBasicEntity(), notNullValue());
+        assertThat(complexEntity.getBasicEntity().getSomeField(), is("thisIsSomeField"));
+        assertThat(complexEntity.getBasicEntity().getAnotherNumberField(), is(9999333L));
+        assertThat(complexEntity.getBasicEntity().getJustSomeTextField(), is("bladiebla"));
     }
 
     @Test
@@ -163,5 +173,22 @@ public class EntityMapperTest {
 
         complexEntity = mapper.mapFrom(ComplexEntity.class, SimpleEntity.fromJson(json));
         assertThat(complexEntity.getRelatedItems().size(), is(1));
+    }
+
+    @Test
+    public void testEmbeddedEntity() throws JasDBStorageException {
+        AnnotationEntityMapper mapper = new AnnotationEntityMapper();
+        String keyField = UUID.randomUUID().toString();
+
+        ComplexEntity complexEntity = new ComplexEntity(Lists.newArrayList(TEST_1), SOME_EMAIL,
+                ComplexEntity.CUSTOM_ENUM.VALUE2, MY_NAME, keyField,
+                new ImmutableMap.Builder<String, String>()
+                        .put(FIELD_0, SOME_VALUE_8).build());
+        complexEntity.setBasicEntity(new BasicEntity("testField", 9933322, "justSomeText"));
+
+        var entity = mapper.mapTo(complexEntity).getJasDBEntity();
+        assertThat(entity.getEntity("basicEntity"), notNullValue());
+
+
     }
 }

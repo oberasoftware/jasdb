@@ -1,5 +1,6 @@
 package com.oberasoftware.jasdb.entitymapper;
 
+import com.oberasoftware.jasdb.api.entitymapper.annotations.EmbeddedEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
@@ -22,6 +23,8 @@ public class ComplexEntity extends BaseEntity {
         VALUE1,
         VALUE2
     }
+
+    private BasicEntity basicEntity;
 
     private Map<String, String> properties;
 
@@ -49,6 +52,16 @@ public class ComplexEntity extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    @JasDBProperty(nullable = true)
+    @EmbeddedEntity
+    public BasicEntity getBasicEntity() {
+        return basicEntity;
+    }
+
+    public void setBasicEntity(BasicEntity basicEntity) {
+        this.basicEntity = basicEntity;
     }
 
     @JasDBProperty

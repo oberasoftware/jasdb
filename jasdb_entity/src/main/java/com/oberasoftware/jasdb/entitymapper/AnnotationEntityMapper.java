@@ -1,6 +1,7 @@
 package com.oberasoftware.jasdb.entitymapper;
 
 import com.oberasoftware.jasdb.api.entitymapper.*;
+import com.oberasoftware.jasdb.api.entitymapper.annotations.EmbeddedEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
@@ -10,6 +11,7 @@ import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.api.session.Property;
 import com.oberasoftware.jasdb.core.SimpleEntity;
 import com.oberasoftware.jasdb.core.utils.StringUtils;
+import com.oberasoftware.jasdb.entitymapper.types.EmbeddedObjectTypeMapper;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -186,9 +188,15 @@ public class AnnotationEntityMapper implements EntityMapper {
             Optional<JasDBProperty> readAnnotation = getOptionalAnnotation(readMethod, JasDBProperty.class);
             Optional<JasDBProperty> writeAnnotation = getOptionalAnnotation(writeMethod, JasDBProperty.class);
             Optional<Id> idAnnotation = getOptionalAnnotation(readMethod, Id.class);
+            Optional<EmbeddedEntity> optionalEmbeddedEntity = getOptionalAnnotation(EmbeddedEntity.class, readMethod, writeMethod);
 
             if (readAnnotation.isPresent() || writeAnnotation.isPresent()) {
-                TypeMapper typeMapper = getTypeMapper(readMethod);
+                TypeMapper typeMapper;
+                if(optionalEmbeddedEntity.isPresent()) {
+                    typeMapper = new EmbeddedObjectTypeMapper(this);
+                } else {
+                    typeMapper = getTypeMapper(readMethod);
+                }
 
                 //here a number of override for the property name, first check read method, next write else default to property bean name
                 String propertyName = readAnnotation.isPresent() ? readAnnotation.get().name() : "";

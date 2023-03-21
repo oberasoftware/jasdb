@@ -4,6 +4,7 @@ import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -24,7 +25,11 @@ public class AnnotationUtils {
 
     }
 
+    public static <T extends Annotation> Optional<T> getOptionalAnnotation(Class<T> annotationType, AnnotatedElement... types) {
+        var firstAnnotated = Arrays.stream(types).filter(t -> getOptionalAnnotation(t, annotationType).isPresent()).findFirst();
+        return firstAnnotated.map(annotatedElement -> annotatedElement.getAnnotation(annotationType));
 
+    }
 
     public static <T extends Annotation> Optional<T> getOptionalAnnotation(AnnotatedElement type, Class<T> annotationType) {
         T annotation = type.getAnnotation(annotationType);

@@ -398,8 +398,8 @@ public class SimpleEntity implements Serializable, CachableItem, Entity {
     @Override
     public SimpleEntity getEntity(String embeddedEntityName) {
         Object value = getValue(embeddedEntityName);
-        if(value != null && value instanceof EmbeddedEntity) {
-            return (EmbeddedEntity) value;
+        if(value != null && value instanceof SimpleEntity) {
+            return (SimpleEntity) value;
         }
         return null;
     }
