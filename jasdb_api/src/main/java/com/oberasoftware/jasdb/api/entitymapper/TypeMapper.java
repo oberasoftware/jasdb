@@ -11,7 +11,7 @@ public interface TypeMapper<T> {
 
     Object mapToEmptyValue();
 
-    T mapToRawType(Object value);
+    T mapToRawType(Class targetClass, Object value);
 
     Value mapToValue(Object value);
 

@@ -17,13 +17,13 @@ public class StringTypeMapper implements TypeMapper<String> {
     }
 
     @Override
-    public String mapToRawType(Object value) {
+    public String mapToRawType(Class targetClass, Object value) {
         return value.toString();
     }
 
     @Override
     public Value mapToValue(Object value) {
-        return new StringValue(mapToRawType(value));
+        return new StringValue(mapToRawType(String.class, value));
     }
 
     @Override

@@ -30,9 +30,12 @@ public class EmbeddedObjectTypeMapper implements TypeMapper<Object> {
     }
 
     @Override
-    public Object mapToRawType(Object value) {
-
-        return null;
+    public Object mapToRawType(Class targetClass, Object value) {
+        try {
+            return entityMapper.mapFrom(targetClass, (Entity)value);
+        } catch (JasDBStorageException e) {
+            throw new RuntimeJasDBException("Could not map to Target Entity class", e);
+        }
     }
 
     @Override

@@ -22,7 +22,7 @@ public class EnumTypeMapper implements TypeMapper<Enum> {
     }
 
     @Override
-    public Enum mapToRawType(Object value) {
+    public Enum mapToRawType(Class targetClass, Object value) {
         return (Enum) value;
     }
 

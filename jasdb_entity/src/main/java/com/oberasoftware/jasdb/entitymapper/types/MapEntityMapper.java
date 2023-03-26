@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.oberasoftware.jasdb.entitymapper.types.TypeMapperFactory.getTypeMapper;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -25,13 +24,19 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MapEntityMapper implements TypeMapper<Map<String, ?>> {
     private static final Logger LOG = getLogger(MapEntityMapper.class);
 
+    private TypeMapperFactory mapperFactory;
+
+    public MapEntityMapper(TypeMapperFactory mapperFactory) {
+        this.mapperFactory = mapperFactory;
+    }
+
     @Override
     public boolean isSupportedType(Class<?> type) {
         return Map.class.isAssignableFrom(type);
     }
 
     @Override
-    public Map<String, ?> mapToRawType(Object value) {
+    public Map<String, ?> mapToRawType(Class targetClass, Object value) {
         if(value instanceof Map) {
             return (Map<String, ?>) value;
         } else {
@@ -54,10 +59,10 @@ public class MapEntityMapper implements TypeMapper<Map<String, ?>> {
         Property property = new MultivalueProperty(propertyName, true);
         EmbeddedEntity entity = new EmbeddedEntity();
 
-        Map<String, ?> rawValueMap = mapToRawType(value);
+        Map<String, ?> rawValueMap = mapToRawType(value.getClass(), value);
         rawValueMap.forEach((k, v) -> {
             try {
-                TypeMapper typeMapper = getTypeMapper(v.getClass());
+                TypeMapper typeMapper = mapperFactory.getTypeMapper(v.getClass());
                 entity.addProperty(typeMapper.mapToProperty(k, v));
             } catch (JasDBStorageException e) {
                 LOG.error("", e);

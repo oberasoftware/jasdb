@@ -20,7 +20,7 @@ public class LongTypeMapper implements TypeMapper<Long> {
     }
 
     @Override
-    public Long mapToRawType(Object value) {
+    public Long mapToRawType(Class targetClass, Object value) {
         if(value instanceof Long) {
             return (Long)value;
         } else if(value instanceof Integer) {
@@ -38,7 +38,7 @@ public class LongTypeMapper implements TypeMapper<Long> {
 
     @Override
     public Value mapToValue(Object value) {
-        return new LongValue(mapToRawType(value));
+        return new LongValue(mapToRawType(Long.class, value));
     }
 
     @Override

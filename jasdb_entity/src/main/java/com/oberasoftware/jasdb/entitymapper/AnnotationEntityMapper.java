@@ -1,7 +1,6 @@
 package com.oberasoftware.jasdb.entitymapper;
 
 import com.oberasoftware.jasdb.api.entitymapper.*;
-import com.oberasoftware.jasdb.api.entitymapper.annotations.EmbeddedEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.Id;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBEntity;
 import com.oberasoftware.jasdb.api.entitymapper.annotations.JasDBProperty;
@@ -12,6 +11,7 @@ import com.oberasoftware.jasdb.api.session.Property;
 import com.oberasoftware.jasdb.core.SimpleEntity;
 import com.oberasoftware.jasdb.core.utils.StringUtils;
 import com.oberasoftware.jasdb.entitymapper.types.EmbeddedObjectTypeMapper;
+import com.oberasoftware.jasdb.entitymapper.types.TypeMapperFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.oberasoftware.jasdb.core.utils.AnnotationUtils.getAnnotation;
 import static com.oberasoftware.jasdb.core.utils.AnnotationUtils.getOptionalAnnotation;
-import static com.oberasoftware.jasdb.entitymapper.types.TypeMapperFactory.getTypeMapper;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -40,6 +39,8 @@ public class AnnotationEntityMapper implements EntityMapper {
     private static final Logger LOG = getLogger(AnnotationEntityMapper.class);
 
     private ConcurrentMap<String, EntityMetadata> cachedEntityMetadata = new ConcurrentHashMap<>();
+
+    private TypeMapperFactory mapperFactory = new TypeMapperFactory(this);
 
     @Override
     public MapResult mapTo(Object mappableObject) throws JasDBStorageException {
@@ -53,7 +54,7 @@ public class AnnotationEntityMapper implements EntityMapper {
         if(keyProperty.isPresent()) {
             Object keyValue = EntityUtils.getValue(mappableObject, keyProperty.get());
             if(keyValue != null) {
-                String id = getTypeMapper(String.class).mapToRawType(keyValue);
+                String id = mapperFactory.getTypeMapper(String.class).mapToRawType(String.class, keyValue);
 
                 if (EntityUtils.toValidUUID(id) != null) {
                     LOG.debug("Setting entity id to: {}", id);
@@ -188,15 +189,9 @@ public class AnnotationEntityMapper implements EntityMapper {
             Optional<JasDBProperty> readAnnotation = getOptionalAnnotation(readMethod, JasDBProperty.class);
             Optional<JasDBProperty> writeAnnotation = getOptionalAnnotation(writeMethod, JasDBProperty.class);
             Optional<Id> idAnnotation = getOptionalAnnotation(readMethod, Id.class);
-            Optional<EmbeddedEntity> optionalEmbeddedEntity = getOptionalAnnotation(EmbeddedEntity.class, readMethod, writeMethod);
 
             if (readAnnotation.isPresent() || writeAnnotation.isPresent()) {
-                TypeMapper typeMapper;
-                if(optionalEmbeddedEntity.isPresent()) {
-                    typeMapper = new EmbeddedObjectTypeMapper(this);
-                } else {
-                    typeMapper = getTypeMapper(readMethod);
-                }
+                TypeMapper typeMapper = mapperFactory.getTypeMapper(readMethod);
 
                 //here a number of override for the property name, first check read method, next write else default to property bean name
                 String propertyName = readAnnotation.isPresent() ? readAnnotation.get().name() : "";

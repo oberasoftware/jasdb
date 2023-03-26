@@ -12,16 +12,20 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.oberasoftware.jasdb.entitymapper.types.TypeMapperFactory.getTypeMapper;
-
 public class SetEntityMapper implements TypeMapper<Set<?>> {
     @Override
     public boolean isSupportedType(Class<?> type) {
         return Set.class.isAssignableFrom(type);
     }
 
+    private TypeMapperFactory mapperFactory;
+
+    public SetEntityMapper(TypeMapperFactory mapperFactory) {
+        this.mapperFactory = mapperFactory;
+    }
+
     @Override
-    public Set<?> mapToRawType(Object value) {
+    public Set<?> mapToRawType(Class targetClass, Object value) {
         if(value instanceof Set) {
             return (Set<?>) value;
         } else {
@@ -42,10 +46,10 @@ public class SetEntityMapper implements TypeMapper<Set<?>> {
     @Override
     public Property mapToProperty(String propertyName, Object value) {
         Property property = new MultivalueProperty(propertyName, true);
-        Set<?> values = mapToRawType(value);
+        Set<?> values = mapToRawType(value.getClass(), value);
         values.forEach(v -> {
             try {
-                TypeMapper typeMapper = getTypeMapper(v.getClass());
+                TypeMapper typeMapper = mapperFactory.getTypeMapper(v.getClass());
                 property.addValue(typeMapper.mapToValue(v));
             } catch (JasDBStorageException e) {
                 throw new RuntimeJasDBException("Unable to map list", e);

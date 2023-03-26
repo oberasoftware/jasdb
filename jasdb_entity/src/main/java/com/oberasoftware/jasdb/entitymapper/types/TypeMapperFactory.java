@@ -2,6 +2,7 @@ package com.oberasoftware.jasdb.entitymapper.types;
 
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import com.oberasoftware.jasdb.entitymapper.AnnotationEntityMapper;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,26 +13,24 @@ import java.util.Optional;
  * @author Renze de Vries
  */
 public class TypeMapperFactory {
-    private static List<TypeMapper> typeMappers = new ArrayList<>();
-    static {
+    private List<TypeMapper> typeMappers = new ArrayList<>();
+
+    public TypeMapperFactory(AnnotationEntityMapper entityMapper) {
         typeMappers.add(new StringTypeMapper());
-        typeMappers.add(new SetEntityMapper());
+        typeMappers.add(new SetEntityMapper(this));
         typeMappers.add(new LongTypeMapper());
-        typeMappers.add(new MapEntityMapper());
-        typeMappers.add(new ListEntityMapper());
+        typeMappers.add(new MapEntityMapper(this));
+        typeMappers.add(new ListEntityMapper(this));
         typeMappers.add(new EnumTypeMapper());
+        typeMappers.add(new EmbeddedObjectTypeMapper(entityMapper));
     }
 
-    private TypeMapperFactory() {
-
-    }
-
-    public static TypeMapper getTypeMapper(Method method) throws JasDBStorageException {
+    public TypeMapper getTypeMapper(Method method) throws JasDBStorageException {
         Class<?> returnType = method.getReturnType();
         return getTypeMapper(returnType);
     }
 
-    public static <T> TypeMapper<T> getTypeMapper(Class<T> type) throws JasDBStorageException {
+    public <T> TypeMapper<T> getTypeMapper(Class<T> type) throws JasDBStorageException {
         Optional<TypeMapper> typeMapperOptional = typeMappers.stream().filter(t -> t.isSupportedType(type)).findAny();
         if(typeMapperOptional.isPresent()) {
             return typeMapperOptional.get();

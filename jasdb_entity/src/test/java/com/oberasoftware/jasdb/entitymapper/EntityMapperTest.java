@@ -6,8 +6,11 @@ import com.oberasoftware.jasdb.api.entitymapper.MapResult;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.session.Entity;
 import com.oberasoftware.jasdb.api.session.Property;
+import com.oberasoftware.jasdb.api.session.Value;
 import com.oberasoftware.jasdb.core.EmbeddedEntity;
 import com.oberasoftware.jasdb.core.SimpleEntity;
+import com.oberasoftware.jasdb.core.properties.EntityValue;
+import com.oberasoftware.jasdb.core.properties.MultivalueProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -16,6 +19,7 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -92,6 +96,7 @@ public class EntityMapperTest {
                 new ImmutableMap.Builder<String, String>()
                 .put(FIELD_4, SOME_VALUE_1)
                 .put(FIELD_0, SOME_VALUE_8).build());
+        complexEntity.setRelatedEntities(Lists.newArrayList(new BasicEntity("testField1", 0001l, "justAField1"), new BasicEntity("testField2", 0002l, "justAField2")));
 
         MapResult result = mapper.mapTo(complexEntity);
         assertThat(result.getBagName(), is("COMPLEX_TEST"));
@@ -109,6 +114,22 @@ public class EntityMapperTest {
 
         List<String> values = entity.getValues(ITEMS);
         assertThat(values, hasItems(TEST_1, TEST_3, TEST_0));
+
+        List<Value> relatedEntities = entity.getProperty("relatedEntities").getValues();
+        assertThat(relatedEntities.size(), is(2));
+        var entity1 = ((EntityValue)relatedEntities.get(0)).getValue();
+        assertThat(entity1, notNullValue());
+        assertThat(entity1.getProperty("someField").getFirstValueObject(), is("testField1"));
+        assertThat(entity1.getValue("anotherNumberField"), is(1l));
+        assertThat(entity1.getValue("differentNameThanField"), is("justAField1"));
+
+        var entity2 = ((EntityValue)relatedEntities.get(1)).getValue();
+        assertThat(entity2, notNullValue());
+        assertThat(entity2.getProperty("someField").getFirstValueObject(), is("testField2"));
+        assertThat(entity2.getValue("anotherNumberField"), is(2l));
+        assertThat(entity2.getValue("differentNameThanField"), is("justAField2"));
+
+        LOG.info(SimpleEntity.toJson(entity));
     }
 
     @Test
@@ -135,6 +156,17 @@ public class EntityMapperTest {
         basicEntityEmbedded.setProperty("differentNameThanField", "bladiebla");
         entity.addEntity("basicEntity", basicEntityEmbedded);
 
+        EmbeddedEntity basicListEntityEmbedded1 = new EmbeddedEntity();
+        basicListEntityEmbedded1.setProperty("someField", "thisIsSomeField1");
+        basicListEntityEmbedded1.setProperty("anotherNumberField", 9999331);
+        basicListEntityEmbedded1.setProperty("differentNameThanField", "bladiebla1");
+
+        EmbeddedEntity basicListEntityEmbedded2 = new EmbeddedEntity();
+        basicListEntityEmbedded2.setProperty("someField", "thisIsSomeField2");
+        basicListEntityEmbedded2.setProperty("anotherNumberField", 9999332);
+        basicListEntityEmbedded2.setProperty("differentNameThanField", "bladiebla2");
+        entity.addProperty(new MultivalueProperty("relatedEntities", true).addValue(new EntityValue(basicListEntityEmbedded1)).addValue(new EntityValue(basicListEntityEmbedded2)));
+
         ComplexEntity complexEntity = mapper.mapFrom(ComplexEntity.class, entity);
         assertThat(complexEntity.getCustomKey(), is(keyField));
         assertThat(complexEntity.getName(), is(MY_NAME));
@@ -150,6 +182,17 @@ public class EntityMapperTest {
         assertThat(complexEntity.getBasicEntity().getSomeField(), is("thisIsSomeField"));
         assertThat(complexEntity.getBasicEntity().getAnotherNumberField(), is(9999333L));
         assertThat(complexEntity.getBasicEntity().getJustSomeTextField(), is("bladiebla"));
+
+        assertThat(complexEntity.getRelatedEntities().size(), is(2));
+        assertThat(complexEntity.getRelatedEntities().get(0), notNullValue());
+        assertThat(complexEntity.getRelatedEntities().get(1), notNullValue());
+        assertThat(complexEntity.getRelatedEntities().get(0).getSomeField(), is("thisIsSomeField1"));
+        assertThat(complexEntity.getRelatedEntities().get(0).getAnotherNumberField(), is(9999331l));
+        assertThat(complexEntity.getRelatedEntities().get(0).getJustSomeTextField(), is("bladiebla1"));
+        assertThat(complexEntity.getRelatedEntities().get(1).getSomeField(), is("thisIsSomeField2"));
+        assertThat(complexEntity.getRelatedEntities().get(1).getAnotherNumberField(), is(9999332l));
+        assertThat(complexEntity.getRelatedEntities().get(1).getJustSomeTextField(), is("bladiebla2"));
+
     }
 
     @Test
