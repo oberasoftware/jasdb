@@ -35,13 +35,13 @@ public class Locomotive {
     public Locomotive() {
     }
 
-    @Id
     @JasDBProperty
+    @Id
     public String getId() {
         return this.entityId;
     }
 
-    public void setEntityId(String entityId) {
+    public void setId(String entityId) {
         this.entityId = entityId;
     }
 

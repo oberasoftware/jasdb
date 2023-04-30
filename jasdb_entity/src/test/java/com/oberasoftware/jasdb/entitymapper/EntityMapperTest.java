@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -245,6 +245,23 @@ public class EntityMapperTest {
                 "        }");
 
         AnnotationEntityMapper mapper = new AnnotationEntityMapper();
-        mapper.mapFrom(Locomotive.class, loc);
+        Locomotive mappedResult = mapper.mapFrom(Locomotive.class, loc);
+        assertThat(mappedResult, notNullValue());
+    }
+
+    @Test
+    public void testNullKey() throws JasDBStorageException {
+        var loc = new Locomotive(99, "test", "thing1", "blaaat");
+        AnnotationEntityMapper entityMapper = new AnnotationEntityMapper();
+        var entity = entityMapper.mapTo(loc).getJasDBEntity();
+        assertThat(entity, notNullValue());
+        assertThat(entity.getInternalId(), nullValue());
+
+        entity.setInternalId("fakeKey");
+
+        var remapped = entityMapper.mapFrom(Locomotive.class, entity);
+        assertThat(remapped.getId(), notNullValue());
+        assertThat(remapped.getId(), is("fakeKey"));
+
     }
 }
