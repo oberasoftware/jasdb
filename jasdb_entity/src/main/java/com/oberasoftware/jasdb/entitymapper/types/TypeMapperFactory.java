@@ -19,6 +19,7 @@ public class TypeMapperFactory {
         typeMappers.add(new StringTypeMapper());
         typeMappers.add(new SetEntityMapper(this));
         typeMappers.add(new LongTypeMapper());
+        typeMappers.add(new IntegerTypeMapper());
         typeMappers.add(new MapEntityMapper(this));
         typeMappers.add(new ListEntityMapper(this));
         typeMappers.add(new EnumTypeMapper());
