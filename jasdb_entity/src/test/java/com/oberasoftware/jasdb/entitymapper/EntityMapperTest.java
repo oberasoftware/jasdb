@@ -231,7 +231,20 @@ public class EntityMapperTest {
 
         var entity = mapper.mapTo(complexEntity).getJasDBEntity();
         assertThat(entity.getEntity("basicEntity"), notNullValue());
+    }
 
+    @Test
+    public void testLoadLocomotive() throws JasDBStorageException {
+        var loc = SimpleEntity.fromJson("        {\n" +
+                "            \"__ID\": \"00001ec0-3194-1873-0000-01878b7e4ab7\",\n" +
+                "            \"attributes\": {},\n" +
+                "            \"controllerId\": \"test\",\n" +
+                "            \"locAddress\": 99,\n" +
+                "            \"name\": \"DB 103\",\n" +
+                "            \"thingId\": \"db103\"\n" +
+                "        }");
 
+        AnnotationEntityMapper mapper = new AnnotationEntityMapper();
+        mapper.mapFrom(Locomotive.class, loc);
     }
 }
