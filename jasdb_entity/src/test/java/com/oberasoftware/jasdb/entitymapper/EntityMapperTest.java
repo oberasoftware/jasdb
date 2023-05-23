@@ -49,6 +49,7 @@ public class EntityMapperTest {
     private static final String TEST_0 = "test0";
     private static final String EMAIL_ADDRESS = "emailAddress";
     private static final String CUSTOM_ENUM = "customEnum";
+    private static final String SOME_BOOLEAN_FIELD = "someBoolean";
 
     @Test
     public void testMapToSimpleEntity() throws JasDBStorageException {
@@ -61,7 +62,7 @@ public class EntityMapperTest {
         Entity entity = result.getJasDBEntity();
 
         List<Property> properties = entity.getProperties();
-        assertThat(properties.size(), is(4));
+        assertThat(properties.size(), is(5));
 
         assertThat(entity.getValue(SOME_FIELD), is(FIELD_VALUE1));
         assertThat(entity.getValue(ANOTHER_NUMBER_FIELD), is(LONG_VALUE));
@@ -78,11 +79,13 @@ public class EntityMapperTest {
         entity.addProperty(SOME_FIELD, FIELD_VALUE1);
         entity.addProperty(ANOTHER_NUMBER_FIELD, LONG_VALUE);
         entity.addProperty(DIFFERENT_NAME_THAN_FIELD, FIELD_VALUE2);
+        entity.addProperty(SOME_BOOLEAN_FIELD, true);
 
         BasicEntity basicEntity = mapper.mapFrom(BasicEntity.class, entity);
         assertThat(basicEntity.getSomeField(), is(FIELD_VALUE1));
         assertThat(basicEntity.getAnotherNumberField(), is(LONG_VALUE));
         assertThat(basicEntity.getJustSomeTextField(), is(FIELD_VALUE2));
+        assertThat(basicEntity.isSomeBoolean(), is(true));
     }
 
     @Test
@@ -154,17 +157,20 @@ public class EntityMapperTest {
         basicEntityEmbedded.setProperty("someField", "thisIsSomeField");
         basicEntityEmbedded.setProperty("anotherNumberField", 9999333);
         basicEntityEmbedded.setProperty("differentNameThanField", "bladiebla");
+        basicEntityEmbedded.addProperty("someBoolean", true);
         entity.addEntity("basicEntity", basicEntityEmbedded);
 
         EmbeddedEntity basicListEntityEmbedded1 = new EmbeddedEntity();
         basicListEntityEmbedded1.setProperty("someField", "thisIsSomeField1");
         basicListEntityEmbedded1.setProperty("anotherNumberField", 9999331);
+        basicListEntityEmbedded1.addProperty("someBoolean", false);
         basicListEntityEmbedded1.setProperty("differentNameThanField", "bladiebla1");
 
         EmbeddedEntity basicListEntityEmbedded2 = new EmbeddedEntity();
         basicListEntityEmbedded2.setProperty("someField", "thisIsSomeField2");
         basicListEntityEmbedded2.setProperty("anotherNumberField", 9999332);
         basicListEntityEmbedded2.setProperty("differentNameThanField", "bladiebla2");
+        basicListEntityEmbedded2.addProperty("someBoolean", true);
         entity.addProperty(new MultivalueProperty("relatedEntities", true).addValue(new EntityValue(basicListEntityEmbedded1)).addValue(new EntityValue(basicListEntityEmbedded2)));
 
         ComplexEntity complexEntity = mapper.mapFrom(ComplexEntity.class, entity);

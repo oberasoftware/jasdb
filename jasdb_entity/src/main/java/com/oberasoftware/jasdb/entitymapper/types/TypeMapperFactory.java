@@ -20,6 +20,7 @@ public class TypeMapperFactory {
         typeMappers.add(new SetEntityMapper(this));
         typeMappers.add(new LongTypeMapper());
         typeMappers.add(new IntegerTypeMapper());
+        typeMappers.add(new BooleanTypeMapper());
         typeMappers.add(new MapEntityMapper(this));
         typeMappers.add(new ListEntityMapper(this));
         typeMappers.add(new EnumTypeMapper());

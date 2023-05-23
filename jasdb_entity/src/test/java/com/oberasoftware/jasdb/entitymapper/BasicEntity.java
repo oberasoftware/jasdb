@@ -13,6 +13,8 @@ public class BasicEntity {
     private long anotherNumberField;
     private String justSomeTextField;
 
+    private boolean someBoolean;
+
     public BasicEntity(String someField, long anotherNumberField, String justSomeTextField) {
         this.someField = someField;
         this.anotherNumberField = anotherNumberField;
@@ -47,6 +49,15 @@ public class BasicEntity {
 
     public void setJustSomeTextField(String justSomeTextField) {
         this.justSomeTextField = justSomeTextField;
+    }
+
+    @JasDBProperty
+    public boolean isSomeBoolean() {
+        return someBoolean;
+    }
+
+    public void setSomeBoolean(boolean someBoolean) {
+        this.someBoolean = someBoolean;
     }
 
     @Override
