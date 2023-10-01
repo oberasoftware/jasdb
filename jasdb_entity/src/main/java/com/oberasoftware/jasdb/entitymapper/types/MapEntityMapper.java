@@ -12,6 +12,7 @@ import com.oberasoftware.jasdb.core.properties.EntityValue;
 import com.oberasoftware.jasdb.core.properties.MultivalueProperty;
 import org.slf4j.Logger;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,9 +81,20 @@ public class MapEntityMapper implements TypeMapper<Map<String, ?>> {
         List<Property> embeddedProperties = embeddedEntity.getProperties();
 
         Map<String, Object> properties = new HashMap<>();
-        embeddedProperties.forEach(p -> {
-            properties.put(p.getPropertyName(), p.getFirstValue().getValue());
-        });
+        try {
+            var t = (Class) ((ParameterizedType) propertyMetadata.getReadMethod().getAnnotatedReturnType().getType()).getActualTypeArguments()[1];
+            TypeMapper mapper = mapperFactory.getTypeMapper(t);
+
+            embeddedProperties.forEach(p -> {
+                var value = p.getFirstValue().getValue();
+
+                properties.put(p.getPropertyName(), mapper.mapToRawType(t, value));
+            });
+        } catch(JasDBStorageException e) {
+            throw new RuntimeJasDBException("Unable to map type", e);
+        }
+
+
 
         return properties;
     }

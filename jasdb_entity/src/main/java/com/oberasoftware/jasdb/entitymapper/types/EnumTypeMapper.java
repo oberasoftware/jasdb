@@ -2,6 +2,7 @@ package com.oberasoftware.jasdb.entitymapper.types;
 
 import com.oberasoftware.jasdb.api.entitymapper.PropertyMetadata;
 import com.oberasoftware.jasdb.api.entitymapper.TypeMapper;
+import com.oberasoftware.jasdb.api.exceptions.RuntimeJasDBException;
 import com.oberasoftware.jasdb.api.session.Property;
 import com.oberasoftware.jasdb.api.session.Value;
 import com.oberasoftware.jasdb.core.properties.MultivalueProperty;
@@ -23,7 +24,11 @@ public class EnumTypeMapper implements TypeMapper<Enum> {
 
     @Override
     public Enum mapToRawType(Class targetClass, Object value) {
-        return (Enum) value;
+        if(targetClass.isEnum()) {
+            return Enum.valueOf(targetClass, value.toString());
+        } else {
+            throw new RuntimeJasDBException("Mappable value is not an enum");
+        }
     }
 
     @Override
