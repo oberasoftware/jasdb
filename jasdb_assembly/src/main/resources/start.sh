@@ -5,12 +5,13 @@ if [ ! -e "${JAVA_HOME}" ]; then
   exit 1
 fi
 
-for i in `ls ./lib/*.jar`
+for i in `ls /jasdb/lib/*.jar`
 do
   DB_CLASSPATH=${DB_CLASSPATH}:${i}
 done
 
-DB_CLASSPATH=${DB_CLASSPATH}:./configuration/
+DB_CLASSPATH=${DB_CLASSPATH}:/jasdb/configuration/
+echo "$DB_CLASSPATH"
 
-${JAVA_HOME}/bin/java -cp ".:${DB_CLASSPATH}" -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Xmx1024m nl.renarj.jasdb.JasDBMain
+${JAVA_HOME}/bin/java -cp ".:${DB_CLASSPATH}" -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Xmx1024m com.oberasoftware.jasdb.service.JasDBMain
 

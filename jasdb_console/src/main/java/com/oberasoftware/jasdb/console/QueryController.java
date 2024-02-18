@@ -11,6 +11,8 @@ import com.oberasoftware.jasdb.console.model.PageResult;
 import com.oberasoftware.jasdb.console.model.SearchForm;
 import com.oberasoftware.jasdb.console.model.WebEntity;
 import com.oberasoftware.jasdb.core.SimpleEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,65 +23,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 /**
  * @author Renze de Vries
  */
 @Controller
-@RequestMapping(value = "/search")
+@RequestMapping(value = "/query")
 public class QueryController {
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final Logger LOG = LoggerFactory.getLogger(QueryController.class);
 
     @Autowired
     private DBSessionFactory sessionFactory;
 
+    @RequestMapping(value = "/", method = GET)
+    public String findAll(Model model) throws JasDBException {
+        LOG.info("Requesting query page");
+        return "data/query";
+    }
+
     @RequestMapping(value = "/{instanceId}/{bag}")
     public String findAll(@PathVariable String instanceId, @PathVariable String bag, Model model) throws JasDBException {
-        DBSession session = sessionFactory.createSession(instanceId);
-        EntityBag entityBag = session.getBag(bag);
-
-        PageResult result = new PageResult();
-        model.addAttribute("page", result);
-
-        if(entityBag != null) {
-            QueryResult queryResult = entityBag.getEntities(DEFAULT_PAGE_SIZE);
-
-            result.setEntities(loadEntities(queryResult));
-        } else {
-            result.setMessage(String.format("Unable to load Bag: %s on instance: %s as it does not exist", bag, instanceId));
-        }
+        model.addAttribute("instance", instanceId);
+        model.addAttribute("bag", bag);
 
         return "data/query";
-    }
-
-    @RequestMapping(value = "/{instanceId}/{bag}", method = RequestMethod.POST)
-    public String searchFieldValue(SearchForm searchForm, @PathVariable String instanceId, @PathVariable String bag, Model model) throws JasDBException {
-        DBSession session = sessionFactory.createSession(instanceId);
-        EntityBag entityBag = session.getBag(bag);
-
-        PageResult result = new PageResult();
-        model.addAttribute("page", result);
-
-        if(entityBag != null) {
-            QueryResult queryResult = entityBag.find(QueryBuilder.createBuilder().field(searchForm.getField()).value(searchForm.getValue())).limit(DEFAULT_PAGE_SIZE).execute();
-
-            result.setEntities(loadEntities(queryResult));
-        } else {
-            result.setMessage(String.format("Unable to load Bag: %s on instance: %s as it does not exist", bag, instanceId));
-        }
-
-        return "data/query";
-    }
-
-    private List<WebEntity> loadEntities(QueryResult result) throws JasDBException {
-        List<WebEntity> entities = new ArrayList<>();
-        for(Entity entity : result) {
-            WebEntity webEntity = new WebEntity();
-            webEntity.setData(SimpleEntity.toJson(entity));
-            webEntity.setId(entity.getInternalId());
-
-            entities.add(webEntity);
-        }
-
-        return entities;
     }
 }

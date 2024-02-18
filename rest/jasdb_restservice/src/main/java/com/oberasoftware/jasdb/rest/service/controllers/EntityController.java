@@ -145,15 +145,14 @@ public class EntityController {
         }
     }
 
-    private RestEntity doModificationOperation(String instanceId, String bagName, String rawData, RequestContext context, OPERATION_TYPE type) throws RestException {
+    private RestEntity doModificationOperation(String instanceId, String bagName, String rawData, RequestContext context, OPERATION_TYPE type) {
         if(stringNotEmpty(instanceId) && stringNotEmpty(bagName)) {
 
             LOG.debug("Raw entity data received: {}", rawData);
-
-            StreamedEntity streamedEntity = ENTITY_HANDLER.deserialize(StreamedEntity.class, rawData);
-            Entity storeEntity = streamedEntity.getEntity();
-
             try {
+                StreamedEntity streamedEntity = ENTITY_HANDLER.deserialize(StreamedEntity.class, rawData);
+                Entity storeEntity = streamedEntity.getEntity();
+
                 StorageService storageService = storageServiceFactory.getOrCreateStorageService(instanceId, bagName);
                 if(type == OPERATION_TYPE.UPDATE) {
                     LOG.debug("Updating entity with id: {}", storeEntity.getInternalId());
@@ -165,10 +164,12 @@ public class EntityController {
                 }
                 return new StreamedEntity(storeEntity);
             } catch(JasDBStorageException e) {
-                throw new RestException("Unable to store entity: " + e.getMessage());
+                return new ErrorEntity(400, "Unable to store entity: " + e.getMessage());
+            } catch (RestException e) {
+                return new ErrorEntity(400, "Invalid JSON data structure provided");
             }
         } else {
-            throw new SyntaxException("Cannot store entity, no Bag specified");
+            return new ErrorEntity(400, "Cannot store entity, no Bag specified");
         }
     }
 

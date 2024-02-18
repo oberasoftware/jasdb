@@ -91,16 +91,20 @@ public class LocalStorageServiceFactoryImpl implements StorageServiceFactory {
             return storageServices.get(key);
         } else {
             if(metadataStore.containsInstance(instanceId)) {
-                if(!metadataStore.containsBag(instanceId, bagName)) {
-                    metadataStore.addBag(new BagMeta(instanceId, bagName, new ArrayList<IndexDefinition>()));
+                if(bagName != null && !bagName.isEmpty()) {
+                    if(!metadataStore.containsBag(instanceId, bagName)) {
+                        metadataStore.addBag(new BagMeta(instanceId, bagName, new ArrayList<IndexDefinition>()));
+                    }
+
+                    Instance instance = metadataStore.getInstance(instanceId);
+                    StorageService serviceInstance = createStorageServiceInstance(instance, bagName);
+                    serviceInstance.openService(configurationLoader.getConfiguration());
+
+                    storageServices.put(key, serviceInstance); //wrappedInstance);
+                    return serviceInstance;
+                } else {
+                    throw new JasDBStorageException("Unable to create Bag, bag name not specified");
                 }
-
-                Instance instance = metadataStore.getInstance(instanceId);
-                StorageService serviceInstance = createStorageServiceInstance(instance, bagName);
-                serviceInstance.openService(configurationLoader.getConfiguration());
-
-                storageServices.put(key, serviceInstance); //wrappedInstance);
-                return serviceInstance;
             } else {
                 throw new JasDBStorageException("Unable to create bag storage service, instance: " + instanceId + " does not exist");
             }

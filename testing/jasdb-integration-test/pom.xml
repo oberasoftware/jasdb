@@ -21,6 +21,10 @@
         </dependency>
         <dependency>
             <groupId>com.oberasoftware</groupId>
+            <artifactId>jasdb_console</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
             <artifactId>jasdb-restclient</artifactId>
         </dependency>
         <dependency>

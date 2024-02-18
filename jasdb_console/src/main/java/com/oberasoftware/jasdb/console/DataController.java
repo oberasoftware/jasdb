@@ -85,6 +85,16 @@ public class DataController {
         return "redirect:/data/";
     }
 
+    @RequestMapping(value = "/{instanceId}/updateEntity", method = RequestMethod.PUT)
+    public String updateData(@Valid WebEntity entity, @PathVariable String instanceId) throws JasDBException {
+        DBSession session = sessionFactory.createSession(instanceId);
+        EntityBag entityBag = session.createOrGetBag(entity.getBag());
+
+        entityBag.updateEntity(SimpleEntity.fromJson(entity.getData()));
+
+        return "redirect:/data/";
+    }
+
     @RequestMapping(value = "/{instanceId}/{bag}/delete", method = RequestMethod.GET)
     public String deleteBag(@PathVariable String instanceId, @PathVariable String bag) throws JasDBException {
         DBSession session = sessionFactory.createSession(instanceId);

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 
 @Controller
-public class IndexController {
+public class IndexWebController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String indexRedirect() {

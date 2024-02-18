@@ -10,6 +10,9 @@
 
 
     <logger name="nl.renarj" level="info"/>
+    <logger name="com.oberasoftware" level="info"/>
+    <logger name="org.springframework" level="info"/>
+
 
     <root level="OFF">
         <appender-ref ref="STDOUT"/>

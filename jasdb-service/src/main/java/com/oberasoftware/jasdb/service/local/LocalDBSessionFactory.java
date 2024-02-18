@@ -6,10 +6,12 @@ import com.oberasoftware.jasdb.api.session.DBSession;
 import com.oberasoftware.jasdb.api.session.DBSessionFactory;
 import com.oberasoftware.jasdb.api.security.Credentials;
 import com.oberasoftware.jasdb.api.exceptions.JasDBException;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Renze de Vries
  */
+@Component
 public class LocalDBSessionFactory implements DBSessionFactory {
     private String instance;
 

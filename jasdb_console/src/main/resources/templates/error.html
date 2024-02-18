@@ -4,25 +4,20 @@
     <title th:if="${title}" th:text="'JasDB Admin Console - ' + ${title}">Page title</title>
     <title th:if="!${title}">JasDB Admin Console</title>
 
-    <link th:href="@{/static/bootstrap/css/bootstrap.min.css}" href="/webapp/static/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" href="/bootstrap/css/bootstrap.css" rel="stylesheet"/>
 
-    <script th:src="@{/static/bootstrap/js/bootstrap.min.js}" src="/webapp/static/bootstrap/js/bootstrap.min.js"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}" src="/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
-<script th:src="@{/static/javascript/data.js}" src="/webapp/static/javascript/data.js"></script>
+<script th:src="@{/javascript/data.js}" src="/javascript/data.js"></script>
 <div class="container">
-    <div th:substituteby="includes/header :: navigation"></div>
+    <div th:replace="includes/header :: navigation (selectTab='Error')"></div>
 
     <div class="row">
-        <div th:substituteby="includes/header :: navbar"></div>
-
         <div class="alert alert-error">
             <p><strong>Check the logs for details.</strong></p>
         </div>
 
-        <div th:text="${exception}">
-            No exception
-        </div>
     </div>
     <div th:substituteby="includes/header :: footer"></div>
 </div>

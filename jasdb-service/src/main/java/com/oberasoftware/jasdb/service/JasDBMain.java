@@ -4,6 +4,7 @@ import com.oberasoftware.jasdb.api.engine.EngineManager;
 import com.oberasoftware.jasdb.api.exceptions.JasDBException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.model.NodeInformation;
+import com.oberasoftware.jasdb.console.ConsoleConfiguration;
 import com.oberasoftware.jasdb.engine.EngineConfiguation;
 import com.oberasoftware.jasdb.rest.service.RestConfiguration;
 import com.oberasoftware.jasdb.rest.service.RestConfigurationLoader;
@@ -31,7 +32,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author Renze de Vries
  */
 @SpringBootApplication
-@Import({RestConfiguration.class, EngineConfiguation.class, ServiceConfiguration.class})
+@Import({RestConfiguration.class, EngineConfiguation.class, ServiceConfiguration.class, ConsoleConfiguration.class})
 public class JasDBMain {
     private static final Logger LOG = getLogger(JasDBMain.class);
 

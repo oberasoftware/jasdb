@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <title th:if="${title}" th:text="'JasDB Admin Console - ' + ${title}">Page title</title>
+    <title th:if="!${title}">JasDB Admin Console</title>
+
+    <link th:href="@{/images/favicon.ico}" rel="shortcut icon" href="/images/favicon.ico" title="Favicon"/>
+
+    <script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
+    <script src="/webjars/jquery-ui/1.13.2/jquery-ui.min.js"></script>
+
+    <link rel="stylesheet" href="/webjars/jquery-ui/1.13.2/jquery-ui.min.css" />
+    <link href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
+
+    <script src="/webjars/handlebars/4.7.7/handlebars.min.js"></script>
+
+    <script src="/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <link th:href="@{/css/jquery.jsonview.css}" href="/css/jquery.jsonview.css" rel="stylesheet"/>
+
+    <script th:src="@{/javascript/jquery.jsonview.js}" src="/javascript/jquery.jsonview.js"></script>
+
+    <script th:src="@{/javascript/global.js}" src="/static/javascript/global.js"></script>
+</head>
+
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" role="navigation" th:fragment="navigation (selectTab)">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><img height="" th:src="@{/images/obera.png}"/></a>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="navbar-nav me-auto my-2 my-lg-0">
+                    <li class="nav-item"><a th:classappend="${selectTab == 'Data'} ? 'active'" class="nav-link" th:href="@{'/data/'}">Data</a></li>
+                    <li class="nav-item"><a th:classappend="${selectTab == 'Query'} ? 'active'" class="nav-link" th:href="@{'/query/'}">Query</a></li>
+                    <li class="nav-item"><a th:classappend="${selectTab == 'Security'} ? 'active'" class="nav-link" th:href="@{'/security/'}">Security</a></li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+<div id="version" th:fragment="footer">
+    <p class="text-center">&#169; Copyright 2024 Oberasoftware, version: <span>2.0</span></p>
+</div>
+
+</html>

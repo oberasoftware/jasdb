@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:with="title=Index" th:substituteby="includes/header :: header">
+    <title th:if="${title}" th:text="'JasDB Admin Console - ' + ${title}">Page title</title>
+    <title th:if="!${title}">JasDB Admin Console</title>
+
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" href="/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}" src="/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<script th:src="@{/javascript/data.js}" src="/javascript/data.js"></script>
+<div class="container">
+    <div th:replace="includes/header :: navigation (selectTab='Data')"></div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Modal for instance addition-->
+            <div class="modal fade modal-lg" id="instanceModal" tabindex="-1" role="dialog" aria-labelledby="addInstanceLabel" aria-hidden="true">
+                <form role="form" action="#" th:object="${instanceForm}" th:action="@{'/data/'}" method="post">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="addInstanceLabel">Add an Instance</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" aria-hidden="true"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="instanceName">Instance name</label>
+                                    <input type="text" class="form-control" id="instanceName" placeholder="Enter Instance name" th:field="*{name}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="instancePath">Instance path</label>
+                                    <input type="text" class="form-control" id="instancePath" placeholder="Enter Instance path" th:field="*{path}"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Create</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-start">
+                    <h5 class="card-title flex-grow-1">Instances</h5>
+                    <a class="addInstance" data-bs-toggle="modal" data-bs-target="#instanceModal" href="#"><i class="bi bi-plus"></i></a>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="instance : ${instances}">
+                            <a href="#" th:href="@{'/data/' + ${instance.instanceId}}" th:text="${instance.instanceId}">Text</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-primary">
+
+                <!-- Modal for bag addition-->
+                <div class="modal fade" id="bagModal" tabindex="-1" role="dialog" aria-labelledby="addBagLabel" aria-hidden="true">
+                    <form role="form" action="#" th:object="${bag}" th:action="@{'/data/' + ${instanceId} + '/createBag'}" method="post">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="addBagLabel">Add a bag</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="bagName">Bag name</label>
+                                        <input type="text" class="form-control" id="bagName" placeholder="Enter bag name" th:field="*{name}"/>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal modal-lg fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="errorModal">Error</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="errorMessage">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="clsErrorBtn" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for data insertion -->
+                <div class="modal modal-lg fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="addDocumentLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="addDocumentLabel">Add a document</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="dataEntity">Contents</label>
+                                        <textarea id="dataEntity" class="form-control" placeholder="Enter JSON Data" rows="10"></textarea>
+                                    </div>
+                                    <input type="hidden" value="" id="bag"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="clsBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" id="addEntityBtn" class="btn btn-primary">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                <!-- instance data -->
+                <div class="card px-0" th:attr="instance=${instanceId}" id="instanceRoot">
+                    <div class="card-header d-flex justify-content-start">
+                        <h5 class="card-title flex-grow-1">Instance: <label th:text="${instanceId}">Default</label></h5>
+                        <a class="addBag" data-bs-toggle="modal" data-bs-target="#bagModal"  href="#" id="addBag"><i class="bi bi-plus"></i></a>
+                    </div>
+                    <div class="card-body">
+                        <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Instance Properties</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </tr>
+                                </thead>
+                                <tr>
+                                    <td>Bags</td>
+                                    <td th:text="${bags.size()}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Path:</td>
+                                    <td th:text="${instance.path}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                        <div class="accordion" id="accordion">
+                            <div class="accordion-item" th:each="bag : ${bags}">
+                                <div class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" aria-expanded="false" th:attr="aria-controls=${bag.name},data-bs-target='#'+${bag.name}" th:text="'Bag: ' + ${bag.name}">
+                                    </button>
+                                </div>
+
+                                <div th:id="${bag.name}" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <div class="card">
+                                            <div class="card-header d-flex justify-content-start">
+                                                <h5 class="card-title flex-grow-1">Documents</h5>
+                                                <a class="addDocument" data-bs-toggle="modal" data-bs-target="#dataModal" th:attr="bag=${bag.name}" href="#" title="Add a Document">
+                                                    <i class="bi bi-plus"></i>
+                                                </a>
+                                            </div>
+                                            <div class="card-body">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Property</th>
+                                                        <th>Value</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tr>
+                                                        <td>Document Count:</td>
+                                                        <td th:text="${bag.size}"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Disk size:</td>
+                                                        <td th:text="${bag.diskSize}"></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header">Indexes</div>
+                                            <div class="card-body">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Index</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tr th:each="indexName : ${bag.indexNames}">
+                                                        <td th:text="${indexName}">Name</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-primary btn-sm">Info</button>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header">Query Documents</div>
+                                            <div class="card-body">
+                                                <a href="" th:href="@{'/query/' + ${instanceId} + '/' + ${bag.name}}" class="btn btn-primary">Search</a>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <a href="#" th:href="@{'/data/' + ${instanceId} + '/' + ${bag.name} + '/delete'}" class="btn btn-danger" th:text="'Delete Bag: ' + ${bag.name}"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" th:href="@{'/data/' + ${instanceId} + '/delete'}" class="btn btn-danger" th:text="'Delete Instance: ' + ${instanceId}">Delete: Instance</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:substituteby="includes/header :: footer"></div>
+</div>
+
+</body>
+</html>
