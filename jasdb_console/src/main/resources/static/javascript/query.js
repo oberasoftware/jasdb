@@ -4,11 +4,7 @@ $(document).ready(function() {
         let bag = $(this).attr("bag");
         let instance = $(this).attr("instance");
 
-        let edBtn = $("#editBtn");
-        edBtn.attr("bag", bag);
-        edBtn.attr("instance", instance);
-        edBtn.attr("json", JSON.stringify(json));
-        $("#dataContent").JSONView(json);
+        showEditDialog(bag, instance, json);
     });
 
     loadInstances();
@@ -75,6 +71,16 @@ $(document).ready(function() {
     }
 });
 
+function showEditDialog(bag, instance, json) {
+    let edBtn = $("#editBtn");
+    edBtn.attr("bag", bag);
+    edBtn.attr("instance", instance);
+    edBtn.attr("json", JSON.stringify(json));
+    $("#dataContent").JSONView(json);
+
+    $("#dataModal").modal('show');
+}
+
 function doQuery(instance, bag) {
     $("#docList").empty();
 
@@ -95,8 +101,62 @@ function doQuery(instance, bag) {
             }
             renderAndAppend("resultItem", data, "docList");
         })
+
+        $(".removeEntity").click(function() {
+            let docId = $(this).attr("docId");
+            console.log("Deleting doc: " + docId);
+
+            let docData = $("#" + docId);
+
+            let bag = docData.attr("bag");
+            let instance = docData.attr("instance");
+
+            $("#deleteMessage").html("Are you sure you want to delete entity with id: '" + docId + "' ?");
+            let btn = $("#confirmDeleteMessageBtn");
+            btn.attr("docId", docId);
+            btn.attr("bag", bag);
+            btn.attr("instance", instance);
+
+            $("#deleteModal").modal('show');
+        })
+
+        $("#confirmDeleteMessageBtn").click(function() {
+            let docId = $(this).attr('docId');
+            let bag = $(this).attr('bag');
+            let instance = $(this).attr('instance');
+            console.log("Really deleting doc: " + docId);
+
+            $.ajax({url: "/Instances(" + instance + ")/Bags(" + bag + ")/Entities(" + docId + ")", type: "DELETE", data: {}, success: function() {
+                    console.log("Removed Entity successfully");
+                    doQuery(instance, bag);
+
+                    $("#clsDeleteMessageBtn").click();
+            }}).fail(function(data) {
+                $("#clsDeleteMessageBtn").click();
+
+                let statusCode = data.responseJSON.statusCode;
+                let message = data.responseJSON.message;
+                console.log("Failed to Remove entity, error code: " + statusCode + " and message: " + message);
+
+                $("#errorMessage").html(message);
+                $("#messageModal").modal('show');
+            });
+        })
+        $(".editEntity").click(function(event) {
+            let docId = $(this).attr("docId");
+            console.log("Edit doc: " + docId);
+            let docData = $("#" + docId);
+
+            let bag = docData.attr("bag");
+            let instance = docData.attr("instance");
+            let json = docData.data('content');
+
+            showEditDialog(bag, instance, json);
+        })
     })
 }
+
+
 
 function loadInstances() {
     let instanceList = $("#instanceSelector");

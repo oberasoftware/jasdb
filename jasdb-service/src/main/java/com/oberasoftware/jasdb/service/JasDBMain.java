@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.springframework.boot.Banner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
@@ -31,7 +32,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * @author Renze de Vries
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @Import({RestConfiguration.class, EngineConfiguation.class, ServiceConfiguration.class, ConsoleConfiguration.class})
 public class JasDBMain {
     private static final Logger LOG = getLogger(JasDBMain.class);

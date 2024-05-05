@@ -155,8 +155,12 @@ public class EntityController {
 
                 StorageService storageService = storageServiceFactory.getOrCreateStorageService(instanceId, bagName);
                 if(type == OPERATION_TYPE.UPDATE) {
-                    LOG.debug("Updating entity with id: {}", storeEntity.getInternalId());
-                    storageService.persistEntity(context, storeEntity);
+                    if(storeEntity != null && storeEntity.getInternalId() != null) {
+                        LOG.debug("Updating entity with id: {}", storeEntity.getInternalId());
+                        storageService.persistEntity(context, storeEntity);
+                    } else {
+                        return new ErrorEntity(400, "Cannot update entity, no existing ID specified or invalid document");
+                    }
                 } else if(type == OPERATION_TYPE.INSERT) {
                     LOG.debug("Inserting new entity into bag: {}", bagName);
 

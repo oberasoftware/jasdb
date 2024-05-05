@@ -16,16 +16,37 @@
         <tr>
             <td>{{docId}}</td>
             <td>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#dataModal" data-id="" bag="{{bag}}" instance="{{instance}}" data-content="{{docJson}}" class="showDocument" title="Show full Document">
+                <a href="#" data-bs-toggle="modal" id="{{docId}}" data-bs-target="#dataModal" data-id="" bag="{{bag}}" instance="{{instance}}" data-content="{{docJson}}" class="showDocument" title="Show full Document">
                     {{docJson}}
                 </a>
             </td>
-            <td></td>
+            <td>
+                <a class="removeEntity" href="#" docId="{{docId}}"><i class="bi bi-trash"></i></a>
+                <a class="editEntity" href="#" docId="{{docId}}"><i class="bi bi-pencil-fill"></i></a>
+            </td>
         </tr>
     </script>
 
     <div class="row">
         <div class="col-md-12">
+            <div class="modal modal-lg fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="deleteModalTitle">Remove Entity</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="deleteMessage">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="confirmDeleteMessageBtn" class="btn btn-danger" data-bs-dismiss="modal">Remove</button>
+                            <button type="button" id="clsDeleteMessageBtn" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="modal modal-lg fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
