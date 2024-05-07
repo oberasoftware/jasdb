@@ -249,6 +249,11 @@ public class SimpleEntityTest {
         assertThat(SimpleEntity.toJson(simpleEntity), containsString("\"phones\":[\"12345678\"]"));
     }
 
+    @Test(expected = MetadataParseException.class)
+    public void testDeserializeNull() throws MetadataParseException {
+        SimpleEntity.fromJson(null);
+    }
+
     private void assertEntity(Entity entity) {
         assertThat(entity.hasProperty("test1"), is(true));
         assertThat(entity.hasProperty("test2"), is(true));

@@ -152,21 +152,21 @@ public class EntityController {
             try {
                 StreamedEntity streamedEntity = ENTITY_HANDLER.deserialize(StreamedEntity.class, rawData);
                 Entity storeEntity = streamedEntity.getEntity();
-
-                StorageService storageService = storageServiceFactory.getOrCreateStorageService(instanceId, bagName);
-                if(type == OPERATION_TYPE.UPDATE) {
-                    if(storeEntity != null && storeEntity.getInternalId() != null) {
+                if(storeEntity != null) {
+                    StorageService storageService = storageServiceFactory.getOrCreateStorageService(instanceId, bagName);
+                    if(type == OPERATION_TYPE.UPDATE) {
                         LOG.debug("Updating entity with id: {}", storeEntity.getInternalId());
                         storageService.persistEntity(context, storeEntity);
-                    } else {
-                        return new ErrorEntity(400, "Cannot update entity, no existing ID specified or invalid document");
-                    }
-                } else if(type == OPERATION_TYPE.INSERT) {
-                    LOG.debug("Inserting new entity into bag: {}", bagName);
 
-                    storageService.insertEntity(context, storeEntity);
+                    } else if(type == OPERATION_TYPE.INSERT) {
+                        LOG.debug("Inserting new entity into bag: {}", bagName);
+
+                        storageService.insertEntity(context, storeEntity);
+                    }
+                    return new StreamedEntity(storeEntity);
+                } else {
+                    return new ErrorEntity(400, "Cannot update entity, invalid document");
                 }
-                return new StreamedEntity(storeEntity);
             } catch(JasDBStorageException e) {
                 return new ErrorEntity(400, "Unable to store entity: " + e.getMessage());
             } catch (RestException e) {
