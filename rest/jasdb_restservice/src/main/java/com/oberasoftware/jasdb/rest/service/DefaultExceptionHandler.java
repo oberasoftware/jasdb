@@ -1,6 +1,7 @@
 package com.oberasoftware.jasdb.rest.service;
 
 import com.oberasoftware.jasdb.rest.model.ErrorEntity;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Renze de Vries

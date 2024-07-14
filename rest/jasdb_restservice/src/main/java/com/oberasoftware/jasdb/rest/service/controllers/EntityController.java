@@ -26,13 +26,13 @@ import com.oberasoftware.jasdb.rest.service.input.conditions.AndBlockOperation;
 import com.oberasoftware.jasdb.rest.service.input.conditions.BlockOperation;
 import com.oberasoftware.jasdb.rest.service.input.conditions.FieldCondition;
 import com.oberasoftware.jasdb.rest.service.input.conditions.InputCondition;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;

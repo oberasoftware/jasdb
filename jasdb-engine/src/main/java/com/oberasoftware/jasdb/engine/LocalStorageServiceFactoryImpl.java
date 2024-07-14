@@ -10,13 +10,13 @@ import com.oberasoftware.jasdb.api.model.Instance;
 import com.oberasoftware.jasdb.api.engine.MetadataStore;
 import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

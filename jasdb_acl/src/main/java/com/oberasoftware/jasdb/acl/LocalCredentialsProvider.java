@@ -13,13 +13,13 @@ import com.oberasoftware.jasdb.api.security.CryptoEngine;
 import com.oberasoftware.jasdb.core.crypto.CryptoFactory;
 import com.oberasoftware.jasdb.api.exceptions.JasDBSecurityException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**

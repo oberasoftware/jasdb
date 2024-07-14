@@ -9,6 +9,7 @@ import com.oberasoftware.jasdb.api.security.UserManager;
 import com.oberasoftware.jasdb.core.context.RequestContext;
 import com.oberasoftware.jasdb.api.engine.ConfigurationLoader;
 import com.oberasoftware.jasdb.api.exceptions.ConfigurationException;
+import jakarta.annotation.PostConstruct;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 
 /**
  * @author Renze de Vries

@@ -11,10 +11,10 @@ import com.oberasoftware.jasdb.rest.model.RestGrant;
 import com.oberasoftware.jasdb.rest.model.RestGrantObject;
 import com.oberasoftware.jasdb.rest.model.RestGrantObjectCollection;
 import com.oberasoftware.jasdb.rest.model.mappers.GrantModelMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -7,10 +7,10 @@ import com.oberasoftware.jasdb.api.session.DBInstance;
 import com.oberasoftware.jasdb.core.context.RequestContext;
 import com.oberasoftware.jasdb.core.utils.StringUtils;
 import com.oberasoftware.jasdb.rest.model.RestEntity;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Renze de Vries

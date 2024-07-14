@@ -5,6 +5,7 @@ import com.oberasoftware.jasdb.api.security.SessionManager;
 import com.oberasoftware.jasdb.api.security.UserSession;
 import com.oberasoftware.jasdb.api.exceptions.JasDBSecurityException;
 import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Renze de Vries

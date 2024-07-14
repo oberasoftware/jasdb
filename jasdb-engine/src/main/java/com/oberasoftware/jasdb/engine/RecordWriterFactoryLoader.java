@@ -8,12 +8,12 @@ import com.oberasoftware.jasdb.api.exceptions.JasDBStorageException;
 import com.oberasoftware.jasdb.api.storage.RecordWriter;
 import com.oberasoftware.jasdb.api.storage.RecordWriterFactory;
 import com.oberasoftware.jasdb.core.index.keys.UUIDKey;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.Map;
 import java.util.ServiceLoader;

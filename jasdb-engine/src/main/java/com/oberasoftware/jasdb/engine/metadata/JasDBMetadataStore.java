@@ -13,11 +13,11 @@ import com.oberasoftware.jasdb.engine.HomeLocatorUtil;
 import com.oberasoftware.jasdb.writer.transactional.FSWriter;
 import com.oberasoftware.jasdb.writer.transactional.RecordIteratorImpl;
 import com.oberasoftware.jasdb.writer.transactional.RecordResultImpl;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
