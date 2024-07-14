@@ -29,20 +29,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * @author Renze de Vries
  */
 @Controller
-@RequestMapping(value = "/query")
 public class QueryController {
     private static final Logger LOG = LoggerFactory.getLogger(QueryController.class);
 
     @Autowired
     private DBSessionFactory sessionFactory;
 
-    @RequestMapping(value = "/", method = GET)
+    @RequestMapping(value = "/console/query", method = GET)
     public String findAll(Model model) throws JasDBException {
         LOG.info("Requesting query page");
         return "data/query";
     }
 
-    @RequestMapping(value = "/{instanceId}/{bag}")
+    @RequestMapping(value = "/console/query/{instanceId}/{bag}")
     public String findAll(@PathVariable String instanceId, @PathVariable String bag, Model model) throws JasDBException {
         model.addAttribute("instance", instanceId);
         model.addAttribute("bag", bag);

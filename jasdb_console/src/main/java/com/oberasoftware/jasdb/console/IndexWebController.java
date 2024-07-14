@@ -13,6 +13,6 @@ public class IndexWebController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String indexRedirect() {
-        return "redirect:/data/";
+        return "redirect:/console";
     }
 }

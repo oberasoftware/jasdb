@@ -22,13 +22,12 @@ import javax.validation.Valid;
  * @author Renze de Vries
  */
 @Controller
-@RequestMapping(value = "/data")
 public class DataController {
 
     @Autowired
     private DBSessionFactory sessionFactory;
 
-    @RequestMapping(value="/", method=RequestMethod.GET)
+    @RequestMapping(value="/console", method=RequestMethod.GET)
     public String indexPage(Model model) throws JasDBException {
         DBSession session = sessionFactory.createSession();
         model.addAttribute("bags", session.getBags());
@@ -36,7 +35,7 @@ public class DataController {
         return buildIndex(session, model);
     }
 
-    @RequestMapping(value="/{instanceId}", method = RequestMethod.GET)
+    @RequestMapping(value="/console/{instanceId}", method = RequestMethod.GET)
     public String instanceData(@PathVariable String instanceId, Model model) throws JasDBException {
         DBSession session = sessionFactory.createSession(instanceId);
         model.addAttribute("bags", session.getBags(instanceId));
@@ -58,57 +57,57 @@ public class DataController {
         return "data/index";
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "/console", method = RequestMethod.POST)
     public String createInstance(@Valid WebInstance instance) throws JasDBException {
         DBSession session = sessionFactory.createSession();
         session.addInstance(instance.getName());
 
-        return "redirect:/data/";
+        return "redirect:/console";
     }
 
-    @RequestMapping(value="/{instanceId}/createBag", method = RequestMethod.POST)
+    @RequestMapping(value="/console/{instanceId}/createBag", method = RequestMethod.POST)
     public String createBag(Bag bag, @PathVariable String instanceId) throws JasDBException {
         DBSession session = sessionFactory.createSession(instanceId);
 
         session.createOrGetBag(bag.getName());
 
-        return "redirect:/data/";
+        return "redirect:/console";
     }
 
-    @RequestMapping(value = "/{instanceId}/createEntity", method = RequestMethod.POST)
+    @RequestMapping(value = "/console/{instanceId}/createEntity", method = RequestMethod.POST)
     public String createData(@Valid WebEntity entity, @PathVariable String instanceId) throws JasDBException {
         DBSession session = sessionFactory.createSession(instanceId);
         EntityBag entityBag = session.createOrGetBag(entity.getBag());
 
         entityBag.addEntity(SimpleEntity.fromJson(entity.getData()));
 
-        return "redirect:/data/";
+        return "redirect:/console";
     }
 
-    @RequestMapping(value = "/{instanceId}/updateEntity", method = RequestMethod.PUT)
+    @RequestMapping(value = "/console/{instanceId}/updateEntity", method = RequestMethod.PUT)
     public String updateData(@Valid WebEntity entity, @PathVariable String instanceId) throws JasDBException {
         DBSession session = sessionFactory.createSession(instanceId);
         EntityBag entityBag = session.createOrGetBag(entity.getBag());
 
         entityBag.updateEntity(SimpleEntity.fromJson(entity.getData()));
 
-        return "redirect:/data/";
+        return "redirect:/console";
     }
 
-    @RequestMapping(value = "/{instanceId}/{bag}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/console/{instanceId}/{bag}/delete", method = RequestMethod.GET)
     public String deleteBag(@PathVariable String instanceId, @PathVariable String bag) throws JasDBException {
         DBSession session = sessionFactory.createSession(instanceId);
         session.removeBag(instanceId, bag);
 
-        return "redirect:/data/";
+        return "redirect:/console";
     }
 
-    @RequestMapping(value = "/{instanceId}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/console/{instanceId}/delete", method = RequestMethod.GET)
     public String deleteInstance(@PathVariable String instanceId) throws JasDBException {
         DBSession session = sessionFactory.createSession();
         session.deleteInstance(instanceId);
 
-        return "redirect:/data/";
+        return "redirect:/console";
     }
 
 }

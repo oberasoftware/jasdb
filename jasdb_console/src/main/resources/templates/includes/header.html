@@ -10,12 +10,12 @@
     <script src="/webjars/jquery-ui/1.13.2/jquery-ui.min.js"></script>
 
     <link rel="stylesheet" href="/webjars/jquery-ui/1.13.2/jquery-ui.min.css" />
-    <link href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/webjars/bootstrap/5.3.3/css/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
 
     <script src="/webjars/handlebars/4.7.7/handlebars.min.js"></script>
 
-    <script src="/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.js"></script>
 
     <link th:href="@{/css/jquery.jsonview.css}" href="/css/jquery.jsonview.css" rel="stylesheet"/>
 
@@ -31,8 +31,8 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="navbar-nav me-auto my-2 my-lg-0">
-                    <li class="nav-item"><a th:classappend="${selectTab == 'Data'} ? 'active'" class="nav-link" th:href="@{'/data/'}">Data</a></li>
-                    <li class="nav-item"><a th:classappend="${selectTab == 'Query'} ? 'active'" class="nav-link" th:href="@{'/query/'}">Query</a></li>
+                    <li class="nav-item"><a th:classappend="${selectTab == 'Data'} ? 'active'" class="nav-link" th:href="@{'/console'}">Data</a></li>
+                    <li class="nav-item"><a th:classappend="${selectTab == 'Query'} ? 'active'" class="nav-link" th:href="@{'/console/query'}">Query</a></li>
                     <li class="nav-item"><a th:classappend="${selectTab == 'Security'} ? 'active'" class="nav-link" th:href="@{'/security/'}">Security</a></li>
                 </ul>
                 <form class="d-flex" role="search">

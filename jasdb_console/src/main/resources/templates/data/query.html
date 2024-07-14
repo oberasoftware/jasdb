@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
-<head th:with="title=Query" th:substituteby="includes/header :: header">
-    <title th:if="${title}" th:text="'JasDB Admin Console - ' + ${title}">Page title</title>
-    <title th:if="!${title}">JasDB Admin Console</title>
-
-    <link th:href="@{/bootstrap/css/bootstrap.min.css}" href="/bootstrap/css/bootstrap.css" rel="stylesheet"/>
-
-    <script th:src="@{/bootstrap/js/bootstrap.min.js}" src="/bootstrap/js/bootstrap.min.js"></script>
+<head th:with="title=Query" th:replace="~{includes/header :: header}">
 </head>
 <body>
 <script th:src="@{/javascript/query.js}" src="/javascript/data.js"></script>
@@ -167,7 +161,7 @@
         </div>
     </div>
 
-    <div th:substituteby="includes/header :: footer"></div>
+    <div th:replace="~{includes/header :: footer}"></div>
 </div>
 
 </body>
